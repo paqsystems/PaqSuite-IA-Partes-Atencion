@@ -4,6 +4,8 @@
 ## 1) Contexto
 Este repositorio contiene el desarrollo de un **MVP web** para consultorías y empresas de servicios.
 
+**Modo arquitectura:** **MONO** (mono-empresa, una sola base de datos para app y seguridad). Detalle y checklist: `docs/01-arquitectura/00-modo-instalacion.md`. La documentación bajo `docs/01-arquitectura/` que describe multi-DB o `X-Company-Id` es referencia ERP; en este MVP interpretar sin tenancy.
+
 El sistema permite que cada empleado/asistente registre tareas diarias indicando:
 - Fecha
 - Cliente
@@ -42,7 +44,7 @@ Para alcance formal antes de implementar:
 
 - **Especificaciones:** `docs/05-open-spec/` (plantilla `_template-spec.md`, guía `guia-adopcion-open-spec.md`).
 - **Flujo nuevo alcance (A–F):** **A→B→C→D→E→F** en el dispatcher — mismas letras en orden alfabético que en ejecución: SPEC (`openspec-01`) → HU (`openspec-02`) → TR (`openspec-03`) → ejecutar TR → tests → verificación (`openspec-04`).
-- **Correcciones / CC:** **G→D→E→F→H→I** — **Parte G** (§0 = SPEC-update si cambia el «qué» + volcado CC), luego **D**/**E**/**F**, **H** (cerrar control), **I** (unificar; SPEC punto **11** antes que HU/TR).
+- **Correcciones / CC:** **G→D→E→F→I** — **Parte G** (§0 + volcado CC; cierre del bloque CC **Especificado** en la misma corrida), luego **D**/**E**/**F** por ítem, **I** (unificar; SPEC punto **11** antes que HU/TR). **H** solo si hace falta cerrar sin re-volcar.
 - **Comandos en lenguaje natural:** Partes **A–Q** del dispatcher `.cursor/rules/base/00-arquitectura/01-prompts-programados-dispatcher.md`.
 - **Estado intermedio HU/TR:** **Especificado** (cuando SPEC y derivados están alineados): ver `07-estado-hu-tr.md` en la misma carpeta.
 - **Documentación compartida:** `docs/_base/_OPEN-SPEC-METODOLOGIA.md`.

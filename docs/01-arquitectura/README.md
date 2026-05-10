@@ -4,11 +4,19 @@
 
 ---
 
+## Modo de instalación de **este** repositorio
+
+**MONO (mono-empresa)** — declaración y criterios: **[`00-modo-instalacion.md`](./00-modo-instalacion.md)**. La documentación multi-DB / `X-Company-Id` de varios archivos es **referencia ERP**; el MVP **Partes de Atención** usa **una sola base de datos** y **sin tenancy**.
+
+---
+
 ## Contenido de la carpeta
 
 | Documento | Descripción |
 |-----------|-------------|
+| [00-modo-instalacion.md](./00-modo-instalacion.md) | **MONO** vs MULTI: modo adoptado en este repo y checklist |
 | [01-arquitectura-proyecto.md](./01-arquitectura-proyecto.md) | Arquitectura técnica del backend: capas, responsabilidades, multiempresa, bases de datos |
+| [10-arquitectura-programacion.md](./10-arquitectura-programacion.md) | Arquitectura de **programación**: mapeo a carpetas Laravel/React, flujo MONO, tests y anti‑patrones |
 | [02-modelo-datos-overview.md](./02-modelo-datos-overview.md) | Vista general del modelo de datos (en definición) |
 | [03-modelo-datos-modulos.md](./03-modelo-datos-modulos.md) | Modelo de datos por módulo (en definición) |
 | [04-decisiones-clave.md](./04-decisiones-clave.md) | Decisiones estructurales y justificaciones técnicas (en definición) |
@@ -18,13 +26,19 @@
 | [08-roadmap-madurez-arquitectonica-erp.md](./08-roadmap-madurez-arquitectonica-erp.md) | Evolución de la arquitectura en 5 niveles de madurez |
 | [09-bug-validacion-unique-multiconexion-laravel10.md](./09-bug-validacion-unique-multiconexion-laravel10.md) | Laravel 10: `Rule::unique` multi-DB; `orderBy` + query `dir` (listados Partes Producción) |
 | [ui/01_MainLayout_PostLogin_Specification.md](./ui/01_MainLayout_PostLogin_Specification.md) | Especificación del Shell principal post-login (DevExtreme, theming por empresa, responsive) |
-| [ui/frontend-folder-structure.md](./ui/frontend-folder-structure.md) | Estructura ideal de carpetas del frontend React + DevExtreme, lista para Cursor |
+| [ui/02-frontend-folder-structure.md](./ui/02-frontend-folder-structure.md) | Estructura ideal de carpetas del frontend React + DevExtreme, lista para Cursor |
 
 ---
 
 ## Resumen ejecutivo
 
-### Arquitectura por capas
+### Este producto (MVP Partes de Atención): **MONO**
+
+- **Una base de datos** para seguridad y negocio.
+- Sin **`X-Company-Id`**, sin Dictionary/Company separadas en runtime.
+- Capas, OpenAPI, tests y disciplina de documentación iguales al lineamiento PaqSuite; reglas multi-empresa solo donde el equipo las adapte explícitamente.
+
+### Arquitectura por capas (referencia común MULTI / MONO)
 
 1. **API / Controllers** – Reciben requests, extraen contexto, delegan a servicios
 2. **Application Services** – Casos de uso, orquestación, reglas funcionales
@@ -32,7 +46,7 @@
 4. **Infrastructure (Repositories)** – Acceso a datos
 5. **Base de Datos** – Dictionary DB y Company DB
 
-### Modelo multiempresa
+### Modelo multiempresa *(referencia ERP; ver modo en [00-modo-instalacion.md](./00-modo-instalacion.md))*
 
 - **Multiusuario, multiempresa, multirroles**
 - Usuario puede pertenecer a varias empresas
@@ -43,7 +57,7 @@
 ### Seguridad
 
 - Autorización por operación
-- Validación en cada request: autenticación → pertenencia a empresa → permiso específico
+- Validación en cada request: en **MONO**, **autenticación → permiso específico**; el modelo “pertenencia a empresa” es referencia **MULTI** (ver `01-arquitectura-proyecto.md` §7)
 - Formato de permisos: `{recurso}.{accion}` (ej: `clientes.read`, `clientes.create`)
 - El menú refleja permisos, pero la seguridad real se valida en backend
 
@@ -63,11 +77,12 @@
 | Si necesitas… | Lee primero |
 |---------------|--------------|
 | Entender la arquitectura general | [01-arquitectura-proyecto.md](./01-arquitectura-proyecto.md) |
+| Implementar capas en código (MONO) | [10-arquitectura-programacion.md](./10-arquitectura-programacion.md) |
 | Ver diagramas rápidos | [05-mapa-arquitectura-backend.md](./05-mapa-arquitectura-backend.md) |
 | Entender seguridad y permisos | [06-mapa-visual-seguridad-roles-permisos-menu.md](./06-mapa-visual-seguridad-roles-permisos-menu.md) |
 | Entender tenancy y bases de datos | [07-mapa-visual-tenancy-resolucion-db.md](./07-mapa-visual-tenancy-resolucion-db.md) |
 | Entender el Shell UI post-login | [ui/01_MainLayout_PostLogin_Specification.md](./ui/01_MainLayout_PostLogin_Specification.md) |
-| Estructura del frontend para Cursor | [ui/frontend-folder-structure.md](./ui/frontend-folder-structure.md) |
+| Estructura del frontend para Cursor | [ui/02-frontend-folder-structure.md](./ui/02-frontend-folder-structure.md) |
 | Planificar evolución futura | [08-roadmap-madurez-arquitectonica-erp.md](./08-roadmap-madurez-arquitectonica-erp.md) |
 
 ---

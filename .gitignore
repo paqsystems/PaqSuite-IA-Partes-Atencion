@@ -1,0 +1,14 @@
+# Dependencias
+backend/vendor/
+frontend/node_modules/
+
+# Entorno local
+backend/.env
+frontend/.env
+*.log
+
+# Builds
+frontend/dist/
+
+# Herramientas
+.DS_Store
