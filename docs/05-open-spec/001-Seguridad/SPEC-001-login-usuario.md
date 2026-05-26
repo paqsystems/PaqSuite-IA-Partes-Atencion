@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-001](../../03-historias-usuario/001-Seguridad/HU-001-login-usuario.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-001](../../04-tareas/001-Seguridad/TR-001-login-usuario.md) |
 
 ---
 

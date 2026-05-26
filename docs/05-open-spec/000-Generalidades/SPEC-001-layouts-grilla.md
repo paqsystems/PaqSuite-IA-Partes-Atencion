@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-001](../../03-historias-usuario/000-Generalidades/HU-001-layouts-grilla.md) |
-| TR relacionada(s) | — (vincular al crear TR) |
+| TR relacionada(s) | [TR-001](../../04-tareas/000-Generalidades/TR-001-layouts-grilla.md) |
 
 ---
 

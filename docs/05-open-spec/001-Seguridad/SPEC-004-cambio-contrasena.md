@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-004](../../03-historias-usuario/001-Seguridad/HU-004-cambio-contraseña.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-004](../../04-tareas/001-Seguridad/TR-004-cambio-contrasena.md) |
 
 ---
 

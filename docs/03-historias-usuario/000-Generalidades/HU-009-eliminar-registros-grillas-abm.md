@@ -84,3 +84,4 @@ Feature: Eliminacion de registros en grillas ABM
 ## Especificación (Open-Spec)
 
 - [SPEC-009 – Eliminar registros en grillas ABM](../../05-open-spec/000-Generalidades/SPEC-009-eliminar-registros-grillas-abm.md)
+- [TR-009 – Plan técnico](../../04-tareas/000-Generalidades/TR-009-eliminar-registros-grillas-abm.md)

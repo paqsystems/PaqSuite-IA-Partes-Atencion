@@ -73,6 +73,7 @@ Como usuario quiero que la aplicación ofrezca varios idiomas con indicadores vi
 ## Especificación (Open-Spec)
 
 - [SPEC-008 – Multilingual e iconografía banderas](../../05-open-spec/000-Generalidades/SPEC-008-multilingual-banderas.md)
+- [TR-008 – Plan técnico](../../04-tareas/000-Generalidades/TR-008-multilingual-banderas.md)
 
 ## Referencias
 

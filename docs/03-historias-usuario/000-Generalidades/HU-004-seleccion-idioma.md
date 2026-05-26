@@ -69,6 +69,7 @@ Como usuario quiero elegir el idioma en que se muestran los datos de la aplicaci
 ## Especificación (Open-Spec)
 
 - [SPEC-004 – Selección de idioma (i18n)](../../05-open-spec/000-Generalidades/SPEC-004-seleccion-idioma.md)
+- [TR-004 – Plan técnico](../../04-tareas/000-Generalidades/TR-004-seleccion-idioma.md)
 
 ## Referencias
 

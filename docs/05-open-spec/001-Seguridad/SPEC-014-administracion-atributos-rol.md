@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-014](../../03-historias-usuario/001-Seguridad/HU-014-administracion-atributos-rol.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-014](../../04-tareas/001-Seguridad/TR-014-administracion-atributos-rol.md) |
 
 ---
 

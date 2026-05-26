@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-010](../../03-historias-usuario/000-Generalidades/HU-010-acceso-ayuda-externa-chat-compartido.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-010](../../04-tareas/000-Generalidades/TR-010-ayuda-externa-asistente-ia.md) |
 
 ---
 

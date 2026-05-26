@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-003](../../03-historias-usuario/000-Generalidades/HU-003-apertura-menu-misma-o-nueva-pestana.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-003](../../04-tareas/000-Generalidades/TR-003-apertura-menu-pestanas.md) |
 
 ---
 

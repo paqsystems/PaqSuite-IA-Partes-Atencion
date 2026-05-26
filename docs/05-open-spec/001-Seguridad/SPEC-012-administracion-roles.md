@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-012](../../03-historias-usuario/001-Seguridad/HU-012-administracion-roles.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-012](../../04-tareas/001-Seguridad/TR-012-administracion-roles.md) |
 
 ---
 

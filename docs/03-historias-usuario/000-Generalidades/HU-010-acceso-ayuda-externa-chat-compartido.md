@@ -113,6 +113,7 @@ Feature: Acceso a ayuda externa desde la app
 ## Especificación (Open-Spec)
 
 - [SPEC-010 – Asistente IA / ayuda externa](../../05-open-spec/000-Generalidades/SPEC-010-ayuda-externa-asistente-ia.md)
+- [TR-010 – Plan técnico](../../04-tareas/000-Generalidades/TR-010-ayuda-externa-asistente-ia.md)
 
 ## Referencias
 

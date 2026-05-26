@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-005](../../03-historias-usuario/000-Generalidades/HU-005-seleccion-apariencias.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-005](../../04-tareas/000-Generalidades/TR-005-seleccion-apariencia.md) |
 
 ---
 

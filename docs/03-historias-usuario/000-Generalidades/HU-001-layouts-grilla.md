@@ -59,6 +59,7 @@ Como usuario que trabajo frecuentemente con grillas quiero guardar y recuperar f
 ## Especificación (Open-Spec)
 
 - [SPEC-001 – Layouts persistentes de grillas](../../05-open-spec/000-Generalidades/SPEC-001-layouts-grilla.md)
+- [TR-001 – Plan técnico](../../04-tareas/000-Generalidades/TR-001-layouts-grilla.md)
 
 ## Referencias
 

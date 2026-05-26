@@ -12,7 +12,7 @@
 | Estado | Especificado (alineado a CC TR-017 updates) |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-017](../../03-historias-usuario/001-Seguridad/HU-017-sidebar-dinamico-pqmenus.md) |
-| TR relacionada(s) | — (vincular TR-017 updates) |
+| TR relacionada(s) | [TR-017](../../04-tareas/001-Seguridad/TR-017-sidebar-dinamico-pqmenus.md) |
 
 ---
 

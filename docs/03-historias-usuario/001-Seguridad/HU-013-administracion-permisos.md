@@ -51,3 +51,4 @@ Como administrador quiero **asignar roles a usuarios** mediante la tabla de perm
 ## Especificación (Open-Spec)
 
 - [SPEC-013 – Administración de permisos (asignaciones usuario–rol)](../../05-open-spec/001-Seguridad/SPEC-013-administracion-permisos.md)
+- [TR-013 – Plan técnico](../../04-tareas/001-Seguridad/TR-013-administracion-permisos.md)

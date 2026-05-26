@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-016](../../03-historias-usuario/001-Seguridad/HU-016-api-menu-usuario.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-016](../../04-tareas/001-Seguridad/TR-016-api-menu-usuario.md) |
 
 ---
 

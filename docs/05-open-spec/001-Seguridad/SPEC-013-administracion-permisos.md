@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-013](../../03-historias-usuario/001-Seguridad/HU-013-administracion-permisos.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-013](../../04-tareas/001-Seguridad/TR-013-administracion-permisos.md) |
 
 ---
 

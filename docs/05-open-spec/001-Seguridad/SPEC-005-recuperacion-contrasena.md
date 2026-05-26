@@ -12,7 +12,7 @@
 | Estado | Especificado (coherente con CC HU-005 updates) |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-005](../../03-historias-usuario/001-Seguridad/HU-005-recuperacion-contraseña.md) |
-| TR relacionada(s) | — (vincular updates) |
+| TR relacionada(s) | [TR-005](../../04-tareas/001-Seguridad/TR-005-recuperacion-contrasena.md) |
 
 ---
 

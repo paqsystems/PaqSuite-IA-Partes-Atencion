@@ -12,7 +12,7 @@
 | Estado | Especificado (Coherente con CC documentado en HU-007) |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-007](../../03-historias-usuario/000-Generalidades/HU-007-Parametros-generales.md) |
-| TR relacionada(s) | — (vincular updates TR-007 si aplica) |
+| TR relacionada(s) | [TR-007](../../04-tareas/000-Generalidades/TR-007-parametros-generales.md) |
 
 ---
 

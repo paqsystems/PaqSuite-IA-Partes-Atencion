@@ -45,6 +45,7 @@ Como usuario del sistema quiero autenticarme con mi código y contraseña para a
 ## Especificación (Open-Spec)
 
 - [SPEC-001 – Login de usuario](../../05-open-spec/001-Seguridad/SPEC-001-login-usuario.md)
+- [TR-001 – Plan técnico](../../04-tareas/001-Seguridad/TR-001-login-usuario.md)
 
 ## Referencias
 

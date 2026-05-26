@@ -108,6 +108,7 @@ Como usuario autenticado quiero **elegir la apariencia (look & feel)** del siste
 ## Especificación (Open-Spec)
 
 - [SPEC-005 – Apariencia / tema por usuario](../../05-open-spec/000-Generalidades/SPEC-005-seleccion-apariencia.md)
+- [TR-005 – Plan técnico](../../04-tareas/000-Generalidades/TR-005-seleccion-apariencia.md)
 
 ## Referencias
 

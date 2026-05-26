@@ -49,6 +49,7 @@ Como usuario que trabajo en el frontend web quiero elegir si las opciones del me
 ## Especificación (Open-Spec)
 
 - [SPEC-003 – Apertura menú misma o nueva pestaña](../../05-open-spec/000-Generalidades/SPEC-003-apertura-menu-pestanas.md)
+- [TR-003 – Plan técnico](../../04-tareas/000-Generalidades/TR-003-apertura-menu-pestanas.md)
 
 ## Referencias
 

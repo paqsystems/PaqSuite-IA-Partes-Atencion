@@ -224,6 +224,7 @@ Scenario: Sin datos no se puede exportar
 ## Especificación (Open-Spec)
 
 - [SPEC-006 – Exportación Excel desde grillas](../../05-open-spec/000-Generalidades/SPEC-006-exportacion-excel-grillas.md)
+- [TR-006 – Plan técnico](../../04-tareas/000-Generalidades/TR-006-exportacion-excel-grillas.md)
 
 ## Referencias
 

@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-006](../../03-historias-usuario/000-Generalidades/HU-006-exportacion-excel.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-006](../../04-tareas/000-Generalidades/TR-006-exportacion-excel-grillas.md) |
 
 ---
 

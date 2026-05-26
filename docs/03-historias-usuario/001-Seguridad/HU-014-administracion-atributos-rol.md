@@ -42,6 +42,7 @@ Como administrador quiero definir los permisos granulares de cada rol por opció
 ## Especificación (Open-Spec)
 
 - [SPEC-014 – Administración de atributos de rol](../../05-open-spec/001-Seguridad/SPEC-014-administracion-atributos-rol.md)
+- [TR-014 – Plan técnico](../../04-tareas/001-Seguridad/TR-014-administracion-atributos-rol.md)
 
 ## Referencias
 

@@ -56,6 +56,7 @@ Como usuario autenticado quiero que el menú lateral (sidebar) se genere dinámi
 ## Especificación (Open-Spec)
 
 - [SPEC-017 – Sidebar dinámico desde `pq_menus`](../../05-open-spec/001-Seguridad/SPEC-017-sidebar-dinamico-pqmenus.md)
+- [TR-017 – Plan técnico](../../04-tareas/001-Seguridad/TR-017-sidebar-dinamico-pqmenus.md)
 
 ## Referencias
 

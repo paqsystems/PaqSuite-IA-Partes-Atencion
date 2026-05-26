@@ -51,6 +51,7 @@ Como usuario autenticado quiero que el sistema exponga un endpoint que devuelva 
 ## Especificación (Open-Spec)
 
 - [SPEC-016 – API de menú del usuario](../../05-open-spec/001-Seguridad/SPEC-016-api-menu-usuario.md)
+- [TR-016 – Plan técnico](../../04-tareas/001-Seguridad/TR-016-api-menu-usuario.md)
 
 ## Referencias
 

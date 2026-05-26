@@ -39,6 +39,7 @@ Como administrador quiero que el menú del sistema esté versionado y sea reprod
 ## Especificación (Open-Spec)
 
 - [SPEC-015 – Menú del sistema (seed versionado)](../../05-open-spec/001-Seguridad/SPEC-015-menu-sistema-seed.md)
+- [TR-015 – Plan técnico](../../04-tareas/001-Seguridad/TR-015-menu-sistema-seed.md)
 
 ## Referencias
 

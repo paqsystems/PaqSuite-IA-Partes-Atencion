@@ -40,6 +40,7 @@ Como administrador quiero gestionar los roles del sistema para definir conjuntos
 ## Especificación (Open-Spec)
 
 - [SPEC-012 – Administración de roles](../../05-open-spec/001-Seguridad/SPEC-012-administracion-roles.md)
+- [TR-012 – Plan técnico](../../04-tareas/001-Seguridad/TR-012-administracion-roles.md)
 
 ## Referencias
 

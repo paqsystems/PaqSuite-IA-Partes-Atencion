@@ -12,7 +12,7 @@
 | Estado | Especificado (Coherente con CC documentado en HU-008) |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-008](../../03-historias-usuario/000-Generalidades/HU-008-multilingual-idiomas-banderas.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-008](../../04-tareas/000-Generalidades/TR-008-multilingual-banderas.md) |
 
 ---
 

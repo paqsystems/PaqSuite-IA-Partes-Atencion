@@ -42,6 +42,7 @@ Como administrador quiero que las opciones de menú que deben mostrarse en el si
 ## Especificación (Open-Spec)
 
 - [SPEC-018 – Seed menú `routeName` y `enabled`](../../05-open-spec/001-Seguridad/SPEC-018-seed-menu-routename-enabled.md)
+- [TR-018 – Plan técnico](../../04-tareas/001-Seguridad/TR-018-seed-menu-routename-enabled.md)
 
 ## Referencias
 

@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "menuText": "Aplicación",
+    "expanded": true,
+    "idParent": 0,
+    "orden": 1,
+    "tipo": "INF",
+    "procedimiento": "app_root",
+    "enabled": true,
+    "routeName": null,
+    "estructura": null
+  },
+  {
+    "id": 2,
+    "menuText": "Inicio",
+    "expanded": false,
+    "idParent": 1,
+    "orden": 1,
+    "tipo": "INF",
+    "procedimiento": "inicio",
+    "enabled": true,
+    "routeName": "home",
+    "estructura": null
+  }
+]

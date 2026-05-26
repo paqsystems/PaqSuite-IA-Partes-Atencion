@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-018](../../03-historias-usuario/001-Seguridad/HU-018-seed-menu-routeName-enabled.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-018](../../04-tareas/001-Seguridad/TR-018-seed-menu-routename-enabled.md) |
 
 ---
 

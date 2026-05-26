@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-004](../../03-historias-usuario/000-Generalidades/HU-004-seleccion-idioma.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-004](../../04-tareas/000-Generalidades/TR-004-seleccion-idioma.md) |
 
 ---
 

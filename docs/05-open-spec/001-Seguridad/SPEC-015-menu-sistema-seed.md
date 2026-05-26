@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-015](../../03-historias-usuario/001-Seguridad/HU-015-menu-sistema.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-015](../../04-tareas/001-Seguridad/TR-015-menu-sistema-seed.md) |
 
 ---
 

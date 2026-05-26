@@ -12,7 +12,7 @@
 | Estado | Especificado |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-010](../../03-historias-usuario/001-Seguridad/HU-010-administracion-usuarios.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-010](../../04-tareas/001-Seguridad/TR-010-administracion-usuarios.md) |
 
 ---
 

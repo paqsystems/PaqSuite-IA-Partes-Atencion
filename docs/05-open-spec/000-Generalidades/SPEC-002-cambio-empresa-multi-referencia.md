@@ -12,7 +12,7 @@
 | Estado | No aplica (instalación MONO) |
 | Última actualización | 2026-05-09 |
 | HU relacionada(s) | [HU-002](../../03-historias-usuario/000-Generalidades/HU-002-cambio-empresa-activa.md) |
-| TR relacionada(s) | — |
+| TR relacionada(s) | [TR-002](../../04-tareas/000-Generalidades/TR-002-cambio-empresa-mono-reserva.md) |
 
 ---
 

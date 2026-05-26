@@ -43,6 +43,7 @@ Como administrador quiero gestionar los usuarios del sistema (alta, edición, ba
 ## Especificación (Open-Spec)
 
 - [SPEC-010 – Administración de usuarios](../../05-open-spec/001-Seguridad/SPEC-010-administracion-usuarios.md)
+- [TR-010 – Plan técnico](../../04-tareas/001-Seguridad/TR-010-administracion-usuarios.md)
 
 ## Referencias
 

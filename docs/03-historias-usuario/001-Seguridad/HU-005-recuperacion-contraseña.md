@@ -43,6 +43,7 @@ Como usuario que olvidé mi contraseña quiero solicitar un enlace de restableci
 ## Especificación (Open-Spec)
 
 - [SPEC-005 – Recuperación de contraseña](../../05-open-spec/001-Seguridad/SPEC-005-recuperacion-contrasena.md)
+- [TR-005 – Plan técnico](../../04-tareas/001-Seguridad/TR-005-recuperacion-contrasena.md)
 
 ## Referencias
 

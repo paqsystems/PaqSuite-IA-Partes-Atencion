@@ -37,6 +37,7 @@ Como usuario autenticado quiero cerrar sesión de forma segura para que mi token
 ## Especificación (Open-Spec)
 
 - [SPEC-003 – Cerrar sesión](../../05-open-spec/001-Seguridad/SPEC-003-cerrar-sesion.md)
+- [TR-003 – Plan técnico](../../04-tareas/001-Seguridad/TR-003-cerrar-sesion.md)
 
 ## Referencias
 

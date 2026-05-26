@@ -38,6 +38,7 @@ Como usuario autenticado quiero cambiar mi contraseña para mantener la segurida
 ## Especificación (Open-Spec)
 
 - [SPEC-004 – Cambio de contraseña](../../05-open-spec/001-Seguridad/SPEC-004-cambio-contrasena.md)
+- [TR-004 – Plan técnico](../../04-tareas/001-Seguridad/TR-004-cambio-contrasena.md)
 
 ## Referencias
 

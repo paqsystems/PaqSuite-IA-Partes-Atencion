@@ -12,6 +12,8 @@
 | Rol en la metodología | **Contexto / alcance de épica** que en un flujo A→B→C precedería a la redacción de las HU (paso **B**). |
 | Estado | Reconstrucción documental (ver §8) |
 | Última actualización | 2026-05-09 |
+| HU relacionada(s) | N/A (épica de contexto) |
+| TR relacionada(s) | [TR-CTX-001](../../04-tareas/001-Seguridad/TR-CTX-001-epica-seguridad-acceso.md) |
 
 ---
 
