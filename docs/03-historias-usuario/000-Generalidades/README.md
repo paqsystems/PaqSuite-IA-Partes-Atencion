@@ -40,5 +40,5 @@ Cada HU incluye sección **Especificación (Open-Spec)** con enlace al `SPEC-NNN
 - `.cursor/rules/24-devextreme-grid-standards.md` – Estándar de grillas
 - `docs/modelo-datos/md-seguridad.md` – Esquema en diccionario (incluye `pq_grid_layouts`, `users`, etc.)
 - `docs/modelo-datos/pq-parametros-gral.md` – Tabla `PQ_PARAMETROS_GRAL` (MONO: mismo esquema que el resto de la instalación)
-- `docs/00-contexto/05-parametros-generales.md` – Parámetros generales
+- `docs/00-contexto/_mono/04-configuracion-global/parametros-generales.md` – Parámetros generales
 - `docs/05-open-spec/README.md` – Índice Open-Spec (SPEC y SPEC-CTX)

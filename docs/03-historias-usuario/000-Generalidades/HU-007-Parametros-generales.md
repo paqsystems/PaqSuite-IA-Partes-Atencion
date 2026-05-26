@@ -60,10 +60,11 @@ Cada módulo que tenga parámetros generales tendrá una HU que:
 ## Especificación (Open-Spec)
 
 - [SPEC-007 – Parámetros generales por módulo](../../05-open-spec/000-Generalidades/SPEC-007-parametros-generales.md)
+- [TR-007 – Plan técnico](../../04-tareas/000-Generalidades/TR-007-parametros-generales.md)
 
 ## Referencias
 
-- `docs/00-contexto/05-parametros-generales.md` – Objetivo y diseño
+- `docs/00-contexto/_mono/04-configuracion-global/parametros-generales.md` – Objetivo y diseño
 - `docs/modelo-datos/md-empresas/pq-parametros-gral.md` – Esquema de la tabla (documentación legada puede citar “Company DB”; en **MONO** la tabla vive en el esquema único de la instalación)
 - `.cursor/rules/27-parametros-generales-por-modulo.md` – Formato de la HU por módulo
 - `.cursor/rules/28-plan-tareas-hu-parametros-generales.md` – Plan de tareas del TR
