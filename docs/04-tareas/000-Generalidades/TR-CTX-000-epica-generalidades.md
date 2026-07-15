@@ -1,5 +1,7 @@
 # TR-CTX-000 – Épica Generalidades: trazabilidad y coordinación de entregas
 
+> Estado del bloque: **histórico / deprecado**. Esta TR-CTX se conserva para trazabilidad del esquema anterior; para lectura operativa vigente de generalidades, consultar `docs/05-open-spec/001-Generalidades/README.md`.
+
 ### 0) Tabla de metadatos
 
 | Campo              | Valor |
@@ -22,7 +24,7 @@
 
 ### 1) HU Refinada
 
-Este TR **no** sustituye a las HU; consolida el **marco MONO** de generalidades (shell, grillas, i18n, parámetros) y enlaza las TR derivadas de cada SPEC operativo. **In scope:** coherencia entre entregas, dependencias entre TR. **Out of scope:** implementación detallada (cada TR-00x).
+Este TR **no** sustituye a las HU; consolida el **marco MONO** de generalidades (shell, grillas, i18n, parámetros) y enlaza las TR derivadas de cada SPEC operativo del bloque histórico `000-Generalidades`. **In scope:** coherencia entre entregas, dependencias entre TR. **Out of scope:** implementación detallada (cada TR-00x) y el bloque vigente `001-Generalidades`.
 
 ---
 

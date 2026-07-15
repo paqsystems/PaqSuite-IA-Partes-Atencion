@@ -2,7 +2,7 @@
 
 Carpeta **`docs/05-open-spec/`** del producto: **fuente de verdad de alcance detallado** antes y durante el ciclo HU → TR → implementación.
 
-**Nota:** el número `SPEC-NNN` se alinea al **número de HU dentro de la misma épica** (`000-Generalidades`, `001-Seguridad`, …). Puede repetirse el mismo número entre carpetas (ej. SPEC-001 generalidades vs SPEC-001 seguridad).
+**Nota:** el número `SPEC-NNN` se alinea al **número de HU dentro de la misma épica**. Puede repetirse el mismo número entre carpetas (ej. SPEC-001 en más de una épica).
 
 ## SPEC de contexto (antecedente lógico a las HU)
 
@@ -10,12 +10,20 @@ Documentos **SPEC-CTX-***: alcance de épica redactado como **insumo previo** al
 
 | SPEC-CTX | Épica | Enlace |
 |----------|--------|--------|
-| SPEC-CTX-000 | 000 – Generalidades | [SPEC-CTX-000-generalidades.md](000-Generalidades/SPEC-CTX-000-generalidades.md) |
+| SPEC-CTX-000 | 000 – Generalidades (histórico / deprecado) | [SPEC-CTX-000-generalidades.md](000-Generalidades/SPEC-CTX-000-generalidades.md) |
 | SPEC-CTX-001 | 001 – Seguridad y acceso | [SPEC-CTX-001-seguridad-y-acceso.md](001-Seguridad/SPEC-CTX-001-seguridad-y-acceso.md) |
 
 ## Índice de especificaciones (operativas por HU)
 
-### 000 – Generalidades (`000-Generalidades/`)
+### 001 – Generalidades (`001-Generalidades/`) — bloque vigente
+
+Ver índice principal: [README de 001-Generalidades](001-Generalidades/README.md).
+
+Este bloque es la referencia vigente para generalidades de `SistemaPartes` y productos que reutilicen la base replicada desde PedidosWeb.
+
+### 000 – Generalidades (`000-Generalidades/`) — histórico / deprecado
+
+Este bloque se conserva por trazabilidad documental. Para trabajo nuevo o regeneración de HU/TR/SPEC, usar `001-Generalidades/`.
 
 | SPEC | Título | HU |
 |------|--------|-----|

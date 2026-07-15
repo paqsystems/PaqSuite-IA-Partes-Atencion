@@ -1,5 +1,7 @@
 # Épica 000 – Generalidades
 
+> Estado del bloque: **histórico / deprecado**. No usar esta carpeta como fuente principal para trabajo nuevo. La lectura vigente de generalidades debe comenzar en `docs/03-historias-usuario/001-Generalidades/` y en `docs/05-open-spec/001-Generalidades/`.
+
 ## Open-Spec de contexto (épica)
 
 Antecedente lógico “como si hubiese existido antes de las HU”: [SPEC-CTX-000 – Generalidades](../../05-open-spec/000-Generalidades/SPEC-CTX-000-generalidades.md).
@@ -31,6 +33,12 @@ Ver `.cursor/rules/34-obtencion-datos-performance.md` (en MONO ignorar apartados
 **Reserva MULTI (no hay archivo HU en esta carpeta):** cambio de empresa activa — ver [SPEC-002](../../05-open-spec/000-Generalidades/SPEC-002-cambio-empresa-multi-referencia.md). La épica 001 – Seguridad enlaza el mismo tema en su tabla con la ruta histórica `HU-002-cambio-empresa-activa.md` si se restaura el archivo.
 
 Cada HU incluye sección **Especificación (Open-Spec)** con enlace al `SPEC-NNN` correspondiente. Índice completo: [docs/05-open-spec/README.md](../../05-open-spec/README.md).
+
+## Criterio de uso actual
+
+- Esta carpeta se conserva para trazabilidad del bloque documental original.
+- Si un tema ya existe en `001-Generalidades`, prevalece `001-Generalidades`.
+- La única excepción tolerada es la consulta histórica o la reserva MULTI mientras termina su reasignación documental.
 
 ## Referencias
 

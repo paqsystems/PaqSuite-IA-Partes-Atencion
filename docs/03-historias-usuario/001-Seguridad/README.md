@@ -38,7 +38,7 @@ Ver el apartado **Rendimiento y obtención de datos** en [README padre](../READM
 | HU | Título | Clasificación |
 |----|--------|---------------|
 | [HU-001](HU-001-login-usuario.md) | Login de usuario | MUST-HAVE |
-| [HU-002](../../000-Generalidades/HU-002-cambio-empresa-activa.md) | Cambio de empresa activa — **no aplica (MONO)** | — |
+| Referencia MULTI | Cambio de empresa activa — **no aplica (MONO)**; ver `docs/05-open-spec/001-Generalidades/SPEC-001-05-variantes-y-alcance.md` | — |
 | [HU-003](HU-003-logout.md) | Cerrar sesión | MUST-HAVE |
 | [HU-004](HU-004-cambio-contraseña.md) | Cambio de contraseña | SHOULD-HAVE |
 | [HU-005](HU-005-recuperacion-contraseña.md) | Recuperación de contraseña | SHOULD-HAVE |
@@ -57,6 +57,11 @@ Ver el apartado **Rendimiento y obtención de datos** en [README padre](../READM
 | [HU-018](HU-018-seed-menu-routeName-enabled.md) | Seed pq_menus: routeName y enabled para sidebar | SHOULD-HAVE |
 
 **No aplica (MONO):** administración de empresas (no hay HU equivalente en este alcance).
+
+## Nota de transición
+
+- `docs/03-historias-usuario/000-Generalidades/` queda **deprecada** para lectura operativa.
+- Si un flujo de seguridad necesita mencionar la variante MULTI, debe referenciar `docs/05-open-spec/001-Generalidades/SPEC-001-05-variantes-y-alcance.md`.
 
 ## Dependencias
 

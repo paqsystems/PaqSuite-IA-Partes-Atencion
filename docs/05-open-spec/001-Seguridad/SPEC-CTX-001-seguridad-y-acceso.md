@@ -38,7 +38,7 @@ El sistema debe **saber quién entra**, **mantener la sesión**, **revocar el ac
 | Capacidad (origen lógico) | Qué debe quedar garantizado | HUs derivadas | SPEC detalle |
 |---------------------------|----------------------------|---------------|--------------|
 | **S1 – Ingreso al sistema** | Credenciales válidas, usuario activo, contraseña verificada, **token** y bloqueo sin rol asignado | [HU-001](../../03-historias-usuario/001-Seguridad/HU-001-login-usuario.md) | [SPEC-001](SPEC-001-login-usuario.md) |
-| **S2 – Reserva MULTI (no MONO)** | Cambio de empresa en un ERP multi-sociedad documentado en generalidades; no entrega MONO | [HU-002](../../03-historias-usuario/000-Generalidades/HU-002-cambio-empresa-activa.md) (épica 000) | [SPEC-002](../000-Generalidades/SPEC-002-cambio-empresa-multi-referencia.md) |
+| **S2 – Reserva MULTI (no MONO)** | Cambio de empresa en un ERP multi-sociedad documentado como variante; no entrega MONO | Referencia histórica en `000-Generalidades` | [SPEC-001-05](../001-Generalidades/SPEC-001-05-variantes-y-alcance.md) |
 | **S3 – Salida segura** | Logout invalida sesión en servidor si aplica y limpia cliente | [HU-003](../../03-historias-usuario/001-Seguridad/HU-003-logout.md) | [SPEC-003](SPEC-003-cerrar-sesion.md) |
 | **S4 – Gestión de contraseña por el usuario** | Cambio autenticado, primer login forzado opcional | [HU-004](../../03-historias-usuario/001-Seguridad/HU-004-cambio-contraseña.md) | [SPEC-004](SPEC-004-cambio-contrasena.md) |
 | **S5 – Recuperación ante olvido** | Flujo por email/token sin filtrar existencia de cuenta | [HU-005](../../03-historias-usuario/001-Seguridad/HU-005-recuperacion-contraseña.md) | [SPEC-005](SPEC-005-recuperacion-contrasena.md) |
@@ -65,7 +65,7 @@ S7, S10, S9 → S11 → S12    (menú maestro + permisos → API → sidebar)
 S10 → S13                  (seed reforzado para rutas)
 ```
 
-**S2** es trazabilidad cruzada con épica 000 (MULTI); no bloquea entrega MONO.
+**S2** es trazabilidad cruzada con variantes MONO/MULTI; no bloquea entrega MONO. La referencia operativa vigente es `SPEC-001-05` de `001-Generalidades`; `000-Generalidades` queda solo como respaldo histórico.
 
 ---
 
