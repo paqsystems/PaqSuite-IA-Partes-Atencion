@@ -1,0 +1,183 @@
+# Checklist de temas definidos del modulo
+
+# Fecha : 18/07/2026
+
+## Base del modulo
+
+- [x] Proposito del modulo
+- [x] Problema que resuelve
+- [x] Objetivos del MVP
+- [x] Flujo E2E prioritario
+- [x] Alcance funcional del modulo
+- [x] Limites del MVP
+- [x] Relacion del modulo con el framework comun
+- [x] Valor esperado del modulo
+
+## Actores e identidad
+
+- [x] Asistente como actor interno principal
+- [x] Supervisor como variante funcional del asistente
+- [x] Cliente como actor de consulta
+- [x] Administracion tecnica separada del dominio del modulo
+- [x] Identidad autenticable comun del sistema
+- [x] Identidad funcional propia del modulo
+- [x] Resolucion funcional del usuario autenticado
+- [x] Exclusividad esperada entre asistente y cliente
+- [x] Perfil visible del usuario autenticado
+- [x] Clientes con acceso habilitado
+- [x] Delimitacion del universo funcional visible
+
+## Dominio y entidades
+
+- [x] Registro de tarea como entidad central
+- [x] Asistente
+- [x] Cliente
+- [x] Tipo de cliente
+- [x] Tipo de tarea
+- [x] Asignacion cliente - tipo de tarea
+- [x] Relaciones principales del dominio
+- [x] Integridad funcional esperada
+- [x] Glosario funcional minimo
+
+## Reglas conceptuales del dominio
+
+- [x] `supervisor` como capacidad funcional del modulo
+- [x] `isGenerico` como disponibilidad general del tipo de tarea
+- [x] `isDefault` como tipo de tarea unico y generico
+- [x] `sinCargo` como marca funcional
+- [x] `presencial` como marca funcional
+- [x] `cerrado` como estado funcional del registro
+- [x] Tarea cerrada con valor historico y sin edicion normal
+
+## Maestros y catalogos
+
+- [x] Maestro de clientes
+- [x] Maestro de asistentes
+- [x] Catalogo de tipos de cliente
+- [x] Catalogo de tipos de tarea
+- [x] Regla general de inhabilitacion en maestros
+- [x] Regla de asignacion de tipos de tarea a cliente
+- [x] Tipos genericos disponibles para todos los clientes
+- [x] Tipos no genericos por asignacion
+- [x] Clientes con acceso como capacidad adicional
+- [x] Criterio de bajas o eliminaciones sin romper trazabilidad
+
+## Operacion del modulo
+
+- [x] Carga diaria desde grilla previamente filtrada
+- [x] Insercion de tareas desde grilla
+- [x] Edicion de tareas desde grilla
+- [x] Eliminacion de tareas desde grilla
+- [x] Carga individual para usuarios no cliente en mobile
+- [x] Propiedad de la tarea
+- [x] Seleccion de asistente propietario por supervisor
+- [x] Reglas funcionales de captura
+- [x] Fecha de proceso o fecha funcional de la tarea
+- [x] Regla de cliente
+- [x] Regla de tipo de tarea
+- [x] Regla de duracion
+- [x] Regla de observacion
+- [x] Regla de marcas funcionales
+- [x] Estado `cerrado`
+- [x] Edicion y eliminacion segun rol y estado
+- [x] Complemento por IA en la carga
+
+## Supervision
+
+- [x] Supervision como ampliacion del mismo dominio
+- [x] Vista sobre tareas de terceros
+- [x] Proceso masivo sobre tareas
+- [x] Seleccion explicita de registros
+- [x] Filtros previos del proceso masivo
+- [x] Validacion de seleccion no vacia
+- [x] Reflejo inmediato del resultado
+- [x] Criterio de atomicidad del procesamiento
+
+## Consultas y analitica
+
+- [x] Consulta detallada de tareas
+- [x] Consultas agrupadas
+- [x] Restricciones por perfil en consultas
+- [x] Resultados vacios con acciones deshabilitadas
+- [x] Reutilizacion de grillas del framework
+- [x] Reutilizacion de layouts del framework
+- [x] Reutilizacion de exportaciones cuando se habiliten
+- [x] Uso eventual de pivots segun el proceso
+- [x] Exportacion como evolucion inmediata
+
+## Dashboard
+
+- [x] Dashboard como puerta de entrada analitica
+- [x] Lectura del dashboard segun rol
+- [x] Indicadores minimos del dashboard
+- [x] Graficos simples cuando aporten valor
+- [x] Refresco automatico del dashboard
+- [x] Refresco manual del dashboard
+- [x] Periodo inicial en mes calendario del sistema
+- [x] Modificacion manual del periodo
+- [x] Persistencia de filtros por rol durante refrescos
+
+## Navegacion del modulo
+
+- [x] Integracion del modulo con `pq_menus`
+- [x] Navegacion segun framework PaqSuite
+- [x] Seccion Inicio
+- [x] Seccion Archivos
+- [x] Seccion Partes
+- [x] Seccion Informes
+- [x] Criterio de no hardcodear el menu del modulo
+
+## Mobile
+
+- [x] Documento conceptual mobile propio
+- [x] Pantalla inicial mobile
+- [x] Configuracion de URL en mobile
+- [x] Login mobile con empresa
+- [x] Login mobile con usuario
+- [x] Login mobile con contrasena
+- [x] Dashboard mobile
+- [x] Consulta de partes mobile
+- [x] Carga individual de partes mobile
+- [x] Chatbot IA como complemento en mobile
+- [x] Grillas mobile en formato Kardex
+- [x] Filtros por universo funcional en mobile
+- [x] Acciones agregar/editar/eliminar para asistente en mobile
+- [x] Informe Paquete de Horas en mobile
+- [x] Exclusiones mobile: ABMs
+- [x] Exclusiones mobile: pivots
+- [x] Exclusiones mobile: cargas masivas
+- [x] Exclusiones mobile: operaciones con Excel
+- [x] Exclusiones mobile: informes impresos
+
+## Modelo de datos tecnico
+
+- [x] Documento tecnico separado del resto de la narrativa conceptual
+- [x] Convenciones generales del esquema
+- [x] Tabla `PQ_PARTES_USUARIOS`
+- [x] Tabla `PQ_PARTES_CLIENTES`
+- [x] Tabla `PQ_PARTES_TIPOS_CLIENTE`
+- [x] Tabla `PQ_PARTES_TIPOS_TAREA`
+- [x] Tabla `PQ_PARTES_CLIENTE_TIPO_TAREA`
+- [x] Tabla `PQ_PARTES_REGISTRO_TAREA`
+- [x] Relaciones tecnicas esperadas
+- [x] Observaciones tecnicas relevantes
+- [x] DDL consolidado
+
+## Evolucion ya identificada
+
+- [x] Cuenta corriente de horas como proceso distinto
+- [x] Auditoria de partes como linea futura
+- [x] Costeo de horas como linea futura
+- [x] Informe de facturacion como linea futura
+- [x] Carga de tareas con IA como evolucion complementaria
+- [x] Carga cronometrada como evolucion posible
+- [x] Carga masiva desde Excel como evolucion separada
+
+## Temas aun abiertos
+
+- [ ] Aplicacion exacta del campo `empresa` en mobile
+- [ ] Frecuencia tecnica exacta del refresco automatico del dashboard
+- [ ] Definicion final del perfil como solo lectura o parcialmente editable
+- [ ] Comportamiento exacto al revocar acceso a un cliente
+- [ ] Definicion conceptual detallada de auditoria de partes
+- [ ] Especificacion concreta del Informe Paquete de Horas

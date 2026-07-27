@@ -52,7 +52,8 @@ Si quien opera es un supervisor, el sistema puede permitirle seleccionar al asis
 
 ### Fecha
 
-- la tarea debe tener fecha;
+- la tarea debe tener una **fecha de proceso**, entendida como la fecha funcional a la que corresponde el trabajo registrado;
+- esa fecha de proceso es parte central del significado del registro y no un mero dato tecnico de carga;
 - una fecha futura puede merecer advertencia, pero no necesariamente bloqueo;
 - el criterio de presentacion para la fecha debe ser amigable para el usuario, aunque la persistencia use otro formato.
 

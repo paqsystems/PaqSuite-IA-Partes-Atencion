@@ -129,7 +129,7 @@ Tabla central del modulo, donde se persiste cada tarea realizada.
 | `usuario_id` | `bigint` | No | FK a asistente propietario |
 | `cliente_id` | `bigint` | No | FK a cliente |
 | `tipo_tarea_id` | `bigint` | No | FK a tipo de tarea |
-| `fecha` | `date` | No | Fecha funcional de la tarea |
+| `fecha` | `date` | No | Fecha de proceso o fecha funcional de la tarea |
 | `duracion_minutos` | `int` | No | Duracion persistida en minutos |
 | `sin_cargo` | `bit` | No | Marca funcional |
 | `presencial` | `bit` | No | Marca funcional |
