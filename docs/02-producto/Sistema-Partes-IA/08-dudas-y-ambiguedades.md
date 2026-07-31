@@ -79,23 +79,23 @@ Quedaron definidos estos puntos:
 
 Sigue faltando cerrar con precision:
 
-- la frecuencia tecnica exacta del refresco automatico;
-- y si algun rol o contexto puede requerir una excepcion a ese comportamiento.
+- ~~la frecuencia tecnica exacta del refresco automatico~~ → **cerrado:** web parametrizable en segundos (default 60; 0 = off) [SPEC-006]; mobile solo manual/pull [SPEC-007];
+- ~~excepciones por rol~~ → **cerrado:** sin excepción por rol; un solo parámetro para todos.
 
 ### 2. Perfil del usuario
 
-Sigue pendiente definir con mayor claridad si el perfil del modulo es:
-
-- solo de lectura;
-- o si admite algun bloque editable y bajo que alcance funcional.
+**Cerrado MVP:** solo lectura; UI = **panel/modal desde el menú del avatar** del shell (sin ruta dedicada). Ver [SPEC-002](../../05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md) §4.5.
 
 ### 3. Revocacion de acceso de clientes
 
-Sigue pendiente precisar que comportamiento exacto debe adoptar el sistema cuando se revoca el acceso de un cliente:
+**Cerrado para MVP** en [SPEC-003](../../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) §4.3.2:
 
-- si solo conserva la entidad funcional;
-- si debe desasociar la identidad comun;
-- y que validaciones de consistencia deben imponerse.
+- revocar = `PQ_PARTES_CLIENTES.user_id = NULL`;
+- se conserva la entidad cliente;
+- no se exige baja del `users` Framework;
+- nuevo login falla el gate (SPEC-002).
+
+Pendiente menor: ~~efecto exacto sobre sesion Bearer ya abierta~~ → **cerrado:** revalidar en `/auth/me` y APIs de dominio ([SPEC-002](../../05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md) R-ID-11).
 
 ### 4. Auditoria de partes
 
@@ -108,17 +108,11 @@ Todavia no esta cerrado si debe tratarse como:
 
 ### 5. Aplicacion del campo empresa en mobile
 
-La version mobile ya incorpora como decision funcional una pantalla inicial con configuracion de URL y un login con:
+**Cerrado para MVP** en [SPEC-007](../../05-open-spec/100-SistemaPartes/SPEC-007-mobile-capacitor.md) §4.3:
 
-- empresa;
-- usuario;
-- contrasena.
-
-Lo que sigue pendiente precisar es:
-
-- como se interpreta exactamente `empresa` en el modulo;
-- si su efecto es solo de seleccion operativa, de seguridad o de contexto funcional;
-- y como se relaciona esa decision con la arquitectura general del producto.
+- el campo UI **empresa** mapea a **`X-Paq-Cliente`** (código de instalación / tenant Paq, ej. `DEMO`);
+- en este producto MONO **no** actúa como selector multi-empresa `X-Company-Id`;
+- el tenant **no** se configura en la pantalla de engranaje (solo URL API ahí).
 
 ## Uso recomendado
 

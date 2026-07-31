@@ -14,9 +14,12 @@ Se separa del resto de la carpeta para que la fuente conceptual principal quede 
 ## Convenciones generales
 
 - prefijo de tablas del modulo: `PQ_PARTES_`;
-- excepcion: la identidad autenticable comun vive fuera del modulo;
+- excepcion: la identidad autenticable comun vive fuera del modulo (`users`);
 - nombres de columnas en `snake_case`;
-- tablas pensadas para un contexto MONO, reutilizando la identidad comun del sistema.
+- tablas pensadas para un contexto MONO / `PAQSUITE_DB=unified`, reutilizando la identidad comun del sistema;
+- timestamps de auditoria: preferir `datetime2(3)` en SQL Server;
+- **Canónico OpenSpec:** [`docs/05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md`](../../05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md);
+- diagrama operativo sincronizado: [`docs/modelo-datos/md-sistema-partes.md`](../../modelo-datos/md-sistema-partes.md).
 
 ## Vista general del esquema
 
@@ -29,6 +32,10 @@ El esquema tecnico del modulo se organiza alrededor de estas tablas:
 - `PQ_PARTES_CLIENTE_TIPO_TAREA`
 - `PQ_PARTES_REGISTRO_TAREA`
 
+**`supervisor`:** vive en `PQ_PARTES_USUARIOS` (capacidad de dominio). No usar `users.supervisor` como fuente de verdad.
+
+**Vinculo autenticable:** `user_id` → `users.id` (no por igualdad de `code` con login Framework).
+
 ## Tablas del modulo
 
 ## `PQ_PARTES_USUARIOS`
@@ -40,15 +47,15 @@ Representa asistentes del modulo y su capacidad eventual de supervision.
 | Campo | Tipo | Nulo | Descripcion tecnica |
 |-------|------|------|---------------------|
 | `id` | `bigint` | No | Clave primaria |
-| `user_id` | `bigint` | No | Vinculo con identidad autenticable comun |
-| `code` | `nvarchar(50)` | No | Codigo funcional del asistente |
+| `user_id` | `bigint` | No | Vinculo UNIQUE con `users.id` |
+| `code` | `nvarchar(50)` | No | Codigo funcional del asistente (UNIQUE) |
 | `nombre` | `nvarchar(255)` | No | Nombre visible |
 | `email` | `nvarchar(255)` | Si | Email del asistente |
-| `supervisor` | `bit` | No | Marca tecnica de supervision |
-| `activo` | `bit` | No | Estado activo |
-| `inhabilitado` | `bit` | No | Estado de inhabilitacion |
-| `created_at` | `datetime` | Si | Auditoria de alta |
-| `updated_at` | `datetime` | Si | Auditoria de modificacion |
+| `supervisor` | `bit` | No | Marca de supervision de dominio (default 0) |
+| `activo` | `bit` | No | Estado activo (default 1) |
+| `inhabilitado` | `bit` | No | Estado de inhabilitacion (default 0) |
+| `created_at` | `datetime2(3)` | Si | Auditoria de alta |
+| `updated_at` | `datetime2(3)` | Si | Auditoria de modificacion |
 
 ## `PQ_PARTES_CLIENTES`
 
@@ -59,15 +66,15 @@ Representa clientes del modulo y, cuando aplique, su vinculacion con acceso aute
 | Campo | Tipo | Nulo | Descripcion tecnica |
 |-------|------|------|---------------------|
 | `id` | `bigint` | No | Clave primaria |
-| `user_id` | `bigint` | Si | Vinculo opcional con identidad autenticable comun |
+| `user_id` | `bigint` | Si | Vinculo opcional UNIQUE con `users.id` |
 | `nombre` | `nvarchar(255)` | No | Nombre o razon social |
 | `tipo_cliente_id` | `bigint` | No | FK a tipo de cliente |
-| `code` | `nvarchar(50)` | No | Codigo funcional del cliente |
+| `code` | `nvarchar(50)` | No | Codigo funcional del cliente (UNIQUE) |
 | `email` | `nvarchar(255)` | Si | Email del cliente |
-| `activo` | `bit` | No | Estado activo |
-| `inhabilitado` | `bit` | No | Estado de inhabilitacion |
-| `created_at` | `datetime` | Si | Auditoria de alta |
-| `updated_at` | `datetime` | Si | Auditoria de modificacion |
+| `activo` | `bit` | No | Estado activo (default 1) |
+| `inhabilitado` | `bit` | No | Estado de inhabilitacion (default 0) |
+| `created_at` | `datetime2(3)` | Si | Auditoria de alta |
+| `updated_at` | `datetime2(3)` | Si | Auditoria de modificacion |
 
 ## `PQ_PARTES_TIPOS_CLIENTE`
 
@@ -78,12 +85,12 @@ Catalogo tecnico para clasificar clientes.
 | Campo | Tipo | Nulo | Descripcion tecnica |
 |-------|------|------|---------------------|
 | `id` | `bigint` | No | Clave primaria |
-| `code` | `nvarchar(50)` | No | Codigo obligatorio del tipo |
+| `code` | `nvarchar(50)` | No | Codigo obligatorio del tipo (UNIQUE) |
 | `descripcion` | `nvarchar(255)` | No | Descripcion visible |
-| `activo` | `bit` | No | Estado activo |
-| `inhabilitado` | `bit` | No | Estado de inhabilitacion |
-| `created_at` | `datetime` | Si | Auditoria de alta |
-| `updated_at` | `datetime` | Si | Auditoria de modificacion |
+| `activo` | `bit` | No | Estado activo (default 1) |
+| `inhabilitado` | `bit` | No | Estado de inhabilitacion (default 0) |
+| `created_at` | `datetime2(3)` | Si | Auditoria de alta |
+| `updated_at` | `datetime2(3)` | Si | Auditoria de modificacion |
 
 ## `PQ_PARTES_TIPOS_TAREA`
 
@@ -94,14 +101,14 @@ Catalogo tecnico de tipos de tarea.
 | Campo | Tipo | Nulo | Descripcion tecnica |
 |-------|------|------|---------------------|
 | `id` | `bigint` | No | Clave primaria |
-| `code` | `nvarchar(50)` | No | Codigo obligatorio del tipo |
+| `code` | `nvarchar(50)` | No | Codigo obligatorio del tipo (UNIQUE) |
 | `descripcion` | `nvarchar(255)` | No | Descripcion visible |
 | `is_generico` | `bit` | No | Marca de disponibilidad general |
-| `is_default` | `bit` | No | Marca de tipo por defecto |
-| `activo` | `bit` | No | Estado activo |
-| `inhabilitado` | `bit` | No | Estado de inhabilitacion |
-| `created_at` | `datetime` | Si | Auditoria de alta |
-| `updated_at` | `datetime` | Si | Auditoria de modificacion |
+| `is_default` | `bit` | No | Marca de tipo por defecto (unico; implica generico) |
+| `activo` | `bit` | No | Estado activo (default 1) |
+| `inhabilitado` | `bit` | No | Estado de inhabilitacion (default 0) |
+| `created_at` | `datetime2(3)` | Si | Auditoria de alta |
+| `updated_at` | `datetime2(3)` | Si | Auditoria de modificacion |
 
 ## `PQ_PARTES_CLIENTE_TIPO_TAREA`
 
@@ -114,8 +121,10 @@ Tabla de relacion entre clientes y tipos de tarea no genericos.
 | `id` | `bigint` | No | Clave primaria |
 | `cliente_id` | `bigint` | No | FK a cliente |
 | `tipo_tarea_id` | `bigint` | No | FK a tipo de tarea |
-| `created_at` | `datetime` | Si | Auditoria de alta |
-| `updated_at` | `datetime` | Si | Auditoria de modificacion |
+| `created_at` | `datetime2(3)` | Si | Auditoria de alta |
+| `updated_at` | `datetime2(3)` | Si | Auditoria de modificacion |
+
+UNIQUE (`cliente_id`, `tipo_tarea_id`).
 
 ## `PQ_PARTES_REGISTRO_TAREA`
 
@@ -131,12 +140,13 @@ Tabla central del modulo, donde se persiste cada tarea realizada.
 | `tipo_tarea_id` | `bigint` | No | FK a tipo de tarea |
 | `fecha` | `date` | No | Fecha de proceso o fecha funcional de la tarea |
 | `duracion_minutos` | `int` | No | Duracion persistida en minutos |
-| `sin_cargo` | `bit` | No | Marca funcional |
-| `presencial` | `bit` | No | Marca funcional |
+| `sin_cargo` | `bit` | No | Marca funcional (default 0) |
+| `presencial` | `bit` | No | Marca funcional (default 0) |
 | `observacion` | `nvarchar(max)` | No | Descripcion del trabajo |
-| `cerrado` | `bit` | No | Estado funcional de cierre |
-| `created_at` | `datetime` | Si | Auditoria de alta |
-| `updated_at` | `datetime` | Si | Auditoria de modificacion |
+| `cerrado` | `bit` | No | Estado funcional de cierre (default 0) |
+| `row_version` | `rowversion` | No | Optimistic lock (SQL Server); token opaco en API (TR-004) |
+| `created_at` | `datetime2(3)` | Si | Auditoria de alta |
+| `updated_at` | `datetime2(3)` | Si | Auditoria de modificacion |
 
 ## Relaciones tecnicas esperadas
 
@@ -146,8 +156,10 @@ Tabla central del modulo, donde se persiste cada tarea realizada.
 - `PQ_PARTES_REGISTRO_TAREA.usuario_id` -> `PQ_PARTES_USUARIOS.id`
 - `PQ_PARTES_REGISTRO_TAREA.cliente_id` -> `PQ_PARTES_CLIENTES.id`
 - `PQ_PARTES_REGISTRO_TAREA.tipo_tarea_id` -> `PQ_PARTES_TIPOS_TAREA.id`
+- `PQ_PARTES_USUARIOS.user_id` -> `users.id` (UNIQUE)
+- `PQ_PARTES_CLIENTES.user_id` -> `users.id` (opcional, UNIQUE si no null)
 
-Los vinculos con la identidad autenticable comun se expresan mediante `user_id` en asistentes y clientes.
+Los vinculos con la identidad autenticable comun se expresan mediante `user_id` (no por igualdad de `code` con el login).
 
 ## Observaciones tecnicas relevantes
 
@@ -156,108 +168,17 @@ Los vinculos con la identidad autenticable comun se expresan mediante `user_id` 
 - `cerrado` pertenece al ciclo de vida de la tarea y no a una regla transversal de seguridad.
 - `is_generico` e `is_default` sostienen la semantica tecnica de seleccion de tipos de tarea.
 - La definicion conceptual adoptada exige un unico tipo de tarea por defecto y que ese tipo por defecto sea generico.
+- Un mismo `users.id` no debe figurar a la vez como asistente y como cliente (exclusividad).
+- `row_version` en `PQ_PARTES_REGISTRO_TAREA` habilita optimistic lock; no usar `users.supervisor` como fuente de verdad del modulo.
 
 ## DDL consolidado
 
-```sql
-CREATE TABLE [dbo].[PQ_PARTES_CLIENTE_TIPO_TAREA](
-    [id] [bigint] IDENTITY(1,1) NOT NULL,
-    [cliente_id] [bigint] NOT NULL,
-    [tipo_tarea_id] [bigint] NOT NULL,
-    [created_at] [datetime] NULL,
-    [updated_at] [datetime] NULL,
-PRIMARY KEY CLUSTERED
-(
-    [id] ASC
-)
-) ON [PRIMARY];
-
-CREATE TABLE [dbo].[PQ_PARTES_CLIENTES](
-    [id] [bigint] IDENTITY(1,1) NOT NULL,
-    [user_id] [bigint] NULL,
-    [nombre] [nvarchar](255) NOT NULL,
-    [tipo_cliente_id] [bigint] NOT NULL,
-    [code] [nvarchar](50) NOT NULL,
-    [email] [nvarchar](255) NULL,
-    [activo] [bit] NOT NULL,
-    [inhabilitado] [bit] NOT NULL,
-    [created_at] [datetime] NULL,
-    [updated_at] [datetime] NULL,
-PRIMARY KEY CLUSTERED
-(
-    [id] ASC
-)
-) ON [PRIMARY];
-
-CREATE TABLE [dbo].[PQ_PARTES_REGISTRO_TAREA](
-    [id] [bigint] IDENTITY(1,1) NOT NULL,
-    [usuario_id] [bigint] NOT NULL,
-    [cliente_id] [bigint] NOT NULL,
-    [tipo_tarea_id] [bigint] NOT NULL,
-    [fecha] [date] NOT NULL,
-    [duracion_minutos] [int] NOT NULL,
-    [sin_cargo] [bit] NOT NULL,
-    [presencial] [bit] NOT NULL,
-    [observacion] [nvarchar](max) NOT NULL,
-    [cerrado] [bit] NOT NULL,
-    [created_at] [datetime] NULL,
-    [updated_at] [datetime] NULL,
-PRIMARY KEY CLUSTERED
-(
-    [id] ASC
-)
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
-
-CREATE TABLE [dbo].[PQ_PARTES_TIPOS_CLIENTE](
-    [id] [bigint] IDENTITY(1,1) NOT NULL,
-    [code] [nvarchar](50) NOT NULL,
-    [descripcion] [nvarchar](255) NOT NULL,
-    [activo] [bit] NOT NULL,
-    [inhabilitado] [bit] NOT NULL,
-    [created_at] [datetime] NULL,
-    [updated_at] [datetime] NULL,
-PRIMARY KEY CLUSTERED
-(
-    [id] ASC
-)
-) ON [PRIMARY];
-
-CREATE TABLE [dbo].[PQ_PARTES_TIPOS_TAREA](
-    [id] [bigint] IDENTITY(1,1) NOT NULL,
-    [code] [nvarchar](50) NOT NULL,
-    [descripcion] [nvarchar](255) NOT NULL,
-    [is_generico] [bit] NOT NULL,
-    [is_default] [bit] NOT NULL,
-    [activo] [bit] NOT NULL,
-    [inhabilitado] [bit] NOT NULL,
-    [created_at] [datetime] NULL,
-    [updated_at] [datetime] NULL,
-PRIMARY KEY CLUSTERED
-(
-    [id] ASC
-)
-) ON [PRIMARY];
-
-CREATE TABLE [dbo].[PQ_PARTES_USUARIOS](
-    [id] [bigint] IDENTITY(1,1) NOT NULL,
-    [user_id] [bigint] NOT NULL,
-    [code] [nvarchar](50) NOT NULL,
-    [nombre] [nvarchar](255) NOT NULL,
-    [email] [nvarchar](255) NULL,
-    [supervisor] [bit] NOT NULL,
-    [activo] [bit] NOT NULL,
-    [inhabilitado] [bit] NOT NULL,
-    [created_at] [datetime] NULL,
-    [updated_at] [datetime] NULL,
-PRIMARY KEY CLUSTERED
-(
-    [id] ASC
-)
-) ON [PRIMARY];
-```
+El DDL canónico (tipos, defaults, UNIQUE) esta en [SPEC-001 §4](../../05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md). Las migraciones de implementacion deben seguir ese contrato (`datetime2(3)`, constraints R-MD-*).
 
 ## Relacion con documentacion operativa
 
 Para reconstruccion, migraciones, seeders y arranque del entorno, complementar este documento con:
 
 - `docs/backend/SistemaPartes/arranque-base-datos-inicial.md`
+- `docs/modelo-datos/md-sistema-partes.md`
+- `docs/05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md`

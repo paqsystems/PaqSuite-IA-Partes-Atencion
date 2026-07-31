@@ -2,26 +2,113 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\EnsureFirstLoginCompletedMiddleware;
+use App\Http\Middleware\EnsurePartesFunctionalProfile;
+use App\Http\Middleware\EnsurePartesNotCliente;
+use App\Http\Middleware\EnsureSeguridadAdminMiddleware;
+use App\Repositories\Sp\SpAccesoTotalChecker;
+use App\Repositories\Sp\SpCaller;
+use App\Repositories\Sp\SpCompanyAllowedChecker;
+use App\Repositories\Sp\SpEmpresaAdminRepository;
+use App\Repositories\Sp\SpMenuQueryRepository;
+use App\Repositories\Sp\SpParametroRepository;
+use App\Repositories\Sp\SpPermisoAdminRepository;
+use App\Repositories\Sp\SpRolAdminRepository;
+use App\Repositories\Sp\SpRolAtributosRepository;
+use App\Repositories\Sp\SpUserAdminRepository;
+use App\Repositories\Sp\SpUserEmpresasQueryRepository;
+use App\Repositories\Sp\SpUserPreferencesRepository;
+use App\Services\Auth\PartesPostLoginBusinessGate;
+use App\Services\Auth\PostLoginBusinessGate;
+use App\Services\Auth\SpUserEmpresasResolver;
+use App\Services\Auth\UserEmpresasResolver;
+use App\Tenancy\HostMenuProcedimientoChecker;
+use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
+use PaqSuite\LaravelCore\Auth\DictionaryAuthParametroStore;
+use PaqSuite\LaravelCore\Auth\ParametroStore;
+use App\Repositories\Sp\SpUserEffectiveMenuPermissions;
+use PaqSuite\LaravelCore\Menu\MenuAuthorizationService;
+use PaqSuite\LaravelCore\Menu\UserEffectiveMenuPermissions;
+use PaqSuite\LaravelCore\Menu\MenuQueryRepository;
+use PaqSuite\LaravelCore\Parametros\Contracts\ParametroRepository;
+use PaqSuite\LaravelCore\Providers\PaqSuiteCoreServiceProvider;
+use PaqSuite\LaravelCore\Security\AccesoTotalChecker;
+use PaqSuite\LaravelCore\Security\CompanyAllowedChecker;
+use PaqSuite\LaravelCore\Security\EmpresaAdminRepository;
+use PaqSuite\LaravelCore\Security\PermisoAdminRepository;
+use PaqSuite\LaravelCore\Security\RolAdminRepository;
+use PaqSuite\LaravelCore\Security\RolAtributosRepository;
+use PaqSuite\LaravelCore\Security\UserAdminRepository;
+use PaqSuite\LaravelCore\Security\UserEmpresasQueryRepository;
+use PaqSuite\LaravelCore\Security\UserPreferencesRepository;
+use PaqSuite\LaravelCore\Tenancy\MenuProcedimientoChecker;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
+        $this->app->singleton(SpCaller::class);
+
+        $this->app->singleton(ParametroStore::class, function ($app) {
+            return new DictionaryAuthParametroStore($app->make(ParametroRepository::class));
+        });
+
+        $this->app->singleton(PostLoginBusinessGate::class, PartesPostLoginBusinessGate::class);
+        $this->app->singleton(UserEmpresasResolver::class, SpUserEmpresasResolver::class);
+
+        $this->app->singleton(ParametroRepository::class, SpParametroRepository::class);
+        $this->app->singleton(AccesoTotalChecker::class, SpAccesoTotalChecker::class);
+        $this->app->singleton(UserAdminRepository::class, SpUserAdminRepository::class);
+        $this->app->singleton(EmpresaAdminRepository::class, SpEmpresaAdminRepository::class);
+        $this->app->singleton(RolAdminRepository::class, SpRolAdminRepository::class);
+        $this->app->singleton(RolAtributosRepository::class, SpRolAtributosRepository::class);
+        $this->app->singleton(PermisoAdminRepository::class, SpPermisoAdminRepository::class);
+        $this->app->singleton(MenuQueryRepository::class, SpMenuQueryRepository::class);
+        $this->app->singleton(UserEffectiveMenuPermissions::class, SpUserEffectiveMenuPermissions::class);
+        $this->app->singleton(MenuAuthorizationService::class, function ($app) {
+            return new MenuAuthorizationService(
+                $app->make(MenuQueryRepository::class),
+                $app->make(AccesoTotalChecker::class),
+                $app->make(PermisoAdminRepository::class),
+                $app->make(UserEffectiveMenuPermissions::class)
+            );
+        });
+        $this->app->singleton(MenuProcedimientoChecker::class, HostMenuProcedimientoChecker::class);
+        $this->app->singleton(UserPreferencesRepository::class, SpUserPreferencesRepository::class);
+        $this->app->singleton(UserEmpresasQueryRepository::class, SpUserEmpresasQueryRepository::class);
+        $this->app->singleton(CompanyAllowedChecker::class, SpCompanyAllowedChecker::class);
+
         $this->app->bind(
             \App\Domain\Repositories\SystemStatusRepositoryInterface::class,
             \App\Infrastructure\Repositories\ConfigSystemStatusRepository::class
         );
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
+    public function boot(Router $router): void
     {
-        //
+        Sanctum::usePersonalAccessTokenModel(\App\Models\PersonalAccessToken::class);
+
+        foreach (PaqSuiteCoreServiceProvider::tenancyMiddlewareAliases() as $alias => $class) {
+            $router->aliasMiddleware($alias, $class);
+        }
+
+        $router->aliasMiddleware('paqsuite.firstLogin', EnsureFirstLoginCompletedMiddleware::class);
+        $router->aliasMiddleware('partes.profile', EnsurePartesFunctionalProfile::class);
+        $router->aliasMiddleware('partes.notCliente', EnsurePartesNotCliente::class);
+        $router->aliasMiddleware('paqsuite.seguridadAdmin', EnsureSeguridadAdminMiddleware::class);
+
+        // SQL Server con locale dmy: forzar interpretación ymd en cada conexión.
+        $this->app->resolving('db', function () {
+            try {
+                if (DB::connection()->getDriverName() === 'sqlsrv') {
+                    DB::statement('SET DATEFORMAT ymd');
+                }
+            } catch (\Throwable) {
+                // ignore during early boot
+            }
+        });
     }
 }

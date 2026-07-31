@@ -73,7 +73,8 @@ Si quien opera es un supervisor, el sistema puede permitirle seleccionar al asis
 
 - debe existir una duracion positiva;
 - debe expresarse en tramos validos para el modulo;
-- en la base conceptual vigente, ese tramo es de 15 minutos;
+- el tramo es **parametrizable** en `PQ_PARAMETROS_GRAL` (**default 15** minutos);
+- en la experiencia de carga, la duracion se captura con **selector de tramos + valor editable** (web);
 - la experiencia de carga puede ofrecer una representacion mas amigable que el valor tecnico persistido.
 
 ### Observacion

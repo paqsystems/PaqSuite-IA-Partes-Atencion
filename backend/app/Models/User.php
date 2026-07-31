@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,20 +12,27 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
+     * SQL Server: Y-m-d es ambiguo con DATEFORMAT dmy; Ymd H:i:s es inequívoco.
+     */
+    protected $dateFormat = 'Ymd H:i:s';
+
+    /**
      * @var array<int, string>
      */
     protected $fillable = [
         'name',
+        'usuario',
         'email',
         'password',
-        'permission_slugs',
+        'first_login',
+        'supervisor',
+        'activo',
+        'inhabilitado',
+        'locale',
+        'open_in_new_tab',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
      * @var array<int, string>
      */
     protected $hidden = [
@@ -35,13 +41,37 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
-     *
      * @var array<string, string>
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'permission_slugs' => 'array',
+        'first_login' => 'boolean',
+        'supervisor' => 'boolean',
+        'activo' => 'boolean',
+        'inhabilitado' => 'boolean',
+        'open_in_new_tab' => 'boolean',
     ];
+
+    public function isLoginAllowed(): bool
+    {
+        return $this->activo && ! $this->inhabilitado;
+    }
+
+    public static function findByUsuarioOrEmail(string $identifier): ?self
+    {
+        $identifier = trim($identifier);
+
+        if ($identifier === '') {
+            return null;
+        }
+
+        $lower = strtolower($identifier);
+
+        return static::query()
+            ->where(function ($query) use ($identifier, $lower): void {
+                $query->where('usuario', $identifier)
+                    ->orWhereRaw('LOWER(email) = ?', [$lower]);
+            })
+            ->first();
+    }
 }

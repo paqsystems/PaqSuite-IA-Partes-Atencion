@@ -75,12 +75,12 @@
 - [x] Fecha de proceso o fecha funcional de la tarea
 - [x] Regla de cliente
 - [x] Regla de tipo de tarea
-- [x] Regla de duracion
+- [x] Regla de duracion *(tramo param GRAL default 15; UI tramos + editable; paginación DX en carga web)*
 - [x] Regla de observacion
 - [x] Regla de marcas funcionales
 - [x] Estado `cerrado`
 - [x] Edicion y eliminacion segun rol y estado
-- [x] Complemento por IA en la carga
+- [x] Complemento por IA en la carga *(definido como **fuera del MVP**; evolutivo — ver checklist Evolución)*
 
 ## Supervision
 
@@ -102,7 +102,7 @@
 - [x] Reutilizacion de grillas del framework
 - [x] Reutilizacion de layouts del framework
 - [x] Reutilizacion de exportaciones cuando se habiliten
-- [x] Uso eventual de pivots segun el proceso
+- [x] Uso eventual de pivots segun el proceso *(web: Pivot en **todo** Informe con grilla; dashboard no; mobile no)*
 - [x] Exportacion como evolucion inmediata
 
 ## Dashboard
@@ -175,9 +175,9 @@
 
 ## Temas aun abiertos
 
-- [ ] Aplicacion exacta del campo `empresa` en mobile
-- [ ] Frecuencia tecnica exacta del refresco automatico del dashboard
-- [ ] Definicion final del perfil como solo lectura o parcialmente editable
-- [ ] Comportamiento exacto al revocar acceso a un cliente
+- [x] Aplicacion exacta del campo `empresa` en mobile *(MVP: = `X-Paq-Cliente`; SPEC-007 §4.3)*
+- [x] Frecuencia tecnica exacta del refresco automatico del dashboard *(web: param GRAL segundos default 60 / 0=off; mobile: manual/pull)*
+- [x] Definicion final del perfil como solo lectura o parcialmente editable *(MVP: solo lectura, panel avatar; SPEC-002 §4.5)*
+- [x] Comportamiento exacto al revocar acceso a un cliente *(MVP: `user_id = NULL`; sesión viva = revalidar `/me` + APIs dominio; SPEC-002 R-ID-11 / SPEC-003 §4.3.2)*
 - [ ] Definicion conceptual detallada de auditoria de partes
-- [ ] Especificacion concreta del Informe Paquete de Horas
+- [x] Especificacion concreta del Informe Paquete de Horas *(MVP: SPEC-007 §4.8)*

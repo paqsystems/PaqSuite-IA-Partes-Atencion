@@ -1,0 +1,36 @@
+/**
+ * Fuentes DX con rutas absolutas (evita íconos rotos cuando el CSS
+ * activo queda en /dx-themes/*.css tras themes.init).
+ */
+@font-face {
+  font-family: 'DXIcons';
+  src:
+    url('/dx-themes/icons/dxicons.woff2') format('woff2'),
+    url('/dx-themes/icons/dxicons.woff') format('woff'),
+    url('/dx-themes/icons/dxicons.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'DXIconsMaterial';
+  src:
+    url('/dx-themes/icons/dxiconsmaterial.woff2') format('woff2'),
+    url('/dx-themes/icons/dxiconsmaterial.woff') format('woff'),
+    url('/dx-themes/icons/dxiconsmaterial.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'DXIconsFluent';
+  src:
+    url('/dx-themes/icons/dxiconsfluent.woff2') format('woff2'),
+    url('/dx-themes/icons/dxiconsfluent.woff') format('woff'),
+    url('/dx-themes/icons/dxiconsfluent.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}

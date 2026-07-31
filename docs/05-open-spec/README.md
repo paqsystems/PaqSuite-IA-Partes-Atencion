@@ -15,6 +15,20 @@ Documentos **SPEC-CTX-***: alcance de épica redactado como **insumo previo** al
 
 ## Índice de especificaciones (operativas por HU)
 
+### 100 – Sistema Partes (`100-SistemaPartes/`) — dominio del producto
+
+Índice y roadmap: [100-SistemaPartes/README.md](100-SistemaPartes/README.md). Estrategia: **todas las SPECs primero**, luego HU/TR por SPEC.
+
+| SPEC | Título | HU |
+|------|--------|-----|
+| [SPEC-001](100-SistemaPartes/SPEC-001-modelo-datos-modulo.md) | Modelo de datos del módulo | [HU-001](../03-historias-usuario/100-SistemaPartes/HU-001-modelo-datos-modulo.md) · [TR-001](../04-tareas/100-SistemaPartes/TR-001-modelo-datos-modulo.md) |
+| [SPEC-002](100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md) | Identidad funcional y acceso | [HU-002](../03-historias-usuario/100-SistemaPartes/HU-002-identidad-funcional-y-acceso.md) · [TR-002](../04-tareas/100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md) |
+| [SPEC-003](100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) | Maestros y catálogos | [HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) · [TR-003](../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |
+| [SPEC-004](100-SistemaPartes/SPEC-004-operacion-carga-diaria.md) | Operación / carga diaria | [HU-004](../03-historias-usuario/100-SistemaPartes/HU-004-operacion-carga-diaria.md) · [TR-004](../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md) |
+| [SPEC-005](100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) | Supervisión / proceso masivo | [HU-005](../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) · [TR-005](../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
+| [SPEC-006](100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) | Consultas, dashboard y navegación | [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) |
+| [SPEC-007](100-SistemaPartes/SPEC-007-mobile-capacitor.md) | Mobile Capacitor del módulo | [HU-007](../03-historias-usuario/100-SistemaPartes/HU-007-mobile-capacitor.md) · [TR-007](../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) |
+
 ### 001 – Generalidades (`001-Generalidades/`) — bloque vigente
 
 Ver índice principal: [README de 001-Generalidades](001-Generalidades/README.md).

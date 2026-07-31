@@ -1,0 +1,21 @@
+/**
+ * Tokens del shell PaqSuite alineados a temas dark DevExtreme (A1).
+ * La clase `pq-theme-dark` la setea `applyDevExtremeTheme`.
+ */
+html.pq-theme-dark {
+  color-scheme: dark;
+  --pq-shell-bg: #121212;
+  --pq-shell-panel: #1e1e1e;
+  --pq-shell-border: #3a3a3a;
+  --pq-shell-text: #f3f4f6;
+  --pq-shell-muted: #a3a3a3;
+  --pq-shell-footer-bg: #0a0a0a;
+  --pq-shell-footer-text: #d4d4d4;
+  --pq-shell-footer-strong: #ffffff;
+  --pq-shell-overlay: rgba(0, 0, 0, 0.55);
+}
+
+html.pq-theme-dark body {
+  background: var(--pq-shell-bg);
+  color: var(--pq-shell-text);
+}
