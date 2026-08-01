@@ -7,7 +7,7 @@
 | ID | SPEC-005 |
 | Título | Supervisión: terceros y proceso masivo sobre tareas |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Pendiente |
+| Estado | Finalizado |
 | Última actualización | 2026-07-31 |
 | HU relacionada(s) | [HU-005-supervision-proceso-masivo](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
@@ -265,6 +265,8 @@ La UI debe dejar claro **qué atributo(s)** y **qué valor** se aplicarán antes
 | 2026-07-30 | A1: pantalla dedicada + atajo; tope param; select-all; optimistic lock. |
 | 2026-07-30 | Enlace TR-005 (Parte C+C1). |
 | 2026-07-31 | SPEC-update desde producto: grilla Framework (filter/totales/chooser/plantillas/Excel); edición masiva atributos Must (tipo, sin cargo) + Should (presencial, asistente, fecha); excluidos cliente/duración/descripción; R-SU-03* / R-SU-09 / R-SU-10. |
+| 2026-07-31 | F1: Aprobado con observaciones (ver TR-005). |
+| 2026-07-31 | F1: Aprobado con observaciones (ver TR-005). |
 
 ---
 
