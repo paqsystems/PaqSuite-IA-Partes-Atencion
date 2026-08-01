@@ -52,7 +52,8 @@ Tras registrar tareas (SPEC-004), el usuario necesita **lectura** de dedicación
 ## Alcance incluido
 
 - **Consulta detallada** de tareas (solo lectura): columnas mínimas §4.2 (fecha, cliente, asistente, tipo, duración, marcas sin cargo/presencial, cerrado, observación); filtros mínimos (rango de fechas recomendado/obligatorio, cliente, asistente solo supervisor, tipo, cerrado).
-- **Consultas agrupadas:** **una sola pantalla** con selector de eje (cliente / asistente / tipo de tarea / fecha); métricas mínimas: suma `duracion_minutos` y conteo de tareas; filtro de periodo obligatorio o default = mes calendario actual; PivotGrid ofrecido (Informe con grilla).
+- **Consultas agrupadas:** **una sola pantalla** con selector de eje (cliente / asistente / tipo de tarea / fecha); métricas mínimas: suma `duracion_minutos` y conteo de tareas (**UI en `hh:mm`**); filtro de periodo obligatorio o default = mes calendario actual; PivotGrid ofrecido (Informe con grilla).
+- **Presentación duración:** Dashboard, consulta detallada, agrupadas y paquete de horas muestran tiempo en **`hh:mm`** (API en minutos).
 - **Delimitación por perfil** en todas las lecturas: cliente → solo su `cliente_id`; asistente no supervisor → solo su `usuario_id`; supervisor → universo ampliado.
 - **Experiencia de resultado vacío** clara (`partes.consulta.empty`); no confundir con error técnico.
 - **Dashboard MVP** web:

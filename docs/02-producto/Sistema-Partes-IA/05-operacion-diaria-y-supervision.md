@@ -74,8 +74,9 @@ Si quien opera es un supervisor, el sistema puede permitirle seleccionar al asis
 - debe existir una duracion positiva;
 - debe expresarse en tramos validos para el modulo;
 - el tramo es **parametrizable** en `PQ_PARAMETROS_GRAL` (**default 15** minutos);
-- en la experiencia de carga, la duracion se captura con **selector de tramos + valor editable** (web);
-- la experiencia de carga puede ofrecer una representacion mas amigable que el valor tecnico persistido.
+- en la experiencia de carga web, la duracion se captura con **selector de tramos en formato `hh:mm`** (el valor tecnico persistido sigue siendo minutos enteros);
+- en la grilla de carga diaria, las celdas de duracion se presentan en **`hh:mm`** y la sumatoria usa **horas decimales** (`minutos / 60`) para totalizar en el pie DevExtreme;
+- la API y la base de datos no cambian: continuan en `duracion_minutos`.
 
 ### Observacion
 
@@ -86,7 +87,15 @@ Si quien opera es un supervisor, el sistema puede permitirle seleccionar al asis
 
 - `sinCargo` define que la tarea no se considera con cargo;
 - `presencial` define que la tarea implico presencia fisica;
-- ambas marcas forman parte del significado del registro y no simples adornos de UI.
+- ambas marcas forman parte del significado del registro y no simples adornos de UI;
+- en la grilla de carga diaria ambas columnas estan **disponibles** (visibles por defecto; ocultables con el selector de columnas).
+
+### Presentacion de cliente y tipo en grilla
+
+- la columna **Cliente** muestra la **descripcion/nombre** del cliente (no el codigo como valor principal);
+- la columna **Tipo de tarea** muestra la **descripcion** del tipo (no el codigo como valor principal);
+- los codigos permanecen disponibles via column chooser para quien los necesite;
+- los selectores de formulario siguen mostrando `codigo — descripcion`.
 
 ## Complemento por IA
 

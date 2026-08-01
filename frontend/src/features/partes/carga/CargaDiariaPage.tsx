@@ -5,12 +5,12 @@ import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
 import SelectBox from 'devextreme-react/select-box'
 import TextBox from 'devextreme-react/text-box'
-import NumberBox from 'devextreme-react/number-box'
 import CheckBox from 'devextreme-react/check-box'
 import { Popup } from 'devextreme-react/popup'
 import { confirm } from 'devextreme/ui/dialog'
 import { Link } from 'react-router-dom'
-import { getAuthSession } from '../../auth/authSessionStore'
+import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
+import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
 import { listCatalogo } from '../maestros/partesMaestrosApi'
 import {
@@ -22,11 +22,18 @@ import {
   type PartesTareaItem,
 } from './partesTareaApi'
 import {
-  buildTramoOptions,
+  buildTramoHhMmOptions,
+  formatMinutosAsHhMm,
   isFechaFutura,
   isValidDuracionMinutos,
+  minutosToHorasDecimal,
   todayIsoDate,
 } from './partesTareaDuration'
+
+type CargaDiariaGridRow = PartesTareaItem & {
+  /** Horas decimales para sumatoria DevExtreme (persistencia = minutos). */
+  duracionHoras: number
+}
 
 type FormState = {
   usuarioId: number | null
@@ -62,7 +69,8 @@ export function CargaDiariaPage() {
   const [filtroClienteId, setFiltroClienteId] = useState<number | null>(null)
   const [filtroUsuarioId, setFiltroUsuarioId] = useState<number | null>(null)
   const [estadoCerrado, setEstadoCerrado] = useState<'todas' | 'abiertas' | 'cerradas'>('todas')
-  const [rows, setRows] = useState<PartesTareaItem[]>([])
+  const [rows, setRows] = useState<CargaDiariaGridRow[]>([])
+  const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [tramo, setTramo] = useState(15)
@@ -73,27 +81,53 @@ export function CargaDiariaPage() {
   const [editingId, setEditingId] = useState<number | null>(null)
   const [form, setForm] = useState<FormState>(() => emptyForm(asistenteId))
 
-  const tramoOptions = useMemo(() => buildTramoOptions(tramo), [tramo])
+  const tramoOptions = useMemo(() => buildTramoHhMmOptions(tramo), [tramo])
+
+  const duracionSummaryItems = useMemo(
+    () => [
+      {
+        column: 'duracionHoras',
+        summaryType: 'sum' as const,
+        name: 'pq-duracionHoras-sum',
+        displayFormat: 'Suma: {0} h',
+        valueFormat: '#0.##',
+      },
+    ],
+    []
+  )
+
+  function mapGridRows(items: PartesTareaItem[]): CargaDiariaGridRow[] {
+    return items.map((item) => ({
+      ...item,
+      duracionHoras: minutosToHorasDecimal(item.duracionMinutos),
+    }))
+  }
 
   const load = useCallback(async () => {
     if (!fechaDesde || !fechaHasta) {
       setError(resolveAuthMessage('partes.tarea.fechasRequeridas'))
       setRows([])
+      setLoading(false)
       return
     }
+    setLoading(true)
     setError(null)
-    const result = await listTareas({
-      fechaDesde,
-      fechaHasta,
-      clienteId: filtroClienteId,
-      usuarioId: esSupervisor ? filtroUsuarioId : null,
-      estadoCerrado,
-    })
-    if (result.kind === 'ok') {
-      setRows(result.envelope.resultado.items ?? [])
-      setTotal(result.envelope.resultado.total ?? 0)
-    } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+    try {
+      const result = await listTareas({
+        fechaDesde,
+        fechaHasta,
+        clienteId: filtroClienteId,
+        usuarioId: esSupervisor ? filtroUsuarioId : null,
+        estadoCerrado,
+      })
+      if (result.kind === 'ok') {
+        setRows(mapGridRows(result.envelope.resultado.items ?? []))
+        setTotal(result.envelope.resultado.total ?? 0)
+      } else if (result.kind === 'envelopeError') {
+        setError(resolveAuthMessage(result.envelope.respuesta))
+      }
+    } finally {
+      setLoading(false)
     }
   }, [fechaDesde, fechaHasta, filtroClienteId, filtroUsuarioId, estadoCerrado, esSupervisor])
 
@@ -341,19 +375,37 @@ export function CargaDiariaPage() {
         <ProcessDataGrid
           dataSource={rows}
           keyExpr="id"
+          loading={loading}
+          proceso="partes.carga.diaria"
+          gridId="cargaDiaria"
+          accessToken={getAuthToken()}
+          platform={buildAuthPlatformHeaders()}
           onCreate={openCreate}
           createHint="Nueva tarea"
           createTestId="partesCargaAdd"
+          defaultTotalItems={duracionSummaryItems}
         >
           <Paging defaultPageSize={20} />
           <Pager visible showPageSizeSelector />
           <Column dataField="fecha" caption="Fecha" dataType="date" />
           {esSupervisor ? <Column dataField="usuarioCode" caption="Asistente" /> : null}
-          <Column dataField="clienteCode" caption="Cliente" />
-          <Column dataField="tipoTareaCode" caption="Tipo" />
-          <Column dataField="duracionMinutos" caption="Minutos" />
+          <Column dataField="clienteNombre" caption="Cliente" />
+          <Column dataField="tipoTareaDescripcion" caption="Tipo de Tarea" />
+          <Column
+            dataField="duracionHoras"
+            caption="Duración"
+            dataType="number"
+            customizeText={(cell) =>
+              formatMinutosAsHhMm(Math.round(Number(cell.value ?? 0) * 60))
+            }
+          />
+          <Column dataField="sinCargo" caption="Sin cargo" dataType="boolean" />
+          <Column dataField="presencial" caption="Presencial" dataType="boolean" />
           <Column dataField="observacion" caption="Observación" />
-          <Column dataField="cerrado" caption="Cerrado" />
+          <Column dataField="cerrado" caption="Cerrado" dataType="boolean" />
+          <Column dataField="clienteCode" caption="Cliente (código)" visible={false} />
+          <Column dataField="tipoTareaCode" caption="Tipo (código)" visible={false} />
+          <Column dataField="duracionMinutos" caption="Minutos" dataType="number" visible={false} />
           <Column
             type="buttons"
             buttons={[
@@ -441,24 +493,19 @@ export function CargaDiariaPage() {
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
-            <label>Duración (tramo)</label>
+            <label>Duración</label>
             <SelectBox
               dataSource={tramoOptions}
               value={form.duracionMinutos}
+              valueExpr="minutos"
+              displayExpr="label"
+              searchEnabled
+              elementAttr={{ 'data-testid': 'partesCargaDuracion' }}
               onValueChanged={(e) =>
-                setForm((prev) => ({ ...prev, duracionMinutos: Number(e.value) }))
-              }
-            />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
-            <label>Duración (min)</label>
-            <NumberBox
-              value={form.duracionMinutos}
-              min={tramo}
-              max={1440}
-              step={tramo}
-              onValueChanged={(e) =>
-                setForm((prev) => ({ ...prev, duracionMinutos: Number(e.value) || tramo }))
+                setForm((prev) => ({
+                  ...prev,
+                  duracionMinutos: Number(e.value) || tramo,
+                }))
               }
             />
           </div>

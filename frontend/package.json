@@ -20,8 +20,8 @@
   "dependencies": {
     "@paqsuite/react-core": "file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core",
     "axios": "^1.16.0",
-    "devextreme": "^26.1.3",
-    "devextreme-react": "^26.1.3",
+    "devextreme": "^25.2.7",
+    "devextreme-react": "^25.2.7",
     "exceljs": "^4.4.0",
     "i18next": "^26.0.10",
     "react": "^19.2.5",

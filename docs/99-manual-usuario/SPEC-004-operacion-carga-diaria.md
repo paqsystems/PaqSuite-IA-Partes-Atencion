@@ -22,16 +22,18 @@ En **Partes → Carga diaria** registrás el trabajo del día (o de un rango de 
 1. Menú **Partes** → **Carga diaria**.
 2. Confirmá el filtro de fechas (por defecto el **día de hoy**; podés ampliar el rango).
 3. Actualizá el listado.
-4. Dá de alta una fila: fecha, cliente, tipo, duración, observación; marcas opcionales (sin cargo, presencial).
+4. Dá de alta una fila: fecha, cliente, tipo, duración en **hh:mm**, observación; marcas opcionales (sin cargo, presencial).
 5. Si sos supervisor, elegí el asistente propietario cuando corresponda.
 6. Guardá. Editá o eliminá solo si la tarea **no** está cerrada.
 7. Si la fecha es futura, el sistema pide **confirmación** (no bloquea del todo).
 8. Supervisor: cerrá o reabrí **una** fila con la acción explícita.
 
+En la grilla ves el **nombre del cliente** y la **descripción del tipo de tarea** (no el código como valor principal). Las columnas **Sin cargo** y **Presencial** están disponibles. La duración se muestra en **hh:mm** y podés **sumar** el total en horas (decimal) desde el pie / menú de la grilla.
+
 ## Particularidades
 
 - La **observación es obligatoria**.
-- La duración debe ser múltiplo del **tramo** configurado (por defecto **15** minutos), mayor que 0 y hasta **1440** (24 h).
+- La duración se elige en formato **hh:mm** (tramos según parámetro; por defecto cada **15** minutos), mayor que 0 y hasta **24:00** (1440 minutos).
 - Los tipos disponibles dependen del cliente: genéricos + asignados a ese cliente.
 - Al cambiar de cliente, si el tipo ya no aplica se limpia y debés elegir otro.
 - Una tarea **cerrada** queda de solo lectura en el flujo ordinario.
@@ -63,7 +65,7 @@ En **Partes → Carga diaria** registrás el trabajo del día (o de un rango de 
 | Qué ve el usuario (mensaje o síntoma) | Código / clave i18n (si existe) | Causa habitual | Qué hacer |
 |---------------------------------------|--------------------------------|----------------|-----------|
 | Debe indicar fecha desde y fecha hasta | `partes.tarea.fechasRequeridas` | Filtro incompleto | Completar ambas fechas |
-| Duración inválida (tramo / 0 / >1440) | `partes.tarea.duracionInvalida` | Minutos no múltiplo del tramo | Usar 15, 30, 45… (según tramo) |
+| Duración inválida (tramo / 0 / >1440) | `partes.tarea.duracionInvalida` | Valor no múltiplo del tramo | Elegir un tramo válido en hh:mm (p. ej. 00:15, 00:30…) |
 | Observación obligatoria | `partes.tarea.observacionRequerida` | Texto vacío | Completar observación |
 | Complete los campos obligatorios | `partes.tarea.camposObligatorios` | Faltan datos | Completar el formulario |
 

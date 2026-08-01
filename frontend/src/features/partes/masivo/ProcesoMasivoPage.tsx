@@ -11,6 +11,7 @@ import DateBox from 'devextreme-react/date-box'
 import SelectBox from 'devextreme-react/select-box'
 import { confirm } from 'devextreme/ui/dialog'
 import { Navigate } from 'react-router-dom'
+import { LoadingOverlay } from '@paqsuite/react-core'
 import { getAuthSession } from '../../auth/authSessionStore'
 import { resolveAuthMessage } from '../../auth/authMessages'
 import { listCatalogo } from '../maestros/partesMaestrosApi'
@@ -42,6 +43,7 @@ function ProcesoMasivoView() {
   const [filtroUsuarioId, setFiltroUsuarioId] = useState<number | null>(null)
   const [estadoCerrado, setEstadoCerrado] = useState<'todas' | 'abiertas' | 'cerradas'>('todas')
   const [rows, setRows] = useState<PartesTareaItem[]>([])
+  const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [clientes, setClientes] = useState<Record<string, unknown>[]>([])
@@ -65,15 +67,21 @@ function ProcesoMasivoView() {
   const load = useCallback(async () => {
     if (!fechaDesde || !fechaHasta) {
       setError(resolveAuthMessage('partes.tarea.fechasRequeridas'))
+      setLoading(false)
       return
     }
+    setLoading(true)
     setError(null)
-    const result = await listTareas(filters)
-    if (result.kind === 'ok') {
-      setRows(result.envelope.resultado.items ?? [])
-      setTotal(result.envelope.resultado.total ?? 0)
-    } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+    try {
+      const result = await listTareas(filters)
+      if (result.kind === 'ok') {
+        setRows(result.envelope.resultado.items ?? [])
+        setTotal(result.envelope.resultado.total ?? 0)
+      } else if (result.kind === 'envelopeError') {
+        setError(resolveAuthMessage(result.envelope.respuesta))
+      }
+    } finally {
+      setLoading(false)
     }
   }, [fechaDesde, fechaHasta, filters])
 
@@ -194,6 +202,7 @@ function ProcesoMasivoView() {
 
   return (
     <div data-testid="partesMasivoPage" style={{ padding: 16 }}>
+      <LoadingOverlay visible={loading} />
       <h2 style={{ marginTop: 0 }}>Proceso masivo</h2>
       <div
         data-testid="partesMasivoFiltros"

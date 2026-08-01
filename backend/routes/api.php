@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\V1\GridLayoutsController;
+use App\Http\Controllers\Api\V1\PivotLayoutsController;
 use App\Http\Controllers\Api\V1\ParametrosController;
 use App\Http\Controllers\Api\V1\Admin\EmpresasController as AdminEmpresasController;
 use App\Http\Controllers\Api\V1\Admin\PermisosController as AdminPermisosController;
@@ -45,6 +47,20 @@ Route::prefix('v1')->group(function () {
         Route::get('/system/status', [SystemStatusController::class, 'show']);
         Route::get('/parametros', [ParametrosController::class, 'index']);
         Route::patch('/parametros/{clave}', [ParametrosController::class, 'update']);
+
+        Route::get('/grid-layouts/active', [GridLayoutsController::class, 'active']);
+        Route::put('/grid-layouts/active', [GridLayoutsController::class, 'setActive']);
+        Route::get('/grid-layouts', [GridLayoutsController::class, 'index']);
+        Route::post('/grid-layouts', [GridLayoutsController::class, 'store']);
+        Route::put('/grid-layouts/{id}', [GridLayoutsController::class, 'update']);
+        Route::delete('/grid-layouts/{id}', [GridLayoutsController::class, 'destroy']);
+
+        Route::get('/pivot-layouts/active', [PivotLayoutsController::class, 'active']);
+        Route::put('/pivot-layouts/active', [PivotLayoutsController::class, 'setActive']);
+        Route::get('/pivot-layouts', [PivotLayoutsController::class, 'index']);
+        Route::post('/pivot-layouts', [PivotLayoutsController::class, 'store']);
+        Route::put('/pivot-layouts/{id}', [PivotLayoutsController::class, 'update']);
+        Route::delete('/pivot-layouts/{id}', [PivotLayoutsController::class, 'destroy']);
 
         // Lectura amplia (lookup maestros Partes vía ?soloActivos= + listado Admin Seguridad).
         Route::get('/admin/usuarios', [AdminUsuariosController::class, 'index']);

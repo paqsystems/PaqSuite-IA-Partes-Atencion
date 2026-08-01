@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
-import DataGrid, { Column } from 'devextreme-react/data-grid'
+import { Column, Paging, Pager } from 'devextreme-react/data-grid'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { isNativeApp } from '@paqsuite/react-core'
+import { isNativeApp, LoadingOverlay, ProcessDataGrid } from '@paqsuite/react-core'
+import { getAuthToken } from '../../auth/authSessionStore'
+import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
-import { todayIsoDate } from '../carga/partesTareaDuration'
+import { formatMinutosAsHhMm, todayIsoDate } from '../carga/partesTareaDuration'
 import { fetchDashboard, fetchDashboardParametros } from './partesInformeApi'
 
 function currentMonthValue(date = new Date()): string {
@@ -31,23 +33,33 @@ export function PartesDashboardPage() {
     Array<{ codigo: string; descripcion: string; totalMinutos: number; cantidadTareas: number }>
   >([])
   const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
   const seqRef = useRef(0)
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (showOverlay = true) => {
     const seq = ++seqRef.current
-    setError(null)
-    const result = await fetchDashboard({ mes })
-    if (seq !== seqRef.current) {
-      return
+    if (showOverlay) {
+      setLoading(true)
     }
-    if (result.kind === 'ok') {
-      setTotalMinutos(result.envelope.resultado.totalMinutos)
-      setCantidadTareas(result.envelope.resultado.cantidadTareas)
-      setTop(result.envelope.resultado.top ?? [])
-    } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
-    } else {
-      setError(resolveAuthMessage('infra.transport'))
+    setError(null)
+    try {
+      const result = await fetchDashboard({ mes })
+      if (seq !== seqRef.current) {
+        return
+      }
+      if (result.kind === 'ok') {
+        setTotalMinutos(result.envelope.resultado.totalMinutos)
+        setCantidadTareas(result.envelope.resultado.cantidadTareas)
+        setTop(result.envelope.resultado.top ?? [])
+      } else if (result.kind === 'envelopeError') {
+        setError(resolveAuthMessage(result.envelope.respuesta))
+      } else {
+        setError(resolveAuthMessage('infra.transport'))
+      }
+    } finally {
+      if (seq === seqRef.current && showOverlay) {
+        setLoading(false)
+      }
     }
   }, [mes])
 
@@ -68,7 +80,7 @@ export function PartesDashboardPage() {
       return
     }
     const id = window.setInterval(() => {
-      void load()
+      void load(false)
     }, refreshSeg * 1000)
     return () => window.clearInterval(id)
   }, [load, refreshSeg, native])
@@ -77,6 +89,7 @@ export function PartesDashboardPage() {
 
   return (
     <div className="pqProcessPage" data-testid="partesDashboardRoot">
+      <LoadingOverlay visible={loading} />
       <div className="pqProcessHeader">
         <h2 className="pqProcessTitle">{t('dashboard.title')}</h2>
         <div className="pqProcessToolbar">
@@ -110,7 +123,7 @@ export function PartesDashboardPage() {
 
       <div className="pqProcessStats">
         <div data-testid="partesDashboardTotalMinutos">
-          <strong>{t('dashboard.totalMinutos')}:</strong> {totalMinutos}
+          <strong>{t('dashboard.totalMinutos')}:</strong> {formatMinutosAsHhMm(totalMinutos)}
         </div>
         <div data-testid="partesDashboardCantidad">
           <strong>{t('dashboard.cantidadTareas')}:</strong> {cantidadTareas}
@@ -126,12 +139,27 @@ export function PartesDashboardPage() {
       <h3 className="pqProcessTitle" style={{ fontSize: '1.15rem' }}>
         {t('dashboard.topClientes')}
       </h3>
-      <DataGrid dataSource={top} keyExpr="codigo" showBorders>
+      <ProcessDataGrid
+        dataSource={top}
+        keyExpr="codigo"
+        showBorders
+        proceso="partes.dashboard"
+        gridId="dashboardTop"
+        accessToken={getAuthToken()}
+        platform={buildAuthPlatformHeaders()}
+      >
+        <Paging defaultPageSize={20} />
+        <Pager visible showPageSizeSelector />
         <Column dataField="codigo" caption={t('dashboard.colCodigo')} />
         <Column dataField="descripcion" caption={t('dashboard.colCliente')} />
-        <Column dataField="totalMinutos" caption={t('dashboard.colMinutos')} />
-        <Column dataField="cantidadTareas" caption={t('dashboard.colTareas')} />
-      </DataGrid>
+        <Column
+          dataField="totalMinutos"
+          caption={t('dashboard.colMinutos')}
+          dataType="number"
+          customizeText={(cell) => formatMinutosAsHhMm(Number(cell.value ?? 0))}
+        />
+        <Column dataField="cantidadTareas" caption={t('dashboard.colTareas')} dataType="number" />
+      </ProcessDataGrid>
     </div>
   )
 }

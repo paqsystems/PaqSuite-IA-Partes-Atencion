@@ -56,15 +56,15 @@ return [
     | Grid layouts (GEN-11) — Fase 4; deshabilitado en Fase 1-2
     |--------------------------------------------------------------------------
     */
-    'gridLayoutsEnabled' => env('PAQSUITE_GRID_LAYOUTS_ENABLED', false),
+    'gridLayoutsEnabled' => env('PAQSUITE_GRID_LAYOUTS_ENABLED', true),
 
     /*
     |--------------------------------------------------------------------------
     | Pivots (GEN-12) — solo env; default off
     |--------------------------------------------------------------------------
     */
-    'pivotsEnabled' => filter_var(env('PIVOTS_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
-    'pivotLayoutsEnabled' => filter_var(env('PIVOT_LAYOUTS_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
+    'pivotsEnabled' => filter_var(env('PIVOTS_ENABLED', true), FILTER_VALIDATE_BOOLEAN),
+    'pivotLayoutsEnabled' => filter_var(env('PIVOT_LAYOUTS_ENABLED', true), FILTER_VALIDATE_BOOLEAN),
 
     /*
     |--------------------------------------------------------------------------

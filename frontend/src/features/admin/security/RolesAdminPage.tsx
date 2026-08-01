@@ -9,6 +9,8 @@ import { confirm } from 'devextreme/ui/dialog'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { resolveAuthMessage } from '../../auth/authMessages'
+import { getAuthToken } from '../../auth/authSessionStore'
+import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import {
   type AdminRol,
   createAdminRol,
@@ -30,18 +32,24 @@ export function RolesAdminPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [rows, setRows] = useState<AdminRol[]>([])
+  const [loading, setLoading] = useState(true)
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [form, setForm] = useState<FormState>(emptyForm)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
+    setLoading(true)
     setError(null)
-    const result = await listAdminRoles()
-    if (result.kind === 'ok') {
-      setRows(result.envelope.resultado.items ?? [])
-    } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+    try {
+      const result = await listAdminRoles()
+      if (result.kind === 'ok') {
+        setRows(result.envelope.resultado.items ?? [])
+      } else if (result.kind === 'envelopeError') {
+        setError(resolveAuthMessage(result.envelope.respuesta))
+      }
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -106,6 +114,11 @@ export function RolesAdminPage() {
         <ProcessDataGrid
           dataSource={rows}
           keyExpr="id"
+          loading={loading}
+          proceso="partes.admin.roles"
+          gridId="roles"
+          accessToken={getAuthToken()}
+          platform={buildAuthPlatformHeaders()}
           onCreate={openCreate}
           createHint={t('admin.common.add')}
           createTestId="adminRolesAdd"

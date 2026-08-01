@@ -99,10 +99,10 @@ Sin filtros de fecha aplicados, la grilla **no** carga el universo completo hist
 | `fecha` | Obligatoria; fecha de **negocio** (no solo `created_at`). Presentación amigable (locale). Si `fecha` > fecha del sistema → **advertencia** confirmable; **no** bloqueo duro. |
 | `cliente_id` | Obligatorio; solo cliente usable (SPEC-003). Al cambiar cliente, recalcular tipos disponibles; si el `tipo_tarea_id` actual no pertenece al nuevo universo → **limpiar** `tipo_tarea_id` (queda vacío hasta nueva elección). |
 | `tipo_tarea_id` | Obligatorio (no nulo/vacío al grabar); ∈ universo SPEC-003 §4.7 para ese cliente. Default sugerido al alta: tipo con `is_default = 1` si está en el universo. Tras limpiar por cambio de cliente, no se puede grabar hasta elegir tipo válido. |
-| `duracion_minutos` | Entero; obligatorio; `> 0`; **múltiplo del tramo** parametrizado en `PQ_PARAMETROS_GRAL` (clave p. ej. `PartesDuracionTramoMin`; **default 15**); máximo **1440** (24 h). Persiste minutos. **UI:** combinación de selector de tramos + valor editable (misma unidad/validación). |
+| `duracion_minutos` | Entero; obligatorio; `> 0`; **múltiplo del tramo** parametrizado en `PQ_PARAMETROS_GRAL` (clave p. ej. `PartesDuracionTramoMin`; **default 15**); máximo **1440** (24 h). Persiste minutos. **UI captura:** selector de tramos en formato **`hh:mm`** (value interno = minutos). |
 | `observacion` | Obligatoria; no vacía ni solo whitespace. |
-| `sin_cargo` | Bit; **default `0` (false)** en alta y en UI nueva fila. No es “dato faltante”: siempre tiene valor. |
-| `presencial` | Bit; **default `0` (false)** en alta y en UI nueva fila. No es “dato faltante”: siempre tiene valor. |
+| `sin_cargo` | Bit; **default `0` (false)** en alta y en UI nueva fila. No es “dato faltante”: siempre tiene valor. Visible como columna en grilla (column chooser). |
+| `presencial` | Bit; **default `0` (false)** en alta y en UI nueva fila. No es “dato faltante”: siempre tiene valor. Visible como columna en grilla (column chooser). |
 | `usuario_id` | Obligatorio; propietario (asistente fijo / supervisor elige). |
 | `cerrado` | Ver §4.6. Alta ordinaria → `0`. |
 
@@ -113,10 +113,15 @@ Mensajes: envelope + claves i18n `partes.tarea.*` (validación / permiso / cerra
 ### 4.5 Listado, edición y eliminación
 
 - **Listar:** API paginada/filtrada; solo filas del universo del actor (§3) ∩ filtros. **UI web:** paginación estándar DevExtreme (no virtual scroll como modo principal del MVP).
+- **Columnas de presentación (grilla carga diaria):**
+  - **Cliente:** descripción (`clienteNombre`); código disponible vía column chooser (`clienteCode`).
+  - **Tipo de tarea:** descripción (`tipoTareaDescripcion`); código disponible vía column chooser (`tipoTareaCode`).
+  - **Sin cargo** y **Presencial:** columnas booleanas disponibles (visibles por defecto; ocultables con column chooser).
+  - **Duración:** celdas en **`hh:mm`**; exposición numérica en grilla como **horas decimales** (`duracionHoras = duracion_minutos / 60`) para permitir **sumatoria** DevExtreme (pie / menú contextual). Persistencia y API siguen en minutos. Columna técnica `duracionMinutos` oculta por defecto (chooser).
 - **Insertar / actualizar:** validar §4.4; persistir vía SP (MUST). En **update**, el cliente envía `rowVersion` leído en el listado; si no coincide → **409** (conflicto); UI invita a refrescar.
 - **Eliminar:** solo si `cerrado = 0` y el actor tiene derecho sobre la fila (propia o supervisor); también con `rowVersion` (mismo criterio 409).
 - Tarea `cerrado = 1`: **no** editar campos de negocio ni eliminar en el flujo ordinario (lectura en grilla permitida).
-- **Duración en UI:** control combinado (tramos sugeridos según parámetro + entrada editable); validación contra el tramo de `PQ_PARAMETROS_GRAL`.
+- **Duración en UI:** selector de tramos etiquetados en **`hh:mm`**; validación contra el tramo de `PQ_PARAMETROS_GRAL`.
 - **Concurrencia:** optimistic lock vía `PQ_PARTES_REGISTRO_TAREA.row_version` (SPEC-001 / SPEC-005).
 
 ### 4.6 Estado `cerrado` (circuito ordinario)
@@ -151,8 +156,11 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | R-OP-02 | Cliente funcional no carga; API deniega. |
 | R-OP-03 | Asistente solo opera tareas propias; columna Asistente fija a su código. Supervisor: columna Asistente editable con cualquier asistente activo/usable. |
 | R-OP-04 | Filtro de fechas obligatorio antes de listar; **default al abrir = día del sistema**. |
-| R-OP-05 | `duracion_minutos` > 0, múltiplo del tramo (`PQ_PARAMETROS_GRAL`, default **15**), ≤ 1440. UI = tramos + editable. |
+| R-OP-05 | `duracion_minutos` > 0, múltiplo del tramo (`PQ_PARAMETROS_GRAL`, default **15**), ≤ 1440. UI captura = selector de tramos en **`hh:mm`**. |
 | R-OP-05b | Listado carga diaria: paginación estándar DevExtreme. |
+| R-OP-05c | Grilla: Cliente y Tipo de tarea muestran **descripción**; códigos opcionales vía column chooser. |
+| R-OP-05d | Grilla: columnas **Sin cargo** y **Presencial** disponibles. |
+| R-OP-05e | Grilla: duración visible en **`hh:mm`**; sumatoria sobre horas decimales (`duracionHoras`); API/DB en minutos. |
 | R-OP-06 | `observacion` obligatoria (no blank). |
 | R-OP-07 | Cliente/tipo usables; tipo ∈ universo del cliente (SPEC-003). Al cambiar cliente con tipo fuera de universo → limpiar tipo; grabar con tipo vacío → rechazo. |
 | R-OP-07b | Alta/edición rechazada si falta cualquier campo obligatorio de captura (§4.4). `sin_cargo` / `presencial` default `0`. |
@@ -171,7 +179,8 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 - [ ] Supervisor ve columna Asistente editable y puede asignar cualquier asistente activo/usable.
 - [ ] Cliente autenticado recibe 403 en APIs de carga / no ve menú de carga.
 - [ ] Alta rechaza duración no múltiplo del tramo (default 15), 0 y >1440; acepta valores válidos (p. ej. 15, 60, 1440 con tramo 15).
-- [ ] UI duración = tramos + editable; grilla con paginación DevExtreme.
+- [ ] UI duración = selector tramos en **`hh:mm`**; grilla con paginación DevExtreme.
+- [ ] Grilla muestra descripción de Cliente y Tipo de tarea; columnas Sin cargo y Presencial disponibles; duración en hh:mm con sumatoria en horas decimales.
 - [ ] Alta rechaza observación vacía; rechaza cliente/tipo inhabilitados o tipo fuera de universo.
 - [ ] Fecha futura muestra advertencia y permite confirmar.
 - [ ] Tarea cerrada no se edita ni elimina en flujo ordinario; supervisor puede cerrar/reabrir una fila.
@@ -188,7 +197,7 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | Capa | Impacto |
 |------|---------|
 | Backend | SP list/filter/upsert/delete/setCerrado; validación servidor espejo de §4.4–4.7 |
-| Frontend | Feature carga diaria (filtros + DataGrid paginado DX + editores; duración tramos+editable); selectores catálogo SPEC-003; leer tramo desde param GRAL |
+| Frontend | Feature carga diaria (filtros + DataGrid paginado DX + editores; duración hh:mm; columnas descripción + bits; sumatoria horas decimales); selectores catálogo SPEC-003; leer tramo desde param GRAL |
 | Menú | Ítem “Carga diaria” para asistente/supervisor |
 | Tests | Feature API por rol; Vitest validadores duración/fecha; E2E humo alta tarea |
 | Params | Seed `PartesDuracionTramoMin` (programa `Partes`) default `15` |
@@ -223,6 +232,7 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | 2026-07-30 | Batch HU: duración = tramos+editable; tramo en `PQ_PARAMETROS_GRAL` default 15; paginación DX. |
 | 2026-07-30 | Batch HU: optimistic lock `row_version` en update/delete (409). |
 | 2026-07-30 | Parte C+C1: enlazada [TR-004](../../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md). |
+| 2026-07-31 | Presentación grilla: Cliente/Tipo = descripción; bits Sin cargo/Presencial; duración UI `hh:mm` + sumatoria horas decimales (persistencia minutos). |
 
 ---
 

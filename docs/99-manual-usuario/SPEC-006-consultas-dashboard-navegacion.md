@@ -21,7 +21,7 @@ Desde **Inicio** ves el **Dashboard** de dedicación. En **Informes** consultás
 
 1. Tras el login llegás al Dashboard (también desde **Inicio → Dashboard**).
 2. El periodo inicial es el **mes calendario** actual.
-3. Revisá total de minutos, cantidad de tareas y el ranking top N (por defecto 10).
+3. Revisá total de duración en **hh:mm**, cantidad de tareas y el ranking top N (por defecto 10; duración también en **hh:mm**).
 4. Cambiá el mes/periodo y actualizá.
 5. En web puede haber auto-refresco (por defecto cada 60 s; 0 = solo manual). Al salir de la pantalla se detiene.
 
@@ -38,16 +38,18 @@ Desde **Inicio** ves el **Dashboard** de dedicación. En **Informes** consultás
 1. Menú **Informes** → consultas agrupadas.
 2. Elegí el eje: cliente, asistente, tipo o fecha.
 3. Si el eje es fecha, indicá granularidad **día** o **mes**.
-4. Revisá suma de minutos y cantidad de tareas (pivot disponible en web).
+4. Revisá suma de duración en **hh:mm** y cantidad de tareas (pivot disponible en web).
 
 ### Paquete de horas
 
 1. Desde Informes o el enlace del dashboard.
 2. Elegí el periodo (por defecto el mes actual).
-3. Consultá totales y desgloses (p. ej. por cliente y por tipo).
+3. Consultá totales y desgloses en **hh:mm** (p. ej. por cliente y por tipo).
 
 ## Particularidades
 
+- En Informes y Dashboard la duración se muestra en **hh:mm** (no en minutos sueltos).
+- Las grillas de proceso usan el estándar del sistema (selector de columnas y plantillas en la barra de la grilla).
 - No se editan tareas desde Informes en el MVP: usá **Carga diaria**.
 - Vacío de resultados ≠ error del sistema.
 - Exportación Excel: no es Must de esta versión.

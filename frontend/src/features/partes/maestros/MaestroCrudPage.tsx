@@ -8,6 +8,8 @@ import SelectBox from 'devextreme-react/select-box'
 import { Popup } from 'devextreme-react/popup'
 import { confirm } from 'devextreme/ui/dialog'
 import { resolveAuthMessage } from '../../auth/authMessages'
+import { getAuthToken } from '../../auth/authSessionStore'
+import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import {
   deletePartesResource,
   listAdminUsuarios,
@@ -46,6 +48,7 @@ export function MaestroCrudPage({
   initialForm,
 }: MaestroCrudPageProps) {
   const [rows, setRows] = useState<Record<string, unknown>[]>([])
+  const [loading, setLoading] = useState(true)
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [form, setForm] = useState<Record<string, unknown>>(initialForm)
@@ -54,12 +57,17 @@ export function MaestroCrudPage({
   const [catalogs, setCatalogs] = useState<Record<string, Record<string, unknown>[]>>({})
 
   const load = useCallback(async () => {
+    setLoading(true)
     setError(null)
-    const result = await listPartesResource(resourcePath)
-    if (result.kind === 'ok') {
-      setRows(result.envelope.resultado.items ?? [])
-    } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+    try {
+      const result = await listPartesResource(resourcePath)
+      if (result.kind === 'ok') {
+        setRows(result.envelope.resultado.items ?? [])
+      } else if (result.kind === 'envelopeError') {
+        setError(resolveAuthMessage(result.envelope.respuesta))
+      }
+    } finally {
+      setLoading(false)
     }
   }, [resourcePath])
 
@@ -149,6 +157,11 @@ export function MaestroCrudPage({
         <ProcessDataGrid
           dataSource={rows}
           keyExpr="id"
+          loading={loading}
+          proceso={`partes.maestros.${resourcePath}`}
+          gridId={testIdPrefix}
+          accessToken={getAuthToken()}
+          platform={buildAuthPlatformHeaders()}
           onCreate={openCreate}
           createHint="Agregar"
           createTestId={`${testIdPrefix}Add`}

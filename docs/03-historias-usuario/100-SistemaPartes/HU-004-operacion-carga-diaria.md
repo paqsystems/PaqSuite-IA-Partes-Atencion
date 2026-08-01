@@ -52,7 +52,7 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 - Pantalla web de carga diaria: DataGrid de trabajo + filtros previos obligatorios.
 - Insertar, editar y eliminar registros según rol y estado `cerrado`.
 - Campos de negocio: `fecha`, `cliente_id`, `tipo_tarea_id`, `duracion_minutos`, `observacion`, `sin_cargo`, `presencial`, `usuario_id`, `cerrado`.
-- Validaciones: no grabar si falta cualquier obligatorio (`fecha`, `cliente_id`, `tipo_tarea_id`, `duracion_minutos`, `observacion`, `usuario_id`); duración entera > 0, **múltiplo del tramo** (`PQ_PARAMETROS_GRAL`, default **15**), máximo 1440; UI duración = **tramos + editable**; listado con **paginación DevExtreme**; cliente/tipo usables; tipo ∈ universo del cliente (SPEC-003 §4.7). Al cambiar cliente con tipo fuera de universo → **limpiar** tipo. `sin_cargo` / `presencial` default `0` (false).
+- Validaciones: no grabar si falta cualquier obligatorio (`fecha`, `cliente_id`, `tipo_tarea_id`, `duracion_minutos`, `observacion`, `usuario_id`); duración entera > 0, **múltiplo del tramo** (`PQ_PARAMETROS_GRAL`, default **15**), máximo 1440; UI duración = **selector de tramos en `hh:mm`**; grilla: Cliente/Tipo = **descripción**, columnas **Sin cargo** / **Presencial**, duración visible **`hh:mm`** con sumatoria en **horas decimales**; listado con **paginación DevExtreme**; cliente/tipo usables; tipo ∈ universo del cliente (SPEC-003 §4.7). Al cambiar cliente con tipo fuera de universo → **limpiar** tipo. `sin_cargo` / `presencial` default `0` (false).
 - Delimitación de filas visibles según `tipoFuncional` / `esSupervisor` (SPEC-002).
 - Columna Asistente: fija para asistente no supervisor; editable para supervisor con selector de asistentes usables.
 - Advertencia confirmable (no bloqueo) ante fecha futura.
@@ -83,7 +83,10 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 | R-OP-02 | Cliente funcional no carga; API deniega. |
 | R-OP-03 | Asistente solo opera tareas propias; columna Asistente fija a su código. Supervisor: columna Asistente editable con cualquier asistente activo/usable. |
 | R-OP-04 | Filtro de fechas obligatorio antes de listar; **default al abrir = día del sistema**. |
-| R-OP-05 | `duracion_minutos` > 0, múltiplo del tramo (`PQ_PARAMETROS_GRAL`, default 15), ≤ 1440. UI = tramos + editable. |
+| R-OP-05 | `duracion_minutos` > 0, múltiplo del tramo (`PQ_PARAMETROS_GRAL`, default 15), ≤ 1440. UI = selector tramos en `hh:mm`. |
+| R-OP-05c | Grilla: Cliente y Tipo de tarea = descripción; códigos opcionales en column chooser. |
+| R-OP-05d | Grilla: Sin cargo y Presencial disponibles. |
+| R-OP-05e | Grilla: duración en `hh:mm`; sumatoria horas decimales; API en minutos. |
 | R-OP-05b | Listado: paginación estándar DevExtreme. |
 | R-OP-06 | `observacion` obligatoria (no blank). |
 | R-OP-07 | Cliente/tipo usables; tipo ∈ universo del cliente (SPEC-003). Cambio cliente fuera de universo → limpiar tipo; vacío no grabable. |
@@ -102,7 +105,8 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 - [ ] **CA-01** Asistente no supervisor lista solo sus tareas; columna Asistente fija a su código/nombre; no puede crear ni persistir con otro `usuario_id` (403 en API).
 - [ ] **CA-02** Supervisor ve columna Asistente editable y puede asignar cualquier asistente activo y usable (`activo = 1`, `inhabilitado = 0`).
 - [ ] **CA-03** Cliente autenticado recibe 403 en APIs de carga y no ve menú/ruta de carga diaria.
-- [ ] **CA-04** Alta rechaza duración no múltiplo del tramo (default 15), 0 y >1440; acepta p. ej. 15, 60, 1440 con tramo 15. UI = tramos + editable; grilla con paginación DevExtreme.
+- [ ] **CA-04** Alta rechaza duración no múltiplo del tramo (default 15), 0 y >1440; acepta p. ej. 15, 60, 1440 con tramo 15. UI = selector tramos en `hh:mm`; grilla con paginación DevExtreme.
+- [ ] **CA-04b** Grilla muestra descripción de Cliente y Tipo de tarea; columnas Sin cargo y Presencial disponibles; duración en `hh:mm` con sumatoria en horas decimales.
 - [ ] **CA-05** Alta rechaza observación vacía o solo whitespace; rechaza cliente/tipo inhabilitados o tipo fuera del universo del cliente.
 - [ ] **CA-06** Fecha de negocio futura muestra advertencia confirmable y permite completar el alta/edición.
 - [ ] **CA-07** Tarea con `cerrado = 1` no se edita ni elimina en flujo ordinario; supervisor puede cerrar y reabrir una fila mediante acción explícita.
@@ -187,7 +191,8 @@ Feature: Carga diaria de tareas Partes
 - Al cambiar cliente en edición: ~~pendiente~~ → **cerrado:** limpiar tipo si no está en el nuevo universo; no grabar con tipo (ni otros obligatorios) vacíos. `sin_cargo`/`presencial` default `0`.
 - Contrato mínimo del complemento IA: ~~pendiente~~ → **cerrado:** fuera del MVP de carga; evolutivo posterior.
 - Paginación vs scroll: ~~pendiente~~ → **cerrado:** paginación estándar DevExtreme.
-- Presentación UI de `duracion_minutos`: ~~pendiente~~ → **cerrado:** tramos + editable; tramo = param `PQ_PARAMETROS_GRAL` (clave p. ej. `PartesDuracionTramoMin`, default **15**); persiste minutos.
+- Presentación UI de `duracion_minutos`: ~~pendiente~~ → **cerrado:** selector de tramos en **`hh:mm`**; tramo = param `PQ_PARAMETROS_GRAL` (clave p. ej. `PartesDuracionTramoMin`, default **15**); persiste minutos; grilla expone horas decimales para sumatoria y muestra celdas en `hh:mm`.
+- Presentación Cliente / Tipo / bits en grilla: ~~pendiente~~ → **cerrado:** descripción de cliente y tipo; Sin cargo y Presencial disponibles; códigos opcionales vía column chooser.
 - Nombres de SP y clave param tramo: ~~pendiente~~ → **cerrado en [TR-004](../../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md)** (`PartesDuracionTramoMin`; `pq_sp_partes_tarea_*`).
 
 ---
@@ -218,3 +223,4 @@ Feature: Carga diaria de tareas Partes
 | 2026-07-30 | Batch: complemento IA fuera del MVP de carga diaria. |
 | 2026-07-30 | Batch: duración tramos+editable; tramo param GRAL default 15; paginación DX. |
 | 2026-07-30 | Parte C+C1: enlazada TR-004. |
+| 2026-07-31 | Grilla: descripción Cliente/Tipo; bits; duración hh:mm + sumatoria horas decimales. |

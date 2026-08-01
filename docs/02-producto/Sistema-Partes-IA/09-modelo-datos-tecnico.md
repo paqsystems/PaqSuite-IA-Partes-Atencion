@@ -164,7 +164,7 @@ Los vinculos con la identidad autenticable comun se expresan mediante `user_id` 
 ## Observaciones tecnicas relevantes
 
 - `PQ_PARTES_REGISTRO_TAREA` es la tabla de mayor sensibilidad funcional.
-- `duracion_minutos` se persiste como entero, aunque la experiencia de usuario pueda expresarlo con formatos mas amigables.
+- `duracion_minutos` se persiste como entero; la UI de carga diaria presenta y captura en **`hh:mm`**, y la grilla expone horas decimales (`duracionHoras`) solo para sumatoria DevExtreme.
 - `cerrado` pertenece al ciclo de vida de la tarea y no a una regla transversal de seguridad.
 - `is_generico` e `is_default` sostienen la semantica tecnica de seleccion de tipos de tarea.
 - La definicion conceptual adoptada exige un unico tipo de tarea por defecto y que ese tipo por defecto sea generico.

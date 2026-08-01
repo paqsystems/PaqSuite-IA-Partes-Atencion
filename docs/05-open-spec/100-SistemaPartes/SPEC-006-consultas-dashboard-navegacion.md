@@ -81,7 +81,7 @@ Menú/permisos Framework pueden ocultar pantallas; **no** sustituyen esta capa.
 | Cliente | Código + nombre |
 | Asistente | Código + nombre (cliente puede verlo; asistente propio puede ocultarse o mostrarse fijo) |
 | Tipo de tarea | Código + descripción |
-| Duración | Minutos o formato amigable |
+| Duración | Presentación **`hh:mm`** (API/persistencia en minutos) |
 | Sin cargo / Presencial | Marcas |
 | Cerrado | Estado |
 | Observación | Texto (truncar en grilla + detalle/tooltip) |
@@ -100,14 +100,16 @@ Al menos esa superficie debe permitir agregar tiempo / cantidad de tareas por:
 
 | Eje | Métrica mínima |
 |-----|----------------|
-| Cliente | Suma `duracion_minutos`, conteo tareas |
+| Cliente | Suma `duracion_minutos`, conteo tareas — UI suma/celda en **`hh:mm`** |
 | Asistente | Idem (cliente: eje asistente permitido dentro de su org) |
 | Tipo de tarea | Idem |
 | Fecha | Por día o por mes según **selector de granularidad** explícito (día / mes) del usuario |
 
 - Filtro de periodo obligatorio o con default = mes calendario actual.
+- **Presentación duración (cerrado 2026-07-31):** en consulta detallada, agrupadas, paquete de horas y dashboard, celdas/totales/tooltips de tiempo en **`hh:mm`** (coherente SPEC-004); API sigue en minutos.
 - **Web — Pivot:** en **todos** los procesos de menú tipo **Informes** que muestran grilla (consulta detallada y consultas agrupadas), la UI **ofrece PivotGrid** (modo/vista pivot disponible junto al patrón grilla Framework). No es “opcional por ruta”: si hay grilla de informe, hay pivot.
-- **Dashboard** (Inicio): no es proceso Informe con grilla de listado; no exige PivotGrid.
+- **Grilla de proceso:** toda grilla de listado/consulta web usa **`ProcessDataGrid`** (regla BASE 29): column chooser, plantillas/layouts, filtros, agrupación y totalizadores vienen **por el componente**, no se reimplementan por menú. `proceso` + `gridId` identifican la plantilla; no usar `DataGrid` crudo en pantallas de proceso.
+- **Dashboard** (Inicio): no es proceso Informe con grilla de listado; no exige PivotGrid (sí usa `ProcessDataGrid` en el top).
 - Mobile: sin pivot (SPEC-007).
 
 ### 4.4 Resultados vacíos
@@ -124,11 +126,13 @@ Al menos esa superficie debe permitir agregar tiempo / cantidad de tareas por:
 
 | Indicador | Descripción |
 |-----------|-------------|
-| Total tiempo del periodo | Suma `duracion_minutos` del universo del rol |
+| Total tiempo del periodo | Suma `duracion_minutos` del universo del rol; **UI:** presentación en **`hh:mm`** (API sigue en minutos) |
 | Cantidad de tareas | Conteo en el periodo |
-| Resumen principal | Asistente/supervisor: top por **cliente**; Cliente: top por **asistente** (default). Cantidad de ítems = parámetro `PQ_PARAMETROS_GRAL` clave **`PartesDashboardTopN`** (programa `Partes`; fijada en TR-006); **default 10**. |
+| Resumen principal | Asistente/supervisor: top por **cliente**; Cliente: top por **asistente** (default). Cantidad de ítems = parámetro `PQ_PARAMETROS_GRAL` clave **`PartesDashboardTopN`** (programa `Partes`; fijada en TR-006); **default 10**. Columna de tiempo del top en **`hh:mm`**. |
 
 Gráficos simples opcionales si no complican el MVP.
+
+**Presentación de duración (cerrado 2026-07-31):** coherente con carga diaria (SPEC-004): totales y columnas de tiempo del Dashboard en **`hh:mm`**; persistencia/API en minutos.
 
 #### Periodo
 
@@ -243,6 +247,9 @@ Gráficos simples opcionales si no complican el MVP.
 | 2026-07-30 | Batch HU: consultas agrupadas = una pantalla + selector de eje. |
 | 2026-07-30 | Batch HU: eje fecha = selector granularidad día/mes. |
 | 2026-07-30 | Enlace TR-006 (Parte C+C1); claves param `PartesDashboardTopN` / `PartesDashboardRefreshSeg`. |
+| 2026-07-31 | Dashboard: totales y top en presentación **`hh:mm`** (coherente SPEC-004; API minutos). |
+| 2026-07-31 | Informes (detalle, agrupadas, paquete horas): duración en **`hh:mm`** en grilla/pivot/totales/tooltip. |
+| 2026-07-31 | Grillas de Informes/Dashboard = **`ProcessDataGrid`** (plantillas y column chooser inherentes). |
 
 ---
 

@@ -23,7 +23,7 @@ Segun el rol del usuario, puede incluir elementos como:
 - cliente;
 - fecha;
 - tipo de tarea;
-- duracion;
+- duracion (presentacion en **`hh:mm`**; el valor tecnico permanece en minutos);
 - marcas funcionales;
 - descripcion.
 
@@ -37,6 +37,8 @@ El modulo debe ofrecer lecturas agrupadas de la dedicacion, al menos sobre ejes 
 - asistente;
 - tipo de tarea;
 - fecha.
+
+Las metricas de tiempo se presentan en **`hh:mm`**, coherente con carga diaria y dashboard.
 
 La finalidad de estas consultas no es solo listar tareas, sino ayudar a comprender patrones de dedicacion.
 
@@ -119,9 +121,9 @@ Su proposito es ofrecer una lectura rapida de la actividad relevante para el usu
 
 Como piso funcional, el dashboard deberia mostrar indicadores comprensibles como:
 
-- total de tiempo del periodo;
+- total de tiempo del periodo (presentacion en **`hh:mm`**; el dato tecnico sigue en minutos);
 - cantidad de tareas;
-- algun resumen principal por cliente o por asistente, segun el rol.
+- algun resumen principal por cliente o por asistente, segun el rol (columna de tiempo tambien en **`hh:mm`**).
 
 Puede incorporar graficos simples si aportan valor inmediato y no agregan complejidad desproporcionada.
 

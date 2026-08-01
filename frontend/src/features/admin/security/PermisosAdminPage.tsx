@@ -7,6 +7,8 @@ import { Popup } from 'devextreme-react/popup'
 import { confirm } from 'devextreme/ui/dialog'
 import { useTranslation } from 'react-i18next'
 import { resolveAuthMessage } from '../../auth/authMessages'
+import { getAuthToken } from '../../auth/authSessionStore'
+import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import {
   type AdminEmpresa,
   type AdminPermiso,
@@ -44,6 +46,7 @@ export function PermisosAdminPage() {
   const [empresas, setEmpresas] = useState<AdminEmpresa[]>([])
   const [roles, setRoles] = useState<AdminRol[]>([])
   const [rows, setRows] = useState<AdminPermiso[]>([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
   const [createForm, setCreateForm] = useState<CreateForm>(emptyCreate)
@@ -56,12 +59,17 @@ export function PermisosAdminPage() {
   const empresaMonoId = empresasActivas.length === 1 ? empresasActivas[0].id : null
 
   const load = useCallback(async () => {
+    setLoading(true)
     setError(null)
-    const result = await listAdminPermisos()
-    if (result.kind === 'ok') {
-      setRows(result.envelope.resultado.items ?? [])
-    } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+    try {
+      const result = await listAdminPermisos()
+      if (result.kind === 'ok') {
+        setRows(result.envelope.resultado.items ?? [])
+      } else if (result.kind === 'envelopeError') {
+        setError(resolveAuthMessage(result.envelope.respuesta))
+      }
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -483,6 +491,11 @@ export function PermisosAdminPage() {
         <ProcessDataGrid
           dataSource={rows}
           keyExpr="id"
+          loading={loading}
+          proceso="partes.admin.permisos"
+          gridId="permisos"
+          accessToken={getAuthToken()}
+          platform={buildAuthPlatformHeaders()}
           onCreate={openCreate}
           createHint={t('admin.common.add')}
           createTestId="admin.permisos.create"

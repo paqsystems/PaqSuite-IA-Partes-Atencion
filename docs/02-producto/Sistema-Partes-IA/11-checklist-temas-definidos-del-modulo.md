@@ -75,9 +75,10 @@
 - [x] Fecha de proceso o fecha funcional de la tarea
 - [x] Regla de cliente
 - [x] Regla de tipo de tarea
-- [x] Regla de duracion *(tramo param GRAL default 15; UI tramos + editable; paginación DX en carga web)*
+- [x] Regla de duracion *(tramo param GRAL default 15; UI selector `hh:mm`; grilla hh:mm + sumatoria horas decimales; paginación DX en carga web)*
 - [x] Regla de observacion
-- [x] Regla de marcas funcionales
+- [x] Regla de marcas funcionales *(Sin cargo / Presencial visibles en grilla de carga diaria)*
+- [x] Presentacion grilla carga: Cliente y Tipo = descripcion (codigos opcionales en chooser)
 - [x] Estado `cerrado`
 - [x] Edicion y eliminacion segun rol y estado
 - [x] Complemento por IA en la carga *(definido como **fuera del MVP**; evolutivo — ver checklist Evolución)*
@@ -95,8 +96,9 @@
 
 ## Consultas y analitica
 
-- [x] Consulta detallada de tareas
-- [x] Consultas agrupadas
+- [x] Consulta detallada de tareas *(duración UI `hh:mm`)*
+- [x] Consultas agrupadas *(totales tiempo UI `hh:mm`)*
+- [x] Paquete de horas *(totales/grillas/chart tooltip en `hh:mm`)*
 - [x] Restricciones por perfil en consultas
 - [x] Resultados vacios con acciones deshabilitadas
 - [x] Reutilizacion de grillas del framework

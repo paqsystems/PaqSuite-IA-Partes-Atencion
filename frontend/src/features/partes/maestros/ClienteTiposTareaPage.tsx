@@ -6,6 +6,8 @@ import SelectBox from 'devextreme-react/select-box'
 import { Popup } from 'devextreme-react/popup'
 import { confirm } from 'devextreme/ui/dialog'
 import { resolveAuthMessage } from '../../auth/authMessages'
+import { getAuthToken } from '../../auth/authSessionStore'
+import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import {
   deletePartesResource,
   listCatalogo,
@@ -15,6 +17,7 @@ import {
 
 export function ClienteTiposTareaPage() {
   const [rows, setRows] = useState<Record<string, unknown>[]>([])
+  const [loading, setLoading] = useState(true)
   const [clientes, setClientes] = useState<Record<string, unknown>[]>([])
   const [tipos, setTipos] = useState<Record<string, unknown>[]>([])
   const [formOpen, setFormOpen] = useState(false)
@@ -23,12 +26,17 @@ export function ClienteTiposTareaPage() {
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
+    setLoading(true)
     setError(null)
-    const result = await listPartesResource('cliente-tipos-tarea')
-    if (result.kind === 'ok') {
-      setRows(result.envelope.resultado.items ?? [])
-    } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+    try {
+      const result = await listPartesResource('cliente-tipos-tarea')
+      if (result.kind === 'ok') {
+        setRows(result.envelope.resultado.items ?? [])
+      } else if (result.kind === 'envelopeError') {
+        setError(resolveAuthMessage(result.envelope.respuesta))
+      }
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -85,6 +93,11 @@ export function ClienteTiposTareaPage() {
         <ProcessDataGrid
           dataSource={rows}
           keyExpr="id"
+          loading={loading}
+          proceso="partes.maestros.clienteTiposTarea"
+          gridId="asignaciones"
+          accessToken={getAuthToken()}
+          platform={buildAuthPlatformHeaders()}
           onCreate={() => setFormOpen(true)}
           createHint="Agregar"
           createTestId="partesMaestrosAsignacionesAdd"

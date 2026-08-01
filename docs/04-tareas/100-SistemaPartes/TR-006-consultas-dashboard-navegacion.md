@@ -126,11 +126,12 @@ Errores: 422 fechas faltantes / eje inválido / granularidad faltante; empty = *
 
 | Pieza | Detalle |
 |-------|---------|
-| Dashboard | Ruta `/partes`; indicadores; top N; DateBox mes/rango; botón refresh; timer; **sin** Pivot |
-| Consulta detallada | `/partes/informes/consulta-detallada`; DataGrid + toggle Pivot; filtros; empty i18n; **solo lectura** (sin row actions de edición) |
-| Consultas agrupadas | `/partes/informes/consultas-agrupadas`; SelectBox eje; si fecha → SelectBox día/mes; grilla agregada + Pivot; empty i18n |
+| Consulta detallada | `/partes/informes/consulta-detallada`; **`ProcessDataGrid`** (plantillas + column chooser inherentes) + toggle Pivot; filtros; empty i18n; duración en **`hh:mm`**; **solo lectura** |
+| Consultas agrupadas | `/partes/informes/consultas-agrupadas`; selector eje + granularidad fecha; **`ProcessDataGrid`** + Pivot; `totalMinutos` en **`hh:mm`** |
+| Paquete de horas | Totales, **`ProcessDataGrid`** por cliente/tipo y tooltip/eje del chart en **`hh:mm`** |
+| Dashboard | Ruta `/partes`; indicadores; top N en **`ProcessDataGrid`**; DateBox mes; botón refresh; timer; totales en **`hh:mm`**; **sin** Pivot |
 | Post-login | Redirect a `/partes` |
-| Layouts | Persistentes GEN si pantalla soporta |
+| Layouts | Via **`ProcessDataGrid`** (`proceso` + `gridId`); no redefinir chooser/plantillas por menú |
 | testids | `partesDashboardRoot`, `partesDashboardRefresh`, `partesConsultaDetalladaGrid`, `partesConsultaAgrupadaEje`, `partesInformePivotToggle`, … |
 | i18n | `partes.consulta.*`, `partes.dashboard.*`, `partes.consulta.empty` |
 | Mobile | Rutas informes/dashboard: comportamiento native en TR-007 (sin pivot; sin auto-timer) |
@@ -212,6 +213,9 @@ Errores: 422 fechas faltantes / eje inválido / granularidad faltante; empty = *
 |-------|--------|
 | 2026-07-30 | Parte C + C1: TR consultas/dashboard/navegación; params/SP/rutas/pivot/fechas cerrados. |
 | 2026-07-30 | Parte D: informes/dashboard API, menú Inicio/Informes, FE 3 pantallas + pivot + post-login `/partes`, Feature OK. |
+| 2026-07-31 | Dashboard FE: total y columna top en `hh:mm` (`formatMinutosAsHhMm`). |
+| 2026-07-31 | Informes FE: detalle/agrupadas/paquete horas — duración en `hh:mm`. |
+| 2026-07-31 | Informes/Dashboard: grillas migradas a `ProcessDataGrid` (plantillas + column chooser inherentes; sin DataGrid ad hoc). |
 
 ---
 

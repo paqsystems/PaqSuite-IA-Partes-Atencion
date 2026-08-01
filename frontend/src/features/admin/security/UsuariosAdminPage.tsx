@@ -8,6 +8,8 @@ import { Popup } from 'devextreme-react/popup'
 import { confirm } from 'devextreme/ui/dialog'
 import { useTranslation } from 'react-i18next'
 import { resolveAuthMessage } from '../../auth/authMessages'
+import { getAuthToken } from '../../auth/authSessionStore'
+import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import {
   type AdminUsuario,
   createAdminUsuario,
@@ -37,18 +39,24 @@ const emptyForm: FormState = {
 export function UsuariosAdminPage() {
   const { t } = useTranslation()
   const [rows, setRows] = useState<AdminUsuario[]>([])
+  const [loading, setLoading] = useState(true)
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [form, setForm] = useState<FormState>(emptyForm)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
+    setLoading(true)
     setError(null)
-    const result = await listAdminUsuariosFull('0')
-    if (result.kind === 'ok') {
-      setRows(result.envelope.resultado.items ?? [])
-    } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+    try {
+      const result = await listAdminUsuariosFull('0')
+      if (result.kind === 'ok') {
+        setRows(result.envelope.resultado.items ?? [])
+      } else if (result.kind === 'envelopeError') {
+        setError(resolveAuthMessage(result.envelope.respuesta))
+      }
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -134,6 +142,11 @@ export function UsuariosAdminPage() {
         <ProcessDataGrid
           dataSource={rows}
           keyExpr="id"
+          loading={loading}
+          proceso="partes.admin.usuarios"
+          gridId="usuarios"
+          accessToken={getAuthToken()}
+          platform={buildAuthPlatformHeaders()}
           onCreate={openCreate}
           createHint={t('admin.common.add')}
           createTestId="adminUsuariosAdd"

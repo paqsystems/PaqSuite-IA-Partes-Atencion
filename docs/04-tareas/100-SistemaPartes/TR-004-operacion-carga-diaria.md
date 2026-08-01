@@ -125,8 +125,8 @@ Documentar paths + 403/409/422 + `resultado.partes` no aplica aquí.
 | Ruta | `/partes/carga-diaria` |
 | Menú | Partes → Carga diaria (asistente + supervisor; no cliente) |
 | Filtros | Fechas (default hoy), cliente opcional, asistente (solo supervisor), estado cerrado (default todas) |
-| Grid | DX DataGrid paginado; filas `cerrado` read-only; inline/modal edición según patrón DX del repo |
-| Duración | Select tramos (N, 2N, …) + NumberBox editable; valida múltiplo |
+| Grid | DX ProcessDataGrid paginado; Cliente/Tipo = descripción; Sin cargo/Presencial visibles; duración celda `hh:mm` + campo `duracionHoras` (decimal) con sumatoria; códigos/minutos ocultos por defecto (chooser); filas `cerrado` read-only |
+| Duración | SelectBox de tramos etiquetados `hh:mm` (`value` = minutos); valida múltiplo del tramo |
 | Alta | Defaults bits false; tipo default del universo si existe |
 | Cambio cliente | Limpia tipo si no ∈ universo; mensaje i18n |
 | Fecha futura | Confirm dialog → re-POST con flag |
@@ -159,7 +159,7 @@ IA: no UI.
 | Capa | Casos |
 |------|--------|
 | Feature | Asistente 403 otro owner; cliente 403; duración; universo; cerrado; 409; setCerrado no asistente |
-| Vitest | Múltiplo tramo; limpiar tipo |
+| Vitest | Múltiplo tramo; formato `hh:mm`; horas decimales; limpiar tipo |
 | E2E | Abrir carga (fechas hoy) + alta mínima OK |
 
 ---
@@ -216,6 +216,7 @@ IA: no UI.
 |-------|--------|
 | 2026-07-30 | Parte C + C1: TR carga diaria; param/SP/409/fecha futura cerrados. |
 | 2026-07-30 | Parte D: Operations `tarea_*`, API `/partes/tareas`, param tramo, menú Carga diaria, FE grilla+modal, Feature+Vitest OK. SP T-SQL follow-up gateway. |
+| 2026-07-31 | FE grilla: descripción Cliente/Tipo; Sin cargo/Presencial; duración `hh:mm` + sumatoria `duracionHoras`; Vitest helpers duración. |
 
 ---
 

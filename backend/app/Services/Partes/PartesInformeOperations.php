@@ -64,34 +64,35 @@ final class PartesInformeOperations
 
         $q = self::baseFiltered($params, $fechaDesde, $fechaHasta);
 
+        $aggSelect = [
+            DB::raw('SUM(r.duracion_minutos) as total_minutos'),
+            DB::raw('COUNT(r.id) as cantidad_tareas'),
+            DB::raw('SUM(CASE WHEN r.sin_cargo = 1 THEN 1 ELSE 0 END) as cantidad_sin_cargo'),
+            DB::raw('SUM(CASE WHEN r.presencial = 1 THEN 1 ELSE 0 END) as cantidad_presencial'),
+        ];
+
         $rows = match ($eje) {
             'cliente' => $q->groupBy('c.id', 'c.code', 'c.nombre')
                 ->orderBy('c.code')
-                ->get([
+                ->get(array_merge([
                     'c.id as eje_key',
                     'c.code as eje_codigo',
                     'c.nombre as eje_descripcion',
-                    DB::raw('SUM(r.duracion_minutos) as total_minutos'),
-                    DB::raw('COUNT(r.id) as cantidad_tareas'),
-                ]),
+                ], $aggSelect)),
             'asistente' => $q->groupBy('u.id', 'u.code', 'u.nombre')
                 ->orderBy('u.code')
-                ->get([
+                ->get(array_merge([
                     'u.id as eje_key',
                     'u.code as eje_codigo',
                     'u.nombre as eje_descripcion',
-                    DB::raw('SUM(r.duracion_minutos) as total_minutos'),
-                    DB::raw('COUNT(r.id) as cantidad_tareas'),
-                ]),
+                ], $aggSelect)),
             'tipo' => $q->groupBy('t.id', 't.code', 't.descripcion')
                 ->orderBy('t.code')
-                ->get([
+                ->get(array_merge([
                     't.id as eje_key',
                     't.code as eje_codigo',
                     't.descripcion as eje_descripcion',
-                    DB::raw('SUM(r.duracion_minutos) as total_minutos'),
-                    DB::raw('COUNT(r.id) as cantidad_tareas'),
-                ]),
+                ], $aggSelect)),
             default => self::agruparPorFecha($q, $granularidad),
         };
 
@@ -103,6 +104,8 @@ final class PartesInformeOperations
                 'eje_descripcion' => (string) ($row->eje_descripcion ?? ''),
                 'total_minutos' => (int) $row->total_minutos,
                 'cantidad_tareas' => (int) $row->cantidad_tareas,
+                'cantidad_sin_cargo' => (int) ($row->cantidad_sin_cargo ?? 0),
+                'cantidad_presencial' => (int) ($row->cantidad_presencial ?? 0),
             ];
         }
 
@@ -246,6 +249,8 @@ final class PartesInformeOperations
                 DB::raw("$expr as eje_descripcion"),
                 DB::raw('SUM(r.duracion_minutos) as total_minutos'),
                 DB::raw('COUNT(r.id) as cantidad_tareas'),
+                DB::raw('SUM(CASE WHEN r.sin_cargo = 1 THEN 1 ELSE 0 END) as cantidad_sin_cargo'),
+                DB::raw('SUM(CASE WHEN r.presencial = 1 THEN 1 ELSE 0 END) as cantidad_presencial'),
             ]);
     }
 

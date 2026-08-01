@@ -1,4 +1,3 @@
-import config from 'devextreme/core/config'
 import type { ReactNode } from 'react'
 import { useLayoutEffect } from 'react'
 import { getAuthSession } from '../../features/auth/authSessionStore'
@@ -12,15 +11,12 @@ import '../../theme/dxIconsFix.css'
 import '../../theme/shellAppearanceBridge.css'
 
 /**
- * Licencia DX + tema inicial (layout effect: antes del paint de hijos).
+ * Tema inicial DevExtreme (layout effect: antes del paint de hijos).
+ * Licencia: `src/init-devextreme-license.ts` (importado primero en `main.tsx`).
  * Prioridad: preview pendiente (Aplicar con reload) → sesión empresa → generic.light.
  */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   useLayoutEffect(() => {
-    config({
-      licenseKey: import.meta.env.VITE_DEVEXTREME_LICENSE ?? '',
-    })
-
     const pendingTheme = consumePendingEmpresaTheme()
     if (pendingTheme) {
       void applyDevExtremeTheme(pendingTheme, { reloadOnGroupChange: false })

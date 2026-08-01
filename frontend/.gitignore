@@ -23,3 +23,4 @@ public/dx-themes
 *.njsproj
 *.sln
 *.sw?
+src/devextreme-license-generated.ts
