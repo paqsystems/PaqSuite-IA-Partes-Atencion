@@ -39,6 +39,8 @@ export function ClientesPage() {
     },
     { key: 'userId', label: 'Acceso usuario', type: 'user' },
     { key: 'email', label: 'Email', type: 'text' },
+    { key: 'erpCliente', label: 'Erp Cliente', type: 'text', maxLength: 15 },
+    { key: 'erpArticulo', label: 'Erp Articulo', type: 'text', maxLength: 15 },
     { key: 'activo', label: 'Activo', type: 'check' },
   ]
 
@@ -51,6 +53,8 @@ export function ClientesPage() {
         { dataField: 'code', caption: 'Código' },
         { dataField: 'nombre', caption: 'Nombre' },
         { dataField: 'tipoClienteCode', caption: 'Tipo' },
+        { dataField: 'erpCliente', caption: 'Erp Cliente' },
+        { dataField: 'erpArticulo', caption: 'Erp Articulo' },
         { dataField: 'activo', caption: 'Activo' },
       ]}
       fields={fields}
@@ -60,6 +64,8 @@ export function ClientesPage() {
         tipoClienteId: null,
         userId: null,
         email: '',
+        erpCliente: '',
+        erpArticulo: '',
         activo: true,
       }}
     />

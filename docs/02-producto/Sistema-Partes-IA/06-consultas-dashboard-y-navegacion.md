@@ -27,6 +27,13 @@ Segun el rol del usuario, puede incluir elementos como:
 - marcas funcionales;
 - descripcion.
 
+Tambien incluye, cuando existan en el maestro de clientes, las referencias ERP del cliente de la fila:
+
+- **Erp Cliente** (`erpCliente` / `erp_cliente`);
+- **Erp Articulo** (`erpArticulo` / `erp_articulo`).
+
+Estas columnas estan disponibles en **grilla y pivot** de la consulta detallada.
+
 Su finalidad es permitir lectura directa del trabajo realizado, sin perder trazabilidad del registro original.
 
 **Filtro `es_tarea`:** la consulta detallada, las consultas agrupadas y el dashboard **solo consideran** registros con `es_tarea = true` (tareas de carga). Las compras de horas quedan fuera de estas vistas.
@@ -39,6 +46,8 @@ El modulo debe ofrecer lecturas agrupadas de la dedicacion, al menos sobre ejes 
 - asistente;
 - tipo de tarea;
 - fecha.
+
+Las consultas agrupadas (grilla y pivot) deben poder incorporar las referencias ERP del cliente (**Erp Cliente**, **Erp Articulo**) como atributos disponibles, en particular cuando el analisis involucra al cliente.
 
 Las metricas de tiempo se presentan en **`hh:mm`**, coherente con carga diaria y dashboard.
 

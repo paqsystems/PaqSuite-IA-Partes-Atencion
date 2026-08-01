@@ -9,8 +9,8 @@
 | **Roles** | Operador con permiso menú Archivos (seed: admin/PQ + rol SUPERVISOR); **no** cliente funcional |
 | **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md), [TR-002](./TR-002-identidad-funcional-y-acceso.md); lookup GEN `GET /api/v1/admin/usuarios` (o implementar lookup si aún no existe en host) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Pendiente (D implementado — verificar F1) |
-| **Última actualización** | 2026-07-30 (D) |
+| **Estado** | Finalizado |
+| **Última actualización** | 2026-08-01 |
 
 **Origen:** [HU-003](../../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md)  
 **Referencia SPEC:** [SPEC-003](../../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md)  
@@ -30,6 +30,7 @@ Maestros y catálogos del módulo Sistema Partes
 - Seed menú Archivos + rutas FE; denegar cliente funcional y mobile.
 - SP MUST; reutilizar `pq_sp_partes_assert_user_id_exclusividad` y `pq_sp_partes_tipos_tarea_marcar_default` (TR-001).
 - Lookup users PedidosWeb + `soloActivos`.
+- **(CC-PQ #2, 01/08)** Maestro clientes: capturar/mostrar `erpCliente` / `erpArticulo` (máx. 15) en API (map/upsert) y UI (columnas + formulario).
 
 ### Out of scope
 - DDL tablas; gate login; carga/consultas; reinventar ABM users/roles (usar menú Seguridad GEN existente/patrón Framework); Excel; mobile ABM.
@@ -53,6 +54,7 @@ Maestros y catálogos del módulo Sistema Partes
 | AC-10 | Sin menú/ruta maestros para `tipoFuncional=cliente` ni native |
 | AC-11 | Lookup `GET /api/v1/admin/usuarios?soloActivos=1\|0` (default UI `1`) |
 | AC-12 | Cambio `userId` asistente que deja al anterior sin vínculo → confirm UI antes de guardar |
+| AC-13 | Clientes: `erpCliente` / `erpArticulo` persisten en list/get/upsert; visibles en listado y modal; valor > 15 caracteres → 422 |
 
 ### Gherkin
 Heredar HU-003; añadir escenario AC-05b y AC-12.
@@ -185,7 +187,7 @@ Actualizar paths anteriores + matriz permisos menú Archivos Partes.
 | Feature | Ruta | Notas |
 |---------|------|-------|
 | Asistentes | `/archivos/partes/asistentes` | Grilla+modal; SelectBox users (`soloActivos`); warn confirm cambio `userId` |
-| Clientes | `/archivos/partes/clientes` | Acciones Habilitar/Revocar acceso + campo modal |
+| Clientes | `/archivos/partes/clientes` | Acciones Habilitar/Revocar acceso + campo modal; columnas y campos `erpCliente` / `erpArticulo` (maxLength 15) |
 | Tipos cliente | `/archivos/partes/tipos-cliente` | |
 | Tipos tarea | `/archivos/partes/tipos-tarea` | Checkbox default → SP; bloquear inhabilitar default |
 | Asignaciones | `/archivos/partes/cliente-tipos-tarea` | Selector tipos no genéricos |
@@ -209,8 +211,10 @@ Filtrar menú: no mostrar ítems Archivos Partes si `resultado.partes.tipoFuncio
 | T5 | Frontend | Acciones acceso cliente; filtro menú cliente | AC-03,10 | M |
 | T6 | Tests | Feature API por entidad crítica + exclusividad + default + universo; E2E humo 1 ABM | Suite | L |
 | T7 | Docs | OpenAPI + checklist revocación | | S |
+| T8 | Backend | Clientes: mapRow/upsert `erpCliente`/`erpArticulo` + validación max 15 (CC-PQ #2) | AC-13 | M |
+| T9 | Frontend | Maestro clientes: columnas + campos formulario ERP (CC-PQ #2) | AC-13 | M |
 
-**Orden:** T0 → T1 → T2 → T3 → T4/T5 → T6 → T7.
+**Orden:** T0 → T1 → T2 → T3 → T4/T5 → T6 → T7; T8/T9 en CC-PQ #2 (dependen de TR-001 con columnas ERP).
 
 ---
 
@@ -237,7 +241,7 @@ Filtrar menú: no mostrar ítems Archivos Partes si `resultado.partes.tipoFuncio
 
 ## 10) Checklist final
 
-- [ ] AC-01…12  
+- [ ] AC-01…13  
 - [ ] SP + menú + APIs + FE  
 - [ ] Lookup users  
 - [ ] Tests + OpenAPI  
@@ -282,6 +286,8 @@ Filtrar menú: no mostrar ítems Archivos Partes si `resultado.partes.tipoFuncio
 |-------|--------|
 | 2026-07-30 | Parte C + C1: TR creada; `soloActivos`; universo con `clienteId` obligatorio; criterio users usable. |
 | 2026-07-30 | Parte D: API maestros (Operations + SpCaller), lookup usuarios, menú Archivos, 5 ABM FE, deny cliente/native, Feature tests OK. Nota: SP T-SQL maestros = follow-up gateway; runtime MONO vía Operations. |
+| 2026-08-01 | CC-PQ #2 (01/08/2026): maestro clientes captura/muestra `erpCliente` / `erpArticulo` (AC-13, T8/T9); [D-VERIFICACION-CC-PQ-02](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md). |
+| 2026-08-01 | Parte I: fusionado TR-003-update (CC-PQ #2, 01/08) en esta TR; update eliminado. Estado → Finalizado. |
 
 ---
 

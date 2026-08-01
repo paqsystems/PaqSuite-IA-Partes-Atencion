@@ -143,6 +143,46 @@ class ApiV1PartesMaestrosTest extends TestCase
         $this->assertTrue($codes->contains('GEN'));
     }
 
+    public function test_cliente_erp_campos_crud_y_validacion(): void
+    {
+        $token = $this->loginAdmin();
+        $tipoId = DB::table('PQ_PARTES_TIPOS_CLIENTE')->insertGetId([
+            'code' => 'TCE',
+            'descripcion' => 'ERP',
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $create = $this->postJson('/api/v1/partes/clientes', [
+            'code' => 'CERP',
+            'nombre' => 'Cliente ERP',
+            'tipoClienteId' => $tipoId,
+            'erpCliente' => 'CLI-001',
+            'erpArticulo' => 'ART-99',
+        ], $this->authHeaders($token));
+        $create->assertStatus(201)
+            ->assertJsonPath('resultado.item.erpCliente', 'CLI-001')
+            ->assertJsonPath('resultado.item.erpArticulo', 'ART-99');
+        $id = (int) $create->json('resultado.item.id');
+
+        $list = $this->getJson('/api/v1/partes/clientes?code=CERP', $this->authHeaders($token));
+        $list->assertStatus(200);
+        $item = collect($list->json('resultado.items'))->firstWhere('id', $id);
+        $this->assertSame('CLI-001', $item['erpCliente'] ?? null);
+        $this->assertSame('ART-99', $item['erpArticulo'] ?? null);
+
+        $tooLong = $this->putJson("/api/v1/partes/clientes/{$id}", [
+            'code' => 'CERP',
+            'nombre' => 'Cliente ERP',
+            'tipoClienteId' => $tipoId,
+            'erpCliente' => '1234567890123456',
+        ], $this->authHeaders($token));
+        $tooLong->assertStatus(422)
+            ->assertJsonPath('respuesta', 'partes.maestros.validationFailed');
+    }
+
     public function test_cliente_funcional_forbidden_en_maestros(): void
     {
         $this->seed();

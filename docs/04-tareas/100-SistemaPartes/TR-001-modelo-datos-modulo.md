@@ -9,8 +9,8 @@
 | **Roles** | Implementación técnica (DBA / backend); sin UI de usuario final |
 | **Dependencias** | Esquema Framework mínimo (`users` y dependencias Sanctum) ya migrado |
 | **Clasificación** | HU COMPLEJA (DDL + integridad + seed + docs) |
-| **Estado** | En Control Calidad |
-| **Última actualización** | 2026-07-31 (Parte G / CC-PQ) |
+| **Estado** | Finalizado |
+| **Última actualización** | 2026-08-01 |
 
 **Origen:** [HU-001](../../03-historias-usuario/100-SistemaPartes/HU-001-modelo-datos-modulo.md)  
 **Referencia SPEC:** [SPEC-001](../../05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md)
@@ -41,6 +41,8 @@ Habilitar persistencia de dominio (asistentes, clientes, catálogos, tareas) con
 - Seed mínimo tipo default genérico (`code = GEN`).
 - Sync docs `md-sistema-partes.md` y `09-modelo-datos-tecnico.md`.
 - Tests de migración / integridad (PHPUnit Feature o equivalente).
+- **(CC-PQ #1, 31/07)** Columna `es_tarea` bit NOT NULL default 1 en `PQ_PARTES_REGISTRO_TAREA`; backfill existentes = 1; mapeo DTO `esTarea`.
+- **(CC-PQ #2, 01/08)** Columnas `erp_cliente` / `erp_articulo` `nvarchar(15)` NULL en `PQ_PARTES_CLIENTES`.
 
 ### Out of scope
 - UI, APIs de negocio de maestros/carga/consultas, gate `resultado.partes`, menú, mobile.
@@ -66,6 +68,8 @@ Habilitar persistencia de dominio (asistentes, clientes, catálogos, tareas) con
 | AC-09 | Docs de dominio no presentan `users.supervisor` como fuente de verdad |
 | AC-10 | `md-sistema-partes.md` y `09-modelo-datos-tecnico.md` alineados (incl. `row_version`, vínculo por `user_id`) |
 | AC-11 | `migrate:rollback` de las migraciones de este TR elimina tablas/objetos creados sin dejar huérfanos de FK Partes |
+| AC-12 | Migración `2026_08_01_100000_add_es_tarea_to_pq_partes_registro_tarea` agrega `es_tarea` bit NOT NULL default 1; registros existentes quedan con `es_tarea = 1`; mapeo API expone `esTarea` |
+| AC-13 | Migración `2026_08_01_100100_add_erp_fields_to_pq_partes_clientes` agrega `erp_cliente` / `erp_articulo` nvarchar(15) NULL |
 
 ### Escenarios Gherkin
 
@@ -103,6 +107,16 @@ Feature: Esquema PQ_PARTES_* (TR-001)
   Scenario: Seed tipo default
     Given se ejecutó el seeder Partes de TR-001
     Then existe al menos un "PQ_PARTES_TIPOS_TAREA" con "is_generico" = 1 e "is_default" = 1
+
+  Scenario: Migración agrega es_tarea con backfill
+    Given una base con registros existentes en "PQ_PARTES_REGISTRO_TAREA"
+    When se aplica la migración de "es_tarea"
+    Then la columna queda "bit NOT NULL" con default 1
+    And todos los registros existentes quedan con "es_tarea" = 1
+
+  Scenario: Migración agrega columnas ERP en clientes
+    When se aplica la migración de campos ERP
+    Then "PQ_PARTES_CLIENTES" tiene "erp_cliente" y "erp_articulo" como "nvarchar(15)" NULL
 ```
 
 ---
@@ -213,8 +227,11 @@ OpenAPI: sin cambio. Futuras APIs (TR-003+) consumirán este esquema.
 | T6 | Docs | Sync `md-sistema-partes.md` + `09-modelo-datos-tecnico.md` | AC-09, AC-10; diagrama con `row_version` | S |
 | T7 | Tests | Feature/integration PHPUnit: migrate schema, exclusividad, SP default, seed | Suite verde en CI local SQL Server (o skip documentado si no hay SQL Server en CI) | M |
 | T8 | DevOps | Nota deploy: `php artisan migrate --force` + seed Partes en runbook/PR | Aviso commit/versión listo | S |
+| T9 | DB | Migración `es_tarea` bit NOT NULL default 1 + backfill (CC-PQ #1) | AC-12; test Feature | S |
+| T10 | BE | Mapeo `esTarea` en DTO/`mapRow` de tareas | AC-12 | S |
+| T11 | DB | Migración `erp_cliente` / `erp_articulo` nvarchar(15) NULL (CC-PQ #2) | AC-13 | S |
 
-**Orden:** T1 → T2 → T3 → T4 → T5 → T7; T6 en paralelo tras T1; T8 al cerrar.
+**Orden:** T1 → T2 → T3 → T4 → T5 → T7; T6 en paralelo tras T1; T8 al cerrar; T9/T10 y T11 ejecutadas en CC-PQ #1 y #2 respectivamente, tras T1.
 
 ---
 
@@ -244,7 +261,7 @@ Datos de prueba: crear `users` temporales en el test; no depender de producción
 
 ## 10) Checklist final
 
-- [ ] AC-01…11 cumplidos
+- [ ] AC-01…13 cumplidos
 - [ ] Migración + rollback + seed
 - [ ] Triggers + SP desplegados
 - [ ] Feature tests OK
@@ -301,6 +318,9 @@ Datos de prueba: crear `users` temporales en el test; no depender de producción
 | 2026-07-30 | Parte C: TR creada desde SPEC-001 + HU-001. |
 | 2026-07-30 | C1: apto con observaciones; SP assert exclusividad; seed `GEN`; params SP fijos. |
 | 2026-07-30 | Parte D: migraciones 6 tablas + integridad; seeder GEN; docs `row_version`; tests Feature (+ verify sqlsrv). |
+| 2026-07-31 | CC-PQ #1 (31/07/2026): migración `2026_08_01_100000_add_es_tarea_to_pq_partes_registro_tarea` (AC-12, T9/T10); [D-VERIFICACION-CC-PQ-01](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md). |
+| 2026-08-01 | CC-PQ #2 (01/08/2026): migración `2026_08_01_100100_add_erp_fields_to_pq_partes_clientes` (AC-13, T11); [D-VERIFICACION-CC-PQ-02](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md). |
+| 2026-08-01 | Parte I: fusionados TR-001-update (CC-PQ #1, 31/07) y TR-001-update-01 (CC-PQ #2, 01/08) en esta TR; updates eliminados. Estado → Finalizado. |
 
 ---
 

@@ -41,6 +41,14 @@ export function buildConsultaDetalladaPivotFields(t: TFunction, locale = 'es') {
         caption: t('partes.informe.field.clienteNombre'),
       },
       {
+        dataField: 'erpCliente',
+        caption: t('partes.informe.field.erpCliente'),
+      },
+      {
+        dataField: 'erpArticulo',
+        caption: t('partes.informe.field.erpArticulo'),
+      },
+      {
         dataField: 'tipoTareaCode',
         caption: t('partes.informe.field.tipoTareaCode'),
         area: 'column' as const,
@@ -107,6 +115,14 @@ export function buildConsultaAgrupadaPivotFields(t: TFunction) {
     {
       dataField: 'ejeDescripcion',
       caption: t('partes.informe.field.ejeDescripcion'),
+    },
+    {
+      dataField: 'erpCliente',
+      caption: t('partes.informe.field.erpCliente'),
+    },
+    {
+      dataField: 'erpArticulo',
+      caption: t('partes.informe.field.erpArticulo'),
     },
     {
       dataField: 'diaSemana',

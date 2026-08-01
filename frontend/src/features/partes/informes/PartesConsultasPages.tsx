@@ -197,6 +197,8 @@ export function ConsultaDetalladaPage() {
             <Column dataField="usuarioCode" caption={t('partes.informe.field.usuarioCode')} />
             <Column dataField="usuarioNombre" caption={t('partes.informe.field.usuarioNombre')} />
             <Column dataField="clienteCode" caption={t('partes.informe.field.clienteCode')} />
+            <Column dataField="erpCliente" caption={t('partes.informe.field.erpCliente')} />
+            <Column dataField="erpArticulo" caption={t('partes.informe.field.erpArticulo')} />
             <Column dataField="tipoTareaCode" caption={t('partes.informe.field.tipoTareaCode')} />
             <Column
               dataField="tipoTareaDescripcion"
@@ -454,6 +456,8 @@ export function ConsultasAgrupadasPage() {
             <Pager visible showPageSizeSelector />
             <Column dataField="ejeCodigo" caption={t('partes.informe.field.ejeCodigo')} />
             <Column dataField="ejeDescripcion" caption={t('partes.informe.field.ejeDescripcion')} />
+            <Column dataField="erpCliente" caption={t('partes.informe.field.erpCliente')} />
+            <Column dataField="erpArticulo" caption={t('partes.informe.field.erpArticulo')} />
             <Column dataField="diaSemana" caption={t('partes.informe.field.diaSemana')} />
             <Column
               dataField="totalMinutos"

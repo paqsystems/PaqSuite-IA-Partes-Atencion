@@ -3,7 +3,7 @@ specId: SPEC-003
 titulo: Maestros y catálogos de Partes
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-07-31
+ultimaActualizacion: 2026-08-01
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md
 ---
 
@@ -30,6 +30,10 @@ Desde **Archivos** administrás los catálogos que alimentan la carga de partes:
 1. Abrí el cliente en Archivos.
 2. Asociá un usuario del sistema existente (habilitar acceso) o revocá el vínculo.
 3. El cliente como entidad de catálogo sigue existiendo aunque no tenga login.
+
+### Referencias ERP del cliente
+
+En el alta/edición de un cliente podés completar, de forma opcional, **Erp Cliente** y **Erp Articulo** (hasta 15 caracteres cada uno). Se usan para cruzar los informes del módulo con el sistema de facturación (ERP); no son obligatorios y se ven también en el listado.
 
 ### Tipos de tarea y asignaciones
 
@@ -69,6 +73,7 @@ Desde **Archivos** administrás los catálogos que alimentan la carga de partes:
 | Ya existe un registro con ese código | `partes.maestros.codeDuplicate` | Código repetido | Usar otro código |
 | Debe seleccionar un usuario Framework | `partes.maestros.userIdRequired` | Falta usuario de login | Elegir usuario del sistema |
 | Debe indicar el cliente | `partes.maestros.clienteIdRequired` | Falta cliente | Seleccionar cliente |
+| Erp Cliente / Erp Articulo supera el largo permitido | `partes.maestros.validationFailed` | Más de 15 caracteres | Acortar el valor a 15 caracteres o menos |
 
 ## Errores de lógica
 
@@ -101,3 +106,7 @@ Sí: puede figurar en catálogo y en partes; solo no ingresa a la aplicación.
 ### ¿Por qué no veo Archivos en el celular?
 
 Los maestros son solo web.
+
+### ¿Para qué sirven Erp Cliente y Erp Articulo?
+
+Son referencias opcionales al código del cliente y del artículo en el sistema ERP, para poder cruzar información en los informes de facturación. No afectan la operación normal del módulo si se dejan vacíos.

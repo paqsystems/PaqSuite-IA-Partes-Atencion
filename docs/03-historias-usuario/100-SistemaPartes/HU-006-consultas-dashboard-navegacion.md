@@ -8,8 +8,8 @@
 | Título | Consultas, dashboard y navegación del módulo |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-07-31 |
+| Estado | Finalizado |
+| Última actualización | 2026-08-01 |
 | SPEC origen | [SPEC-006-consultas-dashboard-navegacion](../../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) |
 | TR relacionada(s) | [TR-006-consultas-dashboard-navegacion](../../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) |
 
@@ -51,19 +51,20 @@ Tras registrar tareas (SPEC-004), el usuario necesita **lectura** de dedicación
 
 ## Alcance incluido
 
-- **Consulta detallada** de tareas (solo lectura): columnas mínimas §4.2 (fecha, cliente, asistente, tipo, duración, marcas sin cargo/presencial, cerrado, observación); filtros mínimos (rango de fechas recomendado/obligatorio, cliente, asistente solo supervisor, tipo, cerrado).
-- **Consultas agrupadas:** **una sola pantalla** con selector de eje (cliente / asistente / tipo de tarea / fecha); métricas mínimas: suma `duracion_minutos` y conteo de tareas (**UI en `hh:mm`**); filtro de periodo obligatorio o default = mes calendario actual; PivotGrid ofrecido (Informe con grilla).
+- **Consulta detallada** de tareas (solo lectura): columnas mínimas §4.2 (fecha, cliente, asistente, tipo, duración, marcas sin cargo/presencial, cerrado, observación, **Erp Cliente / Erp Articulo**); filtros mínimos (rango de fechas recomendado/obligatorio, cliente, asistente solo supervisor, tipo, cerrado). Solo registros con `esTarea = true`.
+- **Consultas agrupadas:** **una sola pantalla** con selector de eje (cliente / asistente / tipo de tarea / fecha); métricas mínimas: suma `duracion_minutos` y conteo de tareas (**UI en `hh:mm`**); filtro de periodo obligatorio o default = mes calendario actual; PivotGrid ofrecido (Informe con grilla); incluye **Erp Cliente / Erp Articulo** en grilla y pivot. Solo registros con `esTarea = true`.
+- **Informe Paquete de Horas** (cuenta corriente de horas por cliente): grilla/pivot con filtros `fechaDesde`/`fechaHasta`/cliente; **no** filtra por `esTarea` (incluye tareas y compras); mismos atributos que consulta detallada; fila sintética «Saldo inicial» (acumulado previo a `fechaDesde`: tarea suma, compra resta) y columna **Saldo** (running balance en grilla, excluida del pivot).
 - **Presentación duración:** Dashboard, consulta detallada, agrupadas y paquete de horas muestran tiempo en **`hh:mm`** (API en minutos).
 - **Delimitación por perfil** en todas las lecturas: cliente → solo su `cliente_id`; asistente no supervisor → solo su `usuario_id`; supervisor → universo ampliado.
 - **Experiencia de resultado vacío** clara (`partes.consulta.empty`); no confundir con error técnico.
-- **Dashboard MVP** web:
+- **Dashboard MVP** web (solo registros con `esTarea = true`):
   - indicadores: total tiempo del periodo, cantidad de tareas, resumen principal (asistente/supervisor: top por cliente; cliente: top por asistente);
   - cantidad de ítems del resumen = parámetro `PQ_PARAMETROS_GRAL` (default **10**);
   - periodo inicial = mes calendario del sistema;
   - refresco automático según parámetro en segundos (default **60**; `0` = desactivado) + botón manual; timer solo con dashboard visible;
   - destino post-login web = Dashboard Partes (Inicio).
-- **Navegación** vía entradas `pq_menus` + permisos; agrupación funcional sugerida §4.7 (Inicio, Archivos, Partes, Informes); perfil de solo lectura vía menú avatar (SPEC-002), sin ruta dedicada Must.
-- Reutilizar patrones Framework: DataGrid, layouts persistentes cuando apliquen; **PivotGrid ofrecido en todos los Informes web que muestran grilla** (detalle + agrupadas). Dashboard sin pivot obligatorio. Mobile sin pivot (SPEC-007).
+- **Navegación** vía entradas `pq_menus` + permisos; agrupación funcional sugerida §4.7 (Inicio, Archivos, Partes, Informes con Paquete de Horas); perfil de solo lectura vía menú avatar (SPEC-002), sin ruta dedicada Must.
+- Reutilizar patrones Framework: DataGrid, layouts persistentes cuando apliquen; **PivotGrid ofrecido en todos los Informes web que muestran grilla** (detalle + agrupadas + Paquete de Horas, este último sin el campo Saldo en el pivot). Dashboard sin pivot obligatorio. Mobile sin pivot (SPEC-007).
 - Acceso a datos vía stored procedures (R-CO-10).
 - i18n + `data-testid` en dashboard y consultas.
 
@@ -77,6 +78,8 @@ Tras registrar tareas (SPEC-004), el usuario necesita **lectura** de dedicación
 - BI avanzado, facturación, costeo.
 - Mobile kardex / exclusiones pivot (SPEC-007); este SPEC prioriza web.
 - Frecuencia de refresco parametrizable avanzada / excepciones por rol más allá del default MVP.
+- UI de alta de compras de horas (`esTarea = false`); proceso a definir.
+- Referencias ERP en Dashboard (no requerido); integración activa con ERP.
 
 ---
 
@@ -95,6 +98,9 @@ Tras registrar tareas (SPEC-004), el usuario necesita **lectura** de dedicación
 | R-CO-08 | Export Must fuera de MVP; si se habilite en el futuro, respeta universo + filtros. |
 | R-CO-09 | Web: PivotGrid **ofrecido** en todo proceso Informes con grilla (detalle + agrupadas). Dashboard sin pivot obligatorio. Mobile: sin pivot. |
 | R-CO-10 | Acceso a datos vía SP (MUST). |
+| R-CO-11 | Consulta detallada, agrupadas y dashboard: solo `esTarea = true`. |
+| R-CO-12 | Paquete de Horas **no** filtra por `esTarea` (incluye tareas y compras); fila «Saldo inicial» = movimientos con fecha &lt; `fechaDesde` (tarea suma, compra resta); columna Saldo = running balance en grilla, excluida del pivot; mismos atributos de detalle que consulta detallada; filtros periodo + cliente según rol. |
+| R-CO-13 | Consulta detallada y agrupada exponen `erpCliente` / `erpArticulo` en grilla y pivot; valores vacíos/NULL no rompen la consulta. |
 
 Visibilidad por rol en menú seed (orientativo): cliente sin Archivos ABM, sin carga, sin masivo; sí dashboard + informes de su org. Perfil vía avatar; no ítem de menú dedicado Must.
 
@@ -115,6 +121,10 @@ Visibilidad por rol en menú seed (orientativo): cliente sin Archivos ABM, sin c
 - [ ] **CA-11** Ítems de menú Partes provienen de API menú / `pq_menus` (seed documentado); FE no hardcodea árbol.
 - [ ] **CA-12** i18n + `data-testid` estables en dashboard y consultas.
 - [ ] **CA-13** Todo proceso web de tipo Informes que muestra grilla (consulta detallada y agrupadas) ofrece PivotGrid; el Dashboard no lo exige; en mobile no hay pivot.
+- [x] **CA-14** Detalle, agrupadas y dashboard excluyen registros con `esTarea = false`.
+- [x] **CA-15** Paquete de Horas incluye tareas y compras del periodo (sin filtrar por `esTarea`).
+- [x] **CA-16** Paquete de Horas muestra fila «Saldo inicial» con acumulado correcto (exclusive `fechaDesde`); columna Saldo corre en grilla; pivot no expone Saldo; filtro cliente disponible para asistente/supervisor.
+- [x] **CA-17** Consulta detallada muestra Erp Cliente y Erp Articulo en grilla y pivot; consulta agrupada los expone en grilla y pivot.
 
 ---
 
@@ -162,6 +172,23 @@ Feature: Consultas, dashboard y navegación Partes
     When el shell carga el menú
     Then los ítems del módulo provienen de la API / "pq_menus"
     And la agrupación funcional sigue el seed documentado (Inicio, Archivos, Partes, Informes)
+
+  Scenario: Informes y dashboard excluyen compras (es_tarea)
+    Given existen registros con "esTarea" = true y con "esTarea" = false en el periodo consultado
+    When un usuario consulta detalle, agrupadas o dashboard
+    Then solo se consideran los registros con "esTarea" = true
+
+  Scenario: Paquete de Horas como cuenta corriente
+    Given un cliente con tareas (consumo) y compras de horas (reposición) en distintas fechas
+    When un usuario consulta el Paquete de Horas con "fechaDesde" y "fechaHasta"
+    Then la primera fila es "Saldo inicial" con el acumulado de movimientos anteriores a "fechaDesde"
+    And cada fila siguiente muestra columna "Saldo" como saldo previo más o menos su duración según sea tarea o compra
+    And el pivot del Paquete de Horas no incluye el campo "Saldo"
+
+  Scenario: Referencias ERP visibles en informes
+    Given un cliente con "erpCliente" y "erpArticulo" cargados
+    When un usuario consulta detalle o agrupada
+    Then ve "Erp Cliente" y "Erp Articulo" disponibles en grilla y en pivot
 ```
 
 ---
@@ -210,3 +237,6 @@ Feature: Consultas, dashboard y navegación Partes
 | 2026-07-30 | Batch: consultas agrupadas = una pantalla + selector de eje. |
 | 2026-07-30 | Batch: eje fecha = selector granularidad día/mes. |
 | 2026-07-30 | Enlace TR-006 (Parte C+C1); preguntas param/SP/UI cerradas. |
+| 2026-07-31 | CC-PQ #1 (31/07/2026): detalle, agrupadas y dashboard filtran `esTarea = true` (CA-14, R-CO-11); nuevo Informe Paquete de Horas como cuenta corriente (CA-15/16, R-CO-12). |
+| 2026-08-01 | CC-PQ #2 (01/08/2026): consulta detallada y agrupada incorporan Erp Cliente / Erp Articulo en grilla y pivot (CA-17, R-CO-13). |
+| 2026-08-01 | Parte I: fusionados HU-006-update (CC-PQ #1, 31/07) y HU-006-update-01 (CC-PQ #2, 01/08) en esta HU; updates eliminados. Estado → Finalizado. |

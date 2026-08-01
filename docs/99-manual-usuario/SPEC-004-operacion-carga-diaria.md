@@ -3,7 +3,7 @@ specId: SPEC-004
 titulo: Carga diaria de tareas
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-07-31
+ultimaActualizacion: 2026-08-01
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md
 ---
 
@@ -38,6 +38,7 @@ En la grilla ves el **nombre del cliente** y la **descripción del tipo de tarea
 - Al cambiar de cliente, si el tipo ya no aplica se limpia y debés elegir otro.
 - Una tarea **cerrada** queda de solo lectura en el flujo ordinario.
 - Sin fechas en el filtro no se lista el histórico completo a ciegas.
+- Esta pantalla solo muestra y registra **tareas** (no incluye compras de horas del Paquete de Horas, que se consultan en Informes).
 
 ### Límites / cupos visibles al usuario
 

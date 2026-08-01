@@ -80,6 +80,8 @@ final class PartesMaestrosController extends Controller
             'nombre' => 'p_nombre',
             'email' => 'p_email',
             'tipoClienteId' => 'p_tipo_cliente_id',
+            'erpCliente' => 'p_erp_cliente',
+            'erpArticulo' => 'p_erp_articulo',
             'activo' => 'p_activo',
             'inhabilitado' => 'p_inhabilitado',
         ]);
@@ -93,6 +95,8 @@ final class PartesMaestrosController extends Controller
             'nombre' => 'p_nombre',
             'email' => 'p_email',
             'tipoClienteId' => 'p_tipo_cliente_id',
+            'erpCliente' => 'p_erp_cliente',
+            'erpArticulo' => 'p_erp_articulo',
             'activo' => 'p_activo',
             'inhabilitado' => 'p_inhabilitado',
         ]);

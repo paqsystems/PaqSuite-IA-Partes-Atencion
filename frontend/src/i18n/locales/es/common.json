@@ -111,6 +111,8 @@
   "partes.informe.field.usuarioNombre": "Asistente (nombre)",
   "partes.informe.field.clienteCode": "Cliente (código)",
   "partes.informe.field.clienteNombre": "Cliente (nombre)",
+  "partes.informe.field.erpCliente": "Erp Cliente",
+  "partes.informe.field.erpArticulo": "Erp Articulo",
   "partes.informe.field.tipoTareaCode": "Tipo de tarea (código)",
   "partes.informe.field.tipoTareaDescripcion": "Tipo de tarea",
   "partes.informe.field.duracion": "Duración",

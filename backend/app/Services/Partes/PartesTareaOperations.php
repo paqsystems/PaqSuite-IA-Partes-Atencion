@@ -703,6 +703,7 @@ final class PartesTareaOperations
             'r.es_tarea', 'r.row_version', 'r.created_at', 'r.updated_at',
             'u.code as usuario_code', 'u.nombre as usuario_nombre',
             'c.code as cliente_code', 'c.nombre as cliente_nombre',
+            'c.erp_cliente', 'c.erp_articulo',
             't.code as tipo_tarea_code', 't.descripcion as tipo_tarea_descripcion',
         ];
     }
@@ -730,6 +731,8 @@ final class PartesTareaOperations
             'usuario_nombre' => (string) $row->usuario_nombre,
             'cliente_code' => (string) $row->cliente_code,
             'cliente_nombre' => (string) $row->cliente_nombre,
+            'erp_cliente' => (string) ($row->erp_cliente ?? ''),
+            'erp_articulo' => (string) ($row->erp_articulo ?? ''),
             'tipo_tarea_code' => (string) $row->tipo_tarea_code,
             'tipo_tarea_descripcion' => (string) $row->tipo_tarea_descripcion,
             'created_at' => $row->created_at,

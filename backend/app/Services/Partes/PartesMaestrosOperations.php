@@ -165,6 +165,7 @@ final class PartesMaestrosOperations
         $total = (clone $q)->count();
         $rows = $q->orderBy('c.code')->forPage($page, $pageSize)->get([
             'c.id', 'c.user_id', 'c.code', 'c.nombre', 'c.email', 'c.tipo_cliente_id',
+            'c.erp_cliente', 'c.erp_articulo',
             't.code as tipo_cliente_code', 't.descripcion as tipo_cliente_descripcion',
             'c.activo', 'c.inhabilitado',
         ]);
@@ -198,6 +199,9 @@ final class PartesMaestrosOperations
         }
         self::assertUniqueCode('PQ_PARTES_CLIENTES', $code, $id);
 
+        $erpCliente = self::normalizeErpField($params['p_erp_cliente'] ?? null);
+        $erpArticulo = self::normalizeErpField($params['p_erp_articulo'] ?? null);
+
         $now = now();
         $payload = [
             'user_id' => $userId !== null && $userId !== '' ? (int) $userId : null,
@@ -205,6 +209,8 @@ final class PartesMaestrosOperations
             'nombre' => (string) ($params['p_nombre'] ?? ''),
             'email' => $params['p_email'] ?? null,
             'tipo_cliente_id' => $tipoClienteId,
+            'erp_cliente' => $erpCliente,
+            'erp_articulo' => $erpArticulo,
             'activo' => (bool) ($params['p_activo'] ?? true),
             'inhabilitado' => (bool) ($params['p_inhabilitado'] ?? false),
             'updated_at' => $now,
@@ -660,6 +666,19 @@ final class PartesMaestrosOperations
         }
 
         return [(object) ['deleted' => 1]];
+    }
+
+    private static function normalizeErpField(mixed $value): ?string
+    {
+        $trimmed = trim((string) ($value ?? ''));
+        if ($trimmed === '') {
+            return null;
+        }
+        if (mb_strlen($trimmed) > 15) {
+            self::fail('partes.maestros.validationFailed');
+        }
+
+        return $trimmed;
     }
 
     private static function fail(string $respuesta): never

@@ -33,7 +33,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | **A Programar** | Todas las entradas marcadas `*Procesado*`; pendiente cierre formal G/H |
 | **Especificado** | Parte G (o H) cerró el bloque: volcado documental completo; cola activa en `docs/.../updates/` — **no** implica código implementado ni **`Finalizado`** en metadatos de HU/TR |
 
-> El **Estado** bajo *Referencia del control* es independiente del **Estado** en metadatos de HU/TR ([`07-estado-hu-tr.md`](../../.cursor/rules/base/00-arquitectura/07-estado-hu-tr.md)).
+> El **Estado** bajo *Referencia del control* es independiente del **Estado** en metadatos de HU/TR ([`07-estado-hu-tr.md`](../../.cursor/rules/base/00-arquitectura/07-estado-hu-tr.md)). Tras **Parte I**, los originales unificados quedan en **Finalizado**; el CC permanece como referencia histórica.
 
 ## Flujo tras registrar un control
 
@@ -46,7 +46,43 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 
 | # | Fecha | Estado | Resumen |
 |---|-------|--------|---------|
-| 1 | 31/07/2026 | Especificado | `es_tarea` + filtros carga/masivo/informes + Paquete de Horas (cuenta corriente) |
+| 1 | 31/07/2026 | Especificado | `es_tarea` + Paquete de Horas — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md)) |
+| 2 | 01/08/2026 | Especificado | ERP clientes + informes — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md)) |
+
+---
+
+## Control de Calidad #2
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 01/08/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado |
+| **F1/F** | Aprobado 01/08/2026 → [D-VERIFICACION-CC-PQ-02](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md) |
+| **Parte I** | Unificado 01/08/2026 → originales [SPEC/HU/TR-001](../05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md), [003](../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md), [006](../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) |
+
+### Hallazgos
+
+Incorporar en los clientes dos atributos referidos al sistema ERP, para obtener informes para facturación.
+
+*Procesado* (unificado Parte I) → [SPEC-001](../05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md) · [HU-001](../03-historias-usuario/100-SistemaPartes/HU-001-modelo-datos-modulo.md) · [TR-001](../04-tareas/100-SistemaPartes/TR-001-modelo-datos-modulo.md) · [SPEC-003](../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) · [HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) · [TR-003](../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md)
+
+### Errores encontrados - Mejoras solicitadas
+
+#### Agregar atributo al maestro de Clientes
+
+*Procesado* (unificado Parte I) → [SPEC-001](../05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md) · [HU-001](../03-historias-usuario/100-SistemaPartes/HU-001-modelo-datos-modulo.md) · [TR-001](../04-tareas/100-SistemaPartes/TR-001-modelo-datos-modulo.md) · [SPEC-003](../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) · [HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) · [TR-003](../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md)
+
+Agregar dos atributos Erp_Cliente y Erp_Articulo, string de 15 caracteres cada uno, para poder referenciar atributos del ERP con el cual después se puedan hacer informes de facturación.
+
+#### Incorporar Atributos a Informes
+
+*Procesado* (unificado Parte I) → [SPEC-006](../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) · [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md)
+
+Incorporar ambos atributos en la consulta detallada y la consulta agrupada, tango en la grilla como en el pivot.
+
 
 ---
 
@@ -59,18 +95,20 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | **Fecha** | 31/07/2026 |
 | **Responsable** | Pablo Quarracino (PQ) |
 | **Estado** | Especificado |
+| **F1/F** | Aprobado 01/08/2026 → [D-VERIFICACION-CC-PQ-01](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md) |
+| **Parte I** | Unificado 01/08/2026 → originales [SPEC/HU/TR-001](../05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md), [004](../05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md), [005](../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md), [006](../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) |
 
 ### Hallazgos
 
 Poder llevar una cuenta corriente de horas para aquellos clientes que abonan por paquete anticipado
 
-*Procesado* → [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion-update.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-consultas-dashboard-navegacion-update.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-consultas-dashboard-navegacion-update.md) (incluido en rehacer Paquete de Horas)
+*Procesado* (unificado Parte I) → [SPEC-006](../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) · [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) (incluido en rehacer Paquete de Horas)
 
 ### Errores encontrados - Mejoras solicitadas
 
 #### Agregar atributo booleano "EsTarea"
 
-*Procesado* → [SPEC-001-update](../05-open-spec/updates/100-SistemaPartes/SPEC-001-modelo-datos-modulo-update.md) · [HU-001-update](../03-historias-usuario/updates/100-SistemaPartes/HU-001-modelo-datos-modulo-update.md) · [TR-001-update](../04-tareas/updates/100-SistemaPartes/TR-001-modelo-datos-modulo-update.md)
+*Procesado* (unificado Parte I) → [SPEC-001](../05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md) · [HU-001](../03-historias-usuario/100-SistemaPartes/HU-001-modelo-datos-modulo.md) · [TR-001](../04-tareas/100-SistemaPartes/TR-001-modelo-datos-modulo.md)
 
 Agregar en la tabla de tareas un atributo booleano denominado "EsTarea"
 True : es una tarea (cargada del proceso "Carga de Partes").
@@ -78,20 +116,20 @@ False : Es una compra de horas (en un proceso a definir)
 
 #### Carga de Partes y Proceso Masivo - Asignar True a "EsTarea"
 
-*Procesado* → [SPEC-004-update](../05-open-spec/updates/100-SistemaPartes/SPEC-004-operacion-carga-diaria-update.md) · [HU-004-update](../03-historias-usuario/updates/100-SistemaPartes/HU-004-operacion-carga-diaria-update.md) · [TR-004-update](../04-tareas/updates/100-SistemaPartes/TR-004-operacion-carga-diaria-update.md) · [SPEC-005-update](../05-open-spec/updates/100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) · [HU-005-update](../03-historias-usuario/updates/100-SistemaPartes/HU-005-supervision-proceso-masivo-update.md) · [TR-005-update](../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md)
+*Procesado* (unificado Parte I) → [SPEC-004](../05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md) · [HU-004](../03-historias-usuario/100-SistemaPartes/HU-004-operacion-carga-diaria.md) · [TR-004](../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md) · [SPEC-005](../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) · [HU-005](../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) · [TR-005](../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md)
 
 - Solo traer registros donde este atributo es "true"
 - Al grabar un parte (nuevo/Edicion), asignar "true" a este atributo
 
 #### Informes "Carga detallada" y "Carga agrupada" y Dashboard
 
-*Procesado* → [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion-update.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-consultas-dashboard-navegacion-update.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-consultas-dashboard-navegacion-update.md)
+*Procesado* (unificado Parte I) → [SPEC-006](../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) · [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md)
 
 - Filtrar los registros para que consideren unicamente los que este atributo es "true"
 
 #### Informe "Paquete de Horas" : Rehacer
 
-*Procesado* → [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion-update.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-consultas-dashboard-navegacion-update.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-consultas-dashboard-navegacion-update.md)
+*Procesado* (unificado Parte I) → [SPEC-006](../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) · [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md)
 
 el objetivo de este informe es poder llevar una cuenta corriente de horas para aquellos clientes que contratan paquetes de horas anticipadas
 este informe debe ser tipo grilla/pivot con las siguientes características:

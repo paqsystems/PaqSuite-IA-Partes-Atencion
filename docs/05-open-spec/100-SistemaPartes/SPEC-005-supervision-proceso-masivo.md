@@ -7,8 +7,8 @@
 | ID | SPEC-005 |
 | Título | Supervisión: terceros y proceso masivo sobre tareas |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | En revisión |
-| Última actualización | 2026-07-31 |
+| Estado | Finalizado |
+| Última actualización | 2026-08-01 |
 | HU relacionada(s) | [HU-005-supervision-proceso-masivo](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md) |
@@ -40,6 +40,7 @@
     - **Must — estado:** cerrar / reabrir (`cerrado`) (§4.5–4.5b);
   - rechazo si selección vacía o inválida; atomicidad del lote (§4.5);
   - actualización de atributos **permitida también sobre tareas cerradas** (el masivo es el circuito supervisor; no exige reabrir primero).
+- Delimitación implícita por `es_tarea = true`: listado, `list_ids`/«seleccionar todos» y acciones de lote (cerrar/reabrir, atributos) operan **únicamente** sobre registros de tarea (SPEC-001 R-MD-12); las compras/movimientos de paquete de horas no participan del masivo.
 - Delimitación API: no confiar solo en UI; denegar a asistente no supervisor y a cliente.
 - i18n + `data-testid`; UI web DevExtreme.
 
@@ -133,6 +134,7 @@ La implementación concreta sigue las normas del framework; este SPEC solo exige
 | `items` vacío | 422; no cambia nada |
 | Algún `id` inexistente | **Fallo total**; nada persistido |
 | Algún ítem no legible / fuera de universo | **Fallo total** |
+| Algún `id` con `es_tarea = 0` (compra) | **Fallo total** (422); el masivo solo opera sobre `es_tarea = 1` |
 | Asistente o cliente invocan | 403; nada persistido |
 | Validación de negocio falla en **alguna** fila (p. ej. tipo inválido para el cliente de esa tarea) | **Fallo total**; cero cambios; mensaje claro (sin éxito aparente parcial) |
 | Lote válido | **Transacción única**: todos los items reciben el cambio |
@@ -209,6 +211,8 @@ La UI debe dejar claro **qué atributo(s)** y **qué valor** se aplicarán antes
 | R-SU-08 | Acceso vía SP (MUST). |
 | R-SU-09 | Fuera de alcance: importación Excel, mails, atributos excluidos §4.6. Export Excel de grilla **sí** está en alcance (R-SU-03c). |
 | R-SU-10 | Actualización masiva de atributos permitida sobre tareas cerradas (circuito supervisor). |
+| R-SU-11 | Listado y `list_ids` del masivo filtran implícitamente `es_tarea = 1`. |
+| R-SU-12 | Lotes (cerrar/reabrir/atributos) rechazan de forma atómica cualquier id con `es_tarea = 0`. |
 
 ---
 
@@ -229,6 +233,8 @@ La UI debe dejar claro **qué atributo(s)** y **qué valor** se aplicarán antes
 - [ ] Tras éxito, el listado refleja el cambio sin recarga completa de la app.
 - [ ] i18n + `data-testid` en proceso masivo.
 - [ ] Tope param N>0 y selección > N → 422; si 0 → sin tope de negocio.
+- [x] Listado masivo y `list_ids`/select-all no muestran ni devuelven compras (`es_tarea = 0`).
+- [x] Un lote que incluye un id con `es_tarea = 0` falla por completo (cero cambios).
 
 ---
 
@@ -267,6 +273,8 @@ La UI debe dejar claro **qué atributo(s)** y **qué valor** se aplicarán antes
 | 2026-07-31 | SPEC-update desde producto: grilla Framework (filter/totales/chooser/plantillas/Excel); edición masiva atributos Must (tipo, sin cargo) + Should (presencial, asistente, fecha); excluidos cliente/duración/descripción; R-SU-03* / R-SU-09 / R-SU-10. |
 | 2026-07-31 | F1: Aprobado con observaciones (ver TR-005). |
 | 2026-07-31 | F1: Aprobado con observaciones (ver TR-005). |
+| 2026-07-31 | CC-PQ #1 (31/07/2026): masivo (listado, `list_ids`, lotes) opera únicamente sobre `es_tarea = 1`; id con `es_tarea = 0` en un lote falla atómico (R-SU-11/12). |
+| 2026-08-01 | Parte I: fusionado SPEC-005-update (CC-PQ #1, 31/07) en este original; update eliminado. Estado → Finalizado. |
 
 ---
 

@@ -8,8 +8,8 @@
 | Título | Maestros y catálogos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente |
-| Última actualización | 2026-07-30 |
+| Estado | Finalizado |
+| Última actualización | 2026-08-01 |
 | SPEC origen | [SPEC-003-maestros-y-catalogos](../../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) |
 | TR relacionada(s) | [TR-003-maestros-y-catalogos](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |
 
@@ -64,6 +64,7 @@ La carga diaria y el gate post-login dependen de maestros administrables: asiste
 - UI web: caption a la izquierda; código + descripción/nombre en listados y selectores; i18n + `data-testid` (`partesMaestros*`).
 - Acceso condicionado por permiso de menú Framework; cliente funcional no administra maestros.
 - Persistencia de negocio vía SP (MUST; firmas en TR).
+- Maestro de clientes: capturar y mostrar `erpCliente` / `erpArticulo` (opcionales, máx. 15 caracteres) en listado y modal de alta/edición; persisten en get/list/upsert.
 
 ---
 
@@ -77,6 +78,7 @@ La carga diaria y el gate post-login dependen de maestros administrables: asiste
 - Mobile: ABMs de maestros excluidos.
 - Importación masiva Excel de maestros.
 - Costos / auditoría avanzada.
+- Exposición de `erpCliente` / `erpArticulo` en informes (HU-006); integración activa con ERP.
 
 ---
 
@@ -96,6 +98,8 @@ La carga diaria y el gate post-login dependen de maestros administrables: asiste
 | R-MA-10 | Vínculo a `users` existentes; no alta de `users` desde este ABM. |
 | R-MA-11 | Cliente funcional no administra maestros; pantallas condicionadas por menú/permisos Framework. |
 | R-MA-12 | Acceso a datos de negocio vía SP (MUST); firmas en TR. |
+| R-MA-13 | ABM clientes: `erp_cliente` / `erp_articulo` opcionales en listado y formulario; se persisten en get/list/upsert. |
+| R-MA-14 | Rechazar (422) valores de `erp_cliente` / `erp_articulo` con longitud > 15. |
 
 Criterio “usable” en selectores: `activo = 1` **y** `inhabilitado = 0`.
 
@@ -116,6 +120,7 @@ Criterio “usable” en selectores: `activo = 1` **y** `inhabilitado = 0`.
 - [ ] **CA-10** Menú/ruta de maestros no expuesta a perfil cliente funcional ni en mobile.
 - [ ] **CA-11** El selector de `users` usa lookup tipo PedidosWeb (`/admin/usuarios` o equivalente) con parámetro para listar solo habilitados o todos.
 - [ ] **CA-12** Al cambiar `user_id` de un asistente de modo que el usuario Framework anterior quede sin vínculo Partes usable, la UI muestra advertencia confirmable antes de guardar.
+- [x] **CA-13** Puedo grabar `erpCliente` y `erpArticulo` en alta/edición de cliente; ambos aparecen en el listado del maestro; un valor con más de 15 caracteres se rechaza (422).
 
 ---
 
@@ -163,6 +168,13 @@ Feature: ABM maestros y catálogos Partes
     When consulto el catálogo de tipos para ese "clienteId"
     Then recibo la unión de genéricos usables y tipos no genéricos asignados usables
     And no aparecen tipos inhabilitados ni no activos
+
+  Scenario: Capturar referencias ERP en cliente
+    Given el modal de alta/edición de un cliente
+    When completo "erpCliente" y "erpArticulo" con valores de hasta 15 caracteres
+    Then el alta/edición es aceptada y ambos valores se muestran en el listado
+    When ingreso un valor de más de 15 caracteres en cualquiera de los dos campos
+    Then la operación es rechazada (422)
 ```
 
 ---
@@ -214,3 +226,5 @@ Feature: ABM maestros y catálogos Partes
 | 2026-07-30 | Batch: cambio `user_id` asistente = advertencia confirmable. |
 | 2026-07-30 | Batch: seed rol supervisor `admin`/`PQ`; MVP menú Seguridad GEN. |
 | 2026-07-30 | Parte C+C1: enlazada TR-003. |
+| 2026-08-01 | CC-PQ #2 (01/08/2026): ABM clientes captura/muestra `erpCliente` / `erpArticulo` (CA-13, R-MA-13/14). |
+| 2026-08-01 | Parte I: fusionado HU-003-update (CC-PQ #2, 01/08) en esta HU; update eliminado. Estado → Finalizado. |

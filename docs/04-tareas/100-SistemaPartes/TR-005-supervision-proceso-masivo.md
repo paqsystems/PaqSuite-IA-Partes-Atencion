@@ -9,8 +9,8 @@
 | **Roles** | Solo `resultado.partes.esSupervisor = true` |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-004](./TR-004-operacion-carga-diaria.md) (listado/tareas/`rowVersion`/tipos), GEN layouts/export grilla |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | En Control Calidad |
-| **Última actualización** | 2026-07-31 (Parte G / CC-PQ) |
+| **Estado** | Finalizado |
+| **Última actualización** | 2026-08-01 |
 
 **Origen:** [HU-005](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md)  
 **Referencia SPEC:** [SPEC-005](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md)  
@@ -28,6 +28,7 @@
 - Lote atómico **cerrar/reabrir** (ya implementado) con `{ id, rowVersion }[]`.
 - Lote atómico **actualizar atributos** — Must: `tipoTareaId`, `sinCargo`; Should: `presencial`, `usuarioId`, `fecha`.
 - Tope `PartesMasivoMaxIds`; i18n `partes.masivo.*` + testids.
+- **(CC-PQ #1, 31/07)** Listado/`list_ids` y lotes (`masivo_set_cerrado`, `masivo_actualizar`) operan solo sobre `es_tarea = 1`; id con `es_tarea = 0` en un lote → 422 atómico (`partes.masivo.noEsTarea`).
 
 ### Out of scope
 - Atributos: cliente, duración/minutos, descripción.
@@ -45,6 +46,8 @@
 | AC-17 | POST actualizar `tipoTareaId` válido para todas → N filas |
 | AC-18 | `tipoTareaId` inválido para alguna fila → 422; 0 cambios |
 | AC-19 | Should: mismos endpoints/UI para `presencial` / `usuarioId` / `fecha` (tarea T7; no bloquea DoD Must si D1 lo marca diferido) |
+| AC-20 | Listado / `list_ids` del masivo no incluyen filas con `es_tarea = 0` |
+| AC-21 | Lote (`set_cerrado` o `actualizar`) con algún id `es_tarea = 0` → 422 `partes.masivo.noEsTarea`; cero cambios |
 
 ---
 
@@ -66,6 +69,7 @@ R-SU-01…10 (SPEC/HU).
 | RN-TR-08 | Validación tipo: para cada item, el `tipoTareaId` debe ser usable para el **cliente de esa fila** (misma regla SPEC-003/004). Fallo en una → rollback total. |
 | RN-TR-09 | Actualizar atributos **no** exige `cerrado = 0` (R-SU-10). |
 | RN-TR-10 | Error negocio lote atributos: 422 `partes.masivo.atributoInvalido` (o subclave tipo); conflicto versión: `partes.masivo.conflictoVersion`. |
+| RN-TR-11 | Listado / `list_ids` filtran implícitamente `es_tarea = 1`; `masivo_set_cerrado` y `masivo_actualizar` rechazan (atómico, 422 `partes.masivo.noEsTarea`) cualquier id con `es_tarea = 0`. |
 
 ---
 
@@ -147,8 +151,10 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 | T7e | Tests | Feature update + tipo inválido atómico; E2E humo | Suite | M |
 | T7f | Docs | OpenAPI + manual usuario | | S |
 | T7g | Frontend/BE | Should: presencial, usuarioId, fecha | AC-19 | M |
+| T8 | Backend | Filtro `es_tarea=1` en list/list_ids + guarda `noEsTarea` en `masivo_set_cerrado`/`masivo_actualizar` (CC-PQ #1) | AC-20/21 | M |
+| T9 | Tests | Feature: masivo no lista compras; lote con compra → 422 | AC-20/21 | S |
 
-**Orden sugerido ampliación:** T7a → T7b → T7c → T7d → T7e → T7f; T7g en cuanto Must esté estable (o en paralelo UI si no bloquea).
+**Orden sugerido ampliación:** T7a → T7b → T7c → T7d → T7e → T7f; T7g en cuanto Must esté estable (o en paralelo UI si no bloquea); T8/T9 en CC-PQ #1 (tras TR-001 con `es_tarea`).
 
 ---
 
@@ -176,6 +182,7 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 - [x] AC-01…14 (D previo + regresión Feature)
 - [x] AC-15…18 (Must ampliación 2026-07-31)
 - [x] AC-19 (Should: presencial / asistente / fecha) — UI + BE 2026-07-31
+- [x] AC-20/21 (`es_tarea` en masivo, CC-PQ #1)
 - [x] SP actualizar + API + FE ProcessDataGrid
 - [x] Tests Feature + unit FE; OpenAPI/manual pendientes menores
 
@@ -201,6 +208,8 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 | 2026-07-31 | D ampliación Must: SP/API `masivo/actualizar`, ProcessDataGrid, UI tipo+sinCargo, Feature + unit. Should UI pendiente. |
 | 2026-07-31 | D Should: UI presencial/asistente/fecha + Feature; AC-19 cerrado. |
 | 2026-07-31 | F1: Aprobado con observaciones (sin E2E Playwright masivo; OpenAPI no versionado en repo). |
+| 2026-07-31 | CC-PQ #1 (31/07/2026): listado/`list_ids` filtran `es_tarea=1`; lotes rechazan ids `es_tarea=0` (AC-20/21, RN-TR-11, T8/T9); [D-VERIFICACION-CC-PQ-01](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md). |
+| 2026-08-01 | Parte I: fusionado TR-005-update (CC-PQ #1, 31/07) en esta TR; update eliminado. Estado → Finalizado. |
 
 ---
 

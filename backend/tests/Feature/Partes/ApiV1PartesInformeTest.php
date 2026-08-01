@@ -91,6 +91,8 @@ class ApiV1PartesInformeTest extends TestCase
             'nombre' => 'Cli Inf',
             'tipo_cliente_id' => $tipoClienteId,
             'email' => null,
+            'erp_cliente' => 'ERP-C1',
+            'erp_articulo' => 'ERP-A1',
             'activo' => true,
             'inhabilitado' => false,
             'created_at' => now(),
@@ -114,6 +116,9 @@ class ApiV1PartesInformeTest extends TestCase
         );
         $list->assertStatus(200);
         $this->assertGreaterThanOrEqual(1, (int) $list->json('resultado.total'));
+        $detalle = collect($list->json('resultado.items'))->firstWhere('clienteCode', 'CLI');
+        $this->assertSame('ERP-C1', $detalle['erpCliente'] ?? null);
+        $this->assertSame('ERP-A1', $detalle['erpArticulo'] ?? null);
 
         $agr = $this->getJson(
             '/api/v1/partes/informes/agrupado?eje=cliente&fechaDesde='.$hoy.'&fechaHasta='.$hoy,
@@ -121,6 +126,9 @@ class ApiV1PartesInformeTest extends TestCase
         );
         $agr->assertStatus(200);
         $this->assertGreaterThanOrEqual(1, (int) $agr->json('resultado.total'));
+        $fila = collect($agr->json('resultado.items'))->firstWhere('ejeCodigo', 'CLI');
+        $this->assertSame('ERP-C1', $fila['erpCliente'] ?? null);
+        $this->assertSame('ERP-A1', $fila['erpArticulo'] ?? null);
     }
 
     public function test_delimitacion_asistente_y_cliente_en_informes(): void

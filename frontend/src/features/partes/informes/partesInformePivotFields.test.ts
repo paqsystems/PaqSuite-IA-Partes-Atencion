@@ -13,6 +13,8 @@ describe('partesInformePivotFields', () => {
     expect(fields.every((field) => String(field.caption).startsWith('i18n:'))).toBe(true)
     expect(fields.some((field) => field.dataField === 'diaSemana')).toBe(true)
     expect(fields.some((field) => field.dataField === 'clienteCode')).toBe(true)
+    expect(fields.some((field) => field.dataField === 'erpCliente')).toBe(true)
+    expect(fields.some((field) => field.dataField === 'erpArticulo')).toBe(true)
     expect(fields.some((field) => field.dataField === 'id')).toBe(false)
     expect(fields.some((field) => field.dataField === 'createdAt')).toBe(false)
   })
@@ -22,6 +24,8 @@ describe('partesInformePivotFields', () => {
     expect(fields.map((field) => field.dataField)).toEqual([
       'ejeCodigo',
       'ejeDescripcion',
+      'erpCliente',
+      'erpArticulo',
       'diaSemana',
       'totalMinutos',
       'cantidadTareas',

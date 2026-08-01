@@ -226,6 +226,8 @@ export function PaqueteHorasPage() {
             <Column dataField="usuarioNombre" caption={t('partes.informe.field.usuarioNombre')} />
             <Column dataField="clienteCode" caption={t('partes.informe.field.clienteCode')} />
             <Column dataField="clienteNombre" caption={t('partes.informe.field.clienteNombre')} />
+            <Column dataField="erpCliente" caption={t('partes.informe.field.erpCliente')} />
+            <Column dataField="erpArticulo" caption={t('partes.informe.field.erpArticulo')} />
             <Column dataField="tipoTareaCode" caption={t('partes.informe.field.tipoTareaCode')} />
             <Column
               dataField="tipoTareaDescripcion"

@@ -8,8 +8,8 @@
 | Título | Modelo de datos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-07-31 |
+| Estado | Finalizado |
+| Última actualización | 2026-08-01 |
 | SPEC origen | [SPEC-001-modelo-datos-modulo](../../05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md) |
 | TR relacionada(s) | [TR-001-modelo-datos-modulo](../../04-tareas/100-SistemaPartes/TR-001-modelo-datos-modulo.md) |
 
@@ -55,6 +55,8 @@ El módulo necesita persistir asistentes, clientes, catálogos y registros de ta
 - Validación de escritura (SP/backend) para un único `is_default` con `is_generico = 1` (sin índice filtrado).
 - Seed mínimo: al menos un tipo de tarea genérico y marcado default.
 - Alineación documental de `docs/modelo-datos/md-sistema-partes.md` y `docs/02-producto/Sistema-Partes-IA/09-modelo-datos-tecnico.md` al contrato.
+- Columna `es_tarea` bit NOT NULL default `1` en `PQ_PARTES_REGISTRO_TAREA` (API `esTarea`); distingue tarea (`1`) de compra/movimiento de paquete de horas (`0`); backfill de registros existentes = `1`.
+- Columnas `erp_cliente` y `erp_articulo` `nvarchar(15)` NULL en `PQ_PARTES_CLIENTES` (API `erpCliente` / `erpArticulo`); referencia externa a ERP, sin integración activa.
 
 ---
 
@@ -66,6 +68,8 @@ El módulo necesita persistir asistentes, clientes, catálogos y registros de ta
 - CHECK de duración múltiplo de 15 / máx. 1440 en DDL (capa negocio / SPEC-004).
 - Firmas de SP de runtime de negocio de operación (TR posteriores); en esta HU sí el soporte de integridad acordado (trigger exclusividad + validaciones de escritura documentadas).
 - Facturación, costeo, auditoría avanzada, cuenta corriente.
+- UI de alta de compras de horas (`es_tarea = false`); proceso a definir.
+- UI ABM de campos ERP (HU-003) e informes con ERP (HU-006); integración activa con ERP.
 
 ---
 
@@ -83,6 +87,8 @@ El módulo necesita persistir asistentes, clientes, catálogos y registros de ta
 | R-MD-08 | `supervisor` de negocio solo en `PQ_PARTES_USUARIOS` (no usar `users.supervisor`). |
 | R-MD-09 | Vínculo por `user_id` → `users.id` con FK formal; NULL en clientes = sin acceso. |
 | R-MD-10 | Timestamps `created_at`/`updated_at` en `datetime2(3)` (SQL Server). |
+| R-MD-12 | `PQ_PARTES_REGISTRO_TAREA.es_tarea` bit NOT NULL default `1`; API `esTarea`; backfill de existentes = `1`. |
+| R-MD-13 | `PQ_PARTES_CLIENTES.erp_cliente` / `erp_articulo` nvarchar(15) NULL; opcionales; API `erpCliente` / `erpArticulo`. |
 
 Campos de cada tabla: según SPEC-001 §4.4 (contrato canónico).
 
@@ -100,6 +106,8 @@ Campos de cada tabla: según SPEC-001 §4.4 (contrato canónico).
 - [ ] **CA-08** Seed mínimo deja un tipo de tarea con `is_generico = 1` e `is_default = 1`.
 - [ ] **CA-09** La documentación de dominio no presenta `users.supervisor` como fuente de verdad del módulo.
 - [ ] **CA-10** `md-sistema-partes.md` y `09-modelo-datos-tecnico.md` están alineados al SPEC-001 (vínculo por `user_id`, tablas y reglas).
+- [x] **CA-11** Existe `PQ_PARTES_REGISTRO_TAREA.es_tarea` con default `1`; registros previos migrados con `es_tarea = 1`; documentación de modelo describe la semántica true/false.
+- [x] **CA-12** Existen `PQ_PARTES_CLIENTES.erp_cliente` y `erp_articulo` con longitud 15; documentación de modelo describe su semántica.
 
 ---
 
@@ -142,6 +150,17 @@ Feature: Esquema de datos PQ_PARTES_*
   Scenario: Seed mínimo de tipo default
     Given se ejecutó el seed de catálogo Partes
     Then existe al menos un "PQ_PARTES_TIPOS_TAREA" con "is_generico" = 1 e "is_default" = 1
+
+  Scenario: Columna es_tarea con default y backfill
+    Given la migración que agrega "es_tarea" a "PQ_PARTES_REGISTRO_TAREA"
+    When se aplica sobre una base con registros existentes
+    Then la columna queda "bit NOT NULL" con default 1
+    And todos los registros existentes quedan con "es_tarea" = 1
+
+  Scenario: Columnas ERP opcionales en clientes
+    Given la migración que agrega "erp_cliente" y "erp_articulo" a "PQ_PARTES_CLIENTES"
+    When se aplica la migración
+    Then ambas columnas existen como "nvarchar(15)" NULL
 ```
 
 ---
@@ -181,3 +200,6 @@ Feature: Esquema de datos PQ_PARTES_*
 | 2026-07-30 | Parte B + B1: HU creada y enriquecida desde SPEC-001. |
 | 2026-07-30 | Batch: al marcar `is_default` se desmarca el anterior (atómico). |
 | 2026-07-30 | Parte C: enlazada [TR-001](../../04-tareas/100-SistemaPartes/TR-001-modelo-datos-modulo.md). |
+| 2026-07-31 | CC-PQ #1 (31/07/2026): agregada columna `es_tarea` (CA-11, R-MD-12). |
+| 2026-08-01 | CC-PQ #2 (01/08/2026): agregadas columnas ERP `erp_cliente` / `erp_articulo` (CA-12, R-MD-13). |
+| 2026-08-01 | Parte I: fusionados HU-001-update (CC-PQ #1, 31/07) y HU-001-update-01 (CC-PQ #2, 01/08) en esta HU; updates eliminados. Estado → Finalizado. |

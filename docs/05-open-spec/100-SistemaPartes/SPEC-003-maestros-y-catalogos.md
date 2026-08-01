@@ -7,8 +7,8 @@
 | ID | SPEC-003 |
 | Título | Maestros y catálogos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Pendiente |
-| Última actualización | 2026-07-30 |
+| Estado | Finalizado |
+| Última actualización | 2026-08-01 |
 | HU relacionada(s) | [HU-003-maestros-y-catalogos](../../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) |
 | TR relacionada(s) | [TR-003-maestros-y-catalogos](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |
 | Depende de | [SPEC-001](./SPEC-001-modelo-datos-modulo.md), [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md) (quién opera; exclusividad `user_id`) |
@@ -100,8 +100,12 @@
 | `nombre` | Obligatorio |
 | `tipo_cliente_id` | Obligatorio; selector de tipo de cliente **usable** |
 | `email` | Opcional |
+| `erp_cliente` | Opcional; texto libre; máx. 15 caracteres; rechazo (422) si excede |
+| `erp_articulo` | Opcional; texto libre; máx. 15 caracteres; rechazo (422) si excede |
 | `user_id` | Opcional; si informado → acceso autenticado |
 | `activo` / `inhabilitado` | Estado operativo |
+
+- Campos `erp_cliente` / `erp_articulo` (API `erpCliente` / `erpArticulo`): visibles como columnas en el listado y como campos del formulario modal (caption a la izquierda, sin cambios en el patrón de catálogo código+descripción). Referencia externa a ERP; sin integración activa ni sincronización.
 
 - Cliente **sin** `user_id`: entidad de negocio válida; no ingresa al módulo.
 - Cliente **con** `user_id`: acceso según SPEC-002 (activo y no inhabilitado).
@@ -189,6 +193,8 @@ Criterio “usable” en selectores de nuevas operaciones: `activo = 1` **y** `i
 | R-MA-10 | Vínculo a `users` existentes; no alta de `users` desde este ABM. |
 | R-MA-11 | Cliente funcional no administra maestros. Visibilidad ABM = permisos/`pq_menus` Framework. Seed: `admin`/`PQ` con rol **supervisor** + dominio `supervisor=1`. MVP incluye menú seguridad GEN (usuarios, roles, permisos). |
 | R-MA-12 | Acceso a datos de negocio vía SP (MUST); firmas en TR. |
+| R-MA-13 | ABM clientes: `erp_cliente` / `erp_articulo` opcionales en listado y formulario; se persisten en get/list/upsert. |
+| R-MA-14 | Rechazar (422) valores de `erp_cliente` / `erp_articulo` con longitud > 15. |
 
 ---
 
@@ -204,6 +210,7 @@ Criterio “usable” en selectores de nuevas operaciones: `activo = 1` **y** `i
 - [ ] Universo de tipos por cliente cumple §4.7.
 - [ ] UI muestra código + nombre/descripción; i18n + `data-testid`.
 - [ ] Menú/ruta de maestros no expuesta a perfil cliente ni en mobile.
+- [x] List/get/create/update de clientes exponen y persisten `erpCliente` / `erpArticulo`; UI de maestro los captura y muestra en grilla; valores > 15 caracteres se rechazan (422).
 
 ---
 
@@ -245,6 +252,8 @@ Criterio “usable” en selectores de nuevas operaciones: `activo = 1` **y** `i
 | 2026-07-30 | Batch HU: cambio `user_id` asistente = advertencia confirmable. |
 | 2026-07-30 | Batch HU: seed rol supervisor + menú Seguridad en MVP. |
 | 2026-07-30 | Parte C+C1: enlazada [TR-003](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md); param `soloActivos`. |
+| 2026-08-01 | CC-PQ #2 (01/08/2026): ABM clientes captura/muestra `erpCliente` / `erpArticulo` (R-MA-13/14). |
+| 2026-08-01 | Parte I: fusionado SPEC-003-update (CC-PQ #2, 01/08) en este original; update eliminado. Estado → Finalizado. |
 
 ---
 

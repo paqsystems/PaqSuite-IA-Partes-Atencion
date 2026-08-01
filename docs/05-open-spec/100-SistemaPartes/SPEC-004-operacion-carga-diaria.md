@@ -7,8 +7,8 @@
 | ID | SPEC-004 |
 | Título | Operación / carga diaria de tareas |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | En revisión |
-| Última actualización | 2026-07-31 |
+| Estado | Finalizado |
+| Última actualización | 2026-08-01 |
 | HU relacionada(s) | [HU-004-operacion-carga-diaria](../../03-historias-usuario/100-SistemaPartes/HU-004-operacion-carga-diaria.md) |
 | TR relacionada(s) | [TR-004-operacion-carga-diaria](../../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md) |
 | Depende de | [SPEC-001](./SPEC-001-modelo-datos-modulo.md), [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-003](./SPEC-003-maestros-y-catalogos.md) (§4.7 universo tipos) |
@@ -30,6 +30,7 @@
 - Pantalla web de carga diaria: **DataGrid de trabajo** + filtros previos obligatorios.
 - Insertar, editar y eliminar registros de tarea según rol y estado `cerrado`.
 - Campos de negocio: `fecha`, `cliente_id`, `tipo_tarea_id`, `duracion_minutos`, `observacion`, `sin_cargo`, `presencial`, `usuario_id` (propietario), `cerrado` (con reglas §4.6).
+- Delimitación implícita por `es_tarea = true`: la carga diaria solo lista y solo persiste registros de tarea (no compras/movimientos de paquete de horas, SPEC-001 R-MD-12).
 - Validaciones de captura (fecha, duración múltiplo del tramo parametrizado — default 15 —, observación no vacía, catálogos usables, universo de tipos por cliente).
 - Delimitación de filas visibles según `tipoFuncional` / `esSupervisor` (SPEC-002).
 - Selección de asistente propietario cuando opera un **supervisor**.
@@ -105,6 +106,7 @@ Sin filtros de fecha aplicados, la grilla **no** carga el universo completo hist
 | `presencial` | Bit; **default `0` (false)** en alta y en UI nueva fila. No es “dato faltante”: siempre tiene valor. Visible como columna en grilla (column chooser). |
 | `usuario_id` | Obligatorio; propietario (asistente fijo / supervisor elige). |
 | `cerrado` | Ver §4.6. Alta ordinaria → `0`. |
+| `es_tarea` | Implícito; no es captura visible del usuario. Alta/edición desde esta pantalla **siempre** persiste `es_tarea = 1` (no editable en este proceso). |
 
 **Grabación:** no se puede insertar/actualizar si falta **cualquiera** de los datos solicitados obligatorios (`fecha`, `cliente_id`, `tipo_tarea_id`, `duracion_minutos`, `observacion`, `usuario_id`) o si fallan las reglas de dominio anteriores. Validación en UI y en API/SP.
 
@@ -112,7 +114,7 @@ Mensajes: envelope + claves i18n `partes.tarea.*` (validación / permiso / cerra
 
 ### 4.5 Listado, edición y eliminación
 
-- **Listar:** API paginada/filtrada; solo filas del universo del actor (§3) ∩ filtros. **UI web:** paginación estándar DevExtreme (no virtual scroll como modo principal del MVP).
+- **Listar:** API paginada/filtrada; solo filas del universo del actor (§3) ∩ filtros ∩ `es_tarea = 1`. **UI web:** paginación estándar DevExtreme (no virtual scroll como modo principal del MVP).
 - **Columnas de presentación (grilla carga diaria):**
   - **Cliente:** descripción (`clienteNombre`); código disponible vía column chooser (`clienteCode`).
   - **Tipo de tarea:** descripción (`tipoTareaDescripcion`); código disponible vía column chooser (`tipoTareaCode`).
@@ -170,6 +172,8 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | R-OP-11 | Acceso de negocio vía SP (MUST). |
 | R-OP-11b | Update/delete: optimistic lock `row_version`; conflicto → 409 + refrescar. |
 | R-OP-12 | IA **fuera del MVP** de carga diaria; no bloquea ni es requisito. Evolutivo: complementar sin sustituir confirmación ni validaciones. |
+| R-OP-13 | Listado de carga diaria filtra implícitamente `es_tarea = 1`; no muestra compras/movimientos de paquete de horas. |
+| R-OP-14 | Alta/edición desde carga diaria persiste siempre `es_tarea = 1` (no editable por el usuario en este proceso). |
 
 ---
 
@@ -189,6 +193,7 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 - [ ] Al cambiar cliente en edición, si el tipo no está en el nuevo universo se limpia; grabar con tipo vacío se rechaza.
 - [ ] Alta/edición rechaza si falta cualquier obligatorio; `sin_cargo` y `presencial` default `0` en alta.
 - [ ] i18n + `data-testid` en pantalla de carga.
+- [x] Tras crear/editar desde carga, `esTarea` queda `true`; un registro con `es_tarea = 0` no aparece en el listado (mismo filtro de fechas).
 
 ---
 
@@ -233,6 +238,8 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | 2026-07-30 | Batch HU: optimistic lock `row_version` en update/delete (409). |
 | 2026-07-30 | Parte C+C1: enlazada [TR-004](../../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md). |
 | 2026-07-31 | Presentación grilla: Cliente/Tipo = descripción; bits Sin cargo/Presencial; duración UI `hh:mm` + sumatoria horas decimales (persistencia minutos). |
+| 2026-07-31 | CC-PQ #1 (31/07/2026): carga diaria filtra `es_tarea = 1` en listado y fuerza `es_tarea = 1` en alta/edición (R-OP-13/14). |
+| 2026-08-01 | Parte I: fusionado SPEC-004-update (CC-PQ #1, 31/07) en este original; update eliminado. Estado → Finalizado. |
 
 ---
 

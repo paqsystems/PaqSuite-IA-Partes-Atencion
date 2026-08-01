@@ -8,8 +8,8 @@
 | Título | Supervisión: terceros y proceso masivo sobre tareas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-07-31 |
+| Estado | Finalizado |
+| Última actualización | 2026-08-01 |
 | SPEC origen | [SPEC-005-supervision-proceso-masivo](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 
@@ -61,6 +61,7 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
   - **Should acciones (mismo circuito):** `presencial`, `asistente`, `fecha`;
   - confirmación con cantidad y valores; lote atómico; tope `PartesMasivoMaxIds`;
   - SP + 403/409/422; i18n `partes.masivo.*` + `data-testid`.
+- Delimitación implícita por `es_tarea = true`: listado, `list_ids`/«seleccionar todos» y lotes (cerrar/reabrir, atributos) operan únicamente sobre registros de tarea; un id con `es_tarea = false` en un lote falla de forma atómica (422, cero cambios).
 
 ---
 
@@ -93,6 +94,8 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
 | R-SU-08 | Acceso vía SP (MUST). |
 | R-SU-09 | Fuera: import Excel, mails, atributos excluidos. Export grilla sí. |
 | R-SU-10 | Actualización de atributos permitida sobre tareas cerradas. |
+| R-SU-11 | Listado y `list_ids` del masivo filtran implícitamente `es_tarea = 1`. |
+| R-SU-12 | Lotes (cerrar/reabrir/atributos) rechazan de forma atómica cualquier id con `es_tarea = 0`. |
 
 ---
 
@@ -117,6 +120,8 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
 - [ ] **CA-17** Actualizar `tipoTarea` válido para todas las filas → las N quedan con ese tipo.
 - [ ] **CA-18** `tipoTarea` incompatible con el cliente de alguna fila → error; **cero** cambios.
 - [ ] **CA-19** (Should) UI/API permiten actualizar `presencial` y/o `asistente` y/o `fecha` en el mismo circuito (puede diferirse a entrega inmediata posterior a Must, documentado en TR).
+- [x] **CA-20** Listado masivo y `list_ids`/select-all no muestran ni devuelven compras (`esTarea = false`).
+- [x] **CA-21** Un lote que incluye un id con `esTarea = false` falla por completo (cero cambios).
 
 ---
 
@@ -162,6 +167,14 @@ Feature: Proceso masivo de supervisión Partes
     When confirma la acción
     Then recibe 422
     And ninguna fila cambia
+
+  Scenario: Proceso masivo solo opera sobre tareas (es_tarea)
+    Given existen registros con "esTarea" = true y con "esTarea" = false en el periodo filtrado
+    When el supervisor lista el proceso masivo con ese periodo
+    Then solo ve y puede seleccionar filas con "esTarea" = true
+    When intenta ejecutar un lote que incluye un id con "esTarea" = false
+    Then la API responde error de validación
+    And ninguna fila del lote cambia
 ```
 
 ---
@@ -207,3 +220,5 @@ Feature: Proceso masivo de supervisión Partes
 | 2026-07-31 | SPEC-update: grilla Framework + atributos masivos Must/Should; CA-15…19; Gherkin sinCargo/tipo. |
 | 2026-07-31 | F1: Finalizado (ver TR-005). |
 | 2026-07-31 | F1: Finalizado (ver TR-005). |
+| 2026-07-31 | CC-PQ #1 (31/07/2026): masivo (listado, `list_ids`, lotes) opera únicamente sobre `es_tarea = 1`; id con `es_tarea = 0` en un lote falla atómico (CA-20/21, R-SU-11/12). |
+| 2026-08-01 | Parte I: fusionado HU-005-update (CC-PQ #1, 31/07) en esta HU; update eliminado. Estado → Finalizado. |

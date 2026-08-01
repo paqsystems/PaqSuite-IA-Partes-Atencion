@@ -3,7 +3,7 @@ specId: SPEC-005
 titulo: Supervisión y proceso masivo
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-07-31
+ultimaActualizacion: 2026-08-01
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md
 ---
 
@@ -53,6 +53,7 @@ No se puede cambiar en lote: **cliente**, **duración** ni **descripción**.
 - Exportar a Excel **no** es importar desde Excel (eso no forma parte de este proceso).
 - Acciones ya aplicadas (cerrar lo cerrado, o el mismo valor de atributo) son inocuas / idempotentes.
 - Si se supera el tope configurado o el límite técnico (~5000), debés refinar el filtro.
+- El proceso masivo solo localiza y opera sobre **tareas** (no incluye compras de horas del Paquete de Horas).
 - **No disponible en la app móvil.**
 
 ### Límites / cupos visibles al usuario
@@ -83,6 +84,7 @@ No se puede cambiar en lote: **cliente**, **duración** ni **descripción**.
 | Acción de proceso masivo no válida | `partes.masivo.accionInvalida` | Acción incorrecta | Elegir una acción válida |
 | Atributo o valor no válido para el lote | `partes.masivo.atributoInvalido` | p. ej. tipo incompatible con un cliente | Elegir otro tipo o reducir selección |
 | Ítem de lote inválido | `partes.masivo.itemInvalido` | Selección corrupta | Refrescar y reseleccionar |
+| El lote incluye un registro que no es tarea | `partes.masivo.noEsTarea` | Alguno de los IDs corresponde a una compra de horas | Reducir la selección a tareas |
 
 ## Errores de lógica
 

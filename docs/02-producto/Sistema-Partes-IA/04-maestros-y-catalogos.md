@@ -20,6 +20,11 @@ Su responsabilidad conceptual incluye:
 - reflejar si esta habilitado o inhabilitado;
 - y, cuando corresponda, determinar si tiene acceso autenticado al modulo.
 
+Ademas puede registrar **referencias al ERP** usadas en informes de facturacion:
+
+- **`erp_cliente`** (API `erpCliente`, UI «Erp Cliente»): string hasta 15 caracteres, opcional;
+- **`erp_articulo`** (API `erpArticulo`, UI «Erp Articulo»): string hasta 15 caracteres, opcional.
+
 El cliente puede existir aunque nunca ingrese al sistema. El acceso es una capacidad adicional, no la definicion del cliente.
 
 ### Asistentes

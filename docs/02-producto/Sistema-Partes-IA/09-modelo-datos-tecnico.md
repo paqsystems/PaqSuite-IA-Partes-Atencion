@@ -71,6 +71,8 @@ Representa clientes del modulo y, cuando aplique, su vinculacion con acceso aute
 | `tipo_cliente_id` | `bigint` | No | FK a tipo de cliente |
 | `code` | `nvarchar(50)` | No | Codigo funcional del cliente (UNIQUE) |
 | `email` | `nvarchar(255)` | Si | Email del cliente |
+| `erp_cliente` | `nvarchar(15)` | Si | Código/referencia de cliente en el ERP (facturación) |
+| `erp_articulo` | `nvarchar(15)` | Si | Código/referencia de artículo en el ERP (facturación) |
 | `activo` | `bit` | No | Estado activo (default 1) |
 | `inhabilitado` | `bit` | No | Estado de inhabilitacion (default 0) |
 | `created_at` | `datetime2(3)` | Si | Auditoria de alta |

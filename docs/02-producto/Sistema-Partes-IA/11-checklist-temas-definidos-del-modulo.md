@@ -52,6 +52,7 @@
 ## Maestros y catalogos
 
 - [x] Maestro de clientes
+- [x] Atributos ERP en clientes (`erp_cliente`, `erp_articulo`, max 15)
 - [x] Maestro de asistentes
 - [x] Catalogo de tipos de cliente
 - [x] Catalogo de tipos de tarea
@@ -112,8 +113,8 @@
 
 ## Consultas y analitica
 
-- [x] Consulta detallada de tareas *(duración UI `hh:mm`)*
-- [x] Consultas agrupadas *(totales tiempo UI `hh:mm`)*
+- [x] Consulta detallada de tareas *(duración UI `hh:mm`; columnas Erp Cliente / Erp Articulo)*
+- [x] Consultas agrupadas *(totales tiempo UI `hh:mm`; atributos ERP en grilla/pivot)*
 - [x] Paquete de horas *(cuenta corriente: saldo inicial + columna Saldo; no filtra por `es_tarea`; pivot sin Saldo; mismos atributos que carga detallada)*
 - [x] Consulta detallada / agrupadas / dashboard: solo `es_tarea = true`
 - [x] Restricciones por perfil en consultas

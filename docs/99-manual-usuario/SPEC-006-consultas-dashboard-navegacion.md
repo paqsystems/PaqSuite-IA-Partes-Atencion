@@ -3,7 +3,7 @@ specId: SPEC-006
 titulo: Consultas, dashboard y navegación
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-07-31
+ultimaActualizacion: 2026-08-01
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md
 ---
 
@@ -29,16 +29,17 @@ Desde **Inicio** ves el **Dashboard** de dedicación. En **Informes** consultás
 
 1. Menú **Informes** → consulta detallada.
 2. Filtrá por fechas (recomendado), cliente, asistente (si sos supervisor), tipo y estado cerrado.
-3. Revisá las filas en solo lectura.
-4. En web podés usar vista **grilla** y **pivot**.
+3. Revisá las filas en solo lectura, incluidas las referencias **Erp Cliente** y **Erp Articulo** del cliente (si están cargadas en el maestro).
+4. En web podés usar vista **grilla** y **pivot** (ambos incluyen las columnas ERP).
 5. Sin datos verás un mensaje de vacío (no es un fallo técnico).
+6. Esta consulta y la detallada agrupada solo incluyen **tareas** (no compras de horas); para ver también las compras usá **Paquete de horas**.
 
 ### Consultas agrupadas
 
 1. Menú **Informes** → consultas agrupadas.
 2. Elegí el eje: cliente, asistente, tipo o fecha.
 3. Si el eje es fecha, indicá granularidad **día** o **mes**.
-4. Revisá suma de duración en **hh:mm** y cantidad de tareas (pivot disponible en web).
+4. Revisá suma de duración en **hh:mm** y cantidad de tareas (pivot disponible en web, con columnas ERP incluidas). Solo considera **tareas**.
 
 ### Paquete de horas
 

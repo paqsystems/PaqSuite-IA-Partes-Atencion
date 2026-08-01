@@ -7,8 +7,8 @@
 | ID | SPEC-001 |
 | Título | Modelo de datos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | En revisión |
-| Última actualización | 2026-07-31 |
+| Estado | Finalizado |
+| Última actualización | 2026-08-01 |
 | HU relacionada(s) | [HU-001-modelo-datos-modulo](../../03-historias-usuario/100-SistemaPartes/HU-001-modelo-datos-modulo.md) |
 | TR relacionada(s) | [TR-001-modelo-datos-modulo](../../04-tareas/100-SistemaPartes/TR-001-modelo-datos-modulo.md) |
 | Fuentes | [`docs/02-producto/Sistema-Partes-IA/`](../../02-producto/Sistema-Partes-IA/) — en especial `09-modelo-datos-tecnico.md`, `02-actores-identidad-y-acceso.md`, `03-modelo-conceptual-del-dominio.md`, `04-maestros-y-catalogos.md`; diagrama operativo [`docs/modelo-datos/md-sistema-partes.md`](../../modelo-datos/md-sistema-partes.md) |
@@ -51,6 +51,8 @@
 - Gate post-login y payload de sesión funcional del módulo (**SPEC-002**).
 - Reglas de UI de duración (múltiplos de 15), mensajes de advertencia de fecha futura, políticas de baja lógica vs física en pantallas (se reafirman como reglas de negocio a heredar; el DDL no implementa checks de múltiplo de 15 en esta versión salvo documentación).
 - Facturación, costeo, auditoría avanzada, cuenta corriente de horas.
+- UI de alta de compras de horas (`es_tarea = false`); el campo solo habilita el dato, el proceso de alta queda a definir.
+- Integración activa con ERP (los campos `erp_cliente` / `erp_articulo` son referencia externa, sin sincronización ni emisión de facturas).
 
 ---
 
@@ -119,6 +121,8 @@
 | `tipo_cliente_id` | bigint | No | — | FK → `PQ_PARTES_TIPOS_CLIENTE.id` |
 | `code` | nvarchar(50) | No | — | UNIQUE |
 | `email` | nvarchar(255) | Sí | NULL | |
+| `erp_cliente` | nvarchar(15) | Sí | NULL | Código de cliente en ERP (referencia externa; sin integración activa) |
+| `erp_articulo` | nvarchar(15) | Sí | NULL | Código de artículo/servicio en ERP (referencia externa; sin integración activa) |
 | `activo` | bit | No | 1 | |
 | `inhabilitado` | bit | No | 0 | |
 | `created_at` | datetime2(3) | Sí | NULL | |
@@ -173,6 +177,7 @@ Semántica: solo para tipos **no** genéricos. Asignar un tipo genérico a un cl
 | `sin_cargo` | bit | No | 0 | |
 | `presencial` | bit | No | 0 | |
 | `observacion` | nvarchar(max) | No | — | No vacía en negocio |
+| `es_tarea` | bit | No | 1 | `1` = tarea (Carga/masivo/informes); `0` = compra / movimiento de paquete de horas. Backfill de filas preexistentes = `1`. |
 | `cerrado` | bit | No | 0 | Histórico; sin edición/eliminación normal si 1 |
 | `row_version` | rowversion | No | — | Optimistic lock (SQL Server); expuesto a API como token opaco |
 | `created_at` / `updated_at` | datetime2(3) | Sí | NULL | |
@@ -209,6 +214,8 @@ PQ_PARTES_CLIENTES.user_id             → users.id   (FK formal; NULL permitido
 | R-MD-09 | Vínculo autenticable por `user_id` → `users.id`, no por igualdad de códigos. **Decisión:** FK formal en USUARIOS y CLIENTES; en CLIENTES NULL = sin acceso (FK no aplica al NULL). |
 | R-MD-10 | Timestamps de auditoría en `datetime2(3)` (SQL Server de referencia). |
 | R-MD-11 | `PQ_PARTES_REGISTRO_TAREA.row_version` para optimistic lock (SPEC-004 / SPEC-005); conflicto → HTTP 409. |
+| R-MD-12 | `PQ_PARTES_REGISTRO_TAREA.es_tarea` bit NOT NULL default `1`; distingue tarea (`1`) de compra/movimiento de paquete de horas (`0`); API camelCase `esTarea`. Filas históricas migradas con `es_tarea = 1`. |
+| R-MD-13 | `PQ_PARTES_CLIENTES.erp_cliente` / `erp_articulo` nvarchar(15) NULL; opcionales; longitud máxima 15; API camelCase `erpCliente` / `erpArticulo`. |
 
 ---
 
@@ -224,6 +231,8 @@ PQ_PARTES_CLIENTES.user_id             → users.id   (FK formal; NULL permitido
 - [ ] Seed mínimo incluye un tipo de tarea genérico y default.
 - [ ] Documentación [`md-sistema-partes.md`](../../modelo-datos/md-sistema-partes.md) y `09-modelo-datos-tecnico.md` alineadas a este SPEC.
 - [ ] No se usa `users.supervisor` como fuente de verdad en documentación de dominio.
+- [x] `PQ_PARTES_REGISTRO_TAREA.es_tarea` existe (bit NOT NULL default 1); backfill de existentes = 1.
+- [x] `PQ_PARTES_CLIENTES.erp_cliente` / `erp_articulo` existen (nvarchar(15) NULL).
 
 ---
 
@@ -248,6 +257,7 @@ PQ_PARTES_CLIENTES.user_id             → users.id   (FK formal; NULL permitido
 | `md-sistema-partes.md` histórico resolvía login por `code` | Obsoleto frente a `user_id`; corregido en sync documental. |
 | Checks de `duracion_minutos` (múltiplo del tramo param, default 15) | Capa negocio / SPEC-004; no CHECK obligatorio en este SPEC. |
 | Preguntas abiertas de producto (revocar acceso cliente, etc.) | No bloquean DDL; ver `08-dudas-y-ambiguedades.md`. |
+| Alta de compras (`es_tarea = false`) sin proceso definido | Fuera de alcance; el saldo del Paquete de Horas (SPEC-006) solo reflejará sumas (+) hasta que exista el proceso de alta. |
 
 ---
 
@@ -263,6 +273,9 @@ PQ_PARTES_CLIENTES.user_id             → users.id   (FK formal; NULL permitido
 | 2026-07-30 | Batch HU: R-MD-06 al marcar default desmarca el anterior (atómico). |
 | 2026-07-30 | Batch HU: `row_version` en `PQ_PARTES_REGISTRO_TAREA` (optimistic lock). |
 | 2026-07-30 | Parte C: enlazada [TR-001](../../04-tareas/100-SistemaPartes/TR-001-modelo-datos-modulo.md). |
+| 2026-07-31 | CC-PQ #1 (31/07/2026): agregado `PQ_PARTES_REGISTRO_TAREA.es_tarea` bit NOT NULL default 1 (R-MD-12); backfill = 1. |
+| 2026-08-01 | CC-PQ #2 (01/08/2026): agregados `PQ_PARTES_CLIENTES.erp_cliente` / `erp_articulo` nvarchar(15) NULL (R-MD-13). |
+| 2026-08-01 | Parte I: fusionados SPEC-001-update (CC-PQ #1, 31/07) y SPEC-001-update-01 (CC-PQ #2, 01/08) en este original; updates eliminados. Estado → Finalizado. |
 
 ---
 

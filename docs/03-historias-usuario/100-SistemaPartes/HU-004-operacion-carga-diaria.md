@@ -8,8 +8,8 @@
 | Título | Operación / carga diaria de tareas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-07-31 |
+| Estado | Finalizado |
+| Última actualización | 2026-08-01 |
 | SPEC origen | [SPEC-004-operacion-carga-diaria](../../05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md) |
 | TR relacionada(s) | [TR-004-operacion-carga-diaria](../../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md) |
 
@@ -60,6 +60,7 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 - Cerrar/reabrir fila individual: solo supervisor (MVP).
 - Complemento IA **fuera del MVP** (solo carga manual en esta HU).
 - i18n claves `partes.tarea.*` + `data-testid`; persistencia vía SP (MUST).
+- Delimitación implícita por `es_tarea`: el listado de carga solo muestra registros con `es_tarea = true`; alta/edición desde esta pantalla siempre persiste `es_tarea = true` (no editable por el usuario).
 
 ---
 
@@ -72,6 +73,7 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 - Cliente funcional: no carga tareas.
 - Facturación, aprobación formal, importación masiva, **integración IA en carga diaria** (evolutivo).
 - Exportación Excel como Must del MVP de carga.
+- UI de alta de compras de horas (`es_tarea = false`); proceso a definir (SPEC-001).
 
 ---
 
@@ -97,6 +99,8 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 | R-OP-11 | Acceso de negocio vía SP (MUST). |
 | R-OP-11b | Update/delete: optimistic lock `row_version`; conflicto → 409. |
 | R-OP-12 | IA **fuera del MVP** de carga diaria; no bloquea ni es requisito. |
+| R-OP-13 | Listado de carga diaria filtra implícitamente `es_tarea = 1`; no muestra compras/movimientos de paquete de horas. |
+| R-OP-14 | Alta/edición desde carga diaria persiste siempre `es_tarea = 1` (no editable por el usuario en este proceso). |
 
 ---
 
@@ -116,6 +120,7 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 - [ ] **CA-10** Al cambiar `cliente_id` en edición, si el `tipo_tarea_id` no pertenece al nuevo universo se **limpia**; grabar con tipo vacío (u otro obligatorio faltante) se rechaza en UI y API.
 - [ ] **CA-10b** Alta nueva fila inicia `sin_cargo = 0` y `presencial = 0`; no se graba si falta cualquiera de: `fecha`, `cliente_id`, `tipo_tarea_id`, `duracion_minutos`, `observacion`, `usuario_id`.
 - [ ] **CA-11** i18n + `data-testid` estables en pantalla de carga diaria.
+- [x] **CA-12** El listado de carga diaria no incluye filas con `esTarea = false`; tras alta/edición desde esta pantalla, `esTarea` queda siempre `true`.
 
 ---
 
@@ -169,6 +174,13 @@ Feature: Carga diaria de tareas Partes
     When intento listar sin rango de fechas aplicado
     Then la grilla no carga el histórico completo
     And se muestra mensaje i18n indicando acotar fechas
+
+  Scenario: Carga diaria solo opera sobre tareas (es_tarea)
+    Given existen registros con "esTarea" = true y con "esTarea" = false para el mismo periodo
+    When listo la carga diaria con ese rango de fechas
+    Then solo veo las filas con "esTarea" = true
+    When doy de alta o edito una tarea desde esta pantalla
+    Then el registro persiste con "esTarea" = true
 ```
 
 ---
@@ -224,3 +236,5 @@ Feature: Carga diaria de tareas Partes
 | 2026-07-30 | Batch: duración tramos+editable; tramo param GRAL default 15; paginación DX. |
 | 2026-07-30 | Parte C+C1: enlazada TR-004. |
 | 2026-07-31 | Grilla: descripción Cliente/Tipo; bits; duración hh:mm + sumatoria horas decimales. |
+| 2026-07-31 | CC-PQ #1 (31/07/2026): carga diaria filtra `es_tarea = 1` en listado y fuerza `es_tarea = 1` en alta/edición (CA-12, R-OP-13/14). |
+| 2026-08-01 | Parte I: fusionado HU-004-update (CC-PQ #1, 31/07) en esta HU; update eliminado. Estado → Finalizado. |

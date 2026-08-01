@@ -9,8 +9,8 @@
 | **Roles** | Asistente / Supervisor (`resultado.partes`); **no** cliente |
 | **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md) (`row_version`), [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-003](./TR-003-maestros-y-catalogos.md) (catálogos / universo tipos) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | En Control Calidad |
-| **Última actualización** | 2026-07-31 (Parte G / CC-PQ) |
+| **Estado** | Finalizado |
+| **Última actualización** | 2026-08-01 |
 
 **Origen:** [HU-004](../../03-historias-usuario/100-SistemaPartes/HU-004-operacion-carga-diaria.md)  
 **Referencia SPEC:** [SPEC-004](../../05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md)
@@ -27,6 +27,7 @@
 - Duración: tramos + editable; param **`PartesDuracionTramoMin`** default **15**.
 - Paginación DevExtreme; menú Partes; SP MUST.
 - Atajo texto mínimo a proceso masivo (SPEC-005) **sin** pasar filtros (solo UI link; sin lógica masiva aquí).
+- **(CC-PQ #1, 31/07)** `pq_sp_partes_tarea_list` filtra `es_tarea = 1`; `pq_sp_partes_tarea_upsert` fuerza `es_tarea = 1` siempre.
 
 ### Out of scope
 - Masivo (TR-005); consultas/dashboard; mobile kardex; IA; Excel; ABM maestros.
@@ -51,6 +52,7 @@
 | AC-10b | Alta: `sinCargo`/`presencial` false; obligatorios incompletos → 422 |
 | AC-11 | i18n `partes.tarea.*` + testids |
 | AC-12 | Update/delete con `rowVersion` stale → **409** + i18n refrescar |
+| AC-13 | Listado de carga (`pq_sp_partes_tarea_list`) no incluye filas con `es_tarea = 0`; upsert desde esta pantalla deja `esTarea = true` siempre |
 
 ### Gherkin
 HU-004 + escenario 409 y tramo param ≠15 si se cambia seed en test.
@@ -149,8 +151,10 @@ IA: no UI.
 | T5 | Frontend | Acciones cerrar/reabrir + link masivo | AC-07 | S |
 | T6 | Tests | Feature roles/validación/409; Vitest duración; E2E humo alta | Suite | L |
 | T7 | Docs | OpenAPI | | S |
+| T8 | Backend | Filtro `es_tarea=1` en list + forzar en upsert (CC-PQ #1) | AC-13 | M |
+| T9 | Tests | Feature: carga no lista compras; upsert deja `esTarea=true` | AC-13 | S |
 
-**Orden:** T1 → T2 → T3 → T4/T5 → T6 → T7.
+**Orden:** T1 → T2 → T3 → T4/T5 → T6 → T7; T8/T9 en CC-PQ #1 (tras TR-001 con `es_tarea`).
 
 ---
 
@@ -176,7 +180,7 @@ IA: no UI.
 
 ## 10) Checklist
 
-- [ ] AC-01…12  
+- [ ] AC-01…13  
 - [ ] SP + param + menú  
 - [ ] FE grilla + validaciones  
 - [ ] Tests + OpenAPI  
@@ -217,6 +221,8 @@ IA: no UI.
 | 2026-07-30 | Parte C + C1: TR carga diaria; param/SP/409/fecha futura cerrados. |
 | 2026-07-30 | Parte D: Operations `tarea_*`, API `/partes/tareas`, param tramo, menú Carga diaria, FE grilla+modal, Feature+Vitest OK. SP T-SQL follow-up gateway. |
 | 2026-07-31 | FE grilla: descripción Cliente/Tipo; Sin cargo/Presencial; duración `hh:mm` + sumatoria `duracionHoras`; Vitest helpers duración. |
+| 2026-07-31 | CC-PQ #1 (31/07/2026): `pq_sp_partes_tarea_list` filtra `es_tarea=1`; upsert fuerza `es_tarea=1` (AC-13, T8/T9); [D-VERIFICACION-CC-PQ-01](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md). |
+| 2026-08-01 | Parte I: fusionado TR-004-update (CC-PQ #1, 31/07) en esta TR; update eliminado. Estado → Finalizado. |
 
 ---
 

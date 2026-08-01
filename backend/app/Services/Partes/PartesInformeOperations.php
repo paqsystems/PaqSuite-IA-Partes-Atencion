@@ -78,12 +78,14 @@ final class PartesInformeOperations
         ];
 
         $rows = match ($eje) {
-            'cliente' => $q->groupBy('c.id', 'c.code', 'c.nombre')
+            'cliente' => $q->groupBy('c.id', 'c.code', 'c.nombre', 'c.erp_cliente', 'c.erp_articulo')
                 ->orderBy('c.code')
                 ->get(array_merge([
                     'c.id as eje_key',
                     'c.code as eje_codigo',
                     'c.nombre as eje_descripcion',
+                    'c.erp_cliente',
+                    'c.erp_articulo',
                 ], $aggSelect)),
             'asistente' => $q->groupBy('u.id', 'u.code', 'u.nombre')
                 ->orderBy('u.code')
@@ -108,6 +110,8 @@ final class PartesInformeOperations
                 'eje_key' => $row->eje_key,
                 'eje_codigo' => (string) ($row->eje_codigo ?? ''),
                 'eje_descripcion' => (string) ($row->eje_descripcion ?? ''),
+                'erp_cliente' => (string) ($row->erp_cliente ?? ''),
+                'erp_articulo' => (string) ($row->erp_articulo ?? ''),
                 'total_minutos' => (int) $row->total_minutos,
                 'cantidad_tareas' => (int) $row->cantidad_tareas,
                 'cantidad_sin_cargo' => (int) ($row->cantidad_sin_cargo ?? 0),
@@ -210,6 +214,8 @@ final class PartesInformeOperations
             'usuario_nombre' => '',
             'cliente_code' => '',
             'cliente_nombre' => '',
+            'erp_cliente' => '',
+            'erp_articulo' => '',
             'tipo_tarea_code' => '',
             'tipo_tarea_descripcion' => '',
             'saldo' => $saldoInicial,
@@ -236,6 +242,8 @@ final class PartesInformeOperations
                 'usuario_nombre' => (string) $row->usuario_nombre,
                 'cliente_code' => (string) $row->cliente_code,
                 'cliente_nombre' => (string) $row->cliente_nombre,
+                'erp_cliente' => (string) ($row->erp_cliente ?? ''),
+                'erp_articulo' => (string) ($row->erp_articulo ?? ''),
                 'tipo_tarea_code' => (string) $row->tipo_tarea_code,
                 'tipo_tarea_descripcion' => (string) $row->tipo_tarea_descripcion,
                 'saldo' => $running,
@@ -258,6 +266,7 @@ final class PartesInformeOperations
             'r.es_tarea',
             'u.code as usuario_code', 'u.nombre as usuario_nombre',
             'c.code as cliente_code', 'c.nombre as cliente_nombre',
+            'c.erp_cliente', 'c.erp_articulo',
             't.code as tipo_tarea_code', 't.descripcion as tipo_tarea_descripcion',
         ];
     }

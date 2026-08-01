@@ -19,7 +19,8 @@ import {
 } from './partesMaestrosApi'
 
 export type MaestroField =
-  | { key: string; label: string; type: 'text' | 'check' }
+  | { key: string; label: string; type: 'text'; maxLength?: number }
+  | { key: string; label: string; type: 'check' }
   | { key: string; label: string; type: 'user' }
   | {
       key: string
@@ -207,6 +208,7 @@ export function MaestroCrudPage({
               {field.type === 'text' ? (
                 <TextBox
                   value={String(form[field.key] ?? '')}
+                  maxLength={field.maxLength}
                   onValueChanged={(e) => setForm((prev) => ({ ...prev, [field.key]: e.value }))}
                 />
               ) : null}

@@ -34,6 +34,8 @@ erDiagram
         bigint tipo_cliente_id FK
         string code UK
         string email
+        string erp_cliente
+        string erp_articulo
         bit activo
         bit inhabilitado
     }
@@ -116,6 +118,7 @@ Tabla Sanctum / autenticación común. Columnas de negocio del módulo **no** vi
 | `user_id` | NULL = sin acceso autenticado; si no NULL, UNIQUE |
 | `tipo_cliente_id` | NOT NULL → tipos cliente |
 | `code` | UNIQUE |
+| `erp_cliente` / `erp_articulo` | `nvarchar(15)` opcionales; referencias ERP para facturación (API `erpCliente` / `erpArticulo`) |
 
 ### `PQ_PARTES_TIPOS_CLIENTE` / `PQ_PARTES_TIPOS_TAREA`
 
