@@ -384,6 +384,69 @@ class ApiV1PartesMasivoTest extends TestCase
         }
     }
 
+    public function test_masivo_excluye_compras_y_lote_rechaza_no_es_tarea(): void
+    {
+        $token = $this->loginAdmin();
+        $cat = $this->seedCatalogos();
+        $tarea = $this->createTarea($token, $cat, 'Tarea masivo');
+        $hoy = now()->toDateString();
+
+        $compraId = (int) DB::table('PQ_PARTES_REGISTRO_TAREA')->insertGetId([
+            'usuario_id' => $cat['asistenteId'],
+            'cliente_id' => $cat['clienteId'],
+            'tipo_tarea_id' => $cat['tipoId'],
+            'fecha' => $hoy,
+            'duracion_minutos' => 120,
+            'sin_cargo' => false,
+            'presencial' => false,
+            'observacion' => 'Compra paquete',
+            'cerrado' => false,
+            'es_tarea' => false,
+            'row_version' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $compraRv = $this->encodeCurrent($compraId);
+
+        $list = $this->getJson(
+            '/api/v1/partes/tareas?fechaDesde='.$hoy.'&fechaHasta='.$hoy,
+            $this->authHeaders($token)
+        );
+        $list->assertStatus(200);
+        $listIds = collect($list->json('resultado.items'))->pluck('id')->all();
+        $this->assertContains($tarea['id'], $listIds);
+        $this->assertNotContains($compraId, $listIds);
+
+        $ids = $this->getJson(
+            '/api/v1/partes/tareas/ids?fechaDesde='.$hoy.'&fechaHasta='.$hoy,
+            $this->authHeaders($token)
+        );
+        $ids->assertStatus(200);
+        $idList = collect($ids->json('resultado.items'))->pluck('id')->all();
+        $this->assertContains($tarea['id'], $idList);
+        $this->assertNotContains($compraId, $idList);
+
+        $cerrar = $this->postJson('/api/v1/partes/tareas/masivo/set-cerrado', [
+            'accion' => 'cerrar',
+            'items' => [
+                ['id' => $tarea['id'], 'rowVersion' => $tarea['rowVersion']],
+                ['id' => $compraId, 'rowVersion' => $compraRv],
+            ],
+        ], $this->authHeaders($token));
+        $cerrar->assertStatus(422)->assertJsonPath('respuesta', 'partes.masivo.noEsTarea');
+        $this->assertFalse((bool) DB::table('PQ_PARTES_REGISTRO_TAREA')->where('id', $tarea['id'])->value('cerrado'));
+
+        $upd = $this->postJson('/api/v1/partes/tareas/masivo/actualizar', [
+            'campos' => ['sinCargo' => true],
+            'items' => [
+                ['id' => $tarea['id'], 'rowVersion' => $tarea['rowVersion']],
+                ['id' => $compraId, 'rowVersion' => $compraRv],
+            ],
+        ], $this->authHeaders($token));
+        $upd->assertStatus(422)->assertJsonPath('respuesta', 'partes.masivo.noEsTarea');
+        $this->assertFalse((bool) DB::table('PQ_PARTES_REGISTRO_TAREA')->where('id', $tarea['id'])->value('sin_cargo'));
+    }
+
     private function encodeCurrent(int $id): string
     {
         $rv = DB::table('PQ_PARTES_REGISTRO_TAREA')->where('id', $id)->value('row_version');

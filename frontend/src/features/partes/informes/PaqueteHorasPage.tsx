@@ -1,161 +1,286 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import Chart, {
-  ArgumentAxis,
-  CommonSeriesSettings,
-  Legend,
-  Series,
-  Tooltip,
-  ValueAxis,
-} from 'devextreme-react/chart'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Column, Paging, Pager } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
-import { resolveAuthMessage } from '../../auth/authMessages'
-import { getAuthToken } from '../../auth/authSessionStore'
+import SelectBox from 'devextreme-react/select-box'
+import PivotGrid, { FieldChooser, FieldPanel, type PivotGridRef } from 'devextreme-react/pivot-grid'
+import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source'
+import type dxPivotGrid from 'devextreme/ui/pivot_grid'
+import { useTranslation } from 'react-i18next'
+import {
+  getPivotLocalizedUiTexts,
+  isNativeApp,
+  PivotLayoutsBar,
+  ProcessDataGrid,
+} from '@paqsuite/react-core'
+import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
-import { formatMinutosAsHhMm } from '../carga/partesTareaDuration'
-import { currentMonthValue, monthRange } from './PartesDashboardPage'
+import { resolveAuthMessage } from '../../auth/authMessages'
+import { listCatalogo } from '../maestros/partesMaestrosApi'
+import { formatMinutosAsHhMm, todayIsoDate } from '../carga/partesTareaDuration'
+import { monthRange, currentMonthValue } from './PartesDashboardPage'
 import { fetchPaqueteHoras } from './partesInformeApi'
-import { LoadingOverlay, ProcessDataGrid } from '@paqsuite/react-core'
+import { buildPaqueteHorasPivotFields } from './partesInformePivotFields'
+import { enrichRowsWithDiaSemana } from './partesInformeDiaSemana'
 
 function formatDuracionCell(cell: { value?: unknown }) {
   return formatMinutosAsHhMm(Number(cell.value ?? 0))
 }
 
+function getPivotInstance(ref: PivotGridRef | null): dxPivotGrid | undefined {
+  if (!ref) {
+    return undefined
+  }
+  if (typeof ref.instance === 'function') {
+    return ref.instance()
+  }
+  return undefined
+}
+
 export function PaqueteHorasPage() {
-  const [mes, setMes] = useState(currentMonthValue())
-  const range = monthRange(mes)
-  const [totalMinutos, setTotalMinutos] = useState(0)
-  const [cantidadTareas, setCantidadTareas] = useState(0)
-  const [porCliente, setPorCliente] = useState<Record<string, unknown>[]>([])
-  const [porTipo, setPorTipo] = useState<Record<string, unknown>[]>([])
-  const [serie, setSerie] = useState<'cliente' | 'tipo'>('cliente')
+  const { t, i18n } = useTranslation()
+  const native = isNativeApp()
+  const session = getAuthSession()
+  const esCliente = session?.partes?.tipoFuncional === 'cliente'
+  const defaultRange = monthRange(currentMonthValue())
+  const [fechaDesde, setFechaDesde] = useState(defaultRange.fechaDesde)
+  const [fechaHasta, setFechaHasta] = useState(defaultRange.fechaHasta)
+  const [clienteId, setClienteId] = useState<number | null>(null)
+  const [clientes, setClientes] = useState<Record<string, unknown>[]>([])
+  const [rawRows, setRawRows] = useState<Record<string, unknown>[]>([])
+  const [saldoInicial, setSaldoInicial] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [mode, setMode] = useState<'grid' | 'pivot'>('grid')
+  const [pivotRemountKey, setPivotRemountKey] = useState(0)
+  const pivotRef = useRef<PivotGridRef>(null)
+
+  const rows = useMemo(
+    () => enrichRowsWithDiaSemana(rawRows, t, 'fecha'),
+    [rawRows, t, i18n.language]
+  )
+
+  const pivotRows = useMemo(
+    () => rows.filter((row) => !row.esSaldoInicial),
+    [rows]
+  )
+
+  useEffect(() => {
+    if (esCliente) {
+      return
+    }
+    void listCatalogo('clientes').then((result) => {
+      if (result.kind === 'ok') {
+        setClientes(result.envelope.resultado.items ?? [])
+      }
+    })
+  }, [esCliente])
 
   const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      const result = await fetchPaqueteHoras(range)
+      const result = await fetchPaqueteHoras({
+        fechaDesde,
+        fechaHasta,
+        clienteId: esCliente ? undefined : clienteId,
+      })
       if (result.kind === 'ok') {
-        setTotalMinutos(result.envelope.resultado.totalMinutos)
-        setCantidadTareas(result.envelope.resultado.cantidadTareas)
-        setPorCliente(result.envelope.resultado.porCliente ?? [])
-        setPorTipo(result.envelope.resultado.porTipo ?? [])
+        setRawRows(result.envelope.resultado.items ?? [])
+        setSaldoInicial(result.envelope.resultado.saldoInicial ?? 0)
+        if ((result.envelope.resultado.total ?? 0) <= 1) {
+          setError(resolveAuthMessage('partes.consulta.empty'))
+        }
       } else if (result.kind === 'envelopeError') {
         setError(resolveAuthMessage(result.envelope.respuesta))
       }
     } finally {
       setLoading(false)
     }
-  }, [range.fechaDesde, range.fechaHasta])
+  }, [fechaDesde, fechaHasta, clienteId, esCliente])
 
+  // Carga inicial únicamente; cambios de filtro se aplican con «Buscar»
+  // (evitar overlay a mitad de edición del DateBox).
   useEffect(() => {
     void load()
-  }, [load])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo mount
+  }, [])
 
-  const chartData = useMemo(() => {
-    const source = serie === 'cliente' ? porCliente : porTipo
-    return source.map((row) => ({
-      arg: String(row.ejeCodigo ?? row.ejeDescripcion ?? ''),
-      val: Number(row.totalMinutos ?? 0),
-    }))
-  }, [serie, porCliente, porTipo])
+  const pivotSource = useMemo(
+    () =>
+      new PivotGridDataSource({
+        retrieveFields: false,
+        fields: buildPaqueteHorasPivotFields(t, i18n.language),
+        store: pivotRows,
+      }),
+    [pivotRows, t, i18n.language, pivotRemountKey]
+  )
+
+  const pivotUiTexts = useMemo(
+    () => getPivotLocalizedUiTexts(i18n.language),
+    [i18n.language]
+  )
+
+  const pivotInstanceKey = `${pivotRemountKey}-${i18n.language}`
 
   return (
     <div data-testid="partesPaqueteHorasPage" style={{ padding: 16 }}>
-      <LoadingOverlay visible={loading} />
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-        <h2 style={{ margin: 0, flex: 1 }}>Paquete de horas</h2>
+      <h2>Paquete de horas</h2>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'end', flexWrap: 'wrap' }}>
         <DateBox
-          value={mes}
+          value={fechaDesde}
           type="date"
-          displayFormat="yyyy-MM"
-          calendarOptions={{ zoomLevel: 'year', maxZoomLevel: 'year', minZoomLevel: 'century' }}
+          displayFormat="dd/MM/yyyy"
+          dateSerializationFormat="yyyy-MM-dd"
+          elementAttr={{ 'data-testid': 'partesPaqueteFechaDesde' }}
           onValueChanged={(e) => {
-            if (e.value) {
-              setMes(currentMonthValue(new Date(e.value as Date)))
+            if (!e.event) {
+              return
             }
+            const next =
+              typeof e.value === 'string'
+                ? e.value.slice(0, 10)
+                : e.value
+                  ? todayIsoDate(new Date(e.value as Date))
+                  : ''
+            setFechaDesde(next)
           }}
         />
-        <Button text="Actualizar" onClick={() => void load()} />
-        <Button
-          text={serie === 'cliente' ? 'Serie: Cliente' : 'Serie: Tipo'}
-          onClick={() => setSerie((prev) => (prev === 'cliente' ? 'tipo' : 'cliente'))}
-          elementAttr={{ 'data-testid': 'partesPaqueteSerieToggle' }}
+        <DateBox
+          value={fechaHasta}
+          type="date"
+          displayFormat="dd/MM/yyyy"
+          dateSerializationFormat="yyyy-MM-dd"
+          elementAttr={{ 'data-testid': 'partesPaqueteFechaHasta' }}
+          onValueChanged={(e) => {
+            if (!e.event) {
+              return
+            }
+            const next =
+              typeof e.value === 'string'
+                ? e.value.slice(0, 10)
+                : e.value
+                  ? todayIsoDate(new Date(e.value as Date))
+                  : ''
+            setFechaHasta(next)
+          }}
         />
+        {!esCliente ? (
+          <SelectBox
+            dataSource={clientes}
+            value={clienteId}
+            displayExpr={(item: Record<string, unknown> | null) =>
+              item ? `${String(item.code ?? '')} — ${String(item.nombre ?? '')}` : ''
+            }
+            valueExpr="id"
+            searchEnabled
+            showClearButton
+            placeholder="Cliente"
+            width={280}
+            onValueChanged={(e) => {
+              if (!e.event) {
+                return
+              }
+              setClienteId((e.value as number | null) ?? null)
+            }}
+            elementAttr={{ 'data-testid': 'partesPaqueteCliente' }}
+          />
+        ) : null}
+        <Button
+          text="Buscar"
+          onClick={() => void load()}
+          disabled={loading}
+          elementAttr={{ 'data-testid': 'partesPaqueteBuscar' }}
+        />
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <strong>Saldo inicial:</strong> {formatMinutosAsHhMm(saldoInicial)}
       </div>
       {error ? <div role="alert">{error}</div> : null}
-      <div style={{ display: 'flex', gap: 24, marginBottom: 16 }}>
-        <div>
-          <strong>Total duración:</strong> {formatMinutosAsHhMm(totalMinutos)}
+      {mode === 'grid' || native ? (
+        <div data-testid="partesPaqueteHorasGrid">
+          <ProcessDataGrid
+            dataSource={rows}
+            keyExpr="id"
+            showBorders
+            loading={loading}
+            proceso="partes.informes.paqueteHoras"
+            gridId="paqueteHorasDetalle"
+            accessToken={getAuthToken()}
+            platform={buildAuthPlatformHeaders()}
+            toolbarLeading={
+              !native ? (
+                <Button
+                  text="Pivot"
+                  onClick={() => setMode('pivot')}
+                  elementAttr={{ 'data-testid': 'partesPaquetePivotToggle' }}
+                />
+              ) : undefined
+            }
+          >
+            <Paging defaultPageSize={50} />
+            <Pager visible showPageSizeSelector />
+            <Column dataField="fecha" caption={t('partes.informe.field.fecha')} dataType="date" />
+            <Column dataField="diaSemana" caption={t('partes.informe.field.diaSemana')} />
+            <Column dataField="usuarioCode" caption={t('partes.informe.field.usuarioCode')} />
+            <Column dataField="usuarioNombre" caption={t('partes.informe.field.usuarioNombre')} />
+            <Column dataField="clienteCode" caption={t('partes.informe.field.clienteCode')} />
+            <Column dataField="clienteNombre" caption={t('partes.informe.field.clienteNombre')} />
+            <Column dataField="tipoTareaCode" caption={t('partes.informe.field.tipoTareaCode')} />
+            <Column
+              dataField="tipoTareaDescripcion"
+              caption={t('partes.informe.field.tipoTareaDescripcion')}
+            />
+            <Column
+              dataField="duracionMinutos"
+              caption={t('partes.informe.field.duracion')}
+              dataType="number"
+              customizeText={formatDuracionCell}
+            />
+            <Column
+              dataField="saldo"
+              caption="Saldo"
+              dataType="number"
+              customizeText={formatDuracionCell}
+            />
+            <Column dataField="esTarea" caption="Es tarea" dataType="boolean" />
+            <Column dataField="esSaldoInicial" caption="Saldo inicial" dataType="boolean" visible={false} />
+            <Column dataField="observacion" caption={t('partes.informe.field.observacion')} />
+            <Column dataField="sinCargo" caption={t('partes.informe.field.sinCargo')} dataType="boolean" />
+            <Column dataField="presencial" caption={t('partes.informe.field.presencial')} dataType="boolean" />
+            <Column dataField="cerrado" caption={t('partes.informe.field.cerrado')} dataType="boolean" />
+          </ProcessDataGrid>
         </div>
-        <div>
-          <strong>Cantidad tareas:</strong> {cantidadTareas}
+      ) : (
+        <div data-testid="partesPaqueteHorasPivot">
+          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <Button text="Grilla" onClick={() => setMode('grid')} />
+            <PivotLayoutsBar
+              proceso="partes.informes.paqueteHoras"
+              pivotId="paqueteHoras"
+              accessToken={getAuthToken()}
+              platform={buildAuthPlatformHeaders()}
+              getPivotInstance={() => getPivotInstance(pivotRef.current)}
+              onLayoutApplied={() => setPivotRemountKey((k) => k + 1)}
+            />
+          </div>
+          <PivotGrid
+            key={pivotInstanceKey}
+            ref={pivotRef}
+            dataSource={pivotSource}
+            allowSorting
+            allowSortingBySummary
+            allowFiltering
+            showBorders
+            showColumnGrandTotals
+            showRowGrandTotals
+            texts={pivotUiTexts}
+          >
+            <FieldChooser enabled />
+            <FieldPanel visible showDataFields showRowFields showColumnFields showFilterFields />
+          </PivotGrid>
         </div>
-      </div>
-      <Chart dataSource={chartData} data-testid="partesPaqueteChart">
-        <CommonSeriesSettings argumentField="arg" valueField="val" type="bar" />
-        <Series name="Duración" />
-        <ArgumentAxis />
-        <ValueAxis
-          label={{
-            customizeText: (arg) => formatMinutosAsHhMm(Number(arg.value ?? 0)),
-          }}
-        />
-        <Legend visible={false} />
-        <Tooltip
-          enabled
-          customizeTooltip={(arg) => ({
-            text: `${arg.argumentText}: ${formatMinutosAsHhMm(Number(arg.value ?? 0))}`,
-          })}
-        />
-      </Chart>
-      <h3>Por cliente</h3>
-      <ProcessDataGrid
-        dataSource={porCliente}
-        keyExpr="ejeKey"
-        showBorders
-        proceso="partes.informes.paqueteHoras"
-        gridId="paqueteHorasCliente"
-        accessToken={getAuthToken()}
-        platform={buildAuthPlatformHeaders()}
-      >
-        <Paging defaultPageSize={20} />
-        <Pager visible showPageSizeSelector />
-        <Column dataField="ejeCodigo" caption="Código" />
-        <Column dataField="ejeDescripcion" caption="Cliente" />
-        <Column
-          dataField="totalMinutos"
-          caption="Duración"
-          dataType="number"
-          customizeText={formatDuracionCell}
-        />
-        <Column dataField="cantidadTareas" caption="Tareas" dataType="number" />
-      </ProcessDataGrid>
-      <h3>Por tipo</h3>
-      <ProcessDataGrid
-        dataSource={porTipo}
-        keyExpr="ejeKey"
-        showBorders
-        proceso="partes.informes.paqueteHoras"
-        gridId="paqueteHorasTipo"
-        accessToken={getAuthToken()}
-        platform={buildAuthPlatformHeaders()}
-      >
-        <Paging defaultPageSize={20} />
-        <Pager visible showPageSizeSelector />
-        <Column dataField="ejeCodigo" caption="Código" />
-        <Column dataField="ejeDescripcion" caption="Tipo" />
-        <Column
-          dataField="totalMinutos"
-          caption="Duración"
-          dataType="number"
-          customizeText={formatDuracionCell}
-        />
-        <Column dataField="cantidadTareas" caption="Tareas" dataType="number" />
-      </ProcessDataGrid>
+      )}
     </div>
   )
 }

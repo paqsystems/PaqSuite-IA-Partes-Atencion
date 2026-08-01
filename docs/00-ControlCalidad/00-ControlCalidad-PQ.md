@@ -46,7 +46,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 
 | # | Fecha | Estado | Resumen |
 |---|-------|--------|---------|
-
+| 1 | 31/07/2026 | Especificado | `es_tarea` + filtros carga/masivo/informes + Paquete de Horas (cuenta corriente) |
 
 ---
 
@@ -58,15 +58,19 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 |-------|--------|
 | **Fecha** | 31/07/2026 |
 | **Responsable** | Pablo Quarracino (PQ) |
-| **Estado** | Pendiente |
+| **Estado** | Especificado |
 
 ### Hallazgos
 
 Poder llevar una cuenta corriente de horas para aquellos clientes que abonan por paquete anticipado
 
+*Procesado* → [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion-update.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-consultas-dashboard-navegacion-update.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-consultas-dashboard-navegacion-update.md) (incluido en rehacer Paquete de Horas)
+
 ### Errores encontrados - Mejoras solicitadas
 
 #### Agregar atributo booleano "EsTarea"
+
+*Procesado* → [SPEC-001-update](../05-open-spec/updates/100-SistemaPartes/SPEC-001-modelo-datos-modulo-update.md) · [HU-001-update](../03-historias-usuario/updates/100-SistemaPartes/HU-001-modelo-datos-modulo-update.md) · [TR-001-update](../04-tareas/updates/100-SistemaPartes/TR-001-modelo-datos-modulo-update.md)
 
 Agregar en la tabla de tareas un atributo booleano denominado "EsTarea"
 True : es una tarea (cargada del proceso "Carga de Partes").
@@ -74,14 +78,20 @@ False : Es una compra de horas (en un proceso a definir)
 
 #### Carga de Partes y Proceso Masivo - Asignar True a "EsTarea"
 
+*Procesado* → [SPEC-004-update](../05-open-spec/updates/100-SistemaPartes/SPEC-004-operacion-carga-diaria-update.md) · [HU-004-update](../03-historias-usuario/updates/100-SistemaPartes/HU-004-operacion-carga-diaria-update.md) · [TR-004-update](../04-tareas/updates/100-SistemaPartes/TR-004-operacion-carga-diaria-update.md) · [SPEC-005-update](../05-open-spec/updates/100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) · [HU-005-update](../03-historias-usuario/updates/100-SistemaPartes/HU-005-supervision-proceso-masivo-update.md) · [TR-005-update](../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md)
+
 - Solo traer registros donde este atributo es "true"
 - Al grabar un parte (nuevo/Edicion), asignar "true" a este atributo
 
 #### Informes "Carga detallada" y "Carga agrupada" y Dashboard
 
+*Procesado* → [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion-update.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-consultas-dashboard-navegacion-update.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-consultas-dashboard-navegacion-update.md)
+
 - Filtrar los registros para que consideren unicamente los que este atributo es "true"
 
 #### Informe "Paquete de Horas" : Rehacer
+
+*Procesado* → [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion-update.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-consultas-dashboard-navegacion-update.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-consultas-dashboard-navegacion-update.md)
 
 el objetivo de este informe es poder llevar una cuenta corriente de horas para aquellos clientes que contratan paquetes de horas anticipadas
 este informe debe ser tipo grilla/pivot con las siguientes características:
@@ -91,6 +101,3 @@ este informe debe ser tipo grilla/pivot con las siguientes características:
 - debe agregar un registro "Saldo inicial" con la suma/resta de minutos hasta la fecha desde solicitada (exclusive). Si "Estarea"=true, suma, si es false, resta.
 - agregar una columna Saldo, donde en el primer registro "saldo inicial" se coloca la sumatoria antedicha, y cada registro agrega el saldo anterior más sus minutos (sumando/restando)
 - en el PIVOT, no incluir este atributo de Saldo.
-
-
-

@@ -7,8 +7,8 @@
 | ID | SPEC-001 |
 | Título | Modelo de datos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Pendiente |
-| Última actualización | 2026-07-30 |
+| Estado | En revisión |
+| Última actualización | 2026-07-31 |
 | HU relacionada(s) | [HU-001-modelo-datos-modulo](../../03-historias-usuario/100-SistemaPartes/HU-001-modelo-datos-modulo.md) |
 | TR relacionada(s) | [TR-001-modelo-datos-modulo](../../04-tareas/100-SistemaPartes/TR-001-modelo-datos-modulo.md) |
 | Fuentes | [`docs/02-producto/Sistema-Partes-IA/`](../../02-producto/Sistema-Partes-IA/) — en especial `09-modelo-datos-tecnico.md`, `02-actores-identidad-y-acceso.md`, `03-modelo-conceptual-del-dominio.md`, `04-maestros-y-catalogos.md`; diagrama operativo [`docs/modelo-datos/md-sistema-partes.md`](../../modelo-datos/md-sistema-partes.md) |

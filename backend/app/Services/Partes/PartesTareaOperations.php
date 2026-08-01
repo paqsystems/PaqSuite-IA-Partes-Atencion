@@ -187,6 +187,9 @@ final class PartesTareaOperations
                 if ($existing === null) {
                     self::fail('partes.masivo.idInexistente');
                 }
+                if (! (bool) ($existing->es_tarea ?? true)) {
+                    self::fail('partes.masivo.noEsTarea');
+                }
                 if (self::encodeRowVersion($existing->row_version) !== strtoupper(trim($rowVersion))) {
                     self::fail('partes.masivo.conflictoVersion', 409);
                 }
@@ -319,6 +322,9 @@ final class PartesTareaOperations
                 $existing = DB::table('PQ_PARTES_REGISTRO_TAREA')->where('id', $id)->first();
                 if ($existing === null) {
                     self::fail('partes.masivo.idInexistente');
+                }
+                if (! (bool) ($existing->es_tarea ?? true)) {
+                    self::fail('partes.masivo.noEsTarea');
                 }
                 if (self::encodeRowVersion($existing->row_version) !== strtoupper(trim($rowVersion))) {
                     self::fail('partes.masivo.conflictoVersion', 409);
@@ -455,6 +461,7 @@ final class PartesTareaOperations
                 'presencial' => $presencial,
                 'observacion' => $observacion,
                 'cerrado' => false,
+                'es_tarea' => true,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -482,6 +489,7 @@ final class PartesTareaOperations
                 'sin_cargo' => $sinCargo,
                 'presencial' => $presencial,
                 'observacion' => $observacion,
+                'es_tarea' => true,
                 'updated_at' => $now,
             ];
             if (Schema::getConnection()->getDriverName() !== 'sqlsrv') {
@@ -569,7 +577,8 @@ final class PartesTareaOperations
 
         $q = self::baseJoin();
         $q->whereDate('r.fecha', '>=', $fechaDesde)
-            ->whereDate('r.fecha', '<=', $fechaHasta);
+            ->whereDate('r.fecha', '<=', $fechaHasta)
+            ->where('r.es_tarea', 1);
 
         $tipo = (string) ($params['p_actor_tipo_funcional'] ?? 'asistente');
         if ($tipo === 'cliente') {
@@ -691,7 +700,7 @@ final class PartesTareaOperations
         return [
             'r.id', 'r.usuario_id', 'r.cliente_id', 'r.tipo_tarea_id', 'r.fecha',
             'r.duracion_minutos', 'r.sin_cargo', 'r.presencial', 'r.observacion', 'r.cerrado',
-            'r.row_version', 'r.created_at', 'r.updated_at',
+            'r.es_tarea', 'r.row_version', 'r.created_at', 'r.updated_at',
             'u.code as usuario_code', 'u.nombre as usuario_nombre',
             'c.code as cliente_code', 'c.nombre as cliente_nombre',
             't.code as tipo_tarea_code', 't.descripcion as tipo_tarea_descripcion',
@@ -715,6 +724,7 @@ final class PartesTareaOperations
             'presencial' => (bool) $row->presencial,
             'observacion' => (string) $row->observacion,
             'cerrado' => (bool) $row->cerrado,
+            'es_tarea' => (bool) ($row->es_tarea ?? true),
             'row_version' => self::encodeRowVersion($row->row_version),
             'usuario_code' => (string) $row->usuario_code,
             'usuario_nombre' => (string) $row->usuario_nombre,

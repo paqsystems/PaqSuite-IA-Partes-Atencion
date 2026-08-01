@@ -19,6 +19,7 @@ Una tarea registra:
 - descripcion u observacion;
 - marca de presencialidad;
 - marca de sin cargo;
+- marca **`es_tarea`** (siempre `true` en este proceso: es una tarea de carga, no una compra de horas);
 - y, cuando corresponda, su estado `cerrado`.
 
 ### Forma operativa del proceso
@@ -32,6 +33,8 @@ La definicion adoptada es que el proceso se realiza desde una **grilla de trabaj
 - eliminar registros.
 
 Como criterio funcional minimo, la grilla se abre sobre un contexto previamente acotado. Ese contexto debe incluir al menos filtros funcionales suficientes para que la carga sea ordenada y util para el usuario.
+
+**Filtro implicito `es_tarea`:** la carga diaria **solo lista y opera** registros con `es_tarea = true`. Al **grabar** (alta o edicion) una tarea desde este proceso, el sistema **asigna siempre `es_tarea = true`**.
 
 ### Quien puede cargar
 
@@ -145,6 +148,8 @@ El supervisor debe poder:
 4. Ejecutar la accion solo sobre esa seleccion (nunca sobre una seleccion vacia o invalida).
 
 Esta etapa de filtro + listado + seleccion es el nucleo ya esperado del proceso.
+
+**Filtro implicito `es_tarea`:** el proceso masivo **solo lista y opera** registros con `es_tarea = true` (tareas de carga). No incluye compras de horas (`es_tarea = false`).
 
 ### Grilla del proceso (capacidades del framework)
 

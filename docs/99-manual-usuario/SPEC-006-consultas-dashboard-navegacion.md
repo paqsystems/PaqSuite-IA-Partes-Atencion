@@ -43,8 +43,10 @@ Desde **Inicio** ves el **Dashboard** de dedicación. En **Informes** consultás
 ### Paquete de horas
 
 1. Desde Informes o el enlace del dashboard.
-2. Elegí el periodo (por defecto el mes actual).
-3. Consultá totales y desgloses en **hh:mm** (p. ej. por cliente y por tipo).
+2. Indicá **fecha desde / hasta** (y **cliente** si sos asistente o supervisor).
+3. Revisá la **cuenta corriente**: fila **Saldo inicial** (movimientos anteriores a la fecha desde) y columna **Saldo** acumulada.
+4. Incluye tareas de carga y compras de horas (si existen). En **Pivot** (web) no se muestra el campo Saldo.
+5. Duraciones en **hh:mm**.
 
 ## Particularidades
 

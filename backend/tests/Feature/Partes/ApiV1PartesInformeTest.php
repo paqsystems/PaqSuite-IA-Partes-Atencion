@@ -69,7 +69,9 @@ class ApiV1PartesInformeTest extends TestCase
             '/api/v1/partes/informes/paquete-horas?fechaDesde='.$desde.'&fechaHasta='.$hasta,
             $this->authHeaders($token)
         );
-        $paq->assertStatus(200)->assertJsonPath('resultado.totalMinutos', 0);
+        $paq->assertStatus(200)
+            ->assertJsonPath('resultado.saldoInicial', 0)
+            ->assertJsonPath('resultado.total', 1); // solo fila Saldo inicial
     }
 
     public function test_informe_detallado_con_dato(): void
@@ -240,6 +242,119 @@ class ApiV1PartesInformeTest extends TestCase
             '/api/v1/partes/informes/paquete-horas?fechaDesde='.$hoy.'&fechaHasta='.$hoy,
             $this->authHeaders($cliToken)
         );
-        $paq->assertStatus(200)->assertJsonPath('resultado.totalMinutos', 15);
+        $paq->assertStatus(200);
+        $this->assertSame(2, (int) $paq->json('resultado.total')); // saldo inicial + 1 movimiento
+        $this->assertSame(0, (int) $paq->json('resultado.saldoInicial'));
+        $this->assertSame(15, (int) $paq->json('resultado.items.1.saldo'));
+    }
+
+    public function test_es_tarea_filtro_informes_y_paquete_cuenta_corriente(): void
+    {
+        $token = $this->loginAdmin();
+        $tipoClienteId = DB::table('PQ_PARTES_TIPOS_CLIENTE')->insertGetId([
+            'code' => 'TCP',
+            'descripcion' => 'Tipo P',
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $clienteId = DB::table('PQ_PARTES_CLIENTES')->insertGetId([
+            'user_id' => null,
+            'code' => 'CLP',
+            'nombre' => 'Cliente Paquete',
+            'tipo_cliente_id' => $tipoClienteId,
+            'email' => null,
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $tipoId = (int) DB::table('PQ_PARTES_TIPOS_TAREA')->where('code', 'GEN')->value('id');
+        $asistenteId = (int) DB::table('PQ_PARTES_USUARIOS')->where('code', 'admin')->value('id');
+        $hoy = now()->toDateString();
+        $ayer = now()->subDay()->toDateString();
+
+        // Compra previa (resta en saldo inicial) + compra en periodo + tarea en periodo
+        DB::table('PQ_PARTES_REGISTRO_TAREA')->insert([
+            [
+                'usuario_id' => $asistenteId,
+                'cliente_id' => $clienteId,
+                'tipo_tarea_id' => $tipoId,
+                'fecha' => $ayer,
+                'duracion_minutos' => 100,
+                'sin_cargo' => false,
+                'presencial' => false,
+                'observacion' => 'Compra previa',
+                'cerrado' => false,
+                'es_tarea' => false,
+                'row_version' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'usuario_id' => $asistenteId,
+                'cliente_id' => $clienteId,
+                'tipo_tarea_id' => $tipoId,
+                'fecha' => $hoy,
+                'duracion_minutos' => 40,
+                'sin_cargo' => false,
+                'presencial' => false,
+                'observacion' => 'Compra hoy',
+                'cerrado' => false,
+                'es_tarea' => false,
+                'row_version' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+        $this->postJson('/api/v1/partes/tareas', [
+            'usuarioId' => $asistenteId,
+            'clienteId' => $clienteId,
+            'tipoTareaId' => $tipoId,
+            'fecha' => $hoy,
+            'duracionMinutos' => 30,
+            'observacion' => 'Tarea hoy',
+        ], $this->authHeaders($token))->assertStatus(201);
+
+        $detalle = $this->getJson(
+            '/api/v1/partes/informes/tareas?fechaDesde='.$hoy.'&fechaHasta='.$hoy,
+            $this->authHeaders($token)
+        );
+        $detalle->assertStatus(200);
+        $this->assertSame(1, (int) $detalle->json('resultado.total'));
+        $this->assertTrue((bool) $detalle->json('resultado.items.0.esTarea'));
+
+        $agr = $this->getJson(
+            '/api/v1/partes/informes/agrupado?eje=cliente&fechaDesde='.$hoy.'&fechaHasta='.$hoy.'&clienteId='.$clienteId,
+            $this->authHeaders($token)
+        );
+        $agr->assertStatus(200);
+        $this->assertSame(1, (int) $agr->json('resultado.total'));
+        $this->assertSame(30, (int) $agr->json('resultado.items.0.totalMinutos'));
+
+        $mes = now()->format('Y-m');
+        $dash = $this->getJson('/api/v1/partes/dashboard?mes='.$mes, $this->authHeaders($token));
+        $dash->assertStatus(200);
+        $this->assertSame(30, (int) $dash->json('resultado.totalMinutos'));
+
+        $paq = $this->getJson(
+            '/api/v1/partes/informes/paquete-horas?fechaDesde='.$hoy.'&fechaHasta='.$hoy.'&clienteId='.$clienteId,
+            $this->authHeaders($token)
+        );
+        $paq->assertStatus(200);
+        $this->assertSame(-100, (int) $paq->json('resultado.saldoInicial'));
+        $this->assertSame(3, (int) $paq->json('resultado.total')); // saldo + compra + tarea
+        $this->assertTrue((bool) $paq->json('resultado.items.0.esSaldoInicial'));
+        $this->assertSame(-100, (int) $paq->json('resultado.items.0.saldo'));
+
+        $movs = collect($paq->json('resultado.items'))->where('esSaldoInicial', false)->values();
+        $this->assertCount(2, $movs);
+        // Orden fecha ASC, id ASC: compra 40 luego tarea 30 (o por id)
+        $saldos = $movs->pluck('saldo')->map(fn ($v) => (int) $v)->all();
+        // -100 -40 = -140; -140 +30 = -110
+        $this->assertSame([-140, -110], $saldos);
+        $this->assertFalse((bool) $movs[0]['esTarea']);
+        $this->assertTrue((bool) $movs[1]['esTarea']);
     }
 }

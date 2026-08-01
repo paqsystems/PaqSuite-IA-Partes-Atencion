@@ -29,6 +29,8 @@ Segun el rol del usuario, puede incluir elementos como:
 
 Su finalidad es permitir lectura directa del trabajo realizado, sin perder trazabilidad del registro original.
 
+**Filtro `es_tarea`:** la consulta detallada, las consultas agrupadas y el dashboard **solo consideran** registros con `es_tarea = true` (tareas de carga). Las compras de horas quedan fuera de estas vistas.
+
 ## Consultas agrupadas
 
 El modulo debe ofrecer lecturas agrupadas de la dedicacion, al menos sobre ejes como:
@@ -173,7 +175,28 @@ Como organizacion del negocio, el modulo puede agruparse asi:
 
 - consultas detalladas;
 - consultas agrupadas;
+- **paquete de horas** (cuenta corriente de horas por cliente);
 - exportaciones cuando correspondan.
+
+## Informe Paquete de Horas (cuenta corriente)
+
+El informe **Paquete de Horas** permite llevar una **cuenta corriente de horas** para clientes que contratan paquetes de horas anticipadas.
+
+### Rasgos funcionales
+
+- Presentacion tipo **grilla / pivot** (capacidades del framework).
+- **Filtros:** fecha desde, fecha hasta, y **cliente** (cuando el usuario es asistente o supervisor). El cliente funcional solo ve su organizacion.
+- **Mismas columnas / atributos** que la consulta detallada (Carga detallada).
+- **No filtra por `es_tarea`:** incluye tareas (`es_tarea = true`) y compras/movimientos de paquete (`es_tarea = false`).
+- **Fila «Saldo inicial»:** primer registro sintetico con la suma/resta de minutos **estrictamente anteriores** a la fecha desde del filtro (fecha desde exclusive).
+  - Si `es_tarea = true` → **suma** minutos.
+  - Si `es_tarea = false` → **resta** minutos.
+- **Columna Saldo:** en «Saldo inicial» = el acumulado anterior; en cada registro siguiente = saldo previo ± minutos del registro (suma si tarea, resta si compra).
+- **Pivot:** la columna **Saldo** **no** se incluye como campo del pivot (solo en la vista grilla / detalle de movimientos).
+
+### Dependencia
+
+La alta de registros con `es_tarea = false` (compra de horas) es un **proceso a definir** aparte; este informe debe comportarse correctamente cuando existan esos movimientos.
 
 ## Criterio final
 

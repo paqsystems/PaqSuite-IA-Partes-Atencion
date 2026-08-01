@@ -25,6 +25,7 @@ class PqPartesSchemaSqliteSmokeTest extends TestCase
         }
 
         $this->assertTrue(Schema::hasColumn('PQ_PARTES_REGISTRO_TAREA', 'row_version'));
+        $this->assertTrue(Schema::hasColumn('PQ_PARTES_REGISTRO_TAREA', 'es_tarea'));
 
         $this->seed(\Database\Seeders\PqPartesTiposTareaSeeder::class);
         $gen = DB::table('PQ_PARTES_TIPOS_TAREA')->where('code', 'GEN')->first();

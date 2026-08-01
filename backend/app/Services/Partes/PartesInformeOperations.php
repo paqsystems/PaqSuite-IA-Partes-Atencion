@@ -5,7 +5,7 @@ namespace App\Services\Partes;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Contratos SP informes/dashboard (TR-006) + fachada paquete-horas (TR-007).
+ * Contratos SP informes/dashboard (TR-006) + paquete-horas cuenta corriente (TR-006-update).
  */
 final class PartesInformeOperations
 {
@@ -44,6 +44,12 @@ final class PartesInformeOperations
         return max(0, (int) ($row->valor_int ?? 60));
     }
 
+    /** Signed minutes: tarea suma, compra resta. */
+    public static function signedMinutos(bool $esTarea, int $duracionMinutos): int
+    {
+        return $esTarea ? $duracionMinutos : -$duracionMinutos;
+    }
+
     /** @param array<string, mixed> $params @return list<object> */
     private static function agrupado(array $params): array
     {
@@ -62,7 +68,7 @@ final class PartesInformeOperations
             self::fail('partes.consulta.granularidadRequerida');
         }
 
-        $q = self::baseFiltered($params, $fechaDesde, $fechaHasta);
+        $q = self::baseFiltered($params, $fechaDesde, $fechaHasta, true);
 
         $aggSelect = [
             DB::raw('SUM(r.duracion_minutos) as total_minutos'),
@@ -123,10 +129,10 @@ final class PartesInformeOperations
         }
         $topN = max(1, (int) ($params['p_top_n'] ?? self::resolveDashboardTopN()));
 
-        $base = self::baseFiltered($params, $fechaDesde, $fechaHasta);
+        $base = self::baseFiltered($params, $fechaDesde, $fechaHasta, true);
         $summary = (clone $base)->selectRaw('COALESCE(SUM(r.duracion_minutos),0) as total_minutos, COUNT(r.id) as cantidad_tareas')->first();
 
-        $top = self::baseFiltered($params, $fechaDesde, $fechaHasta)
+        $top = self::baseFiltered($params, $fechaDesde, $fechaHasta, true)
             ->groupBy('c.id', 'c.code', 'c.nombre')
             ->orderByDesc(DB::raw('SUM(r.duracion_minutos)'))
             ->limit($topN)
@@ -156,45 +162,139 @@ final class PartesInformeOperations
         ]];
     }
 
-    /** @param array<string, mixed> $params @return list<object> */
+    /**
+     * Cuenta corriente: saldo inicial + movimientos del periodo (sin filtrar es_tarea).
+     *
+     * @param  array<string, mixed>  $params
+     * @return list<object>
+     */
     private static function paqueteHoras(array $params): array
     {
-        $dash = self::dashboardSnapshot($params)[0];
-        $porCliente = self::agrupado(array_merge($params, ['p_eje' => 'cliente']));
-        $porTipo = self::agrupado(array_merge($params, ['p_eje' => 'tipo']));
+        self::assertActor($params);
+        $fechaDesde = trim((string) ($params['p_fecha_desde'] ?? ''));
+        $fechaHasta = trim((string) ($params['p_fecha_hasta'] ?? ''));
+        if ($fechaDesde === '' || $fechaHasta === '') {
+            self::fail('partes.tarea.fechasRequeridas');
+        }
+
+        $prevRows = self::baseScoped($params, soloTareas: false)
+            ->whereDate('r.fecha', '<', $fechaDesde)
+            ->get(['r.es_tarea', 'r.duracion_minutos']);
+
+        $saldoInicial = 0;
+        foreach ($prevRows as $prev) {
+            $saldoInicial += self::signedMinutos((bool) $prev->es_tarea, (int) $prev->duracion_minutos);
+        }
+
+        $movRows = self::baseFiltered($params, $fechaDesde, $fechaHasta, false)
+            ->orderBy('r.fecha')
+            ->orderBy('r.id')
+            ->get(self::detalleSelectColumns());
+
+        $items = [];
+        $running = $saldoInicial;
+        $items[] = (object) [
+            'id' => -1,
+            'es_saldo_inicial' => true,
+            'fecha' => $fechaDesde,
+            'usuario_id' => null,
+            'cliente_id' => null,
+            'tipo_tarea_id' => null,
+            'duracion_minutos' => $saldoInicial,
+            'sin_cargo' => false,
+            'presencial' => false,
+            'observacion' => 'Saldo inicial',
+            'cerrado' => false,
+            'es_tarea' => true,
+            'usuario_code' => '',
+            'usuario_nombre' => '',
+            'cliente_code' => '',
+            'cliente_nombre' => '',
+            'tipo_tarea_code' => '',
+            'tipo_tarea_descripcion' => '',
+            'saldo' => $saldoInicial,
+        ];
+
+        foreach ($movRows as $row) {
+            $esTarea = (bool) ($row->es_tarea ?? true);
+            $duracion = (int) $row->duracion_minutos;
+            $running += self::signedMinutos($esTarea, $duracion);
+            $items[] = (object) [
+                'id' => (int) $row->id,
+                'es_saldo_inicial' => false,
+                'fecha' => (string) $row->fecha,
+                'usuario_id' => (int) $row->usuario_id,
+                'cliente_id' => (int) $row->cliente_id,
+                'tipo_tarea_id' => (int) $row->tipo_tarea_id,
+                'duracion_minutos' => $duracion,
+                'sin_cargo' => (bool) $row->sin_cargo,
+                'presencial' => (bool) $row->presencial,
+                'observacion' => (string) $row->observacion,
+                'cerrado' => (bool) $row->cerrado,
+                'es_tarea' => $esTarea,
+                'usuario_code' => (string) $row->usuario_code,
+                'usuario_nombre' => (string) $row->usuario_nombre,
+                'cliente_code' => (string) $row->cliente_code,
+                'cliente_nombre' => (string) $row->cliente_nombre,
+                'tipo_tarea_code' => (string) $row->tipo_tarea_code,
+                'tipo_tarea_descripcion' => (string) $row->tipo_tarea_descripcion,
+                'saldo' => $running,
+            ];
+        }
 
         return [(object) [
-            'total_minutos' => (int) $dash->total_minutos,
-            'cantidad_tareas' => (int) $dash->cantidad_tareas,
-            'por_cliente_json' => json_encode(array_map(static fn ($r) => [
-                'ejeKey' => $r->eje_key,
-                'ejeCodigo' => $r->eje_codigo,
-                'ejeDescripcion' => $r->eje_descripcion,
-                'totalMinutos' => $r->total_minutos,
-                'cantidadTareas' => $r->cantidad_tareas,
-            ], $porCliente), JSON_UNESCAPED_UNICODE),
-            'por_tipo_json' => json_encode(array_map(static fn ($r) => [
-                'ejeKey' => $r->eje_key,
-                'ejeCodigo' => $r->eje_codigo,
-                'ejeDescripcion' => $r->eje_descripcion,
-                'totalMinutos' => $r->total_minutos,
-                'cantidadTareas' => $r->cantidad_tareas,
-            ], $porTipo), JSON_UNESCAPED_UNICODE),
+            'saldo_inicial' => $saldoInicial,
+            'items_json' => json_encode($items, JSON_UNESCAPED_UNICODE),
+            'total' => count($items),
         ]];
+    }
+
+    /** @return list<string|\Illuminate\Database\Query\Expression> */
+    private static function detalleSelectColumns(): array
+    {
+        return [
+            'r.id', 'r.usuario_id', 'r.cliente_id', 'r.tipo_tarea_id', 'r.fecha',
+            'r.duracion_minutos', 'r.sin_cargo', 'r.presencial', 'r.observacion', 'r.cerrado',
+            'r.es_tarea',
+            'u.code as usuario_code', 'u.nombre as usuario_nombre',
+            'c.code as cliente_code', 'c.nombre as cliente_nombre',
+            't.code as tipo_tarea_code', 't.descripcion as tipo_tarea_descripcion',
+        ];
     }
 
     /**
      * @param  array<string, mixed>  $params
      * @return \Illuminate\Database\Query\Builder
      */
-    private static function baseFiltered(array $params, string $fechaDesde, string $fechaHasta)
+    private static function baseFiltered(
+        array $params,
+        string $fechaDesde,
+        string $fechaHasta,
+        bool $soloTareas = true
+    ) {
+        $q = self::baseScoped($params, $soloTareas);
+        $q->whereDate('r.fecha', '>=', $fechaDesde)
+            ->whereDate('r.fecha', '<=', $fechaHasta);
+
+        return $q;
+    }
+
+    /**
+     * Join + delimitación de rol/filtros (sin rango de fechas).
+     *
+     * @param  array<string, mixed>  $params
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private static function baseScoped(array $params, bool $soloTareas = true)
     {
         $q = DB::table('PQ_PARTES_REGISTRO_TAREA as r')
             ->join('PQ_PARTES_USUARIOS as u', 'u.id', '=', 'r.usuario_id')
             ->join('PQ_PARTES_CLIENTES as c', 'c.id', '=', 'r.cliente_id')
-            ->join('PQ_PARTES_TIPOS_TAREA as t', 't.id', '=', 'r.tipo_tarea_id')
-            ->whereDate('r.fecha', '>=', $fechaDesde)
-            ->whereDate('r.fecha', '<=', $fechaHasta);
+            ->join('PQ_PARTES_TIPOS_TAREA as t', 't.id', '=', 'r.tipo_tarea_id');
+
+        if ($soloTareas) {
+            $q->where('r.es_tarea', 1);
+        }
 
         $tipo = (string) ($params['p_actor_tipo_funcional'] ?? 'asistente');
         if ($tipo === 'cliente') {

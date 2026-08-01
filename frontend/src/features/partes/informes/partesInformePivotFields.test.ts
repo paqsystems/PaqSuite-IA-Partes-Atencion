@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   buildConsultaAgrupadaPivotFields,
   buildConsultaDetalladaPivotFields,
+  buildPaqueteHorasPivotFields,
 } from './partesInformePivotFields'
 
 const t = ((key: string) => `i18n:${key}`) as unknown as import('i18next').TFunction
@@ -28,5 +29,12 @@ describe('partesInformePivotFields', () => {
       'cantidadPresencial',
     ])
     expect(fields.every((field) => String(field.caption).startsWith('i18n:'))).toBe(true)
+  })
+
+  it('paquete horas: incluye esTarea y no expone saldo', () => {
+    const fields = buildPaqueteHorasPivotFields(t)
+    expect(fields.some((field) => field.dataField === 'esTarea')).toBe(true)
+    expect(fields.some((field) => field.dataField === 'saldo')).toBe(false)
+    expect(fields.some((field) => field.dataField === 'duracionMinutos')).toBe(true)
   })
 })

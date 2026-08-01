@@ -144,6 +144,7 @@ Tabla central del modulo, donde se persiste cada tarea realizada.
 | `presencial` | `bit` | No | Marca funcional (default 0) |
 | `observacion` | `nvarchar(max)` | No | Descripcion del trabajo |
 | `cerrado` | `bit` | No | Estado funcional de cierre (default 0) |
+| `es_tarea` | `bit` | No | `1` = tarea de carga de partes; `0` = compra/paquete de horas (default 1) |
 | `row_version` | `rowversion` | No | Optimistic lock (SQL Server); token opaco en API (TR-004) |
 | `created_at` | `datetime2(3)` | Si | Auditoria de alta |
 | `updated_at` | `datetime2(3)` | Si | Auditoria de modificacion |
@@ -166,6 +167,7 @@ Los vinculos con la identidad autenticable comun se expresan mediante `user_id` 
 - `PQ_PARTES_REGISTRO_TAREA` es la tabla de mayor sensibilidad funcional.
 - `duracion_minutos` se persiste como entero; la UI de carga diaria presenta y captura en **`hh:mm`**, y la grilla expone horas decimales (`duracionHoras`) solo para sumatoria DevExtreme.
 - `cerrado` pertenece al ciclo de vida de la tarea y no a una regla transversal de seguridad.
+- `es_tarea` distingue **tarea operativa** (`1`, origen carga diaria / masivo de tareas) de **compra o movimiento de paquete de horas** (`0`). La carga diaria y el proceso masivo de supervision solo operan sobre `es_tarea = 1`. El informe Paquete de Horas contempla ambos valores.
 - `is_generico` e `is_default` sostienen la semantica tecnica de seleccion de tipos de tarea.
 - La definicion conceptual adoptada exige un unico tipo de tarea por defecto y que ese tipo por defecto sea generico.
 - Un mismo `users.id` no debe figurar a la vez como asistente y como cliente (exclusividad).

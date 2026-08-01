@@ -109,8 +109,8 @@ final class PartesTareaRepository
                 continue;
             }
             $camel = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', (string) $key))));
-            if (in_array($key, ['sin_cargo', 'presencial', 'cerrado', 'sinCargo', 'presencial', 'cerrado'], true)
-                || in_array($camel, ['sinCargo', 'presencial', 'cerrado'], true)) {
+            if (in_array($key, ['sin_cargo', 'presencial', 'cerrado', 'es_tarea', 'sinCargo', 'presencial', 'cerrado', 'esTarea'], true)
+                || in_array($camel, ['sinCargo', 'presencial', 'cerrado', 'esTarea'], true)) {
                 $value = (bool) $value;
             }
             $out[$camel] = $value;

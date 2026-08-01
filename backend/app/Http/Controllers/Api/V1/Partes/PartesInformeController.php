@@ -116,17 +116,26 @@ final class PartesInformeController extends Controller
                 'p_fecha_hasta' => $fechaHasta,
                 'p_cliente_id' => $request->query('clienteId'),
                 'p_usuario_id' => $request->query('usuarioId'),
-                'p_top_n' => PartesInformeOperations::resolveDashboardTopN(),
             ]))[0] ?? null;
 
-            $porCliente = json_decode((string) ($row->por_cliente_json ?? '[]'), true) ?: [];
-            $porTipo = json_decode((string) ($row->por_tipo_json ?? '[]'), true) ?: [];
+            $itemsRaw = json_decode((string) ($row->items_json ?? '[]'), true);
+            $items = is_array($itemsRaw) ? $itemsRaw : [];
+            $itemsCamel = array_map(function ($item) {
+                $arr = is_array($item) ? $item : (array) $item;
+                $camel = $this->toCamel($arr);
+                foreach (['esSaldoInicial', 'sinCargo', 'presencial', 'cerrado', 'esTarea'] as $boolKey) {
+                    if (array_key_exists($boolKey, $camel)) {
+                        $camel[$boolKey] = (bool) $camel[$boolKey];
+                    }
+                }
+
+                return $camel;
+            }, $items);
 
             return ApiResponse::success([
-                'totalMinutos' => (int) ($row->total_minutos ?? 0),
-                'cantidadTareas' => (int) ($row->cantidad_tareas ?? 0),
-                'porCliente' => $porCliente,
-                'porTipo' => $porTipo,
+                'items' => $itemsCamel,
+                'total' => (int) ($row->total ?? count($itemsCamel)),
+                'saldoInicial' => (int) ($row->saldo_inicial ?? 0),
                 'fechaDesde' => $fechaDesde,
                 'fechaHasta' => $fechaHasta,
             ]);

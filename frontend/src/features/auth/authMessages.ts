@@ -65,6 +65,8 @@ const authMessageMap: Record<string, string> = {
   'partes.masivo.itemInvalido': 'Ítem de lote inválido.',
   'partes.masivo.atributoInvalido':
     'Atributo o valor no válido para el lote. No se aplicaron cambios.',
+  'partes.masivo.noEsTarea':
+    'El lote incluye registros que no son tareas de carga. No se aplicaron cambios.',
   'roles.delete.hasPermisos':
     'No se puede eliminar el rol: está asignado a uno o más permisos.',
   'shell.blockedNoCompany': 'No tiene empresas habilitadas.',

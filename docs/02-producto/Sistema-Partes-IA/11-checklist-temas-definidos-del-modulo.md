@@ -80,6 +80,8 @@
 - [x] Regla de marcas funcionales *(Sin cargo / Presencial visibles en grilla de carga diaria)*
 - [x] Presentacion grilla carga: Cliente y Tipo = descripcion (codigos opcionales en chooser)
 - [x] Estado `cerrado`
+- [x] Atributo `es_tarea` en registro (true = tarea de carga; false = compra de horas)
+- [x] Carga diaria: solo lista `es_tarea = true`; al grabar asigna `es_tarea = true`
 - [x] Edicion y eliminacion segun rol y estado
 - [x] Complemento por IA en la carga *(definido como **fuera del MVP**; evolutivo — ver checklist Evolución)*
 
@@ -88,6 +90,7 @@
 - [x] Supervision como ampliacion del mismo dominio
 - [x] Vista sobre tareas de terceros
 - [x] Proceso masivo sobre tareas
+- [x] Proceso masivo: solo lista `es_tarea = true`
 - [x] Seleccion explicita de registros *(incluye seleccionar todos del conjunto)*
 - [x] Filtros previos del proceso masivo *(periodo obligatorio; cliente / asistente / estado opcionales)*
 - [x] Validacion de seleccion no vacia
@@ -111,7 +114,8 @@
 
 - [x] Consulta detallada de tareas *(duración UI `hh:mm`)*
 - [x] Consultas agrupadas *(totales tiempo UI `hh:mm`)*
-- [x] Paquete de horas *(totales/grillas/chart tooltip en `hh:mm`)*
+- [x] Paquete de horas *(cuenta corriente: saldo inicial + columna Saldo; no filtra por `es_tarea`; pivot sin Saldo; mismos atributos que carga detallada)*
+- [x] Consulta detallada / agrupadas / dashboard: solo `es_tarea = true`
 - [x] Restricciones por perfil en consultas
 - [x] Resultados vacios con acciones deshabilitadas
 - [x] Reutilizacion de grillas del framework

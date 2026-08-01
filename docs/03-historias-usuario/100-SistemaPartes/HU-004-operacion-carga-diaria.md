@@ -8,8 +8,8 @@
 | Título | Operación / carga diaria de tareas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente |
-| Última actualización | 2026-07-30 |
+| Estado | En Control Calidad |
+| Última actualización | 2026-07-31 |
 | SPEC origen | [SPEC-004-operacion-carga-diaria](../../05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md) |
 | TR relacionada(s) | [TR-004-operacion-carga-diaria](../../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md) |
 

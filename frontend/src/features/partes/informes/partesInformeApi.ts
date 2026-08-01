@@ -65,13 +65,24 @@ export async function fetchInformeAgrupado(query: Record<string, string>) {
   )
 }
 
-export async function fetchPaqueteHoras(query: { fechaDesde: string; fechaHasta: string }) {
-  const params = new URLSearchParams(query)
+export async function fetchPaqueteHoras(query: {
+  fechaDesde: string
+  fechaHasta: string
+  clienteId?: number | null
+}) {
+  const params = new URLSearchParams({
+    fechaDesde: query.fechaDesde,
+    fechaHasta: query.fechaHasta,
+  })
+  if (query.clienteId != null) {
+    params.set('clienteId', String(query.clienteId))
+  }
   return apiRequest<{
-    totalMinutos: number
-    cantidadTareas: number
-    porCliente: Array<Record<string, unknown>>
-    porTipo: Array<Record<string, unknown>>
+    items: Record<string, unknown>[]
+    total: number
+    saldoInicial: number
+    fechaDesde: string
+    fechaHasta: string
   }>(`/api/v1/partes/informes/paquete-horas?${params.toString()}`, {
     method: 'GET',
     headers: authHeaders(),

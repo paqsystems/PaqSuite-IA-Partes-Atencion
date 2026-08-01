@@ -67,6 +67,7 @@ erDiagram
         bit presencial
         string observacion
         bit cerrado
+        bit es_tarea
         rowversion row_version
     }
 
@@ -131,6 +132,7 @@ Tabla Sanctum / autenticación común. Columnas de negocio del módulo **no** vi
 - FKs a asistente (`usuario_id`), cliente, tipo tarea.
 - `duracion_minutos` entero; múltiplo de 15 / máx. 1440 en capa de negocio.
 - `cerrado = 1` → sin edición/eliminación normal.
+- `es_tarea` bit NOT NULL default 1: `1` = tarea de carga; `0` = compra/movimiento de paquete de horas (alta en proceso a definir). API: `esTarea`.
 - `row_version` (SQL Server `rowversion`) → optimistic lock (SPEC-004/005); conflicto → HTTP 409.
 
 ---

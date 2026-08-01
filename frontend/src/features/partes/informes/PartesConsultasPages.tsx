@@ -10,14 +10,13 @@ import { useTranslation } from 'react-i18next'
 import {
   getPivotLocalizedUiTexts,
   isNativeApp,
-  LoadingOverlay,
   PivotLayoutsBar,
   ProcessDataGrid,
 } from '@paqsuite/react-core'
 import { getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
-import { formatMinutosAsHhMm } from '../carga/partesTareaDuration'
+import { formatMinutosAsHhMm, todayIsoDate } from '../carga/partesTareaDuration'
 import { monthRange, currentMonthValue } from './PartesDashboardPage'
 import { fetchInformeAgrupado, fetchInformeTareas } from './partesInformeApi'
 import {
@@ -28,6 +27,20 @@ import { enrichRowsWithDiaSemana } from './partesInformeDiaSemana'
 
 function formatDuracionCell(cell: { value?: unknown }) {
   return formatMinutosAsHhMm(Number(cell.value ?? 0))
+}
+
+/** ISO yyyy-MM-dd desde DateBox; ignora cambios programáticos (evita bucles). */
+function isoDateFromDateBox(e: { event?: Event; value?: unknown }): string | null {
+  if (!e.event) {
+    return null
+  }
+  if (e.value == null || e.value === '') {
+    return ''
+  }
+  if (typeof e.value === 'string') {
+    return e.value.slice(0, 10)
+  }
+  return todayIsoDate(new Date(e.value as Date))
 }
 
 function getPivotInstance(ref: PivotGridRef | null): dxPivotGrid | undefined {
@@ -79,9 +92,11 @@ export function ConsultaDetalladaPage() {
     }
   }, [fechaDesde, fechaHasta])
 
+  // Carga inicial; filtros se aplican con «Buscar».
   useEffect(() => {
     void load()
-  }, [load])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo mount
+  }, [])
 
   const pivotSource = useMemo(
     () =>
@@ -121,24 +136,33 @@ export function ConsultaDetalladaPage() {
 
   return (
     <div data-testid="partesConsultaDetalladaPage" style={{ padding: 16 }}>
-      <LoadingOverlay visible={loading} />
       <h2>Consulta detallada</h2>
       <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'end' }}>
         <DateBox
           value={fechaDesde}
           type="date"
-          onValueChanged={(e) =>
-            setFechaDesde(e.value ? (e.value as Date).toISOString().slice(0, 10) : '')
-          }
+          displayFormat="dd/MM/yyyy"
+          dateSerializationFormat="yyyy-MM-dd"
+          onValueChanged={(e) => {
+            const next = isoDateFromDateBox(e)
+            if (next !== null) {
+              setFechaDesde(next)
+            }
+          }}
         />
         <DateBox
           value={fechaHasta}
           type="date"
-          onValueChanged={(e) =>
-            setFechaHasta(e.value ? (e.value as Date).toISOString().slice(0, 10) : '')
-          }
+          displayFormat="dd/MM/yyyy"
+          dateSerializationFormat="yyyy-MM-dd"
+          onValueChanged={(e) => {
+            const next = isoDateFromDateBox(e)
+            if (next !== null) {
+              setFechaHasta(next)
+            }
+          }}
         />
-        <Button text="Buscar" onClick={() => void load()} />
+        <Button text="Buscar" onClick={() => void load()} disabled={loading} />
       </div>
       {error ? <div role="alert">{error}</div> : null}
       {mode === 'grid' || native ? (
@@ -306,7 +330,8 @@ export function ConsultasAgrupadasPage() {
 
   useEffect(() => {
     void load()
-  }, [load])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo mount
+  }, [])
 
   const pivotSource = useMemo(
     () =>
@@ -347,21 +372,30 @@ export function ConsultasAgrupadasPage() {
   return (
     <div data-testid="partesConsultaAgrupadaPage" style={{ padding: 16 }}>
       <h2>Consultas agrupadas</h2>
-      <LoadingOverlay visible={loading} />
       <div style={{ display: 'flex', gap: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'end' }}>
         <DateBox
           value={fechaDesde}
           type="date"
-          onValueChanged={(e) =>
-            setFechaDesde(e.value ? (e.value as Date).toISOString().slice(0, 10) : '')
-          }
+          displayFormat="dd/MM/yyyy"
+          dateSerializationFormat="yyyy-MM-dd"
+          onValueChanged={(e) => {
+            const next = isoDateFromDateBox(e)
+            if (next !== null) {
+              setFechaDesde(next)
+            }
+          }}
         />
         <DateBox
           value={fechaHasta}
           type="date"
-          onValueChanged={(e) =>
-            setFechaHasta(e.value ? (e.value as Date).toISOString().slice(0, 10) : '')
-          }
+          displayFormat="dd/MM/yyyy"
+          dateSerializationFormat="yyyy-MM-dd"
+          onValueChanged={(e) => {
+            const next = isoDateFromDateBox(e)
+            if (next !== null) {
+              setFechaHasta(next)
+            }
+          }}
         />
         <SelectBox
           dataSource={[
@@ -388,7 +422,7 @@ export function ConsultasAgrupadasPage() {
             onValueChanged={(e) => setGranularidadFecha(String(e.value))}
           />
         ) : null}
-        <Button text="Buscar" onClick={() => void load()} />
+        <Button text="Buscar" onClick={() => void load()} disabled={loading} />
       </div>
       {error ? <div role="alert">{error}</div> : null}
       {mode === 'grid' || native ? (

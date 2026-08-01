@@ -81,6 +81,21 @@ export function buildConsultaDetalladaPivotFields(t: TFunction, locale = 'es') {
   )
 }
 
+/**
+ * Pivot Paquete de Horas: mismos campos que detalle + esTarea.
+ * **Sin** campo Saldo (R-CO-PH-03 / AC-U05).
+ */
+export function buildPaqueteHorasPivotFields(t: TFunction, locale = 'es') {
+  return [
+    ...buildConsultaDetalladaPivotFields(t, locale),
+    {
+      dataField: 'esTarea',
+      caption: 'Es tarea',
+      dataType: 'boolean' as const,
+    },
+  ]
+}
+
 /** Campos del Pivot de consultas agrupadas. */
 export function buildConsultaAgrupadaPivotFields(t: TFunction) {
   return [

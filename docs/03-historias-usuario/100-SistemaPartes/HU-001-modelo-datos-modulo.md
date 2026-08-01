@@ -8,8 +8,8 @@
 | Título | Modelo de datos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente |
-| Última actualización | 2026-07-30 |
+| Estado | En Control Calidad |
+| Última actualización | 2026-07-31 |
 | SPEC origen | [SPEC-001-modelo-datos-modulo](../../05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md) |
 | TR relacionada(s) | [TR-001-modelo-datos-modulo](../../04-tareas/100-SistemaPartes/TR-001-modelo-datos-modulo.md) |
 

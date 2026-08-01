@@ -23,11 +23,11 @@ La exportacion a Excel de **consultas / informes** sigue siendo una extension ce
 
 En cambio, la **exportacion a Excel del proceso masivo** forma parte de la definicion vigente de ese proceso (ver `05-operacion-diaria-y-supervision.md`): no se trata como linea postergada.
 
-### Cuenta corriente de horas
+### Cuenta corriente de horas / Paquete de Horas
 
-Existe la idea de una vista que muestre movimientos por fecha y un acumulado de horas por cliente en un periodo.
+La **cuenta corriente de horas** por cliente con paquetes anticipados **ya forma parte** de la definicion vigente del informe **Paquete de Horas** (ver `06-consultas-dashboard-y-navegacion.md`).
 
-Hoy debe leerse como un proceso funcional distinto y futuro, no como parte cerrada del MVP.
+Lo que sigue como evolucion / proceso a definir es la **pantalla o flujo de alta de compras de horas** (`es_tarea = false`), no el concepto de saldo en el informe.
 
 ### Auditoria de partes
 

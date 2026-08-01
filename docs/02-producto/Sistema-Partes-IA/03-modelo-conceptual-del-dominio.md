@@ -4,13 +4,14 @@
 
 El dominio de `SistemaPartes` gira alrededor del **registro de tarea**.
 
-Cada registro representa una unidad concreta de trabajo realizado:
+Cada registro representa una unidad concreta de trabajo realizado **o** un movimiento de paquete de horas:
 
-- por una persona;
+- por una persona (cuando es tarea);
 - para un cliente;
 - en una fecha determinada;
-- con una clasificacion funcional;
-- y con una duracion medible.
+- con una clasificacion funcional (cuando es tarea);
+- con una duracion medible;
+- y con la marca **`es_tarea`**: `true` = tarea de carga; `false` = compra / movimiento de paquete de horas.
 
 Todo el modelo del modulo existe para hacer posible ese registro y su posterior consulta.
 

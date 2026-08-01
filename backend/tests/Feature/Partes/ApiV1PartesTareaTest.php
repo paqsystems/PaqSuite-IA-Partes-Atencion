@@ -96,6 +96,8 @@ class ApiV1PartesTareaTest extends TestCase
         $id = (int) $create->json('resultado.item.id');
         $rv = (string) $create->json('resultado.item.rowVersion');
         $this->assertNotSame('', $rv);
+        $create->assertJsonPath('resultado.item.esTarea', true);
+        $this->assertTrue((bool) DB::table('PQ_PARTES_REGISTRO_TAREA')->where('id', $id)->value('es_tarea'));
 
         $list = $this->getJson(
             '/api/v1/partes/tareas?fechaDesde='.$hoy.'&fechaHasta='.$hoy,
@@ -103,6 +105,9 @@ class ApiV1PartesTareaTest extends TestCase
         );
         $list->assertStatus(200);
         $this->assertGreaterThanOrEqual(1, (int) $list->json('resultado.total'));
+        $listItem = collect($list->json('resultado.items'))->firstWhere('id', $id);
+        $this->assertNotNull($listItem);
+        $this->assertTrue((bool) $listItem['esTarea']);
 
         $stale = $this->putJson("/api/v1/partes/tareas/{$id}", [
             'usuarioId' => $cat['asistenteId'],
@@ -294,5 +299,64 @@ class ApiV1PartesTareaTest extends TestCase
         ], $this->authHeaders($token))
             ->assertStatus(403)
             ->assertJsonPath('respuesta', 'partes.maestros.forbidden');
+    }
+
+    public function test_list_excluye_compras_y_upsert_fuerza_es_tarea(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $hoy = now()->toDateString();
+
+        $compraId = (int) DB::table('PQ_PARTES_REGISTRO_TAREA')->insertGetId([
+            'usuario_id' => $cat['asistenteId'],
+            'cliente_id' => $cat['clienteId'],
+            'tipo_tarea_id' => $cat['tipoId'],
+            'fecha' => $hoy,
+            'duracion_minutos' => 60,
+            'sin_cargo' => false,
+            'presencial' => false,
+            'observacion' => 'Compra horas',
+            'cerrado' => false,
+            'es_tarea' => false,
+            'row_version' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $list = $this->getJson(
+            '/api/v1/partes/tareas?fechaDesde='.$hoy.'&fechaHasta='.$hoy,
+            $this->authHeaders($token)
+        );
+        $list->assertStatus(200);
+        $ids = collect($list->json('resultado.items'))->pluck('id')->all();
+        $this->assertNotContains($compraId, $ids);
+
+        $create = $this->postJson('/api/v1/partes/tareas', [
+            'usuarioId' => $cat['asistenteId'],
+            'clienteId' => $cat['clienteId'],
+            'tipoTareaId' => $cat['tipoId'],
+            'fecha' => $hoy,
+            'duracionMinutos' => 15,
+            'observacion' => 'Tarea real',
+            'sinCargo' => false,
+            'presencial' => false,
+        ], $this->authHeaders($token));
+        $create->assertStatus(201)->assertJsonPath('resultado.item.esTarea', true);
+        $tareaId = (int) $create->json('resultado.item.id');
+        $rv = (string) $create->json('resultado.item.rowVersion');
+
+        DB::table('PQ_PARTES_REGISTRO_TAREA')->where('id', $tareaId)->update(['es_tarea' => false]);
+
+        $update = $this->putJson("/api/v1/partes/tareas/{$tareaId}", [
+            'usuarioId' => $cat['asistenteId'],
+            'clienteId' => $cat['clienteId'],
+            'tipoTareaId' => $cat['tipoId'],
+            'fecha' => $hoy,
+            'duracionMinutos' => 30,
+            'observacion' => 'Edit fuerza es_tarea',
+            'rowVersion' => $rv,
+        ], $this->authHeaders($token));
+        $update->assertStatus(200)->assertJsonPath('resultado.item.esTarea', true);
+        $this->assertTrue((bool) DB::table('PQ_PARTES_REGISTRO_TAREA')->where('id', $tareaId)->value('es_tarea'));
     }
 }
