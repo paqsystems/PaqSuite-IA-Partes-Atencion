@@ -35,7 +35,7 @@ Ademas de lo que hace un asistente comun:
 - ve tareas de otros asistentes;
 - crea tareas para terceros;
 - edita o elimina tareas de terceros;
-- ejecuta el proceso masivo sobre tareas;
+- ejecuta el proceso masivo sobre tareas (filtro, seleccion y cambios en lote);
 - accede a informacion no restringida a su propia actividad;
 - administra maestros del modulo segun permisos.
 

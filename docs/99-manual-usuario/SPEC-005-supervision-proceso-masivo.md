@@ -13,19 +13,34 @@ openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masiv
 
 ## Resumen
 
-El **proceso masivo** permite a un **supervisor** cerrar o reabrir muchas tareas de una vez, sin editar el resto de los datos. Asistentes y clientes no usan esta pantalla. También podés cerrar o reabrir de a una desde la carga diaria (ver SPEC-004).
+El **proceso masivo** permite a un **supervisor** localizar tareas (por periodo y filtros opcionales), seleccionarlas y aplicar cambios en lote: **cerrar/reabrir**, o actualizar atributos permitidos (**tipo de tarea**, **sin cargo**; y en evoluciones cercanas presencial, asistente o fecha). Asistentes y clientes no usan esta pantalla. El cierre individual sigue disponible en carga diaria (SPEC-004).
 
 ## Funcionamiento
 
-### Cerrar o reabrir en lote
+### Localizar y seleccionar
 
 1. Menú **Partes** → **Proceso masivo** (un atajo desde carga **no** arrastra los filtros previos).
 2. Aplicá filtros: fechas obligatorias; cliente, asistente y estado opcionales.
-3. Seleccioná filas, o usá la opción de seleccionar todos los del resultado (si hay varias páginas, confirmá que afectará a N partes).
-4. Elegí **Cerrar** o **Reabrir**.
-5. Confirmá la acción (cantidad y resumen).
-6. El resultado es **todas o ninguna**: si algo falla, no queda un lote a medias.
-7. El listado se actualiza; si hubo conflicto, refrescá y volvé a armar la selección.
+3. Revisá el listado en la grilla (podés filtrar por columna, elegir qué columnas ver, usar plantillas y exportar a Excel).
+4. Seleccioná filas, o usá la opción de seleccionar todos los del resultado (si hay varias páginas, confirmá que afectará a N partes).
+
+### Cerrar o reabrir en lote
+
+1. Con selección hecha, elegí **Cerrar** o **Reabrir**.
+2. Confirmá la acción (cantidad y resumen).
+3. El resultado es **todas o ninguna**: si algo falla, no queda un lote a medias.
+4. El listado se actualiza; si hubo conflicto, refrescá y volvé a armar la selección.
+
+### Actualizar atributos en lote
+
+1. Con selección hecha, indicá el o los atributos a cambiar:
+   - prioridad: **tipo de tarea** y/o **sin cargo**;
+   - también: **presencial**, **asistente** y/o **fecha**.
+2. Confirmá valor(es) y cantidad.
+3. Se aplica el mismo valor a todas las filas seleccionadas (también si están cerradas).
+4. Si el tipo de tarea no es válido para el cliente de alguna fila, **no se cambia ninguna**.
+
+No se puede cambiar en lote: **cliente**, **duración** ni **descripción**.
 
 ### Supervisión puntual en carga diaria
 
@@ -34,8 +49,9 @@ El **proceso masivo** permite a un **supervisor** cerrar o reabrir muchas tareas
 
 ## Particularidades
 
-- Solo cambia el estado **cerrado**; no modifica duración, cliente ni observación en lote.
-- Acciones ya aplicadas (cerrar lo cerrado) son inocuas / idempotentes.
+- La grilla del masivo incluye filtro bajo títulos, totales, selector de columnas, plantillas y exportación a Excel.
+- Exportar a Excel **no** es importar desde Excel (eso no forma parte de este proceso).
+- Acciones ya aplicadas (cerrar lo cerrado, o el mismo valor de atributo) son inocuas / idempotentes.
 - Si se supera el tope configurado o el límite técnico (~5000), debés refinar el filtro.
 - **No disponible en la app móvil.**
 
@@ -64,7 +80,8 @@ El **proceso masivo** permite a un **supervisor** cerrar o reabrir muchas tareas
 |---------------------------------------|--------------------------------|----------------|-----------|
 | Debe indicar fecha desde y fecha hasta | `partes.tarea.fechasRequeridas` | Filtro incompleto | Completar fechas |
 | Seleccione al menos una tarea | `partes.masivo.emptySelection` | Sin selección | Marcar filas o “todos” |
-| Acción de proceso masivo no válida | `partes.masivo.accionInvalida` | Acción incorrecta | Elegir Cerrar o Reabrir |
+| Acción de proceso masivo no válida | `partes.masivo.accionInvalida` | Acción incorrecta | Elegir una acción válida |
+| Atributo o valor no válido para el lote | `partes.masivo.atributoInvalido` | p. ej. tipo incompatible con un cliente | Elegir otro tipo o reducir selección |
 | Ítem de lote inválido | `partes.masivo.itemInvalido` | Selección corrupta | Refrescar y reseleccionar |
 
 ## Errores de lógica
@@ -90,9 +107,13 @@ El **proceso masivo** permite a un **supervisor** cerrar o reabrir muchas tareas
 
 No. Hace falta una selección explícita (o “seleccionar todos” del resultado).
 
-### Si una falla, ¿se cierran las demás?
+### Si una falla, ¿se aplican las demás?
 
 No. No se aplican cambios parciales.
+
+### ¿Puedo cambiar el cliente o la duración en lote?
+
+No. Esos campos quedan fuera del proceso masivo.
 
 ### ¿Desde el celular?
 

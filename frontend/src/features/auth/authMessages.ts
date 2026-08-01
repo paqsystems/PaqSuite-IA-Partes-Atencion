@@ -63,6 +63,8 @@ const authMessageMap: Record<string, string> = {
   'partes.masivo.idInexistente': 'Algún identificador del lote no existe. No se aplicaron cambios.',
   'partes.masivo.accionInvalida': 'Acción de proceso masivo no válida.',
   'partes.masivo.itemInvalido': 'Ítem de lote inválido.',
+  'partes.masivo.atributoInvalido':
+    'Atributo o valor no válido para el lote. No se aplicaron cambios.',
   'roles.delete.hasPermisos':
     'No se puede eliminar el rol: está asignado a uno o más permisos.',
   'shell.blockedNoCompany': 'No tiene empresas habilitadas.',

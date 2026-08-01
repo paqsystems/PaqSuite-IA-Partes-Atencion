@@ -227,6 +227,8 @@ export function ConsultaDetalladaPage() {
               const dataSource = getPivotInstance(pivotRef.current)?.getDataSource()
               dataSource?.state(state)
             }}
+            getPivotComponent={() => getPivotInstance(pivotRef.current)}
+            canExport={rows.length > 0 && !loading}
           >
             <PivotGrid
               key={pivotInstanceKey}
@@ -467,6 +469,8 @@ export function ConsultasAgrupadasPage() {
               const dataSource = getPivotInstance(pivotRef.current)?.getDataSource()
               dataSource?.state(state)
             }}
+            getPivotComponent={() => getPivotInstance(pivotRef.current)}
+            canExport={rows.length > 0 && !loading}
           >
             <PivotGrid
               key={pivotInstanceKey}

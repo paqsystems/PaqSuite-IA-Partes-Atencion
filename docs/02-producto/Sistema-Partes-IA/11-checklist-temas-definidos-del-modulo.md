@@ -88,11 +88,24 @@
 - [x] Supervision como ampliacion del mismo dominio
 - [x] Vista sobre tareas de terceros
 - [x] Proceso masivo sobre tareas
-- [x] Seleccion explicita de registros
-- [x] Filtros previos del proceso masivo
+- [x] Seleccion explicita de registros *(incluye seleccionar todos del conjunto)*
+- [x] Filtros previos del proceso masivo *(periodo obligatorio; cliente / asistente / estado opcionales)*
 - [x] Validacion de seleccion no vacia
 - [x] Reflejo inmediato del resultado
 - [x] Criterio de atomicidad del procesamiento
+- [x] Grilla masivo con capacidades framework: fila de filtro bajo titulos
+- [x] Grilla masivo: totalizacion
+- [x] Grilla masivo: seleccion de campos (column chooser)
+- [x] Grilla masivo: plantillas de layout
+- [x] Grilla masivo: exportacion a Excel
+- [x] Accion masiva: actualizar **tipo de tarea** (prioridad)
+- [x] Accion masiva: actualizar **sin cargo** (prioridad)
+- [x] Accion masiva factible: **presencial**
+- [x] Accion masiva factible: **asistente**
+- [x] Accion masiva factible: **fecha**
+- [x] Excluidos del masivo: cliente, minutos/duracion, descripcion
+- [x] Accion masiva: cerrar / reabrir (`cerrado`)
+- [x] Confirmacion clara de atributo(s) y valor antes de aplicar
 
 ## Consultas y analitica
 

@@ -2,52 +2,60 @@
 
 ## Alcance entendido
 
-Proceso masivo web solo supervisor: filtros, select-all resultado filtrado (+ modal N si >1 página), lote atómico cerrar/reabrir con `{id,rowVersion}`, param `PartesMasivoMaxIds`, pantalla `/partes/proceso-masivo`, atajo desde carga sin filtros.
+Proceso masivo web solo supervisor:
+
+1. **Hecho (D 2026-07-30):** filtros, select-all (+ modal N), lote atómico cerrar/reabrir `{id,rowVersion}`, param `PartesMasivoMaxIds`, ruta `/partes/proceso-masivo`, atajo desde carga.
+2. **Ampliación (pendiente D):** `ProcessDataGrid` (filter row, totales, column chooser, plantillas, export Excel); `POST /partes/tareas/masivo/actualizar` + SP `pq_sp_partes_tarea_masivo_actualizar` para Must `tipoTareaId` / `sinCargo` (Should: presencial, usuarioId, fecha).
 
 ## Fuentes leídas
-- SPEC-005, HU-005, TR-005 (C1 OK)
+- Producto `05-operacion-diaria-y-supervision.md` (proceso masivo)
+- SPEC-005, HU-005, TR-005 (ampliación 2026-07-31)
 
 ## Impacto esperado
 ### Base de datos
-- SP `pq_sp_partes_tarea_masivo_set_cerrado` + `pq_sp_partes_tarea_list_ids`
-- Seed param `PartesMasivoMaxIds=0` + menú
+- Nuevo SP `pq_sp_partes_tarea_masivo_actualizar`
+- Existentes: set_cerrado + list_ids (sin cambio)
 
 ### Backend
-- `GET /partes/tareas/ids`, `POST /partes/tareas/masivo/set-cerrado`
-- 403 no supervisor; 409/422 atómicos
+- `POST /partes/tareas/masivo/actualizar`
+- Validación tipo↔cliente atómica; 422 `partes.masivo.atributoInvalido`
 
 ### Frontend
-- Pantalla masivo + select-all + confirms; link desde carga
-- i18n `partes.masivo.*`
+- Reemplazar DataGrid crudo por ProcessDataGrid + GEN templates/export
+- UI aplicar tipo + sin cargo (+ Should T7g)
 
 ### Tests
-- Feature atomic/idempotencia/tope/409; E2E cerrar 2 filas
+- Feature update + tipo inválido; E2E humo sinCargo
 
 ### Documentación
-- OpenAPI masivo
-
-### DevOps
-- migrate + seed param/menú
+- OpenAPI + manual SPEC-005
 
 ## Orden de trabajo
-1. SP + param
+1. SP actualizar
 2. API
-3. FE
-4. Tests
+3. ProcessDataGrid
+4. UI campos Must
+5. Tests / OpenAPI / manual
+6. Should (T7g)
 
 ## Riesgos
-- Select-all miles de ids → tope param + **hard 5000**
-- JSON payload size → mismo tope
-- Encoding `rowVersion` alineado a TR-004
+- Multi-cliente + un tipo → fallo total esperado
+- Tope técnico 5000 si param=0
+- No confundir export grilla con import Excel
 
 ## Tests a ejecutar
-- Feature masivo; E2E humo 2 filas
+- Feature masivo (regresión + nuevos); E2E humo
 
 ## Dudas / bloqueos
-- **Bloqueo D:** TR-002 + TR-004 (list/`rowVersion`/`esSupervisor`)
-- Tope técnico si param=0: **cerrado D1 = 5000** → 422 `partes.masivo.loteDemasiadoGrande` (FE+BE)
-- Payload SP = JSON (no TVP)
+- **Bloqueo D ampliación:** layouts/export GEN disponibles en el paquete FE del producto
+- AC-19 (Should): **diferible** en este D1 si se prioriza Must; marcar en cierre D
 
 ## Confirmación de alcance
-- Sin cambio fuera SPEC/HU/TR: **Sí**
-- No mobile masivo; no edición campos en lote
+- Sin cambio fuera SPEC/HU/TR ampliación: **Sí**
+- No mobile; no cliente/duración/descripción en lote; no import Excel/mails
+
+## Estado D (2026-07-31)
+- Must implementado: ProcessDataGrid + `POST /masivo/actualizar` + UI tipo/sinCargo
+- Should implementado: UI + API presencial / usuarioId / fecha
+- Feature `ApiV1PartesMasivoTest` OK; unit `partesMasivoCampos` OK
+- Pendiente: F1 formal

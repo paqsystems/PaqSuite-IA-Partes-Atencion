@@ -146,6 +146,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/tareas', [$t, 'list']);
             Route::get('/tareas/ids', [$t, 'listIds']);
             Route::post('/tareas/masivo/set-cerrado', [$t, 'masivoSetCerrado']);
+            Route::post('/tareas/masivo/actualizar', [$t, 'masivoActualizar']);
             Route::get('/tareas/{id}', [$t, 'show'])->whereNumber('id');
             Route::post('/tareas', [$t, 'store']);
             Route::put('/tareas/{id}', [$t, 'update'])->whereNumber('id');

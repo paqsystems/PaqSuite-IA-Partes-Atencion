@@ -70,6 +70,23 @@ final class PartesTareaController extends Controller
         }
     }
 
+    public function masivoActualizar(Request $request): JsonResponse
+    {
+        try {
+            $item = $this->repository->getOne('pq_sp_partes_tarea_masivo_actualizar', array_merge(
+                $this->actorParams($request),
+                [
+                    'p_campos_json' => $request->input('campos', []),
+                    'p_items_json' => $request->input('items', []),
+                ]
+            ));
+
+            return ApiResponse::success(['item' => $item]);
+        } catch (PartesTareaException $e) {
+            return $this->fromException($e);
+        }
+    }
+
     public function show(Request $request, int $id): JsonResponse
     {
         try {

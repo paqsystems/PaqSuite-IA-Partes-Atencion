@@ -127,22 +127,91 @@ Puede operar tambien sobre tareas de terceros, siempre dentro del universo funci
 
 ## Proceso masivo
 
-El proceso masivo es una herramienta de supervision.
+El proceso masivo es una herramienta de **supervision** sobre tareas **ya existentes**.
 
-Su objetivo principal en el MVP es actuar sobre el estado `cerrado` de un conjunto de tareas ya existentes.
+No es un alta de tareas ni un reemplazo de la carga diaria: es un circuito para **localizar un conjunto**, **seleccionarlo** y **aplicar cambios en lote** (atributos y/o estado `cerrado`).
 
-### Rasgos esperados del proceso
+### Que ya forma parte del proceso (descubrimiento y seleccion)
 
-- solo corresponde a supervisores;
-- trabaja sobre una seleccion explicita de registros;
-- requiere filtros previos para acotar el conjunto;
-- debe mostrar con claridad que se va a procesar;
-- no deberia ejecutarse sobre una seleccion vacia o invalida;
-- y su resultado debe quedar inmediatamente reflejado para el usuario.
+El supervisor debe poder:
+
+1. **Filtrar** el universo de tareas con:
+   - **periodo** (obligatorio);
+   - **cliente** (opcional);
+   - **asistente** (opcional);
+   - **estado** / cerrado (opcional).
+2. **Ver** el resultado en una grilla de trabajo.
+3. **Tildar** los registros sobre los que actuara (seleccion explicita), incluyendo la opcion de seleccionar **todos** los visibles / del conjunto filtrado, segun el patron de grilla del framework.
+4. Ejecutar la accion solo sobre esa seleccion (nunca sobre una seleccion vacia o invalida).
+
+Esta etapa de filtro + listado + seleccion es el nucleo ya esperado del proceso.
+
+### Grilla del proceso (capacidades del framework)
+
+La grilla del proceso masivo debe reutilizar las capacidades comunes de grilla del framework (`ProcessDataGrid` / plantillas GEN), no una grilla “a medida” incompleta.
+
+En particular debe incorporar:
+
+- **fila de filtrado** bajo los titulos de columna;
+- **totalizacion** (sumatorias / agregados que aporten valor en el pie, tipicamente sobre duracion cuando la columna este presente);
+- **seleccion de campos** (column chooser): mostrar u ocultar columnas;
+- **plantillas** de layout de grilla (guardar / aplicar / ultimo usado, segun el contrato comun);
+- **exportacion a Excel** del conjunto presentado en la grilla.
+
+Estas capacidades se declaran aqui como **requerimiento de producto del proceso**; la implementacion concreta sigue las normas del framework, sin redefinirlas en este modulo.
+
+### Acciones sobre la seleccion
+
+Sobre los registros tildados, el supervisor debe poder aplicar cambios **masivos**.
+
+#### A) Actualizacion masiva de atributos
+
+El proceso debe permitir modificar en lote **uno o mas atributos permitidos**, aplicando el mismo valor elegido a todos los registros seleccionados.
+
+**Prioridad inmediata (must del proceso):**
+
+| Atributo | Notas |
+|----------|--------|
+| **Tipo de tarea** | Debe respetar reglas de tipos validos / habilitados y la relacion con el cliente de cada tarea (no forzar un tipo invalido para el cliente de un registro). |
+| **Sin cargo** | Marca booleana del dominio. |
+
+**Atributos factibles en el mismo circuito (should / siguientes):**
+
+| Atributo | Notas |
+|----------|--------|
+| **Presencial** | Marca booleana del dominio. |
+| **Asistente** | Cambio de propietario funcional; solo supervisor. |
+| **Fecha** | Fecha de proceso de la tarea. |
+
+**Atributos excluidos de la edicion masiva** (no entran en este proceso):
+
+| Atributo | Motivo funcional |
+|----------|------------------|
+| **Cliente** | Cambio de cliente altera el significado del registro y la validez del tipo; queda fuera del lote. |
+| **Minutos / duracion** | Ajuste individual de tiempo; no forma parte del masivo. |
+| **Descripcion / observacion** | Texto libre por tarea; no se homogeniza en lote. |
+
+La UI debe dejar claro **que atributo(s)** se van a modificar y con **que valor**, antes de confirmar.
+
+#### B) Estado `cerrado` (cerrar / reabrir)
+
+Sigue siendo una accion valida del proceso masivo: marcar o desmarcar `cerrado` sobre la seleccion, con las mismas reglas de supervision y consistencia del dominio.
+
+### Rasgos transversales
+
+- solo corresponde a **supervisores**;
+- trabaja sobre una **seleccion explicita** de registros;
+- requiere **filtros previos** (periodo obligatorio) para acotar el conjunto;
+- debe mostrar con claridad **que se va a procesar** (cantidad, accion, valores);
+- no debe ejecutarse sobre seleccion vacia o invalida;
+- el resultado debe quedar **inmediatamente reflejado** en la grilla / para el usuario;
+- las validaciones de negocio de cada atributo (tipos habilitados, propiedad, cerrado, etc.) siguen vigentes en el lote: un registro que no pueda recibir el cambio no debe “pasar en silencio” de forma confusa.
 
 ### Criterio de atomicidad
 
 Cuando el proceso masivo afecte varios registros, la expectativa funcional es que no deje resultados parciales confusos si el conjunto no puede procesarse correctamente.
+
+Si en una corrida algunos registros fallan validacion (por ejemplo tipo incompatible con el cliente de esa fila), el contrato vigente ([SPEC-005](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md)) es **bloqueo total del lote** (cero cambios; mensaje claro), evitando un exito aparente parcial.
 
 ## Relacion entre operacion y supervision
 

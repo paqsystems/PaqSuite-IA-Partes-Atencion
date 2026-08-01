@@ -25,6 +25,7 @@ final class PartesTareaOperations
             'pq_sp_partes_tarea_delete' => self::delete($params),
             'pq_sp_partes_tarea_set_cerrado' => self::setCerrado($params),
             'pq_sp_partes_tarea_masivo_set_cerrado' => self::masivoSetCerrado($params),
+            'pq_sp_partes_tarea_masivo_actualizar' => self::masivoActualizar($params),
             default => throw new PartesTareaException('partes.tarea.procedureUnknown', 500),
         };
     }
@@ -214,6 +215,179 @@ final class PartesTareaOperations
             'accion' => $accion,
             'afectados' => $count,
             'ok' => 1,
+        ]];
+    }
+
+    /** @param array<string, mixed> $params @return list<object> */
+    private static function masivoActualizar(array $params): array
+    {
+        self::assertActorAsistente($params);
+        if (! (bool) ($params['p_actor_es_supervisor'] ?? false)) {
+            self::fail('partes.masivo.forbidden', 403);
+        }
+
+        $camposRaw = $params['p_campos_json'] ?? $params['p_campos'] ?? [];
+        if (is_array($camposRaw)) {
+            $campos = $camposRaw;
+        } else {
+            $decoded = json_decode((string) $camposRaw, true);
+            $campos = is_array($decoded) ? $decoded : null;
+        }
+        if (! is_array($campos) || $campos === []) {
+            self::fail('partes.masivo.atributoInvalido');
+        }
+
+        $hasTipo = array_key_exists('tipoTareaId', $campos) || array_key_exists('tipo_tarea_id', $campos);
+        $hasSinCargo = array_key_exists('sinCargo', $campos) || array_key_exists('sin_cargo', $campos);
+        $hasPresencial = array_key_exists('presencial', $campos);
+        $hasUsuario = array_key_exists('usuarioId', $campos) || array_key_exists('usuario_id', $campos);
+        $hasFecha = array_key_exists('fecha', $campos);
+
+        if (! $hasTipo && ! $hasSinCargo && ! $hasPresencial && ! $hasUsuario && ! $hasFecha) {
+            self::fail('partes.masivo.atributoInvalido');
+        }
+
+        $tipoTareaId = $hasTipo
+            ? (int) ($campos['tipoTareaId'] ?? $campos['tipo_tarea_id'] ?? 0)
+            : null;
+        if ($hasTipo && ($tipoTareaId === null || $tipoTareaId <= 0)) {
+            self::fail('partes.masivo.atributoInvalido');
+        }
+
+        $sinCargo = $hasSinCargo
+            ? filter_var($campos['sinCargo'] ?? $campos['sin_cargo'] ?? false, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)
+            : null;
+        if ($hasSinCargo && $sinCargo === null) {
+            $raw = $campos['sinCargo'] ?? $campos['sin_cargo'];
+            $sinCargo = (bool) $raw;
+        }
+
+        $presencial = $hasPresencial
+            ? filter_var($campos['presencial'] ?? false, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)
+            : null;
+        if ($hasPresencial && $presencial === null) {
+            $presencial = (bool) $campos['presencial'];
+        }
+
+        $usuarioId = $hasUsuario
+            ? (int) ($campos['usuarioId'] ?? $campos['usuario_id'] ?? 0)
+            : null;
+        if ($hasUsuario && ($usuarioId === null || $usuarioId <= 0)) {
+            self::fail('partes.masivo.atributoInvalido');
+        }
+
+        $fecha = $hasFecha ? trim((string) ($campos['fecha'] ?? '')) : null;
+        if ($hasFecha && ($fecha === null || $fecha === '')) {
+            self::fail('partes.masivo.atributoInvalido');
+        }
+
+        $itemsRaw = $params['p_items_json'] ?? '[]';
+        if (is_array($itemsRaw)) {
+            $items = $itemsRaw;
+        } else {
+            $decoded = json_decode((string) $itemsRaw, true);
+            $items = is_array($decoded) ? $decoded : null;
+        }
+        if (! is_array($items) || $items === []) {
+            self::fail('partes.masivo.emptySelection');
+        }
+
+        $count = count($items);
+        $negocio = self::resolveMasivoMaxIdsNegocio();
+        if ($negocio > 0 && $count > $negocio) {
+            self::fail('partes.masivo.topeExcedido');
+        }
+        if ($count > self::MASIVO_TECH_MAX) {
+            self::fail('partes.masivo.loteDemasiadoGrande');
+        }
+
+        if ($hasUsuario) {
+            self::assertAsistenteUsable((int) $usuarioId);
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($items as $item) {
+                if (! is_array($item)) {
+                    self::fail('partes.masivo.itemInvalido');
+                }
+                $id = (int) ($item['id'] ?? 0);
+                $rowVersion = (string) ($item['rowVersion'] ?? $item['row_version'] ?? '');
+                if ($id <= 0 || $rowVersion === '') {
+                    self::fail('partes.masivo.itemInvalido');
+                }
+                $existing = DB::table('PQ_PARTES_REGISTRO_TAREA')->where('id', $id)->first();
+                if ($existing === null) {
+                    self::fail('partes.masivo.idInexistente');
+                }
+                if (self::encodeRowVersion($existing->row_version) !== strtoupper(trim($rowVersion))) {
+                    self::fail('partes.masivo.conflictoVersion', 409);
+                }
+
+                if ($hasTipo) {
+                    try {
+                        self::assertTipoEnUniverso((int) $existing->cliente_id, (int) $tipoTareaId);
+                    } catch (PartesTareaException $e) {
+                        self::fail('partes.masivo.atributoInvalido', 422);
+                    }
+                }
+
+                $patch = ['updated_at' => now()];
+                $changed = false;
+
+                if ($hasTipo && (int) $existing->tipo_tarea_id !== (int) $tipoTareaId) {
+                    $patch['tipo_tarea_id'] = (int) $tipoTareaId;
+                    $changed = true;
+                }
+                if ($hasSinCargo && (bool) $existing->sin_cargo !== (bool) $sinCargo) {
+                    $patch['sin_cargo'] = (bool) $sinCargo;
+                    $changed = true;
+                }
+                if ($hasPresencial && (bool) $existing->presencial !== (bool) $presencial) {
+                    $patch['presencial'] = (bool) $presencial;
+                    $changed = true;
+                }
+                if ($hasUsuario && (int) $existing->usuario_id !== (int) $usuarioId) {
+                    $patch['usuario_id'] = (int) $usuarioId;
+                    $changed = true;
+                }
+                if ($hasFecha) {
+                    $existingFecha = substr((string) $existing->fecha, 0, 10);
+                    if ($existingFecha !== (string) $fecha) {
+                        $patch['fecha'] = (string) $fecha;
+                        $changed = true;
+                    }
+                }
+
+                if (! $changed) {
+                    continue;
+                }
+
+                if (Schema::getConnection()->getDriverName() !== 'sqlsrv') {
+                    $patch['row_version'] = ((int) $existing->row_version) + 1;
+                }
+                DB::table('PQ_PARTES_REGISTRO_TAREA')->where('id', $id)->update($patch);
+            }
+            DB::commit();
+        } catch (PartesTareaException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
+        return [(object) [
+            'accion' => 'actualizar',
+            'afectados' => $count,
+            'ok' => 1,
+            'campos' => array_keys(array_filter([
+                'tipoTareaId' => $hasTipo,
+                'sinCargo' => $hasSinCargo,
+                'presencial' => $hasPresencial,
+                'usuarioId' => $hasUsuario,
+                'fecha' => $hasFecha,
+            ])),
         ]];
     }
 

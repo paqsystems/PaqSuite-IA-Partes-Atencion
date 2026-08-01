@@ -67,7 +67,7 @@ Ese flujo debe mantenerse estable antes de ampliar el alcance con funciones adic
 ### Supervision
 
 - vista sobre tareas de terceros;
-- proceso masivo para cerrar o reabrir tareas;
+- proceso masivo: filtrar/seleccionar tareas y aplicar cambios en lote (atributos permitidos y/o estado `cerrado`), con grilla del framework (totales, filtro por columna, plantillas, exportacion);
 - acceso a consultas sin filtro por usuario propio.
 
 ### Consulta y analisis

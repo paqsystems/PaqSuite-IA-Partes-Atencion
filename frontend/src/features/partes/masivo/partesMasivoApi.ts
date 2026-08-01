@@ -19,6 +19,14 @@ export type TareaIdItem = {
   usuarioCode?: string
 }
 
+export type MasivoCamposUpdate = {
+  tipoTareaId?: number
+  sinCargo?: boolean
+  presencial?: boolean
+  usuarioId?: number
+  fecha?: string
+}
+
 export async function listTareaIds(query: Omit<TareaListQuery, 'page' | 'pageSize'>) {
   const params = new URLSearchParams({
     fechaDesde: query.fechaDesde,
@@ -51,6 +59,21 @@ export async function masivoSetCerrado(
       method: 'POST',
       headers: authHeaders(),
       body: JSON.stringify({ accion, items }),
+      platform: platform(),
+    }
+  )
+}
+
+export async function masivoActualizar(
+  campos: MasivoCamposUpdate,
+  items: Array<{ id: number; rowVersion: string }>
+) {
+  return apiRequest<{ item: { accion: string; afectados: number; ok: number; campos?: string[] } }>(
+    '/api/v1/partes/tareas/masivo/actualizar',
+    {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ campos, items }),
       platform: platform(),
     }
   )

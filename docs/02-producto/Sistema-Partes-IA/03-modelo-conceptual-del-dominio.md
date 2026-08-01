@@ -163,7 +163,7 @@ Proceso principal mediante el cual un asistente o supervisor trabaja sobre una g
 
 ### Proceso masivo
 
-Proceso supervisor que actua sobre un conjunto de tareas ya existentes.
+Proceso supervisor que, sobre un conjunto de tareas ya existentes acotado por filtros (periodo obligatorio; cliente, asistente y estado opcionales), permite seleccionar registros y aplicar cambios en lote: actualizacion masiva de atributos permitidos (prioridad: tipo de tarea y sin cargo; factibles: presencial, asistente, fecha; excluidos: cliente, duracion, descripcion) y/o cerrar-reabrir, sobre una grilla con capacidades del framework (filtro por columna, totales, column chooser, plantillas, exportacion Excel).
 
 ### Consulta
 

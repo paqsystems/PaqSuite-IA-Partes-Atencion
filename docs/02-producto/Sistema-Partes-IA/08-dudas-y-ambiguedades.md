@@ -99,12 +99,14 @@ Pendiente menor: ~~efecto exacto sobre sesion Bearer ya abierta~~ → **cerrado:
 
 ### 4. Auditoria de partes
 
-La linea futura llamada "auditoria de partes" sigue necesitando profundizacion conceptual.
+La linea futura llamada "auditoria de partes" sigue necesitando profundizacion conceptual respecto de **importacion Excel** y **notificacion / mails**.
 
-Todavia no esta cerrado si debe tratarse como:
+La **edicion masiva de atributos permitidos** ya no queda abierta aqui: forma parte del proceso masivo definido en `05-operacion-diaria-y-supervision.md`.
+
+Todavia no esta cerrado si el resto de la auditoria debe tratarse como:
 
 - una sola epica futura;
-- o varias capacidades separadas, por ejemplo consulta, edicion masiva, importacion y notificacion.
+- o capacidades separadas (consulta ampliada, importacion, notificacion).
 
 ### 5. Aplicacion del campo empresa en mobile
 

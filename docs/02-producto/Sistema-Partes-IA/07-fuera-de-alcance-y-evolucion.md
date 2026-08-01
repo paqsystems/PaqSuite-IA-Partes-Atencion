@@ -19,9 +19,9 @@ Toda idea futura es valida como orientacion, pero no debe contaminar la fuente d
 
 ### Exportacion
 
-La exportacion debe leerse como una evolucion inmediata del modulo, apoyada en las capacidades comunes del framework.
+La exportacion a Excel de **consultas / informes** sigue siendo una extension cercana apoyada en el framework.
 
-No se considera parte del nucleo minimo imprescindible del MVP base, pero si una extension cercana y esperable de las consultas.
+En cambio, la **exportacion a Excel del proceso masivo** forma parte de la definicion vigente de ese proceso (ver `05-operacion-diaria-y-supervision.md`): no se trata como linea postergada.
 
 ### Cuenta corriente de horas
 
@@ -31,9 +31,11 @@ Hoy debe leerse como un proceso funcional distinto y futuro, no como parte cerra
 
 ### Auditoria de partes
 
-Existe la idea de una pantalla supervisor con edicion masiva ampliada, importacion desde Excel y envio selectivo de mails.
+Existe la idea de una pantalla supervisor con **importacion desde Excel** y **envio selectivo de mails**, mas otras capacidades de auditoria ampliada.
 
-Mientras no se cierre formalmente, debe considerarse una evolucion distinta del proceso masivo MVP y no un detalle ya definido del mismo.
+Eso **no** se confunde con el proceso masivo ya definido: la **edicion masiva de atributos permitidos** (tipo de tarea, sin cargo, y los factibles documentados) pertenece al proceso masivo en `05-operacion-diaria-y-supervision.md`.
+
+Mientras no se cierre formalmente, la auditoria con importacion Excel y mails sigue siendo evolucion distinta.
 
 ### Costeo de horas
 
