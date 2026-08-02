@@ -27,6 +27,7 @@
   "chatAssistant.message.counter": "caractères",
   "chatAssistant.attachImages": "Choisir sur l'appareil",
   "chatAssistant.attachImages.hint": "Maximum 4 images · 2 Mio chacune · formats courants (JPG, PNG, WebP…).",
+  "chatAssistant.attachedImages.remove": "Retirer l'image",
   "chatAssistant.dropZone.title": "Joindre des images (facultatif)",
   "chatAssistant.dropZone.primary": "Glissez-déposez les images dans ce cadre",
   "chatAssistant.dropZone.or": "ou",
