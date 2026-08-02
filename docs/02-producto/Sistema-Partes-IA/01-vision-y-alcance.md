@@ -87,7 +87,8 @@ Quedan fuera del MVP, salvo decision explicita posterior:
 - analitica avanzada de tipo BI;
 - automatizaciones sofisticadas de IA;
 - exportacion entendida como capacidad obligatoria dentro del MVP base;
-- procesos de auditoria o importacion masiva aun no cerrados conceptualmente.
+- procesos de auditoria ampliada (mails / consulta auditora) aun no cerrados conceptualmente;
+- la **importacion de partes desde Excel** ya tiene definición de producto en `13-importacion-partes-excel.md` y TR-009 (C 2026-08-02; pendiente C1/D).
 
 ## Relacion con el framework comun
 

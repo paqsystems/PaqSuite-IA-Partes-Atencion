@@ -4,6 +4,7 @@ import {
   buildTramoOptions,
   formatMinutosAsHhMm,
   isFechaFutura,
+  isoDateFromDateBox,
   isValidDuracionMinutos,
   minutosToHorasDecimal,
   parseHhMmToMinutos,
@@ -53,5 +54,16 @@ describe('partesTareaDuration', () => {
   it('detecta fecha futura', () => {
     expect(isFechaFutura('2099-01-01', '2026-07-30')).toBe(true)
     expect(isFechaFutura('2026-07-30', '2026-07-30')).toBe(false)
+  })
+
+  it('isoDateFromDateBox ignora cambios programáticos', () => {
+    expect(isoDateFromDateBox({ value: '2026-08-01' })).toBe(null)
+    expect(isoDateFromDateBox({ event: new Event('change'), value: '2026-08-01T12:00:00' })).toBe(
+      '2026-08-01'
+    )
+    expect(isoDateFromDateBox({ event: new Event('change'), value: null })).toBe('')
+    expect(
+      isoDateFromDateBox({ event: new Event('change'), value: new Date(2026, 7, 1) })
+    ).toBe('2026-08-01')
   })
 })

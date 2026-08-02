@@ -16,7 +16,12 @@ import {
 import { getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
-import { formatMinutosAsHhMm, todayIsoDate } from '../carga/partesTareaDuration'
+import {
+  dateDisplayFormat,
+  dateSerializationFormat,
+  formatMinutosAsHhMm,
+  isoDateFromDateBox,
+} from '../carga/partesTareaDuration'
 import { monthRange, currentMonthValue } from './PartesDashboardPage'
 import { fetchInformeAgrupado, fetchInformeTareas } from './partesInformeApi'
 import {
@@ -27,20 +32,6 @@ import { enrichRowsWithDiaSemana } from './partesInformeDiaSemana'
 
 function formatDuracionCell(cell: { value?: unknown }) {
   return formatMinutosAsHhMm(Number(cell.value ?? 0))
-}
-
-/** ISO yyyy-MM-dd desde DateBox; ignora cambios programáticos (evita bucles). */
-function isoDateFromDateBox(e: { event?: Event; value?: unknown }): string | null {
-  if (!e.event) {
-    return null
-  }
-  if (e.value == null || e.value === '') {
-    return ''
-  }
-  if (typeof e.value === 'string') {
-    return e.value.slice(0, 10)
-  }
-  return todayIsoDate(new Date(e.value as Date))
 }
 
 function getPivotInstance(ref: PivotGridRef | null): dxPivotGrid | undefined {
@@ -141,8 +132,8 @@ export function ConsultaDetalladaPage() {
         <DateBox
           value={fechaDesde}
           type="date"
-          displayFormat="dd/MM/yyyy"
-          dateSerializationFormat="yyyy-MM-dd"
+          displayFormat={dateDisplayFormat}
+          dateSerializationFormat={dateSerializationFormat}
           onValueChanged={(e) => {
             const next = isoDateFromDateBox(e)
             if (next !== null) {
@@ -153,8 +144,8 @@ export function ConsultaDetalladaPage() {
         <DateBox
           value={fechaHasta}
           type="date"
-          displayFormat="dd/MM/yyyy"
-          dateSerializationFormat="yyyy-MM-dd"
+          displayFormat={dateDisplayFormat}
+          dateSerializationFormat={dateSerializationFormat}
           onValueChanged={(e) => {
             const next = isoDateFromDateBox(e)
             if (next !== null) {
@@ -378,8 +369,8 @@ export function ConsultasAgrupadasPage() {
         <DateBox
           value={fechaDesde}
           type="date"
-          displayFormat="dd/MM/yyyy"
-          dateSerializationFormat="yyyy-MM-dd"
+          displayFormat={dateDisplayFormat}
+          dateSerializationFormat={dateSerializationFormat}
           onValueChanged={(e) => {
             const next = isoDateFromDateBox(e)
             if (next !== null) {
@@ -390,8 +381,8 @@ export function ConsultasAgrupadasPage() {
         <DateBox
           value={fechaHasta}
           type="date"
-          displayFormat="dd/MM/yyyy"
-          dateSerializationFormat="yyyy-MM-dd"
+          displayFormat={dateDisplayFormat}
+          dateSerializationFormat={dateSerializationFormat}
           onValueChanged={(e) => {
             const next = isoDateFromDateBox(e)
             if (next !== null) {

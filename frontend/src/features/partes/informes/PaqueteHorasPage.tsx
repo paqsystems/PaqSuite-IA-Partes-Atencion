@@ -17,7 +17,12 @@ import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
 import { listCatalogo } from '../maestros/partesMaestrosApi'
-import { formatMinutosAsHhMm, todayIsoDate } from '../carga/partesTareaDuration'
+import {
+  dateDisplayFormat,
+  dateSerializationFormat,
+  formatMinutosAsHhMm,
+  isoDateFromDateBox,
+} from '../carga/partesTareaDuration'
 import { monthRange, currentMonthValue } from './PartesDashboardPage'
 import { fetchPaqueteHoras } from './partesInformeApi'
 import { buildPaqueteHorasPivotFields } from './partesInformePivotFields'
@@ -130,39 +135,27 @@ export function PaqueteHorasPage() {
         <DateBox
           value={fechaDesde}
           type="date"
-          displayFormat="dd/MM/yyyy"
-          dateSerializationFormat="yyyy-MM-dd"
+          displayFormat={dateDisplayFormat}
+          dateSerializationFormat={dateSerializationFormat}
           elementAttr={{ 'data-testid': 'partesPaqueteFechaDesde' }}
           onValueChanged={(e) => {
-            if (!e.event) {
-              return
+            const next = isoDateFromDateBox(e)
+            if (next !== null) {
+              setFechaDesde(next)
             }
-            const next =
-              typeof e.value === 'string'
-                ? e.value.slice(0, 10)
-                : e.value
-                  ? todayIsoDate(new Date(e.value as Date))
-                  : ''
-            setFechaDesde(next)
           }}
         />
         <DateBox
           value={fechaHasta}
           type="date"
-          displayFormat="dd/MM/yyyy"
-          dateSerializationFormat="yyyy-MM-dd"
+          displayFormat={dateDisplayFormat}
+          dateSerializationFormat={dateSerializationFormat}
           elementAttr={{ 'data-testid': 'partesPaqueteFechaHasta' }}
           onValueChanged={(e) => {
-            if (!e.event) {
-              return
+            const next = isoDateFromDateBox(e)
+            if (next !== null) {
+              setFechaHasta(next)
             }
-            const next =
-              typeof e.value === 'string'
-                ? e.value.slice(0, 10)
-                : e.value
-                  ? todayIsoDate(new Date(e.value as Date))
-                  : ''
-            setFechaHasta(next)
           }}
         />
         {!esCliente ? (

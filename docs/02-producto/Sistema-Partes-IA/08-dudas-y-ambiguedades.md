@@ -99,14 +99,25 @@ Pendiente menor: ~~efecto exacto sobre sesion Bearer ya abierta~~ → **cerrado:
 
 ### 4. Auditoria de partes
 
-La linea futura llamada "auditoria de partes" sigue necesitando profundizacion conceptual respecto de **importacion Excel** y **notificacion / mails**.
+La linea futura llamada "auditoria de partes" sigue necesitando profundizacion conceptual respecto de **notificacion / mails** y, si aplica, consulta auditora ampliada.
 
-La **edicion masiva de atributos permitidos** ya no queda abierta aqui: forma parte del proceso masivo definido en `05-operacion-diaria-y-supervision.md`.
+La **importacion de partes (tareas) desde Excel** bajo Carga de Partes **ya no queda abierta aqui**: ver `13-importacion-partes-excel.md`. No se confunde con auditoria.
+
+La **edicion masiva de atributos permitidos** ya forma parte del proceso masivo definido en `05-operacion-diaria-y-supervision.md`.
 
 Todavia no esta cerrado si el resto de la auditoria debe tratarse como:
 
 - una sola epica futura;
-- o capacidades separadas (consulta ampliada, importacion, notificacion).
+- o capacidades separadas (consulta ampliada, notificacion).
+
+### 4.1 Importación Excel — identidad en archivo (cerrado)
+
+Ver `13-importacion-partes-excel.md`:
+
+- el **cliente no importa** (D-IMP-07);
+- columna **`cliente` siempre obligatoria** en el Excel;
+- **asistente no supervisor:** no debe cargar “otro” asistente → columna `asistente` no obligatoria y se **fuerza** el de sesión (D-IMP-04);
+- **supervisor:** `asistente` obligatorio en archivo.
 
 ### 5. Aplicacion del campo empresa en mobile
 

@@ -55,6 +55,23 @@ En la grilla ves el **nombre del cliente** y la **descripción del tipo de tarea
 | Carga | Grilla / formulario de carga diaria | Flujo kardex + una tarea (ver SPEC-007) |
 | Cierre individual | Supervisor en la misma pantalla | Según app; masivo no existe en mobile |
 
+### Importar desde Excel (web)
+
+En la misma pantalla de **Carga diaria**, debajo de los filtros, podés:
+
+1. **Descargar plantilla** — archivo Excel con las columnas esperadas.
+2. **Importar** — subir el `.xlsx`, revisar errores por fila y pulsar **Procesar** para grabar solo las filas válidas.
+
+Reglas útiles:
+
+- Cada fila grabada es una **tarea** nueva (abierta).
+- Si no sos supervisor, las tareas quedan a tu nombre (aunque el archivo traiga otra columna de asistente, esa fila falla).
+- Si sos supervisor, la columna **asistente** es obligatoria por fila.
+- Tras procesar con altas, la grilla se actualiza **sin perder** los filtros que tenías.
+- En **mobile** esta importación no está disponible.
+
+La capacidad puede estar deshabilitada en la instalación (parámetro de importación Excel); en ese caso no verás la barra de plantilla/importar.
+
 ## Condiciones de uso
 
 - Perfil asistente o supervisor.
