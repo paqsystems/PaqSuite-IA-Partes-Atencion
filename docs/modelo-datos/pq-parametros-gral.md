@@ -1,6 +1,6 @@
 # PQ_PARAMETROS_GRAL – Parámetros generales por módulo
 
-**Contexto:** Ver `docs/00-contexto/05-parametros-generales.md` para el objetivo y reglas de uso.
+**Contexto:** Ver `docs/00-contexto/_mono/04-configuracion-global/parametros-generales.md` para el objetivo y reglas de uso.
 
 **Ubicación:** Esta tabla se crea en la **base de datos de cada empresa** (Company DB), **no** en el diccionario (PQ_DICCIONARIO). Cada empresa tiene su propia instancia de esta tabla.
 
@@ -92,6 +92,6 @@ erDiagram
 
 ## Referencias
 
-- `docs/00-contexto/05-parametros-generales.md` – Objetivo y reglas
+- `docs/00-contexto/_mono/04-configuracion-global/parametros-generales.md` – Objetivo y reglas
 - `docs/03-historias-usuario/000-Generalidades/HU-007-Parametros-generales.md` – HU del proceso general
 - `docs/04-tareas/updates/000-Generalidades/TR-007-Parametros-generales-update-01.md` – Renombre CAPTION/TOOLTIP

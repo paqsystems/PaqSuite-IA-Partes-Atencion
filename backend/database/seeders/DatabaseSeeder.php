@@ -2,21 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::query()->updateOrCreate(
-            ['email' => 'dev@example.com'],
-            [
-                'name' => 'Usuario Desarrollo',
-                'password' => Hash::make('password'),
-                'permission_slugs' => ['*'],
-            ]
-        );
+        $this->call([
+            PqRolSeeder::class,
+            PqMenuSeeder::class,
+            PqPermisoSeeder::class,
+            PqPartesTiposTareaSeeder::class,
+            PqPartesUsuariosSeedSeeder::class,
+            PqPartesParametrosSeeder::class,
+        ]);
     }
 }

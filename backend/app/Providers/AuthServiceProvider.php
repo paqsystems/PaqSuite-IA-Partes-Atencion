@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+use PaqSuite\LaravelCore\Security\AccesoTotalChecker;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -21,6 +23,19 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerPolicies();
+
+        Gate::define('seguridadAdmin', function (?User $user): bool {
+            if ($user === null) {
+                return false;
+            }
+
+            $empresaId = (int) (request()->header(config('paqsuite.headers.company', 'X-Company-Id')) ?: 0);
+            if ($empresaId <= 0) {
+                $empresaId = 1;
+            }
+
+            return app(AccesoTotalChecker::class)->hasAccesoTotal((int) $user->id, $empresaId);
+        });
     }
 }
