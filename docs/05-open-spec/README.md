@@ -28,6 +28,7 @@ Documentos **SPEC-CTX-***: alcance de épica redactado como **insumo previo** al
 | [SPEC-005](100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) | Supervisión / proceso masivo | [HU-005](../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) · [TR-005](../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 | [SPEC-006](100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) | Consultas, dashboard y navegación | [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) |
 | [SPEC-007](100-SistemaPartes/SPEC-007-mobile-capacitor.md) | Mobile Capacitor del módulo | [HU-007](../03-historias-usuario/100-SistemaPartes/HU-007-mobile-capacitor.md) · [TR-007](../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) |
+| [SPEC-008](100-SistemaPartes/SPEC-008-asistente-ia-chat-documental.md) | Asistente IA — chat documental (adopción GEN-21) | [HU-008](../03-historias-usuario/100-SistemaPartes/HU-008-asistente-ia-chat-documental.md) · TR-008 *(pendiente)* |
 
 ### 001 – Generalidades (`001-Generalidades/`) — bloque vigente
 

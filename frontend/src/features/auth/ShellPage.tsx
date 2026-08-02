@@ -26,6 +26,7 @@ import { PartesProfilePanel } from './PartesProfilePanel'
 import { buildAuthPlatformHeaders } from './platformContext'
 import { PartesMenuSidebar } from '../partes/PartesMenuSidebar'
 import { partesMobilePolicy } from '../partes/mobile/partesMobilePolicy'
+import { LlmPreferencesModalHost } from '../llmCredentials/LlmPreferencesModalHost'
 import { resolveAuthMessage } from './authMessages'
 import {
   applyDevExtremeTheme,
@@ -61,6 +62,7 @@ export function AuthenticatedShell() {
   const [locale, setLocale] = useState<LocaleCode>(resolveSessionLocale)
   const [openInNewTab, setOpenInNewTab] = useState(false)
   const [profileVisible, setProfileVisible] = useState(false)
+  const [llmPreferencesVisible, setLlmPreferencesVisible] = useState(false)
   const [menuItems, setMenuItems] = useState<MenuNode[]>([])
   const menuPresentation = useMenuPresentation(session?.user.id ?? null, 'partes')
   const menuAuthValue = useMemo(
@@ -148,10 +150,15 @@ export function AuthenticatedShell() {
             <UserAvatarMenu
               userName={session?.user.usuario ?? '—'}
               isNativeApp={isNativeApp()}
+              showPreferences
+              showChat
+              showHelp={false}
               showOpenInNewTab={!isNativeApp()}
               showChangeEmpresa={showChangeEmpresa}
               openInNewTab={openInNewTab}
               onOpenInNewTabChange={(value) => void handleOpenInNewTabChange(value)}
+              onPreferences={() => setLlmPreferencesVisible(true)}
+              onChat={() => navigate('/chat-assistant')}
               onChangePassword={() => navigate('/change-password')}
               onLogout={() => {
                 void logoutAndRedirect()
@@ -164,6 +171,8 @@ export function AuthenticatedShell() {
                 changeEmpresa: t('avatar.changeEmpresa'),
                 logout: t('avatar.logout'),
                 openInNewTab: t('avatar.openInNewTab'),
+                preferences: t('avatar.preferences'),
+                chat: t('avatar.chat'),
               }}
             />
           </div>
@@ -196,6 +205,10 @@ export function AuthenticatedShell() {
         onHiding={() => setProfileVisible(false)}
         partes={session?.partes}
         loginUsuario={session?.user.usuario ?? ''}
+      />
+      <LlmPreferencesModalHost
+        visible={llmPreferencesVisible}
+        onClose={() => setLlmPreferencesVisible(false)}
       />
     </MenuAuthProvider>
   )

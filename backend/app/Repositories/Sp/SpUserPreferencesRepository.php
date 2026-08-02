@@ -31,7 +31,7 @@ final class SpUserPreferencesRepository implements UserPreferencesRepository
         return [
             'locale' => isset($row->locale) ? (string) $row->locale : null,
             'openInNewTab' => (bool) ($row->open_in_new_tab ?? $row->openInNewTab ?? false),
-            'activeLlmCredentialId' => null,
+            'activeLlmCredentialId' => $this->resolveActiveLlmCredentialId($userId),
         ];
     }
 
@@ -45,6 +45,26 @@ final class SpUserPreferencesRepository implements UserPreferencesRepository
                 : null,
         ]);
 
+        if (array_key_exists('activeLlmCredentialId', $partial)) {
+            $this->spCaller->call('pq_sp_llm_active_preference_set', [
+                'user_id' => $userId,
+                'credential_id' => $partial['activeLlmCredentialId'],
+            ]);
+        }
+
         return $this->getForUser($userId);
+    }
+
+    private function resolveActiveLlmCredentialId(int $userId): ?int
+    {
+        $row = $this->spCaller->callFirst('pq_sp_llm_active_preference_get', [
+            'user_id' => $userId,
+        ]);
+        if ($row === null) {
+            return null;
+        }
+        $value = $row->active_llm_credential_id ?? $row->activeLlmCredentialId ?? null;
+
+        return $value === null || $value === '' ? null : (int) $value;
     }
 }

@@ -38,6 +38,7 @@ import { RolesAdminPage } from '../features/admin/security/RolesAdminPage'
 import { RoleAtributosPage } from '../features/admin/security/RoleAtributosPage'
 import { PermisosAdminPage } from '../features/admin/security/PermisosAdminPage'
 import { EmpresasAdminPage } from '../features/admin/security/EmpresasAdminPage'
+import { ChatAssistantHostPage } from '../features/chatAssistant/ChatAssistantHostPage'
 import { isNativeApp } from '@paqsuite/react-core'
 
 function AuthBootstrap() {
@@ -78,6 +79,7 @@ export function AppRouter() {
               <Route path="/dashboard" element={<Navigate to="/partes" replace />} />
               <Route path="/shell" element={<Navigate to="/partes" replace />} />
               <Route path="/partes" element={<PartesDashboardPage />} />
+              <Route path="/chat-assistant" element={<ChatAssistantHostPage />} />
               <Route path="/partes/consulta" element={<ConsultaRoute />} />
               <Route path="/partes/carga" element={<ConsultaRoute />} />
               <Route path="/partes/informes/paquete-horas" element={<PaqueteHorasPage />} />

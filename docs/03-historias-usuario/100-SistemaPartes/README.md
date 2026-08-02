@@ -11,12 +11,14 @@
 | [HU-005](./HU-005-supervision-proceso-masivo.md) | Supervisión / proceso masivo | [SPEC-005](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) · [TR-005](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) | F1 OK (obs.) |
 | [HU-006](./HU-006-consultas-dashboard-navegacion.md) | Consultas, dashboard y navegación | [SPEC-006](../../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) · [TR-006](../../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) | Pendiente (C1 OK → D1) |
 | [HU-007](./HU-007-mobile-capacitor.md) | Mobile Capacitor | [SPEC-007](../../05-open-spec/100-SistemaPartes/SPEC-007-mobile-capacitor.md) · [TR-007](../../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) | Pendiente (C1 OK → D1) |
+| [HU-008](./HU-008-asistente-ia-chat-documental.md) | Asistente IA — chat documental | [SPEC-008](../../05-open-spec/100-SistemaPartes/SPEC-008-asistente-ia-chat-documental.md) · [TR-008](../../04-tareas/100-SistemaPartes/TR-008-asistente-ia-chat-documental.md) | Especificado (C+C1) |
 
 ## Estrategia
 
-1. **Parte B cerrada** (HU-001…007 + B1).
-2. **Batch de ambigüedades residuales — cerrado a nivel funcional** (2026-07-30). Detalle técnico (nombres SP, claves param exactas, policy/tests, smoke CI) → **Parte C (TR)**.
-3. Siguiente: **Parte C (TR)** por HU en orden 001→007.
+1. **Parte B** HU-001…007 + B1 — **hecho**; **HU-008** (B+B1) — **2026-08-01**.
+2. **Batch de ambigüedades residuales — cerrado a nivel funcional** (2026-07-30) para 001–007.
+3. **Parte C (TR-008)** + C1 — **2026-08-01** (Especificado).
+4. Siguiente 008: **D1 → D**.
 
 ## Preguntas abiertas residuales (batch)
 

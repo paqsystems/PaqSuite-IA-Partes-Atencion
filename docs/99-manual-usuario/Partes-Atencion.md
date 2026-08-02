@@ -38,7 +38,7 @@ Tras el login válido, el sistema abre el **Dashboard** (Inicio). El menú later
 | **Informes** | Consulta detallada, consultas agrupadas, paquete de horas | Según perfil (cliente: solo su organización) |
 | **Seguridad** | Usuarios, roles, permisos (genérico del sistema) | Administradores / supervisor |
 | **Parámetros** | Parámetros Auth y Parámetros Partes | Administradores |
-| **Avatar** | Perfil Partes (solo lectura), idioma, apariencia, salir | Todos |
+| **Avatar** | Perfil Partes (solo lectura), **Asistente IA**, Preferencias LLM, idioma, apariencia, salir | Todos |
 
 **Cliente:** Inicio + Informes (+ perfil en el avatar). Sin Archivos, Partes, Seguridad ni Parámetros de administración.
 
@@ -52,6 +52,14 @@ Tras el login válido, el sistema abre el **Dashboard** (Inicio). El menú later
 | Cerrar muchas partes | Partes → Proceso masivo | [SPEC-005](./SPEC-005-supervision-proceso-masivo.md) |
 | Ver totales e informes | Inicio / Informes | [SPEC-006](./SPEC-006-consultas-dashboard-navegacion.md) |
 | Usar el celular | App móvil | [SPEC-007](./SPEC-007-mobile-capacitor.md) |
+| Pedir ayuda documental (Asistente IA) | Avatar → **Asistente IA** | Ver sección siguiente |
+
+## Asistente IA (ayuda documental)
+
+1. Tras el login, abrí el **menú del avatar** (arriba a la derecha).
+2. Elegí **Asistente IA**.
+3. Si aún no tenés una configuración de modelo (LLM), el sistema te pedirá ir a **Preferencias** para cargar tu propia clave (BYOK).
+4. Con configuración válida, escribí tu pregunta sobre cómo usar Partes o las generalidades del Framework. El asistente **orienta**; no crea ni modifica tareas.
 
 ## Particularidades transversales
 

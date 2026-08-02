@@ -10,6 +10,7 @@ export const partesMobileAllowlist = [
   '/partes/consulta',
   '/partes/carga',
   '/partes/informes/paquete-horas',
+  '/chat-assistant',
   '/dashboard',
   '/change-password',
   '/select-empresa',

@@ -214,7 +214,7 @@ final class SpCaller
                 [(int) $params['UserId'], $params['EmpresaId'] ?? null, $params['EmpresaId'] ?? null]
             ),
             'pq_sp_user_preferences_get' => DB::select(
-                'SELECT locale, open_in_new_tab FROM users WHERE id = ?',
+                'SELECT locale, open_in_new_tab, active_llm_credential_id FROM users WHERE id = ?',
                 [(int) $params['user_id']]
             ),
             'pq_sp_user_preferences_set' => $this->sqlitePreferencesSet($params),
@@ -300,8 +300,166 @@ final class SpCaller
             'pq_sp_admin_permisos_create' => $this->sqliteAdminPermisosCreate($params),
             'pq_sp_admin_permisos_create_if_absent' => $this->sqliteAdminPermisosCreateIfAbsent($params),
             'pq_sp_admin_permisos_delete' => $this->sqliteAdminPermisosDelete($params),
+            'pq_sp_llm_credentials_list' => $this->sqliteLlmCredentialsList($params),
+            'pq_sp_llm_credentials_get' => $this->sqliteLlmCredentialsGet($params),
+            'pq_sp_llm_credentials_insert' => $this->sqliteLlmCredentialsInsert($params),
+            'pq_sp_llm_credentials_update' => $this->sqliteLlmCredentialsUpdate($params),
+            'pq_sp_llm_credentials_delete' => $this->sqliteLlmCredentialsDelete($params),
+            'pq_sp_llm_active_preference_get' => $this->sqliteLlmActivePreferenceGet($params),
+            'pq_sp_llm_active_preference_set' => $this->sqliteLlmActivePreferenceSet($params),
             default => throw new \RuntimeException("SP {$procedure} no disponible en sqlite (tests)."),
         };
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return list<object>
+     */
+    private function sqliteLlmCredentialsList(array $params): array
+    {
+        return DB::select(
+            'SELECT id, user_id, nombre, proveedor, modelo, secreto_cifrado, base_url,
+                    supports_vision, enabled, created_at, updated_at
+             FROM pq_llm_credentials
+             WHERE user_id = ?
+             ORDER BY nombre ASC, id ASC',
+            [(int) $params['user_id']]
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return list<object>
+     */
+    private function sqliteLlmCredentialsGet(array $params): array
+    {
+        return DB::select(
+            'SELECT id, user_id, nombre, proveedor, modelo, secreto_cifrado, base_url,
+                    supports_vision, enabled, created_at, updated_at
+             FROM pq_llm_credentials
+             WHERE id = ? AND user_id = ?',
+            [(int) $params['credential_id'], (int) $params['user_id']]
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return list<object>
+     */
+    private function sqliteLlmCredentialsInsert(array $params): array
+    {
+        $now = now();
+        $id = DB::table('pq_llm_credentials')->insertGetId([
+            'user_id' => (int) $params['user_id'],
+            'nombre' => (string) $params['nombre'],
+            'proveedor' => (string) $params['proveedor'],
+            'modelo' => (string) $params['modelo'],
+            'secreto_cifrado' => (string) $params['secreto_cifrado'],
+            'base_url' => $params['base_url'] ?? null,
+            'supports_vision' => (bool) ($params['supports_vision'] ?? false),
+            'enabled' => (bool) ($params['enabled'] ?? true),
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+
+        return $this->sqliteLlmCredentialsGet([
+            'credential_id' => $id,
+            'user_id' => (int) $params['user_id'],
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return list<object>
+     */
+    private function sqliteLlmCredentialsUpdate(array $params): array
+    {
+        $credentialId = (int) $params['credential_id'];
+        $userId = (int) $params['user_id'];
+        $updated = DB::table('pq_llm_credentials')
+            ->where('id', $credentialId)
+            ->where('user_id', $userId)
+            ->update([
+                'nombre' => (string) $params['nombre'],
+                'proveedor' => (string) $params['proveedor'],
+                'modelo' => (string) $params['modelo'],
+                'secreto_cifrado' => (string) $params['secreto_cifrado'],
+                'base_url' => $params['base_url'] ?? null,
+                'supports_vision' => (bool) $params['supports_vision'],
+                'enabled' => (bool) $params['enabled'],
+                'updated_at' => now(),
+            ]);
+
+        if ($updated === 0) {
+            return [];
+        }
+
+        return $this->sqliteLlmCredentialsGet([
+            'credential_id' => $credentialId,
+            'user_id' => $userId,
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return list<object>
+     */
+    private function sqliteLlmCredentialsDelete(array $params): array
+    {
+        $credentialId = (int) $params['credential_id'];
+        $userId = (int) $params['user_id'];
+
+        DB::table('users')
+            ->where('id', $userId)
+            ->where('active_llm_credential_id', $credentialId)
+            ->update(['active_llm_credential_id' => null]);
+
+        $deleted = DB::table('pq_llm_credentials')
+            ->where('id', $credentialId)
+            ->where('user_id', $userId)
+            ->delete();
+
+        return [(object) ['deleted_count' => $deleted]];
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return list<object>
+     */
+    private function sqliteLlmActivePreferenceGet(array $params): array
+    {
+        return DB::select(
+            'SELECT active_llm_credential_id FROM users WHERE id = ?',
+            [(int) $params['user_id']]
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return list<object>
+     */
+    private function sqliteLlmActivePreferenceSet(array $params): array
+    {
+        $userId = (int) $params['user_id'];
+        $credentialId = $params['credential_id'] ?? null;
+        $normalizedId = null;
+
+        if ($credentialId !== null && $credentialId !== '') {
+            $row = DB::table('pq_llm_credentials')
+                ->where('id', (int) $credentialId)
+                ->where('user_id', $userId)
+                ->where('enabled', 1)
+                ->first();
+            if ($row !== null) {
+                $normalizedId = (int) $row->id;
+            }
+        }
+
+        DB::table('users')->where('id', $userId)->update([
+            'active_llm_credential_id' => $normalizedId,
+        ]);
+
+        return [(object) ['active_llm_credential_id' => $normalizedId]];
     }
 
     /**

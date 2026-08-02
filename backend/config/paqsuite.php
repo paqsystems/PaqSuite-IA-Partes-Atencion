@@ -68,6 +68,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Chat Asistente IA (GEN-21) — timeout producto hacia el proveedor LLM
+    |--------------------------------------------------------------------------
+    */
+    'chatAssistant' => [
+        'llmTimeoutSeconds' => (int) env('PAQSUITE_CHAT_LLM_TIMEOUT_SECONDS', 60),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Allowlist de paths (multi) que no exigen X-Company-Id
     |--------------------------------------------------------------------------
     */
@@ -85,6 +94,8 @@ return [
         '/api/v1/grid-layouts',
         '/api/v1/pivots',
         '/api/v1/pivot-layouts',
+        '/api/v1/llm-credentials',
+        '/api/v1/chat-assistant',
     ],
 
     /*

@@ -7,9 +7,11 @@ import '@paqsuite/react-core/auth.css'
 import '@paqsuite/react-core/shell.css'
 import { AppRouter } from './app/AppRouter.tsx'
 import { ThemeProvider } from './app/providers/ThemeProvider'
+import { installApiAuthFetch } from './features/auth/installApiAuthFetch'
 import i18n from './i18n/i18n'
 import './index.css'
 
+installApiAuthFetch()
 syncDevExtremeLocale('es')
 
 createRoot(document.getElementById('root')!).render(

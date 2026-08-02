@@ -32,6 +32,8 @@ La carpeta no reemplaza al contexto comun del framework en `docs/00-contexto/_mo
 8. `08-dudas-y-ambiguedades.md`
 9. `09-modelo-datos-tecnico.md`
 10. `10-mobile.md`
+11. `11-checklist-temas-definidos-del-modulo.md`
+12. `12-asistente-ia-ayuda-y-chat-documental.md` — Asistente IA (chat documental) desde menú avatar; corpus Partes + generalidades Framework
 
 ## Relacion con otras carpetas
 

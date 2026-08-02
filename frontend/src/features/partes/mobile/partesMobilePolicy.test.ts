@@ -6,6 +6,7 @@ describe('partesMobilePolicy', () => {
     expect(isPartesMobileRouteAllowed('/partes')).toBe(true)
     expect(isPartesMobileRouteAllowed('/partes/consulta')).toBe(true)
     expect(isPartesMobileRouteAllowed('/partes/informes/paquete-horas')).toBe(true)
+    expect(isPartesMobileRouteAllowed('/chat-assistant')).toBe(true)
   })
 
   it('deniega ABM, masivo y consultas pivot web', () => {

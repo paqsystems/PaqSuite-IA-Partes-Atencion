@@ -51,11 +51,19 @@ Eso debe tratarse como linea post-MVP.
 
 ### Carga de tareas con IA
 
-Se plantea la posibilidad de registrar tareas mediante chat, audio o imagen.
+Se plantea la posibilidad de registrar tareas mediante chat, audio o imagen (**Smart Capture** / asistente operativo embebido).
 
 Su rol esperado no es reemplazar la carga manual, sino complementarla completando o proponiendo datos dentro del mismo proceso de registracion.
 
 Aun asi, sigue fuera de la definicion funcional cerrada actual del MVP base.
+
+**No confundir** con el **Asistente IA de ayuda / chat documental** del menú avatar (orientación y manuales), definido en `12-asistente-ia-ayuda-y-chat-documental.md`.
+
+### Asistente IA (ayuda / chat documental)
+
+La ayuda orientativa desde el **menú avatar** (corpus Partes + generalidades Framework) **ya tiene definición conceptual** en `12-asistente-ia-ayuda-y-chat-documental.md`.
+
+Esa capacidad **adopta** el canal GEN del Framework (`21` / SPEC-001-21); no se reabre aquí como invención del módulo. Pendiente: SPEC/HU/TR de adopción e implementación en el shell.
 
 ### Carga cronometrada
 
@@ -84,7 +92,7 @@ Por ejemplo:
 - layouts de grillas;
 - layouts de pivots;
 - exportaciones;
-- menu avatar;
+- menu avatar (catálogo GEN; Partes solo declara adopción del Asistente IA en `12-…`);
 - multilingual;
 - seguridad base;
 - menu lateral comun.

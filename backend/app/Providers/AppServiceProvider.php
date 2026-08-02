@@ -7,6 +7,20 @@ use App\Http\Middleware\EnsurePartesFunctionalProfile;
 use App\Http\Middleware\EnsurePartesNotCliente;
 use App\Http\Middleware\EnsureSeguridadAdminMiddleware;
 use App\Repositories\Sp\SpAccesoTotalChecker;
+use App\Repositories\Sp\SpLlmCredentialRepository;
+use App\Services\ChatAssistant\ManifestChatCorpusProvider;
+use App\Services\Llm\HostHttpLlmChatCompletionClient;
+use PaqSuite\LaravelCore\ChatAssistant\ChatAssistantTurnService;
+use PaqSuite\LaravelCore\ChatAssistant\ChatAssistantTurnValidator;
+use PaqSuite\LaravelCore\ChatAssistant\Contracts\ChatCorpusProvider;
+use PaqSuite\LaravelCore\ChatAssistant\Contracts\LlmChatCompletionClient;
+use PaqSuite\LaravelCore\I18n\LocaleNormalizer;
+use PaqSuite\LaravelCore\Llm\Contracts\ActiveLlmCredentialPreferenceRepository;
+use PaqSuite\LaravelCore\Llm\Contracts\LlmCredentialRepository;
+use PaqSuite\LaravelCore\Llm\Contracts\SecretCipher;
+use PaqSuite\LaravelCore\Llm\LaravelCryptSecretCipher;
+use PaqSuite\LaravelCore\Llm\LlmCredentialResolver;
+use PaqSuite\LaravelCore\Llm\LlmCredentialService;
 use App\Repositories\Sp\SpCaller;
 use App\Repositories\Sp\SpCompanyAllowedChecker;
 use App\Repositories\Sp\SpEmpresaAdminRepository;
@@ -80,6 +94,41 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(UserPreferencesRepository::class, SpUserPreferencesRepository::class);
         $this->app->singleton(UserEmpresasQueryRepository::class, SpUserEmpresasQueryRepository::class);
         $this->app->singleton(CompanyAllowedChecker::class, SpCompanyAllowedChecker::class);
+
+        $this->app->singleton(SpLlmCredentialRepository::class);
+        $this->app->singleton(LlmCredentialRepository::class, SpLlmCredentialRepository::class);
+        $this->app->singleton(ActiveLlmCredentialPreferenceRepository::class, SpLlmCredentialRepository::class);
+        $this->app->singleton(SecretCipher::class, LaravelCryptSecretCipher::class);
+        $this->app->singleton(LlmCredentialService::class, function ($app) {
+            $repo = $app->make(SpLlmCredentialRepository::class);
+
+            return new LlmCredentialService(
+                $repo,
+                $repo,
+                $app->make(SecretCipher::class),
+            );
+        });
+        $this->app->singleton(LlmCredentialResolver::class, function ($app) {
+            $repo = $app->make(SpLlmCredentialRepository::class);
+
+            return new LlmCredentialResolver(
+                $repo,
+                $repo,
+                $app->make(SecretCipher::class),
+            );
+        });
+        $this->app->singleton(ChatCorpusProvider::class, ManifestChatCorpusProvider::class);
+        $this->app->singleton(LlmChatCompletionClient::class, HostHttpLlmChatCompletionClient::class);
+        $this->app->singleton(ChatAssistantTurnService::class, function ($app) {
+            return new ChatAssistantTurnService(
+                new ChatAssistantTurnValidator(),
+                $app->make(LlmCredentialResolver::class),
+                $app->make(ChatCorpusProvider::class),
+                $app->make(LlmChatCompletionClient::class),
+                $app->make(UserPreferencesRepository::class),
+                new LocaleNormalizer(config('paqsuite.supported_locales', ['es', 'en', 'pt', 'fr', 'it'])),
+            );
+        });
 
         $this->app->bind(
             \App\Domain\Repositories\SystemStatusRepositoryInterface::class,

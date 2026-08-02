@@ -189,7 +189,8 @@
 - [x] Auditoria de partes como linea futura
 - [x] Costeo de horas como linea futura
 - [x] Informe de facturacion como linea futura
-- [x] Carga de tareas con IA como evolucion complementaria
+- [x] Carga de tareas con IA como evolucion complementaria *(distinta del chat documental del avatar)*
+- [x] Asistente IA ayuda/chat documental desde menú avatar *(definición D-AI-01…04 + implementación TR-008; F1 2026-08-01 Aprobado con observaciones — Pendiente de Revisión)*
 - [x] Carga cronometrada como evolucion posible
 - [x] Carga masiva desde Excel como evolucion separada
 
@@ -201,3 +202,4 @@
 - [x] Comportamiento exacto al revocar acceso a un cliente *(MVP: `user_id = NULL`; sesión viva = revalidar `/me` + APIs dominio; SPEC-002 R-ID-11 / SPEC-003 §4.3.2)*
 - [ ] Definicion conceptual detallada de auditoria de partes
 - [x] Especificacion concreta del Informe Paquete de Horas *(MVP: SPEC-007 §4.8)*
+- [x] Generación e implementación de SPEC-008 (Asistente IA chat documental) → A–F1 2026-08-01; HU/TR Pendiente de Revisión (`D-VERIFICACION-TR-008-asistente-ia-2026-08-01.md`)

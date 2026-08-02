@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ChatAssistant\ChatAssistantTurnsController;
 use App\Http\Controllers\Api\V1\GridLayoutsController;
+use App\Http\Controllers\Api\V1\Llm\LlmCredentialsController;
 use App\Http\Controllers\Api\V1\PivotLayoutsController;
 use App\Http\Controllers\Api\V1\ParametrosController;
 use App\Http\Controllers\Api\V1\Admin\EmpresasController as AdminEmpresasController;
@@ -61,6 +63,15 @@ Route::prefix('v1')->group(function () {
         Route::post('/pivot-layouts', [PivotLayoutsController::class, 'store']);
         Route::put('/pivot-layouts/{id}', [PivotLayoutsController::class, 'update']);
         Route::delete('/pivot-layouts/{id}', [PivotLayoutsController::class, 'destroy']);
+
+        // GEN-16 BYOK + GEN-21 chat documental (TR-008)
+        Route::get('/llm-credentials/active', [LlmCredentialsController::class, 'showActive']);
+        Route::put('/llm-credentials/active', [LlmCredentialsController::class, 'setActive']);
+        Route::get('/llm-credentials', [LlmCredentialsController::class, 'index']);
+        Route::post('/llm-credentials', [LlmCredentialsController::class, 'store']);
+        Route::patch('/llm-credentials/{id}', [LlmCredentialsController::class, 'update'])->whereNumber('id');
+        Route::delete('/llm-credentials/{id}', [LlmCredentialsController::class, 'destroy'])->whereNumber('id');
+        Route::post('/chat-assistant/turns', ChatAssistantTurnsController::class);
 
         // Lectura amplia (lookup maestros Partes vía ?soloActivos= + listado Admin Seguridad).
         Route::get('/admin/usuarios', [AdminUsuariosController::class, 'index']);
