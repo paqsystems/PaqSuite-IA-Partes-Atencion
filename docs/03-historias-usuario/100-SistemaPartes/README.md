@@ -12,13 +12,14 @@
 | [HU-006](./HU-006-consultas-dashboard-navegacion.md) | Consultas, dashboard y navegación | [SPEC-006](../../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) · [TR-006](../../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) | Pendiente (C1 OK → D1) |
 | [HU-007](./HU-007-mobile-capacitor.md) | Mobile Capacitor | [SPEC-007](../../05-open-spec/100-SistemaPartes/SPEC-007-mobile-capacitor.md) · [TR-007](../../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) | Pendiente (C1 OK → D1) |
 | [HU-008](./HU-008-asistente-ia-chat-documental.md) | Asistente IA — chat documental | [SPEC-008](../../05-open-spec/100-SistemaPartes/SPEC-008-asistente-ia-chat-documental.md) · [TR-008](../../04-tareas/100-SistemaPartes/TR-008-asistente-ia-chat-documental.md) | Especificado (C+C1) |
+| [HU-009](./HU-009-importacion-partes-excel.md) | Importación de partes desde Excel | [SPEC-009](../../05-open-spec/100-SistemaPartes/SPEC-009-importacion-partes-excel.md) · [TR-009](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) | Pendiente (C+C1 2026-08-02) |
 
 ## Estrategia
 
-1. **Parte B** HU-001…007 + B1 — **hecho**; **HU-008** (B+B1) — **2026-08-01**.
+1. **Parte B** HU-001…007 + B1 — **hecho**; **HU-008** (B+B1) — **2026-08-01**; **HU-009** (B+B1) — **2026-08-02**.
 2. **Batch de ambigüedades residuales — cerrado a nivel funcional** (2026-07-30) para 001–007.
-3. **Parte C (TR-008)** + C1 — **2026-08-01** (Especificado).
-4. Siguiente 008: **D1 → D**.
+3. **Parte C (TR-008)** + C1 — **2026-08-01** (Especificado). **TR-009** — **2026-08-02** (C+C1).
+4. Siguiente 009: **D1**; 008: revisión humana / Finalizado.
 
 ## Preguntas abiertas residuales (batch)
 

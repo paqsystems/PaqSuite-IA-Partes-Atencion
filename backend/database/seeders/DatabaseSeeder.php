@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             PqPartesTiposTareaSeeder::class,
             PqPartesUsuariosSeedSeeder::class,
             PqPartesParametrosSeeder::class,
+            PqExcelImportSeeder::class,
         ]);
     }
 }

@@ -130,6 +130,48 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
+        // GEN-14 Excel import (TR-009)
+        $this->app->singleton(\App\Repositories\Sp\ExcelImport\SpExcelImportRepository::class);
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\ExcelImport\Contracts\ExcelImportRepository::class,
+            \App\Repositories\Sp\ExcelImport\SpExcelImportRepository::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\ExcelImport\Contracts\ExcelWorkbookParser::class,
+            \PaqSuite\LaravelCore\ExcelImport\ZipXmlExcelWorkbookParser::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\ExcelImport\Contracts\ExcelImportBinaryExporter::class,
+            \PaqSuite\LaravelCore\ExcelImport\MinimalXlsxExcelImportBinaryExporter::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\ExcelImport\Contracts\ExcelImportAuditPort::class,
+            \App\Services\ExcelImport\NullExcelImportAuditPort::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\ExcelImport\Contracts\ExcelImportNotificationPort::class,
+            \App\Services\ExcelImport\NullExcelImportNotificationPort::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\ExcelImport\Contracts\ExcelImportTaskDispatcher::class,
+            \App\Services\ExcelImport\SyncNoopExcelImportTaskDispatcher::class
+        );
+        $this->app->singleton(\PaqSuite\LaravelCore\ExcelImport\ExcelImportSettings::class);
+        $this->app->singleton(\PaqSuite\LaravelCore\ExcelImport\ExcelImportCapabilityGuard::class);
+        $this->app->singleton(\PaqSuite\LaravelCore\ExcelImport\ExcelImportAsyncThreshold::class);
+        $this->app->singleton(\App\Services\ExcelImport\PartesTareasImportHandler::class);
+        $this->app->singleton(\PaqSuite\LaravelCore\ExcelImport\ExcelImportHandlerRegistry::class, function ($app) {
+            $registry = new \PaqSuite\LaravelCore\ExcelImport\ExcelImportHandlerRegistry();
+            $registry->register(
+                'partes.tareas.import',
+                $app->make(\App\Services\ExcelImport\PartesTareasImportHandler::class)
+            );
+
+            return $registry;
+        });
+        $this->app->singleton(\PaqSuite\LaravelCore\ExcelImport\ExcelImportValidationOrchestrator::class);
+        $this->app->singleton(\PaqSuite\LaravelCore\ExcelImport\ExcelImportProcessOrchestrator::class);
+
         $this->app->bind(
             \App\Domain\Repositories\SystemStatusRepositoryInterface::class,
             \App\Infrastructure\Repositories\ConfigSystemStatusRepository::class

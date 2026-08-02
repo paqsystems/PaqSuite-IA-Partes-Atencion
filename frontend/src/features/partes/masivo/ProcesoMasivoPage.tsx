@@ -17,7 +17,10 @@ import {
   type TareaListQuery,
 } from '../carga/partesTareaApi'
 import {
+  dateDisplayFormat,
+  dateSerializationFormat,
   formatMinutosAsHhMm,
+  isoDateFromDateBox,
   minutosToHorasDecimal,
   todayIsoDate,
 } from '../carga/partesTareaDuration'
@@ -337,9 +340,14 @@ function ProcesoMasivoView() {
           <DateBox
             value={fechaDesde}
             type="date"
-            onValueChanged={(e) =>
-              setFechaDesde(e.value ? todayIsoDate(new Date(e.value as Date)) : '')
-            }
+            displayFormat={dateDisplayFormat}
+            dateSerializationFormat={dateSerializationFormat}
+            onValueChanged={(e) => {
+              const next = isoDateFromDateBox(e)
+              if (next !== null) {
+                setFechaDesde(next)
+              }
+            }}
           />
         </div>
         <div>
@@ -347,9 +355,14 @@ function ProcesoMasivoView() {
           <DateBox
             value={fechaHasta}
             type="date"
-            onValueChanged={(e) =>
-              setFechaHasta(e.value ? todayIsoDate(new Date(e.value as Date)) : '')
-            }
+            displayFormat={dateDisplayFormat}
+            dateSerializationFormat={dateSerializationFormat}
+            onValueChanged={(e) => {
+              const next = isoDateFromDateBox(e)
+              if (next !== null) {
+                setFechaHasta(next)
+              }
+            }}
           />
         </div>
         <div style={{ minWidth: 200 }}>
@@ -502,11 +515,16 @@ function ProcesoMasivoView() {
           <DateBox
             value={applyFecha || undefined}
             type="date"
+            displayFormat={dateDisplayFormat}
+            dateSerializationFormat={dateSerializationFormat}
             disabled={!touchFecha}
             elementAttr={{ 'data-testid': 'partesMasivoFecha' }}
-            onValueChanged={(e) =>
-              setApplyFecha(e.value ? todayIsoDate(new Date(e.value as Date)) : '')
-            }
+            onValueChanged={(e) => {
+              const next = isoDateFromDateBox(e)
+              if (next !== null) {
+                setApplyFecha(next)
+              }
+            }}
           />
         </div>
         <Button

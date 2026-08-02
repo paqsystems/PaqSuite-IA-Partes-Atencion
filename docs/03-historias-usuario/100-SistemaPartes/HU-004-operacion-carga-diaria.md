@@ -71,7 +71,8 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 - Consultas agrupadas, dashboard, pivots (SPEC-006).
 - Carga mobile individual / kardex (SPEC-007); este SPEC es web.
 - Cliente funcional: no carga tareas.
-- Facturación, aprobación formal, importación masiva, **integración IA en carga diaria** (evolutivo).
+- Facturación, aprobación formal, automatizaciones IA (incluida ayuda en pantalla de carga en este MVP).
+- **Importación masiva desde Excel** → [HU-009](./HU-009-importacion-partes-excel.md) / [SPEC-009](../../05-open-spec/100-SistemaPartes/SPEC-009-importacion-partes-excel.md) (no forma parte de esta HU).
 - Exportación Excel como Must del MVP de carga.
 - UI de alta de compras de horas (`es_tarea = false`); proceso a definir (SPEC-001).
 

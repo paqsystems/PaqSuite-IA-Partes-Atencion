@@ -34,6 +34,7 @@ La carpeta no reemplaza al contexto comun del framework en `docs/00-contexto/_mo
 10. `10-mobile.md`
 11. `11-checklist-temas-definidos-del-modulo.md`
 12. `12-asistente-ia-ayuda-y-chat-documental.md` — Asistente IA (chat documental) desde menú avatar; corpus Partes + generalidades Framework
+13. `13-importacion-partes-excel.md` — Importación de partes (tareas) desde Excel bajo Carga de Partes
 
 ## Relacion con otras carpetas
 

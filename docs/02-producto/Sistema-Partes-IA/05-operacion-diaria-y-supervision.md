@@ -108,6 +108,14 @@ Su funcion esperada es **complementar** la carga manual, por ejemplo completando
 
 La confirmacion final del registro sigue perteneciendo al circuito normal del usuario.
 
+## Importación de partes desde Excel
+
+Además de la carga interactiva en grilla, el módulo define un proceso de **alta masiva desde Excel** ubicado en la rama **Carga de Partes**.
+
+Reglas canónicas (plantilla de columnas, forzar `es_tarea = true`, pregunta al usuario si hay filas válidas y con error): ver [`13-importacion-partes-excel.md`](./13-importacion-partes-excel.md).
+
+Ese proceso **no** sustituye al proceso masivo de supervisión (edición/cierre en lote sobre tareas ya existentes).
+
 ## Estado cerrado
 
 El estado `cerrado` expresa que la tarea sale del circuito normal de modificacion individual.

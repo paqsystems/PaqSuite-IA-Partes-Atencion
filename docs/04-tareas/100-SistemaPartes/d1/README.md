@@ -11,6 +11,7 @@ Planes de implementación (parte D1) antes de ejecutar D.
 | [D1-TR-006](./D1-TR-006-consultas-dashboard.md) | Consultas/dashboard | Bloquea: TR-002…005 |
 | [D1-TR-007](./D1-TR-007-mobile.md) | Mobile | Bloquea: TR-002…006 + scaffold Capacitor |
 | [D1-TR-008](./D1-TR-008-asistente-ia.md) | Asistente IA chat documental | TR-002 shell; paquetes Framework GEN-16/21; C1 OK |
+| [D1-TR-009](./D1-TR-009-importacion-excel.md) | Importación Excel (GEN-14) en Carga diaria | TR-004 carga; paquetes GEN-14; C1 OK 2026-08-02 |
 
 **Decisiones D1 absorbidas (2026-07-30):**
 - Masivo: tope técnico **5000** si `PartesMasivoMaxIds=0` → 422 `partes.masivo.loteDemasiadoGrande`
@@ -23,3 +24,9 @@ Planes de implementación (parte D1) antes de ejecutar D.
 - Active credential: **`pq_sp_llm_active_preference_*`**
 - Preferencias BYOK: **modal** Must (sin página `/preferences` Must)
 - Tope corpus v1: **~28 KiB** texto agregado
+
+**Decisiones D1 TR-009 (2026-08-02):**
+- Staging Excel: **SP contract** (+ ops MONO/sqlite); no Eloquent smoke como prod
+- Toolbar: fila entre filtros y grid; `processCode=partes.tareas.import`
+- GEN-17 bandeja: no Must; async `queued` = toast + sin refresh
+- Fixture tests: `ExcelImportEnabled=S`; prod seed default `N`

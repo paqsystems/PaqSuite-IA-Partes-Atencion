@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ChatAssistant\ChatAssistantTurnsController;
+use App\Http\Controllers\Api\V1\ExcelImport\ExcelImportController;
 use App\Http\Controllers\Api\V1\GridLayoutsController;
 use App\Http\Controllers\Api\V1\Llm\LlmCredentialsController;
 use App\Http\Controllers\Api\V1\PivotLayoutsController;
@@ -72,6 +73,16 @@ Route::prefix('v1')->group(function () {
         Route::patch('/llm-credentials/{id}', [LlmCredentialsController::class, 'update'])->whereNumber('id');
         Route::delete('/llm-credentials/{id}', [LlmCredentialsController::class, 'destroy'])->whereNumber('id');
         Route::post('/chat-assistant/turns', ChatAssistantTurnsController::class);
+
+        // GEN-14 Excel import (TR-009) — mismo permiso menú que carga diaria
+        Route::middleware(['partes.profile', 'partes.notCliente'])->group(function () {
+            Route::get('/excel-import/processes/{codigo}/template', [ExcelImportController::class, 'template']);
+            Route::post('/excel-import/batches', [ExcelImportController::class, 'store']);
+            Route::get('/excel-import/batches/{batchId}', [ExcelImportController::class, 'show']);
+            Route::get('/excel-import/batches/{batchId}/errors', [ExcelImportController::class, 'errors']);
+            Route::get('/excel-import/batches/{batchId}/errors/export', [ExcelImportController::class, 'exportErrors']);
+            Route::post('/excel-import/batches/{batchId}/process', [ExcelImportController::class, 'process']);
+        });
 
         // Lectura amplia (lookup maestros Partes vía ?soloActivos= + listado Admin Seguridad).
         Route::get('/admin/usuarios', [AdminUsuariosController::class, 'index']);

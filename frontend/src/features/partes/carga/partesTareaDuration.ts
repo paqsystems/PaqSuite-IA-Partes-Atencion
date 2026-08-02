@@ -70,6 +70,28 @@ export function todayIsoDate(date = new Date()): string {
   return `${y}-${m}-${d}`
 }
 
+/**
+ * ISO `yyyy-MM-dd` desde DateBox DevExtreme.
+ * Ignora cambios programáticos (`!e.event`) para evitar bucles value↔state
+ * que cuelgan el calendario al mezclar string ISO con el widget.
+ */
+export function isoDateFromDateBox(e: { event?: Event; value?: unknown }): string | null {
+  if (!e.event) {
+    return null
+  }
+  if (e.value == null || e.value === '') {
+    return ''
+  }
+  if (typeof e.value === 'string') {
+    return e.value.slice(0, 10)
+  }
+  return todayIsoDate(new Date(e.value as Date))
+}
+
+/** Presentación de fechas en UI (locale es / latam). Persistencia sigue en ISO. */
+export const dateDisplayFormat = 'dd/MM/yyyy'
+export const dateSerializationFormat = 'yyyy-MM-dd'
+
 export function isFechaFutura(fechaIso: string, hoyIso = todayIsoDate()): boolean {
   return fechaIso > hoyIso
 }

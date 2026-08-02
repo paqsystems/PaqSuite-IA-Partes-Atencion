@@ -85,6 +85,7 @@
 - [x] Carga diaria: solo lista `es_tarea = true`; al grabar asigna `es_tarea = true`
 - [x] Edicion y eliminacion segun rol y estado
 - [x] Complemento por IA en la carga *(definido como **fuera del MVP**; evolutivo — ver checklist Evolución)*
+- [x] Importación de partes desde Excel bajo Carga de Partes *(definición cerrada D-IMP-01…09: `13-importacion-partes-excel.md`; SPEC/HU/TR-009 C+C1 2026-08-02; pendiente D1)*
 
 ## Supervision
 
@@ -192,7 +193,7 @@
 - [x] Carga de tareas con IA como evolucion complementaria *(distinta del chat documental del avatar)*
 - [x] Asistente IA ayuda/chat documental desde menú avatar *(definición D-AI-01…04 + implementación TR-008; F1 2026-08-01 Aprobado con observaciones — Pendiente de Revisión)*
 - [x] Carga cronometrada como evolucion posible
-- [x] Carga masiva desde Excel como evolucion separada
+- [x] Carga masiva desde Excel *(definición de producto cerrada: `13-importacion-partes-excel.md`; distinta de auditoría Excel+mails)*
 
 ## Temas aun abiertos
 
@@ -203,3 +204,4 @@
 - [ ] Definicion conceptual detallada de auditoria de partes
 - [x] Especificacion concreta del Informe Paquete de Horas *(MVP: SPEC-007 §4.8)*
 - [x] Generación e implementación de SPEC-008 (Asistente IA chat documental) → A–F1 2026-08-01; HU/TR Pendiente de Revisión (`D-VERIFICACION-TR-008-asistente-ia-2026-08-01.md`)
+- [x] Generación SDD de importación Excel de partes (`13` → SPEC/HU/TR-009 A→D 2026-08-02; pendiente E/F1)

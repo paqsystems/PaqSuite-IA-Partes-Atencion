@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ProcessDataGrid } from '@paqsuite/react-core'
+import { ProcessDataGrid, ExcelImportToolbar, isNativeApp } from '@paqsuite/react-core'
+import type { ExcelImportCompletePayload } from '@paqsuite/react-core'
 import { Column, Paging, Pager } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
@@ -23,12 +24,16 @@ import {
 } from './partesTareaApi'
 import {
   buildTramoHhMmOptions,
+  dateDisplayFormat,
+  dateSerializationFormat,
   formatMinutosAsHhMm,
   isFechaFutura,
+  isoDateFromDateBox,
   isValidDuracionMinutos,
   minutosToHorasDecimal,
   todayIsoDate,
 } from './partesTareaDuration'
+import { shouldRefreshCargaAfterImport } from './excelImportCargaHelpers'
 
 type CargaDiariaGridRow = PartesTareaItem & {
   /** Horas decimales para sumatoria DevExtreme (persistencia = minutos). */
@@ -304,10 +309,14 @@ export function CargaDiariaPage() {
           <DateBox
             value={fechaDesde}
             type="date"
-            displayFormat="yyyy-MM-dd"
-            onValueChanged={(e) =>
-              setFechaDesde(e.value ? todayIsoDate(new Date(e.value as Date)) : '')
-            }
+            displayFormat={dateDisplayFormat}
+            dateSerializationFormat={dateSerializationFormat}
+            onValueChanged={(e) => {
+              const next = isoDateFromDateBox(e)
+              if (next !== null) {
+                setFechaDesde(next)
+              }
+            }}
           />
         </div>
         <div>
@@ -315,10 +324,14 @@ export function CargaDiariaPage() {
           <DateBox
             value={fechaHasta}
             type="date"
-            displayFormat="yyyy-MM-dd"
-            onValueChanged={(e) =>
-              setFechaHasta(e.value ? todayIsoDate(new Date(e.value as Date)) : '')
-            }
+            displayFormat={dateDisplayFormat}
+            dateSerializationFormat={dateSerializationFormat}
+            onValueChanged={(e) => {
+              const next = isoDateFromDateBox(e)
+              if (next !== null) {
+                setFechaHasta(next)
+              }
+            }}
           />
         </div>
         <div style={{ minWidth: 200 }}>
@@ -365,6 +378,18 @@ export function CargaDiariaPage() {
         </div>
         <Button text="Buscar" onClick={() => void load()} elementAttr={{ 'data-testid': 'partesCargaSearch' }} />
       </div>
+
+      {!isNativeApp() && session?.partes?.tipoFuncional !== 'cliente' ? (
+        <ExcelImportToolbar
+          processCode="partes.tareas.import"
+          onComplete={(payload: ExcelImportCompletePayload) => {
+            if (shouldRefreshCargaAfterImport(payload)) {
+              void load()
+            }
+          }}
+          t={(key) => resolveAuthMessage(key) || key}
+        />
+      ) : null}
 
       {error ? (
         <div role="alert" data-testid="partesCargaError">
@@ -460,12 +485,14 @@ export function CargaDiariaPage() {
             <DateBox
               value={form.fecha}
               type="date"
-              onValueChanged={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  fecha: e.value ? todayIsoDate(new Date(e.value as Date)) : prev.fecha,
-                }))
-              }
+              displayFormat={dateDisplayFormat}
+              dateSerializationFormat={dateSerializationFormat}
+              onValueChanged={(e) => {
+                const next = isoDateFromDateBox(e)
+                if (next !== null) {
+                  setForm((prev) => ({ ...prev, fecha: next || prev.fecha }))
+                }
+              }}
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>

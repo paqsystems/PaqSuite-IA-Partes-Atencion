@@ -10,7 +10,8 @@ Fuente conceptual: `docs/02-producto/Sistema-Partes-IA/`.
 2. Set de HU 001–007 (B + B1) — **hecho** → [`docs/03-historias-usuario/100-SistemaPartes/`](../../03-historias-usuario/100-SistemaPartes/README.md)
 3. Batch de ambigüedades HU — **cerrado** (2026-07-30)
 4. **Parte C (TR)** → [`docs/04-tareas/100-SistemaPartes/`](../../04-tareas/100-SistemaPartes/README.md) — 001–007 hechos; **008 Especificado** (C+C1 2026-08-01)
-5. **SPEC-008** Asistente IA — A→B→C **cerrados** (2026-08-01); siguiente **D1 → D**
+5. **SPEC-008** Asistente IA — A→F1 (2026-08-01); revisión humana pendiente
+6. **SPEC-009** Importación Excel partes — A→C+C1 (2026-08-02); siguiente **D1**
 
 ## SPECs redactados
 
@@ -24,3 +25,4 @@ Fuente conceptual: `docs/02-producto/Sistema-Partes-IA/`.
 | [SPEC-006](./SPEC-006-consultas-dashboard-navegacion.md) | Consultas, dashboard y navegación | [HU-006](../../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) | Pendiente (C1 OK → D1) |
 | [SPEC-007](./SPEC-007-mobile-capacitor.md) | Mobile Capacitor | [HU-007](../../03-historias-usuario/100-SistemaPartes/HU-007-mobile-capacitor.md) · [TR-007](../../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) | Pendiente (C1 OK → D1) |
 | [SPEC-008](./SPEC-008-asistente-ia-chat-documental.md) | Asistente IA — chat documental (adopción GEN-21) | [HU-008](../../03-historias-usuario/100-SistemaPartes/HU-008-asistente-ia-chat-documental.md) · [TR-008](../../04-tareas/100-SistemaPartes/TR-008-asistente-ia-chat-documental.md) | Especificado (C+C1 2026-08-01) |
+| [SPEC-009](./SPEC-009-importacion-partes-excel.md) | Importación de partes desde Excel | [HU-009](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) · [TR-009](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) | Pendiente (C+C1 2026-08-02; D1 pendiente) |

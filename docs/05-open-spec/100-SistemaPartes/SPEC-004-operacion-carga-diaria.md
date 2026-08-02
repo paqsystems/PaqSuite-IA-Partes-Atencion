@@ -45,7 +45,8 @@
 - Consultas agrupadas, dashboard, pivots (SPEC-006).
 - Carga **mobile** individual / kardex (SPEC-007); este SPEC es **web**.
 - Cliente funcional: no carga tareas.
-- Facturación, aprobación formal, importación masiva, automatizaciones IA (incluida ayuda en pantalla de carga en este MVP).
+- Facturación, aprobación formal, automatizaciones IA (incluida ayuda en pantalla de carga en este MVP).
+- **Importación masiva desde Excel** → [SPEC-009](./SPEC-009-importacion-partes-excel.md) (no forma parte de este SPEC).
 - Exportación Excel como Must del MVP de carga.
 
 ---

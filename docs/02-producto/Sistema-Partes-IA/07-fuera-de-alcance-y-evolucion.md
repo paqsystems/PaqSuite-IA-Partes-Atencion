@@ -73,9 +73,12 @@ Debe considerarse una evolucion posible del proceso de carga, no una obligacion 
 
 ### Carga masiva desde Excel
 
-Se menciona una posible importacion con plantilla, validacion y grabacion masiva.
+La **importación de partes (tareas) desde Excel** bajo **Carga de Partes** queda definida en [`13-importacion-partes-excel.md`](./13-importacion-partes-excel.md) (plantilla, obligatoriedad, `es_tarea = true`, commit parcial con confirmación).
 
-Debe mantenerse fuera de la definicion canonicamente cerrada hasta que tenga alcance propio.
+No se confunde con:
+
+- la **exportación** Excel de grillas/informes o del proceso masivo;
+- la línea de **auditoría** (Excel + mails), que sigue como evolución distinta (§ Auditoria de partes).
 
 ### Mobile
 
