@@ -82,7 +82,7 @@ Cabecera canónica (primera fila):
 | `asistente` | Código asistente | Según §4.3 |
 | `tipo_tarea` | Código tipo de tarea | Sí |
 | `fecha` | Fecha de trabajo | Sí — ver §4.4.1 |
-| `duracion` | `hh:mm` | Sí |
+| `duracion` | `hh:mm` (ej. `00:30`) o minutos enteros (ej. `30`); media hora = `00:30` o `30`; múltiplo del tramo (p. ej. 15) | Sí |
 | `sin_cargo` | `verdadero` / `falso` | Sí |
 | `presencial` | `verdadero` / `falso` | Sí |
 | `descripcion` | Texto observación | Sí |
@@ -107,7 +107,7 @@ Una fila es inválida si, entre otras:
 - código de cliente / tipo / asistente (cuando aplica) inexistente o no usable;
 - tipo ∉ universo del cliente de la fila;
 - `fecha` no interpretable según §4.4.1;
-- `duracion` no parseable como `hh:mm`, ≤ 0, no múltiplo del tramo (`PQ_PARAMETROS_GRAL`, default 15) o > 1440 minutos equivalentes;
+- `duracion` no parseable como `hh:mm` ni como minutos enteros (ni serial de hora Excel), ≤ 0, no múltiplo del tramo (`PQ_PARAMETROS_GRAL`, default 15) o > 1440 minutos equivalentes;
 - `sin_cargo` / `presencial` no reconocibles como verdadero/falso (Must mínimo: esos literales, case-insensitive; sinónimos adicionales = Should §7);
 - `descripcion` vacía o solo whitespace;
 - asistente no supervisor con `asistente` distinto al de sesión.

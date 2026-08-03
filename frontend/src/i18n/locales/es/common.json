@@ -273,6 +273,7 @@
   "excelImport.close": "Cerrar",
   "excelImport.cancel": "Cancelar",
   "excelImport.selectFile": "Seleccionar archivo",
+  "excelImport.clearFile": "Quitar archivo",
   "excelImport.dropZone.title": "Archivo Excel (.xlsx)",
   "excelImport.dropZone.primary": "Arrastre y suelte la planilla en este recuadro",
   "excelImport.dropZone.or": "o",
@@ -283,6 +284,8 @@
   "excelImport.errorsTitle": "Errores de validación",
   "excelImport.exportErrors": "Exportar errores",
   "excelImport.queued": "Importación en cola",
+  "excelImport.row.required": "Falta el valor obligatorio de la columna {{column}}",
+  "excelImport.row.invalidType": "Tipo inválido en la columna {{column}}",
   "excelImport.error.4603": "Sin permiso para importar",
   "excelImport.error.4604": "Importación Excel deshabilitada",
   "excelImport.error.4605": "Formato de archivo no soportado",
@@ -301,7 +304,7 @@
   "partes.import.tipoRequerido": "Tipo de tarea obligatorio",
   "partes.import.tipoFueraUniverso": "Tipo de tarea fuera del universo del cliente",
   "partes.import.fechaInvalida": "Fecha inválida",
-  "partes.import.duracionInvalida": "Duración inválida",
+  "partes.import.duracionInvalida": "Duración inválida. Use hh:mm (ej. 00:30) o minutos enteros (ej. 30); debe ser múltiplo del tramo",
   "partes.import.booleanoInvalido": "Usar verdadero o falso",
   "partes.import.descripcionRequerida": "Descripción obligatoria"
 }
