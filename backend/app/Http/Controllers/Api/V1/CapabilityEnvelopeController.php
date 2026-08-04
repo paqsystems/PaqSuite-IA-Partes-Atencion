@@ -8,9 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use PaqSuite\LaravelCore\ChatAssistant\ChatAssistantDomainException;
 use PaqSuite\LaravelCore\Http\Responses\ApiResponse;
 use PaqSuite\LaravelCore\Llm\LlmDomainException;
+use PaqSuite\LaravelCore\SmartCapture\SmartCaptureDomainException;
 
 /**
- * Base thin para capacidades GEN-16/21 en el host Partes.
+ * Base thin para capacidades GEN-16/21/03 en el host Partes.
  */
 abstract class CapabilityEnvelopeController extends Controller
 {
@@ -32,6 +33,18 @@ abstract class CapabilityEnvelopeController extends Controller
                 $exception->respuesta,
                 $exception->httpStatus,
                 $exception->resultado,
+            ),
+            $exception instanceof SmartCaptureDomainException => ApiResponse::error(
+                $exception->errorCode,
+                $exception->respuesta,
+                $exception->httpStatus,
+                $exception->resultado !== []
+                    ? $exception->resultado
+                    : (
+                        $exception->errorCode === 4201
+                            ? ['configurationRequired' => true]
+                            : []
+                    ),
             ),
             default => throw $exception,
         };

@@ -81,7 +81,7 @@ class PqExcelImportSeeder extends Seeder
             ['asistente', 'string', false, 20, 'Código de asistente; vacío permitido si no es supervisor'],
             ['tipo_tarea', 'string', true, 30, 'Código de tipo de tarea'],
             ['fecha', 'date', true, 40, 'Fecha de la tarea (dd/mm/yyyy)'],
-            ['duracion', 'string', true, 50, 'Duración hh:mm o minutos enteros'],
+            ['duracion', 'string', true, 50, 'hh:mm (ej. 00:30) o minutos enteros (ej. 30). Media hora = 00:30 o 30. Debe ser múltiplo del tramo (p. ej. 15).'],
             ['sin_cargo', 'bool', true, 60, 'verdadero o falso'],
             ['presencial', 'bool', true, 70, 'verdadero o falso'],
             ['descripcion', 'string', true, 80, 'Descripción de la tarea'],

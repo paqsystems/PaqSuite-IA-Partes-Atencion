@@ -140,7 +140,7 @@ R-AI-01…20 del SPEC/HU. Mapeo técnico:
 |-------|---------|
 | Tabla nueva | `pq_llm_credentials` (columnas alineadas a migración smoke GEN-16: `user_id`, `nombre`, `proveedor`, `modelo`, `secreto_cifrado`, `base_url`, `supports_vision`, `enabled`, timestamps) |
 | Columna | `users.active_llm_credential_id` nullable (FK lógica; cleanup en SP delete) |
-| SP | Desplegar scripts `laravel-core/database/sp/pq_sp_llm_*.sql` en install/update |
+| SP | Desplegar scripts canónicos Framework `packages/php/laravel-core/database/sp/pq_sp_llm_*.sql` (copia host: `backend/database/sp/`) en **cada** entorno install/update. Checklist Must Framework: [`adopcion-gen-16-byok.md`](../../../../PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-gen-16-byok.md) — **migrate + 7 SP**; sin SP, Preferencias falla al guardar la key (no confundir con key inválida). |
 | Seed | No obligatorio para prod; tests: usuario Partes + 0/1 credencial fixture |
 | Menú `pq_menus` | **Sin** ítem nuevo (entrada solo avatar) |
 | Corpus | Solo archivos markdown existentes; sin tablas de embeddings |
@@ -275,7 +275,7 @@ No Must: E2E con proveedor LLM de pago en CI.
 ## 10) Checklist DoD
 
 - [x] AC-01…10 *(AC-05 turno proveedor real = observación F1; Feature con fake OK)*
-- [x] Migración + SP LLM en repo *(deploy SQL Server pendiente — ver F1)*
+- [x] Migración + SP LLM en repo *(cada entorno SQL Server: migrate + deploy 7 `pq_sp_llm_*` — Framework [`adopcion-gen-16-byok.md`](../../../../PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-gen-16-byok.md))*
 - [x] Rutas llm-credentials + chat-assistant/turns
 - [x] Corpus provider + manifest
 - [x] Avatar + ruta + modal BYOK

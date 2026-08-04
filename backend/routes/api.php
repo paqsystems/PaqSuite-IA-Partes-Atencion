@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Partes\PartesInformeController;
 use App\Http\Controllers\Api\V1\Partes\PartesMaestrosController;
 use App\Http\Controllers\Api\V1\Partes\PartesTareaController;
+use App\Http\Controllers\Api\V1\Partes\PartesTareasAsistenteTurnController;
 use App\Http\Controllers\Api\V1\SystemStatusController;
 use App\Http\Controllers\Api\V1\User\EmpresasController;
 use App\Http\Controllers\Api\V1\User\MenuController;
@@ -169,6 +170,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/tareas/ids', [$t, 'listIds']);
             Route::post('/tareas/masivo/set-cerrado', [$t, 'masivoSetCerrado']);
             Route::post('/tareas/masivo/actualizar', [$t, 'masivoActualizar']);
+            Route::post('/tareas/asistente/turn', PartesTareasAsistenteTurnController::class);
             Route::get('/tareas/{id}', [$t, 'show'])->whereNumber('id');
             Route::post('/tareas', [$t, 'store']);
             Route::put('/tareas/{id}', [$t, 'update'])->whereNumber('id');

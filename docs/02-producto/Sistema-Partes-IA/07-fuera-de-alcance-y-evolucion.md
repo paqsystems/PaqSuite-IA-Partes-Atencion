@@ -51,13 +51,11 @@ Eso debe tratarse como linea post-MVP.
 
 ### Carga de tareas con IA
 
-Se plantea la posibilidad de registrar tareas mediante chat, audio o imagen (**Smart Capture** / asistente operativo embebido).
+**Conceptualizado** en [`14-smart-capture.md`](./14-smart-capture.md): Smart Capture (GEN-03) embebido en el **modal** de alta/edición de tarea en Carga diaria (texto, audio, imagen; BYOK; sin montaje en grilla).
 
-Su rol esperado no es reemplazar la carga manual, sino complementarla completando o proponiendo datos dentro del mismo proceso de registracion.
+Complementa la carga manual; no la reemplaza. Distinto del Asistente IA documental (`12`) y de la importación Excel (`13`).
 
-Aun asi, sigue fuera de la definicion funcional cerrada actual del MVP base.
-
-**No confundir** con el **Asistente IA de ayuda / chat documental** del menú avatar (orientación y manuales), definido en `12-asistente-ia-ayuda-y-chat-documental.md`.
+Mobile: fuera de alcance v1 (ver `10-mobile.md` y D-SC-10).
 
 ### Asistente IA (ayuda / chat documental)
 

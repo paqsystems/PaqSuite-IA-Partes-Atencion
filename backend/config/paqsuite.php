@@ -46,6 +46,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Resolver de instalación (GEN-18)
+    |--------------------------------------------------------------------------
+    | config = mapa instalaciones (PHPUnit / fallback local)
+    | sql    = PAQSYSTEMS.EMPRESAS_CONEXION vía SP (multi-cliente)
+    */
+    'instalacion' => [
+        'resolver' => env('PAQSUITE_INSTALACION_RESOLVER', 'config'),
+        'centralConnection' => env('PAQSUITE_CENTRAL_CONNECTION', 'paqsuite_central'),
+        'procedure' => env('PAQSUITE_EMPRESAS_CONEXION_PROCEDURE', 'pq_sp_empresas_conexion_get'),
+        'cacheTtlSeconds' => (int) env('PAQSUITE_INSTALACION_CACHE_TTL', 60),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Locales soportados (GEN-02 lista blanca)
     |--------------------------------------------------------------------------
     */
@@ -100,9 +114,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Mapa instalaciones (demo / desarrollo local)
+    | Mapa instalaciones (solo si PAQSUITE_INSTALACION_RESOLVER=config)
     |--------------------------------------------------------------------------
-    | Producción: sustituir InstalacionResolver por SQL EMPRESAS_CONEXION.
+    | Producción / lab multi-cliente: resolver=sql + fila en PAQSYSTEMS.
+    | Guía: Framework docs/06-operacion/adopcion-instalacion-sql.md
     */
     'instalaciones' => [
         'DEMO|partesatencion' => [
@@ -110,6 +125,12 @@ return [
             'nombre' => 'Partes Demo',
             'connection' => env('DB_CONNECTION', 'sqlsrv'),
             'singleCompanyId' => 1,
+            'host' => env('DB_HOST'),
+            'port' => (int) env('DB_PORT', 1433),
+            'database_name' => env('DB_DATABASE'),
+            'username' => env('DB_USERNAME'),
+            'password' => env('DB_PASSWORD'),
+            'dictionary_database' => env('DB_DATABASE'),
         ],
     ],
 ];

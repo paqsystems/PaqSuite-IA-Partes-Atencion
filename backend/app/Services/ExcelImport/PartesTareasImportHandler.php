@@ -257,15 +257,33 @@ final class PartesTareasImportHandler implements ExcelImportHandler
 
     private function parseDuracion(string $raw): ?int
     {
+        $raw = trim($raw);
+        if ($raw === '') {
+            return null;
+        }
+
+        // hh:mm — ej. 00:30 (media hora), 01:15
         if (preg_match('/^(\d{1,2}):([0-5]\d)$/', $raw, $m)) {
             $total = ((int) $m[1]) * 60 + (int) $m[2];
 
             return $total > 0 && $total <= 1440 ? $total : null;
         }
+
+        // Minutos enteros — ej. 30
         if (ctype_digit($raw)) {
             $n = (int) $raw;
 
             return $n > 0 && $n <= 1440 ? $n : null;
+        }
+
+        // Serial de hora Excel (fracción de día, 0 < x < 1) — ej. 00:30 ≈ 0.020833
+        if (is_numeric($raw)) {
+            $fraction = (float) $raw;
+            if ($fraction > 0 && $fraction < 1) {
+                $n = (int) round($fraction * 1440);
+
+                return $n > 0 && $n <= 1440 ? $n : null;
+            }
         }
 
         return null;

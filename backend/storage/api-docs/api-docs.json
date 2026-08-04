@@ -2,31 +2,64 @@
     "openapi": "3.0.0",
     "info": {
         "title": "PaqSuite IA Partes Atención API",
-        "description": "Scaffold MONO — Laravel 10 + Sanctum.",
+        "description": "API REST Partes Atención (MONO). Respuestas envelope: error / respuesta / resultado.",
         "version": "1.1.0"
     },
+    "servers": [
+        {
+            "url": "/",
+            "description": "Backend Laravel (paths incluyen /api/v1)"
+        }
+    ],
     "paths": {
-        "/api/v1/auth/login": {
+        "/api/v1/admin/usuarios": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Listar usuarios",
+                "description": "Admin seguridad GEN-06.",
+                "operationId": "adminUsuariosIndex",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
-                    "Auth"
+                    "Admin"
                 ],
-                "summary": "Obtener token API",
-                "description": "Login con email/password; devuelve token Bearer Sanctum.",
-                "operationId": "a7997e7c1e3bfed64d4e56de82415931",
+                "summary": "Alta usuario",
+                "operationId": "adminUsuariosStore",
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "email",
-                                    "password"
-                                ],
                                 "properties": {
+                                    "usuario": {
+                                        "type": "string"
+                                    },
                                     "email": {
-                                        "type": "string",
-                                        "example": "dev@example.com"
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
                                     },
                                     "password": {
                                         "type": "string",
@@ -40,12 +73,704 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "OK"
-                    },
-                    "422": {
-                        "description": "Validación"
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/usuarios/{id}": {
+            "delete": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Eliminar usuario",
+                "operationId": "adminUsuariosDestroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Actualizar usuario",
+                "operationId": "adminUsuariosUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/empresas": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Listar empresas (MONO: consulta)",
+                "operationId": "adminEmpresasIndex",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/empresas/{id}": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Detalle empresa",
+                "operationId": "adminEmpresasShow",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Actualizar empresa",
+                "operationId": "adminEmpresasUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/roles": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Listar roles",
+                "operationId": "adminRolesIndex",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Alta rol",
+                "operationId": "adminRolesStore",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/roles/{id}": {
+            "delete": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Eliminar rol",
+                "operationId": "adminRolesDestroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Actualizar rol",
+                "operationId": "adminRolesUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/roles/{id}/atributos": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Atributos del rol",
+                "operationId": "adminRolAtributosShow",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Actualizar atributos del rol",
+                "operationId": "adminRolAtributosUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/permisos": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Listar permisos",
+                "operationId": "adminPermisosIndex",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Alta permiso",
+                "operationId": "adminPermisosStore",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/permisos/batch": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Alta/baja permisos en lote",
+                "operationId": "adminPermisosBatch",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/permisos/{id}": {
+            "delete": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Eliminar permiso",
+                "operationId": "adminPermisosDestroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Obtener token API",
+                "description": "Auth — rutas reales en `routes/api.php` (controllers invokable Auth/*).",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "password"
+                                ],
+                                "properties": {
+                                    "usuario": {
+                                        "description": "Usuario o email",
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "codigo": {
+                                        "description": "Alias de usuario",
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "locale": {
+                                        "type": "string",
+                                        "example": "es",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciales inválidas"
+                    }
+                },
+                "security": [
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/forgot-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Solicitar recuperación de contraseña",
+                "operationId": "authForgotPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "usuario": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/reset-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Restablecer contraseña con token",
+                "operationId": "authResetPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "tenant": []
+                    }
+                ]
             }
         },
         "/api/v1/auth/logout": {
@@ -54,10 +779,17 @@
                     "Auth"
                 ],
                 "summary": "Revocar token actual",
-                "operationId": "f6b8957b4c0b25636613a9f0512a8ba9",
+                "operationId": "authLogout",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "No autenticado"
@@ -66,6 +798,9 @@
                 "security": [
                     {
                         "sanctum": []
+                    },
+                    {
+                        "tenant": []
                     }
                 ]
             }
@@ -75,11 +810,18 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Usuario autenticado",
-                "operationId": "37d33f0281f67d31d05b4c45eea0143b",
+                "summary": "Contexto de sesión / usuario autenticado",
+                "operationId": "authMe",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "No autenticado"
@@ -88,55 +830,3228 @@
                 "security": [
                     {
                         "sanctum": []
+                    },
+                    {
+                        "tenant": []
                     }
                 ]
+            }
+        },
+        "/api/v1/auth/change-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Cambiar contraseña (sesión autenticada)",
+                "operationId": "authChangePassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/excel-import/processes/{codigo}/template": {
+            "get": {
+                "tags": [
+                    "Excel Import"
+                ],
+                "summary": "Descargar plantilla XLSX del proceso",
+                "description": "Importación Excel GEN-14 (TR-009) — processCode partes.tareas.import.",
+                "operationId": "excelImportTemplate",
+                "parameters": [
+                    {
+                        "name": "codigo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "partes.tareas.import"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Archivo XLSX"
+                    },
+                    "404": {
+                        "description": "Proceso no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/excel-import/batches": {
+            "post": {
+                "tags": [
+                    "Excel Import"
+                ],
+                "summary": "Crear lote (upload + validación)",
+                "operationId": "excelImportBatchesStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "processCode",
+                                    "file"
+                                ],
+                                "properties": {
+                                    "processCode": {
+                                        "type": "string",
+                                        "example": "partes.tareas.import"
+                                    },
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/excel-import/batches/{batchId}": {
+            "get": {
+                "tags": [
+                    "Excel Import"
+                ],
+                "summary": "Estado del lote",
+                "operationId": "excelImportBatchesShow",
+                "parameters": [
+                    {
+                        "name": "batchId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/excel-import/batches/{batchId}/errors": {
+            "get": {
+                "tags": [
+                    "Excel Import"
+                ],
+                "summary": "Errores de validación del lote",
+                "operationId": "excelImportBatchesErrors",
+                "parameters": [
+                    {
+                        "name": "batchId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/excel-import/batches/{batchId}/errors/export": {
+            "get": {
+                "tags": [
+                    "Excel Import"
+                ],
+                "summary": "Exportar errores a XLSX",
+                "operationId": "excelImportBatchesErrorsExport",
+                "parameters": [
+                    {
+                        "name": "batchId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Archivo XLSX"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/excel-import/batches/{batchId}/process": {
+            "post": {
+                "tags": [
+                    "Excel Import"
+                ],
+                "summary": "Procesar filas válidas del lote",
+                "operationId": "excelImportBatchesProcess",
+                "parameters": [
+                    {
+                        "name": "batchId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/llm-credentials/active": {
+            "get": {
+                "tags": [
+                    "LLM"
+                ],
+                "summary": "Credencial LLM activa",
+                "description": "LLM BYOK + Chat assistant (TR-008).",
+                "operationId": "llmCredentialsActive",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "LLM"
+                ],
+                "summary": "Definir credencial LLM activa",
+                "operationId": "llmCredentialsSetActive",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/llm-credentials": {
+            "get": {
+                "tags": [
+                    "LLM"
+                ],
+                "summary": "Listar credenciales LLM",
+                "operationId": "llmCredentialsIndex",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "LLM"
+                ],
+                "summary": "Alta credencial LLM",
+                "operationId": "llmCredentialsStore",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "provider": {
+                                        "type": "string"
+                                    },
+                                    "label": {
+                                        "type": "string"
+                                    },
+                                    "apiKey": {
+                                        "type": "string"
+                                    },
+                                    "model": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/llm-credentials/{id}": {
+            "delete": {
+                "tags": [
+                    "LLM"
+                ],
+                "summary": "Eliminar credencial LLM",
+                "operationId": "llmCredentialsDestroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "LLM"
+                ],
+                "summary": "Actualizar credencial LLM",
+                "operationId": "llmCredentialsUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "label": {
+                                        "type": "string"
+                                    },
+                                    "apiKey": {
+                                        "type": "string"
+                                    },
+                                    "model": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/chat-assistant/turns": {
+            "post": {
+                "tags": [
+                    "Chat Assistant"
+                ],
+                "summary": "Turno de chat documental",
+                "operationId": "chatAssistantTurns",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "message"
+                                ],
+                                "properties": {
+                                    "message": {
+                                        "type": "string"
+                                    },
+                                    "conversationId": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "locale": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/asistentes": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Listar asistentes",
+                "description": "Maestros Partes (ABM + catálogos lookup).",
+                "operationId": "partesAsistentesList",
+                "parameters": [
+                    {
+                        "name": "soloActivos",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Alta asistente",
+                "operationId": "partesAsistentesStore",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/asistentes/{id}": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Detalle asistente",
+                "operationId": "partesAsistentesGet",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Actualizar asistente",
+                "operationId": "partesAsistentesUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Eliminar asistente",
+                "operationId": "partesAsistentesDelete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/asistentes/{id}/estado": {
+            "patch": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Cambiar estado asistente",
+                "operationId": "partesAsistentesPatchEstado",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/clientes": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Listar clientes",
+                "operationId": "partesClientesList",
+                "parameters": [
+                    {
+                        "name": "soloActivos",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Alta cliente",
+                "operationId": "partesClientesStore",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/clientes/{id}": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Detalle cliente",
+                "operationId": "partesClientesGet",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Actualizar cliente",
+                "operationId": "partesClientesUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Eliminar cliente",
+                "operationId": "partesClientesDelete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/clientes/{id}/estado": {
+            "patch": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Cambiar estado cliente",
+                "operationId": "partesClientesPatchEstado",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/clientes/{id}/acceso": {
+            "post": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Asignar acceso portal cliente",
+                "operationId": "partesClientesSetAcceso",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Revocar acceso portal cliente",
+                "operationId": "partesClientesRevokeAcceso",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tipos-cliente": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Listar tipos de cliente",
+                "operationId": "partesTiposClienteList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Alta tipo cliente",
+                "operationId": "partesTiposClienteStore",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tipos-cliente/{id}": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Detalle tipo cliente",
+                "operationId": "partesTiposClienteGet",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Actualizar tipo cliente",
+                "operationId": "partesTiposClienteUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Eliminar tipo cliente",
+                "operationId": "partesTiposClienteDelete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tipos-cliente/{id}/estado": {
+            "patch": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Cambiar estado tipo cliente",
+                "operationId": "partesTiposClientePatchEstado",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tipos-tarea": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Listar tipos de tarea",
+                "operationId": "partesTiposTareaList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Alta tipo tarea",
+                "operationId": "partesTiposTareaStore",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tipos-tarea/{id}": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Detalle tipo tarea",
+                "operationId": "partesTiposTareaGet",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Actualizar tipo tarea",
+                "operationId": "partesTiposTareaUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Eliminar tipo tarea",
+                "operationId": "partesTiposTareaDelete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tipos-tarea/{id}/estado": {
+            "patch": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Cambiar estado tipo tarea",
+                "operationId": "partesTiposTareaPatchEstado",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/cliente-tipos-tarea": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Listar asignaciones cliente↔tipo tarea",
+                "operationId": "partesClienteTiposTareaList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Alta asignación",
+                "operationId": "partesClienteTiposTareaStore",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/cliente-tipos-tarea/{id}": {
+            "delete": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Eliminar asignación",
+                "operationId": "partesClienteTiposTareaDelete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/catalogos/clientes": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Catálogo clientes (lookup)",
+                "operationId": "partesCatalogoClientes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/catalogos/asistentes": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Catálogo asistentes (lookup)",
+                "operationId": "partesCatalogoAsistentes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/catalogos/tipos-cliente": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Catálogo tipos cliente (lookup)",
+                "operationId": "partesCatalogoTiposCliente",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/catalogos/tipos-tarea": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Catálogo tipos tarea (lookup)",
+                "operationId": "partesCatalogoTiposTarea",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/parametros/duracion-tramo": {
+            "get": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "Parámetro duración tramo (minutos)",
+                "description": "Tareas (carga diaria / masivo) + informes / dashboard.",
+                "operationId": "partesDuracionTramo",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tareas": {
+            "get": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "Listar tareas (filtros fecha/cliente/asistente)",
+                "operationId": "partesTareasList",
+                "parameters": [
+                    {
+                        "name": "fechaDesde",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "fechaHasta",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "clienteId",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "asistenteId",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "Alta tarea",
+                "operationId": "partesTareasStore",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tareas/ids": {
+            "get": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "IDs de tareas según filtros (masivo)",
+                "operationId": "partesTareasListIds",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tareas/masivo/set-cerrado": {
+            "post": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "Cerrar/reabrir tareas en lote",
+                "operationId": "partesTareasMasivoSetCerrado",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "cerrado": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tareas/masivo/actualizar": {
+            "post": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "Actualizar campos en lote",
+                "operationId": "partesTareasMasivoActualizar",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tareas/{id}": {
+            "get": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "Detalle tarea",
+                "operationId": "partesTareasShow",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "Actualizar tarea",
+                "operationId": "partesTareasUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "Eliminar tarea",
+                "operationId": "partesTareasDestroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tareas/{id}/cerrar": {
+            "post": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "Cerrar tarea",
+                "operationId": "partesTareasCerrar",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tareas/{id}/reabrir": {
+            "post": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "Reabrir tarea",
+                "operationId": "partesTareasReabrir",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/parametros/dashboard": {
+            "get": {
+                "tags": [
+                    "Partes Informes"
+                ],
+                "summary": "Parámetros del dashboard",
+                "operationId": "partesDashboardParametros",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/dashboard": {
+            "get": {
+                "tags": [
+                    "Partes Informes"
+                ],
+                "summary": "Datos dashboard",
+                "operationId": "partesDashboard",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/informes/tareas": {
+            "get": {
+                "tags": [
+                    "Partes Informes"
+                ],
+                "summary": "Informe listado de tareas",
+                "operationId": "partesInformesTareas",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/informes/agrupado": {
+            "get": {
+                "tags": [
+                    "Partes Informes"
+                ],
+                "summary": "Informe agrupado",
+                "operationId": "partesInformesAgrupado",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/informes/paquete-horas": {
+            "get": {
+                "tags": [
+                    "Partes Informes"
+                ],
+                "summary": "Informe paquete de horas",
+                "operationId": "partesInformesPaqueteHoras",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/parametros": {
+            "get": {
+                "tags": [
+                    "Parametros"
+                ],
+                "summary": "Listar parámetros",
+                "description": "Parámetros generales y layouts de grilla/pivot.",
+                "operationId": "parametrosIndex",
+                "parameters": [
+                    {
+                        "name": "programa",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/parametros/{clave}": {
+            "patch": {
+                "tags": [
+                    "Parametros"
+                ],
+                "summary": "Actualizar valor de parámetro",
+                "operationId": "parametrosUpdate",
+                "parameters": [
+                    {
+                        "name": "clave",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "valor": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/grid-layouts/active": {
+            "get": {
+                "tags": [
+                    "Grid Layouts"
+                ],
+                "summary": "Layout de grilla activo",
+                "operationId": "gridLayoutsActive",
+                "parameters": [
+                    {
+                        "name": "gridKey",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Grid Layouts"
+                ],
+                "summary": "Marcar layout de grilla activo",
+                "operationId": "gridLayoutsSetActive",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "gridKey": {
+                                        "type": "string"
+                                    },
+                                    "layoutId": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/grid-layouts": {
+            "get": {
+                "tags": [
+                    "Grid Layouts"
+                ],
+                "summary": "Listar layouts de grilla",
+                "operationId": "gridLayoutsIndex",
+                "parameters": [
+                    {
+                        "name": "gridKey",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Grid Layouts"
+                ],
+                "summary": "Crear layout de grilla",
+                "operationId": "gridLayoutsStore",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "gridKey": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "state": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/grid-layouts/{id}": {
+            "put": {
+                "tags": [
+                    "Grid Layouts"
+                ],
+                "summary": "Actualizar layout de grilla",
+                "operationId": "gridLayoutsUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "state": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Grid Layouts"
+                ],
+                "summary": "Eliminar layout de grilla",
+                "operationId": "gridLayoutsDestroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/pivot-layouts/active": {
+            "get": {
+                "tags": [
+                    "Pivot Layouts"
+                ],
+                "summary": "Layout de pivot activo",
+                "operationId": "pivotLayoutsActive",
+                "parameters": [
+                    {
+                        "name": "pivotKey",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Pivot Layouts"
+                ],
+                "summary": "Marcar layout de pivot activo",
+                "operationId": "pivotLayoutsSetActive",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "pivotKey": {
+                                        "type": "string"
+                                    },
+                                    "layoutId": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/pivot-layouts": {
+            "get": {
+                "tags": [
+                    "Pivot Layouts"
+                ],
+                "summary": "Listar layouts de pivot",
+                "operationId": "pivotLayoutsIndex",
+                "parameters": [
+                    {
+                        "name": "pivotKey",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Pivot Layouts"
+                ],
+                "summary": "Crear layout de pivot",
+                "operationId": "pivotLayoutsStore",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "pivotKey": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "state": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/pivot-layouts/{id}": {
+            "put": {
+                "tags": [
+                    "Pivot Layouts"
+                ],
+                "summary": "Actualizar layout de pivot",
+                "operationId": "pivotLayoutsUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "state": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Pivot Layouts"
+                ],
+                "summary": "Eliminar layout de pivot",
+                "operationId": "pivotLayoutsDestroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/health": {
+            "get": {
+                "tags": [
+                    "FrameWork"
+                ],
+                "summary": "Health check (sin auth)",
+                "description": "Health y system status (tag FrameWork).",
+                "operationId": "health",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/v1/system/status": {
             "get": {
                 "tags": [
-                    "System"
+                    "FrameWork"
                 ],
                 "summary": "Estado instalación / entorno",
-                "description": "Estado del sistema (MONO: una sola instalación).",
-                "operationId": "909caae0a82cd1cf57c4096639e407d3",
+                "operationId": "systemStatus",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "No autenticado"
-                    },
-                    "403": {
-                        "description": "Sin permiso"
                     }
                 },
                 "security": [
                     {
                         "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/menu": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Árbol de menú del usuario",
+                "description": "User shell: menú, preferencias, empresas.",
+                "operationId": "userMenu",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/preferences": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Preferencias del usuario",
+                "operationId": "userPreferencesShow",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Actualizar preferencias (locale, theme, openInNewTab)",
+                "operationId": "userPreferencesUpdate",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "locale": {
+                                        "type": "string",
+                                        "example": "es"
+                                    },
+                                    "theme": {
+                                        "type": "string"
+                                    },
+                                    "openInNewTab": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/empresas": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Empresas accesibles del usuario",
+                "operationId": "userEmpresas",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
                     }
                 ]
             }
         }
     },
     "components": {
+        "schemas": {
+            "ApiEnvelope": {
+                "required": [
+                    "error",
+                    "respuesta",
+                    "resultado"
+                ],
+                "properties": {
+                    "error": {
+                        "description": "0 = OK",
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "respuesta": {
+                        "type": "string",
+                        "example": "ok"
+                    },
+                    "resultado": {
+                        "description": "Payload; vacío = {}",
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
+        },
         "securitySchemes": {
             "sanctum": {
                 "type": "http",
-                "description": "Token personal Sanctum",
-                "bearerFormat": "sanctum",
+                "description": "Token Bearer obtenido en POST /api/v1/auth/login",
+                "bearerFormat": "Sanctum",
                 "scheme": "bearer"
+            },
+            "tenant": {
+                "type": "apiKey",
+                "description": "Cliente MONO (ej. desarrollo, demo)",
+                "name": "X-Paq-Cliente",
+                "in": "header"
             }
         }
     },
     "tags": [
         {
+            "name": "Admin",
+            "description": "Seguridad ABM + menú/preferencias/empresas del usuario"
+        },
+        {
             "name": "Auth",
             "description": "Autenticación API (Bearer Sanctum)"
         },
         {
-            "name": "System",
-            "description": "Estado y salud del sistema"
+            "name": "Chat Assistant",
+            "description": "Asistente IA documental"
+        },
+        {
+            "name": "Excel Import",
+            "description": "Importación Excel (GEN-14)"
+        },
+        {
+            "name": "FrameWork",
+            "description": "Health y estado del sistema (scaffold / plataforma)"
+        },
+        {
+            "name": "Grid Layouts",
+            "description": "Layouts de grilla DevExtreme"
+        },
+        {
+            "name": "LLM",
+            "description": "Credenciales LLM (BYOK)"
+        },
+        {
+            "name": "Parametros",
+            "description": "Parámetros generales"
+        },
+        {
+            "name": "Partes Informes",
+            "description": "Dashboard e informes"
+        },
+        {
+            "name": "Partes Maestros",
+            "description": "Maestros Partes (clientes, asistentes, tipos)"
+        },
+        {
+            "name": "Partes Tareas",
+            "description": "Carga diaria y proceso masivo de tareas"
+        },
+        {
+            "name": "Pivot Layouts",
+            "description": "Layouts de pivot"
         }
     ]
 }

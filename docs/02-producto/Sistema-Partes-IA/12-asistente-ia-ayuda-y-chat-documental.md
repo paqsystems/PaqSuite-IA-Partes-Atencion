@@ -22,6 +22,7 @@ La capacidad es **transversal** del Framework. Partes **adopta** y **configura**
 | [`02-producto/08-menu-avatar.md`](../../../PaqSuite-IA-FRAMEWORK/docs/02-producto/08-menu-avatar.md) / SPEC-001-08 | Catálogo del menú avatar (`showChatAssistant`, copy, orden) |
 | [`SPEC-001-99`](../../../PaqSuite-IA-FRAMEWORK/docs/05-open-spec/001-Generalidades/SPEC-001-99-manual-usuario-corpus.md) | Contrato del corpus de manuales |
 | [`02-producto/16-provider-ia.md`](../../../PaqSuite-IA-FRAMEWORK/docs/02-producto/16-provider-ia.md) | BYOK / Preferencias LLM (compartido) |
+| [`06-operacion/adopcion-gen-16-byok.md`](../../../PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-gen-16-byok.md) | **Must** host: migrate `pq_llm_credentials` + deploy 7 SP `pq_sp_llm_*` |
 | Contexto mono | `docs/00-contexto/_mono/01-experiencia-base/ayuda-externa-asistente.md` (si está enlazado en el host) |
 
 **Regla:** el menú avatar y el chat son piezas GEN; Partes declara **si las habilita**, **qué corpus aporta** y **qué copy/bienvenida** usa.
@@ -34,7 +35,7 @@ La capacidad es **transversal** del Framework. Partes **adopta** y **configura**
 |-----------|---------------------|-------------------------|
 | **Chat documental / Asistente IA** (este doc) | Explicar y orientar: «¿cómo cargo un parte?», «¿qué ve un cliente?», «¿qué es Paquete de Horas?» | **Sí** |
 | **Ayuda externa (URL)** | Enlace a wiki/Zendesk/PDF fuera del portal | **No** en este MVP (fuera de alcance) |
-| **Smart Capture / asistente operativo** | Completar o proponer datos en un formulario abierto (carga diaria) | **No** — evolución (`07-fuera-de-alcance-y-evolucion.md`, `10-mobile.md`) |
+| **Smart Capture / asistente operativo** | Completar o proponer datos en el modal de tarea (carga diaria) | Definido en [`14-smart-capture.md`](./14-smart-capture.md) — **no** es este canal |
 | **Perfil Partes** | Solo lectura desde avatar (SPEC-002) | Ya definido; **ítem distinto** del Asistente IA |
 
 Anti-patrón: usar el Asistente IA para grabar tareas, cerrar lotes o consultar datos vivos de clientes/tareas como si fuera el ERP.

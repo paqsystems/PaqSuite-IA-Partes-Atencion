@@ -1,5 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ProcessDataGrid, ExcelImportToolbar, isNativeApp } from '@paqsuite/react-core'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ProcessDataGrid,
+  ExcelImportToolbar,
+  isNativeApp,
+  SmartCapturePanel,
+  useLlmCredentialSelection,
+  useSmartCapturePendingChoice,
+  type SmartCaptureThreadMessage,
+} from '@paqsuite/react-core'
 import type { ExcelImportCompletePayload } from '@paqsuite/react-core'
 import { Column, Paging, Pager } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
@@ -10,10 +18,13 @@ import CheckBox from 'devextreme-react/check-box'
 import { Popup } from 'devextreme-react/popup'
 import { confirm } from 'devextreme/ui/dialog'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
+import { LlmPreferencesModalHost } from '../../llmCredentials/LlmPreferencesModalHost'
 import { listCatalogo } from '../maestros/partesMaestrosApi'
+import type { FormState } from './cargaDiariaFormTypes'
 import {
   deleteTarea,
   fetchDuracionTramo,
@@ -34,22 +45,11 @@ import {
   todayIsoDate,
 } from './partesTareaDuration'
 import { shouldRefreshCargaAfterImport } from './excelImportCargaHelpers'
+import { handlePartesSmartCaptureSend } from './partesSmartCaptureTurn'
 
 type CargaDiariaGridRow = PartesTareaItem & {
   /** Horas decimales para sumatoria DevExtreme (persistencia = minutos). */
   duracionHoras: number
-}
-
-type FormState = {
-  usuarioId: number | null
-  clienteId: number | null
-  tipoTareaId: number | null
-  fecha: string
-  duracionMinutos: number
-  sinCargo: boolean
-  presencial: boolean
-  observacion: string
-  rowVersion?: string
 }
 
 const emptyForm = (asistenteId: number | null): FormState => ({
@@ -64,9 +64,13 @@ const emptyForm = (asistenteId: number | null): FormState => ({
 })
 
 export function CargaDiariaPage() {
+  const { t } = useTranslation()
   const session = getAuthSession()
   const esSupervisor = Boolean(session?.partes?.esSupervisor)
   const asistenteId = session?.partes?.asistenteId ?? null
+  const isCliente = session?.partes?.tipoFuncional === 'cliente'
+  const llmSelection = useLlmCredentialSelection({ autoSelectFirstEnabled: true })
+  const { pendingChoice, setPendingChoice, clearPendingChoice } = useSmartCapturePendingChoice()
 
   const hoy = todayIsoDate()
   const [fechaDesde, setFechaDesde] = useState(hoy)
@@ -84,7 +88,72 @@ export function CargaDiariaPage() {
   const [tipos, setTipos] = useState<Record<string, unknown>[]>([])
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [formCerrado, setFormCerrado] = useState(false)
   const [form, setForm] = useState<FormState>(() => emptyForm(asistenteId))
+  const [scThread, setScThread] = useState<SmartCaptureThreadMessage[]>([])
+  const [llmPreferencesVisible, setLlmPreferencesVisible] = useState(false)
+  const [credentialsRevision, setCredentialsRevision] = useState(0)
+  const formRef = useRef(form)
+  const editingIdRef = useRef(editingId)
+  editingIdRef.current = editingId
+
+  /** Aplica cambios al form y sincroniza formRef en el mismo tick (persist/SC no pueden esperar el re-render). */
+  const patchForm = useCallback((updater: (prev: FormState) => FormState) => {
+    const next = updater(formRef.current)
+    formRef.current = next
+    setForm(next)
+  }, [])
+
+  useEffect(() => {
+    if (credentialsRevision === 0) {
+      return
+    }
+    void llmSelection.refresh()
+  }, [credentialsRevision, llmSelection.refresh])
+
+  function resetSmartCaptureState() {
+    setScThread([])
+    clearPendingChoice()
+  }
+
+  function closeForm() {
+    setFormOpen(false)
+    resetSmartCaptureState()
+  }
+
+  function resolveSmartCaptureMessage(key: string): string {
+    const viaI18n = t(key)
+    if (viaI18n !== key) {
+      return viaI18n
+    }
+    return resolveAuthMessage(key)
+  }
+
+  function buildSmartCaptureHandlers() {
+    return {
+      form: formRef.current,
+      editingId: editingIdRef.current,
+      cerrado: formCerrado,
+      esSupervisor,
+      clientes: clientes as Array<{ id: number; code?: string; nombre?: string }>,
+      asistentes: asistentes as Array<{ id: number; code?: string; nombre?: string }>,
+      tipos: tipos as Array<{ id: number; code?: string; descripcion?: string }>,
+      pendingChoice,
+      activeCredentialId: llmSelection.activeCredentialId,
+      supportsVision: llmSelection.canAttachImages,
+      setForm: (updater: (prev: FormState) => FormState) => {
+        patchForm(updater)
+      },
+      setPendingChoice,
+      onClienteIdChange: handleClienteChange,
+      onSave: () => persist(false),
+      onAssistantReply: (text: string) => {
+        setScThread((prev) => [...prev, { role: 'assistant', text }])
+      },
+      onError: (message: string) => setError(message),
+      resolveMessage: resolveSmartCaptureMessage,
+    }
+  }
 
   const tramoOptions = useMemo(() => buildTramoHhMmOptions(tramo), [tramo])
 
@@ -177,10 +246,13 @@ export function CargaDiariaPage() {
 
   function openCreate() {
     setEditingId(null)
+    setFormCerrado(false)
     const initial = emptyForm(asistenteId)
     initial.duracionMinutos = tramo
+    formRef.current = initial
     setForm(initial)
     setTipos([])
+    resetSmartCaptureState()
     setFormOpen(true)
   }
 
@@ -189,7 +261,8 @@ export function CargaDiariaPage() {
       return
     }
     setEditingId(row.id)
-    setForm({
+    setFormCerrado(false)
+    const next: FormState = {
       usuarioId: row.usuarioId,
       clienteId: row.clienteId,
       tipoTareaId: row.tipoTareaId,
@@ -199,14 +272,17 @@ export function CargaDiariaPage() {
       presencial: row.presencial,
       observacion: row.observacion,
       rowVersion: row.rowVersion,
-    })
+    }
+    formRef.current = next
+    setForm(next)
     await loadUniverso(row.clienteId)
+    resetSmartCaptureState()
     setFormOpen(true)
   }
 
   async function handleClienteChange(clienteId: number | null) {
     const items = await loadUniverso(clienteId)
-    setForm((prev) => {
+    patchForm((prev) => {
       const stillValid = items?.some((item) => Number(item.id) === prev.tipoTareaId)
       const defaultTipo = items?.find((item) => item.isDefault) ?? items?.[0]
       return {
@@ -222,11 +298,13 @@ export function CargaDiariaPage() {
   }
 
   async function persist(confirmFutura = false) {
-    if (!isValidDuracionMinutos(form.duracionMinutos, tramo)) {
+    const current = formRef.current
+    const currentEditingId = editingIdRef.current
+    if (!isValidDuracionMinutos(current.duracionMinutos, tramo)) {
       setError(resolveAuthMessage('partes.tarea.duracionInvalida'))
       return
     }
-    if (isFechaFutura(form.fecha) && !confirmFutura) {
+    if (isFechaFutura(current.fecha) && !confirmFutura) {
       const ok = await confirm(
         'La fecha es futura. ¿Confirma el registro?',
         'Fecha futura'
@@ -238,23 +316,23 @@ export function CargaDiariaPage() {
     }
 
     const body: Record<string, unknown> = {
-      usuarioId: form.usuarioId,
-      clienteId: form.clienteId,
-      tipoTareaId: form.tipoTareaId,
-      fecha: form.fecha,
-      duracionMinutos: form.duracionMinutos,
-      sinCargo: form.sinCargo,
-      presencial: form.presencial,
-      observacion: form.observacion,
+      usuarioId: current.usuarioId,
+      clienteId: current.clienteId,
+      tipoTareaId: current.tipoTareaId,
+      fecha: current.fecha,
+      duracionMinutos: current.duracionMinutos,
+      sinCargo: current.sinCargo,
+      presencial: current.presencial,
+      observacion: current.observacion,
       confirmarFechaFutura: confirmFutura || undefined,
     }
-    if (editingId !== null) {
-      body.rowVersion = form.rowVersion
+    if (currentEditingId !== null) {
+      body.rowVersion = current.rowVersion
     }
 
-    const result = await saveTarea(body, editingId ?? undefined)
+    const result = await saveTarea(body, currentEditingId ?? undefined)
     if (result.kind === 'ok') {
-      setFormOpen(false)
+      closeForm()
       void load()
       return
     }
@@ -406,6 +484,7 @@ export function CargaDiariaPage() {
           accessToken={getAuthToken()}
           platform={buildAuthPlatformHeaders()}
           onCreate={openCreate}
+          allowCreate
           createHint="Nueva tarea"
           createTestId="partesCargaAdd"
           defaultTotalItems={duracionSummaryItems}
@@ -460,10 +539,11 @@ export function CargaDiariaPage() {
 
       <Popup
         visible={formOpen}
-        onHiding={() => setFormOpen(false)}
+        onHiding={() => closeForm()}
         title={editingId ? 'Editar tarea' : 'Nueva tarea'}
-        width={560}
+        width={640}
         height="auto"
+        maxHeight="90vh"
         showCloseButton
       >
         <div style={{ display: 'grid', gap: 10, padding: 8 }} data-testid="partesCargaForm">
@@ -476,7 +556,9 @@ export function CargaDiariaPage() {
                 valueExpr="id"
                 displayExpr={(item) => (item ? `${item.code} — ${item.nombre}` : '')}
                 searchEnabled
-                onValueChanged={(e) => setForm((prev) => ({ ...prev, usuarioId: e.value as number }))}
+                onValueChanged={(e) =>
+                  patchForm((prev) => ({ ...prev, usuarioId: e.value as number }))
+                }
               />
             </div>
           ) : null}
@@ -487,10 +569,11 @@ export function CargaDiariaPage() {
               type="date"
               displayFormat={dateDisplayFormat}
               dateSerializationFormat={dateSerializationFormat}
+              elementAttr={{ 'data-testid': 'partesCargaFecha' }}
               onValueChanged={(e) => {
                 const next = isoDateFromDateBox(e)
                 if (next !== null) {
-                  setForm((prev) => ({ ...prev, fecha: next || prev.fecha }))
+                  patchForm((prev) => ({ ...prev, fecha: next || prev.fecha }))
                 }
               }}
             />
@@ -503,6 +586,7 @@ export function CargaDiariaPage() {
               valueExpr="id"
               displayExpr={(item) => (item ? `${item.code} — ${item.nombre}` : '')}
               searchEnabled
+              elementAttr={{ 'data-testid': 'partesCargaCliente' }}
               onValueChanged={(e) => void handleClienteChange((e.value as number | null) ?? null)}
             />
           </div>
@@ -515,7 +599,7 @@ export function CargaDiariaPage() {
               displayExpr={(item) => (item ? `${item.code} — ${item.descripcion}` : '')}
               searchEnabled
               onValueChanged={(e) =>
-                setForm((prev) => ({ ...prev, tipoTareaId: e.value as number | null }))
+                patchForm((prev) => ({ ...prev, tipoTareaId: e.value as number | null }))
               }
             />
           </div>
@@ -529,7 +613,7 @@ export function CargaDiariaPage() {
               searchEnabled
               elementAttr={{ 'data-testid': 'partesCargaDuracion' }}
               onValueChanged={(e) =>
-                setForm((prev) => ({
+                patchForm((prev) => ({
                   ...prev,
                   duracionMinutos: Number(e.value) || tramo,
                 }))
@@ -540,25 +624,32 @@ export function CargaDiariaPage() {
             <label>Observación</label>
             <TextBox
               value={form.observacion}
-              onValueChanged={(e) => setForm((prev) => ({ ...prev, observacion: String(e.value ?? '') }))}
+              elementAttr={{ 'data-testid': 'partesCargaObservacion' }}
+              onValueChanged={(e) =>
+                patchForm((prev) => ({ ...prev, observacion: String(e.value ?? '') }))
+              }
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
             <label>Sin cargo</label>
             <CheckBox
               value={form.sinCargo}
-              onValueChanged={(e) => setForm((prev) => ({ ...prev, sinCargo: Boolean(e.value) }))}
+              onValueChanged={(e) =>
+                patchForm((prev) => ({ ...prev, sinCargo: Boolean(e.value) }))
+              }
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
             <label>Presencial</label>
             <CheckBox
               value={form.presencial}
-              onValueChanged={(e) => setForm((prev) => ({ ...prev, presencial: Boolean(e.value) }))}
+              onValueChanged={(e) =>
+                patchForm((prev) => ({ ...prev, presencial: Boolean(e.value) }))
+              }
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <Button text="Cancelar" onClick={() => setFormOpen(false)} />
+            <Button text="Cancelar" onClick={() => closeForm()} />
             <Button
               text="Guardar"
               type="default"
@@ -566,8 +657,60 @@ export function CargaDiariaPage() {
               elementAttr={{ 'data-testid': 'partesCargaSave' }}
             />
           </div>
+
+          {!isNativeApp() && !isCliente ? (
+            <div data-testid="partesCargaSmartCapture" style={{ marginTop: 8 }}>
+              <SmartCapturePanel
+                enabled={!formCerrado}
+                hintText={t('partes.smartCapture.hint')}
+                credentials={llmSelection.credentials.map((item) => ({
+                  id: item.id,
+                  nombre: item.nombre,
+                  enabled: item.enabled,
+                  supportsVision: item.supportsVision,
+                }))}
+                activeCredentialId={llmSelection.activeCredentialId}
+                onActiveCredentialChange={(id) => {
+                  void llmSelection.setActiveCredentialId(id)
+                }}
+                onOpenPreferences={() => setLlmPreferencesVisible(true)}
+                threadMessages={scThread}
+                onThreadChange={setScThread}
+                t={(key) => t(key)}
+                pendingChoice={pendingChoice}
+                onSelectPendingOption={(oneBasedIndex) => {
+                  const choiceText = String(oneBasedIndex)
+                  setScThread((prev) => [...prev, { role: 'user', text: choiceText }])
+                  void handlePartesSmartCaptureSend(
+                    {
+                      message: choiceText,
+                      modality: 'texto',
+                      images: [],
+                      credentialId: llmSelection.activeCredentialId,
+                    },
+                    buildSmartCaptureHandlers()
+                  )
+                }}
+                onDiscardThread={() => {
+                  clearPendingChoice()
+                }}
+                onSend={async (payload) => {
+                  await handlePartesSmartCaptureSend(payload, buildSmartCaptureHandlers())
+                }}
+              />
+            </div>
+          ) : null}
         </div>
       </Popup>
+
+      <LlmPreferencesModalHost
+        visible={llmPreferencesVisible}
+        onClose={() => {
+          setLlmPreferencesVisible(false)
+          setCredentialsRevision((current) => current + 1)
+        }}
+        onCredentialsChanged={() => setCredentialsRevision((current) => current + 1)}
+      />
     </div>
   )
 }

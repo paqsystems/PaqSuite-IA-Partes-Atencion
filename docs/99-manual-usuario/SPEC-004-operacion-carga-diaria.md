@@ -72,6 +72,16 @@ Reglas útiles:
 
 La capacidad puede estar deshabilitada en la instalación (parámetro de importación Excel); en ese caso no verás la barra de plantilla/importar.
 
+### Captura inteligente (Smart Capture) en el formulario
+
+Al dar de alta o editar una tarea (modal), debajo del formulario podés usar la **captura inteligente**:
+
+1. Escribí, dictá o adjuntá una imagen (si tu proveedor LLM lo permite) describiendo la tarea.
+2. El asistente **propone** valores en el formulario (cliente, tipo, duración, etc.).
+3. Revisá y, si corresponde, pedí **guardar**; se usan las mismas validaciones que el botón Guardar.
+
+No confundir con el **Asistente IA** del menú del avatar (ese responde preguntas de ayuda; no completa el parte). En **mobile** la captura inteligente no está disponible. Si la tarea está **cerrada**, el panel queda deshabilitado. Sin credencial LLM configurada en Preferencias, el panel te pedirá configurarla.
+
 ## Condiciones de uso
 
 - Perfil asistente o supervisor.
