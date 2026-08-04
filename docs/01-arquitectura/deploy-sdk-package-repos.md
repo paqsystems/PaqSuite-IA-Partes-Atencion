@@ -12,7 +12,7 @@ Fecha: 2026-08-04 · Rama producto: `1.2.0`
 | Capa | Dependencia |
 |------|-------------|
 | Backend | `paqsuite/laravel-core: ^1.3.1` → VCS `https://github.com/paqsystems/laravel-core.git` |
-| Frontend | `@paqsuite/react-core` → `github:paqsystems/react-core#v2.2.0` |
+| Frontend | `@paqsuite/react-core` → `git+https://github.com/paqsystems/react-core.git#v2.2.0` |
 
 **Sin** path a `PaqSuite-IA-FRAMEWORK`. **Sin** `forge-ensure-framework.sh` en el Deploy Script.
 
@@ -40,17 +40,44 @@ Web Directory típico: `backend/public` (repo completo Partes, no solo subfolder
 
 ## F2 — Auth en Vercel (frontend)
 
-1. Variable / credencial git con **lectura** a `paqsystems/react-core` (PAT o GitHub integration que alcance ese repo privado).
-2. `npm ci` / `npm install` debe clonar `github:paqsystems/react-core#v2.2.0`.
-3. Build de producción: `npm run build` → **Vite** (`build:check` / `typecheck` opcionales; el source del SDK aún no pasa `tsc -b` limpio).
+### Causa típica del fallo
+
+```text
+git@github.com: Permission denied (publickey)
+ls-remote ssh://git@github.com/paqsystems/react-core.git
+```
+
+Vercel **no tiene SSH** hacia repos privados. Hay que clonar por **HTTPS + PAT**.
+
+### Configuración Must
+
+1. **Environment Variable** en el proyecto Vercel (Production + Preview):
+   - Name: `GITHUB_TOKEN`
+   - Value: PAT (classic `repo` o fine-grained con Contents: Read sobre `paqsystems/react-core`)
+   - Sensitive / encrypted
+
+2. **Root Directory:** `frontend` (si el site apunta al monorepo Partes).
+
+3. **Install / Build** (ya en `frontend/vercel.json`):
+   - Install: `bash scripts/vercel-install.sh` (reescribe git→HTTPS con el token + `npm install`)
+   - Build: `npm run build`
+   - Output: `dist`
+
 4. Mantener `VITE_API_BASE_URL` según [`frontend-api-base-url-y-env.md`](./frontend-api-base-url-y-env.md).
+
+### Checklist Vercel
+
+- [ ] `GITHUB_TOKEN` con lectura a `react-core`
+- [ ] Root Directory = `frontend`
+- [ ] Redeploy tras setear el token
+- [ ] Log de install **sin** `Permission denied (publickey)`
 
 ---
 
 ## Checklist cutover
 
 - [ ] Acceso git Forge → `laravel-core`
-- [ ] Acceso git Vercel/CI → `react-core`
-- [ ] Deploy Script **sin** `forge-ensure-framework.sh`
-- [ ] `composer.lock` / `package-lock.json` regenerados con las deps nuevas
-- [ ] Smoke: `GET /api/v1/health` + build FE Vercel
+- [ ] `GITHUB_TOKEN` en Vercel → `react-core`
+- [ ] Deploy Script Forge **sin** `forge-ensure-framework.sh`
+- [ ] `composer.lock` / `package-lock.json` con deps nuevas
+- [ ] Smoke: `GET /api/v1/health` + build FE Vercel verde
