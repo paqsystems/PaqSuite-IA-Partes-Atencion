@@ -1,9 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const cssDir = 'c:/Programacion/PaqSuite-IA-Partes-Atencion/frontend/node_modules/devextreme/dist/css'
-const publicDir = 'c:/Programacion/PaqSuite-IA-Partes-Atencion/frontend/public/dx-themes'
-const outFile = 'c:/Programacion/PaqSuite-IA-Partes-Atencion/frontend/src/theme/empresaThemeCssUrls.ts'
+const frontendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const cssDir = path.join(frontendRoot, 'node_modules', 'devextreme', 'dist', 'css')
+const publicDir = path.join(frontendRoot, 'public', 'dx-themes')
+const outFile = path.join(frontendRoot, 'src', 'theme', 'empresaThemeCssUrls.ts')
 
 function copyDirRecursive(fromDir, toDir) {
   fs.mkdirSync(toDir, { recursive: true })
@@ -18,6 +20,13 @@ function copyDirRecursive(fromDir, toDir) {
   }
 }
 
+if (!fs.existsSync(cssDir)) {
+  console.error(
+    `gen-dx-theme-urls: no existe ${cssDir}. ¿Corriste npm install en frontend/?`,
+  )
+  process.exit(1)
+}
+
 const files = fs
   .readdirSync(cssDir)
   .filter(
@@ -25,7 +34,7 @@ const files = fs
       f.startsWith('dx.') &&
       f.endsWith('.css') &&
       !f.includes('.min.') &&
-      !/^dx\.(common|diagram|gantt|icons|visibility)/.test(f)
+      !/^dx\.(common|diagram|gantt|icons|visibility)/.test(f),
   )
 
 function fileToKey(fileName) {
