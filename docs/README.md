@@ -37,7 +37,7 @@ Este documento sirve como **índice de navegación** para toda la documentación
 
 | Documento | Propósito |
 |-----------|-----------|
-| **`03-historias-usuario/000-Generalidades/`** | Épica Generalidades: layouts persistentes de grillas |
+| **`03-historias-usuario/001-Generalidades/`** | Bloque vigente de Generalidades replicado desde PedidosWeb para SistemaPartes |
 | **`03-historias-usuario/001-Seguridad/`** | Épica Seguridad: login, selección empresa, logout, mantenimiento tablas (users, PQ_Empresa, roles, permisos, menú) |
 | **`03-historias-usuario/Historia_PQ_MENUS_seed.md`** | Seed versionado del menú del sistema |
 | **`04-tareas/`** | Tareas técnicas (TR) derivadas de las HU |
@@ -101,6 +101,12 @@ Las reglas en `.cursor/rules/` complementan esta documentación:
 1. SPEC en `docs/05-open-spec/` si el alcance es formal (ver `guia-adopcion-open-spec.md`).
 2. Leer la HU en `03-historias-usuario/` y la TR en `04-tareas/`.
 3. Dispatcher: `.cursor/rules/base/00-arquitectura/01-prompts-programados-dispatcher.md` (núcleo Open-Spec **A–F**; tabla completa **A–Q**).
+
+## Nota de transición
+
+- `000-Generalidades` queda como bloque **histórico / deprecado** para trazabilidad.
+- La lectura vigente de generalidades debe comenzar por `docs/05-open-spec/001-Generalidades/README.md` y sus HUs/TR derivadas.
+- Cuando exista contradicción entre `000-Generalidades` y `001-Generalidades`, prevalece `001-Generalidades` junto con `docs/00-contexto/_mono/`.
 
 **Para implementar una funcionalidad (flujo mínimo):**
 1. Leer la HU correspondiente en `03-historias-usuario/`

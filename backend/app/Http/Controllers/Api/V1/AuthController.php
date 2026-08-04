@@ -10,27 +10,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * Legacy scaffold (no enrutado). Auth real: App\Http\Controllers\Api\V1\Auth\*.
+ * OpenAPI: App\OpenApi\OpenApiPathsAuth.
+ */
 class AuthController extends Controller
 {
-    /**
-     * Login con email/password; devuelve token Bearer Sanctum.
-     *
-     * @OA\Post(
-     *   path="/api/v1/auth/login",
-     *   tags={"Auth"},
-     *   summary="Obtener token API",
-     *   @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(
-     *       required={"email","password"},
-     *       @OA\Property(property="email", type="string", example="dev@example.com"),
-     *       @OA\Property(property="password", type="string", format="password")
-     *     )
-     *   ),
-     *   @OA\Response(response=200, description="OK"),
-     *   @OA\Response(response=422, description="Validación")
-     * )
-     */
     public function login(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -60,16 +45,6 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *   path="/api/v1/auth/logout",
-     *   tags={"Auth"},
-     *   summary="Revocar token actual",
-     *   security={{"sanctum":{}}},
-     *   @OA\Response(response=200, description="OK"),
-     *   @OA\Response(response=401, description="No autenticado")
-     * )
-     */
     public function logout(Request $request): JsonResponse
     {
         $request->user()?->currentAccessToken()?->delete();
@@ -77,16 +52,6 @@ class AuthController extends Controller
         return ApiEnvelope::ok(['loggedOut' => true]);
     }
 
-    /**
-     * @OA\Get(
-     *   path="/api/v1/auth/me",
-     *   tags={"Auth"},
-     *   summary="Usuario autenticado",
-     *   security={{"sanctum":{}}},
-     *   @OA\Response(response=200, description="OK"),
-     *   @OA\Response(response=401, description="No autenticado")
-     * )
-     */
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -98,7 +63,6 @@ class AuthController extends Controller
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            'permissionSlugs' => $user->permission_slugs ?? [],
         ]);
     }
 }

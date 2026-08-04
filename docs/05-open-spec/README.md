@@ -2,7 +2,7 @@
 
 Carpeta **`docs/05-open-spec/`** del producto: **fuente de verdad de alcance detallado** antes y durante el ciclo HU → TR → implementación.
 
-**Nota:** el número `SPEC-NNN` se alinea al **número de HU dentro de la misma épica** (`000-Generalidades`, `001-Seguridad`, …). Puede repetirse el mismo número entre carpetas (ej. SPEC-001 generalidades vs SPEC-001 seguridad).
+**Nota:** el número `SPEC-NNN` se alinea al **número de HU dentro de la misma épica**. Puede repetirse el mismo número entre carpetas (ej. SPEC-001 en más de una épica).
 
 ## SPEC de contexto (antecedente lógico a las HU)
 
@@ -10,12 +10,35 @@ Documentos **SPEC-CTX-***: alcance de épica redactado como **insumo previo** al
 
 | SPEC-CTX | Épica | Enlace |
 |----------|--------|--------|
-| SPEC-CTX-000 | 000 – Generalidades | [SPEC-CTX-000-generalidades.md](000-Generalidades/SPEC-CTX-000-generalidades.md) |
+| SPEC-CTX-000 | 000 – Generalidades (histórico / deprecado) | [SPEC-CTX-000-generalidades.md](000-Generalidades/SPEC-CTX-000-generalidades.md) |
 | SPEC-CTX-001 | 001 – Seguridad y acceso | [SPEC-CTX-001-seguridad-y-acceso.md](001-Seguridad/SPEC-CTX-001-seguridad-y-acceso.md) |
 
 ## Índice de especificaciones (operativas por HU)
 
-### 000 – Generalidades (`000-Generalidades/`)
+### 100 – Sistema Partes (`100-SistemaPartes/`) — dominio del producto
+
+Índice y roadmap: [100-SistemaPartes/README.md](100-SistemaPartes/README.md). Estrategia: **todas las SPECs primero**, luego HU/TR por SPEC.
+
+| SPEC | Título | HU |
+|------|--------|-----|
+| [SPEC-001](100-SistemaPartes/SPEC-001-modelo-datos-modulo.md) | Modelo de datos del módulo | [HU-001](../03-historias-usuario/100-SistemaPartes/HU-001-modelo-datos-modulo.md) · [TR-001](../04-tareas/100-SistemaPartes/TR-001-modelo-datos-modulo.md) |
+| [SPEC-002](100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md) | Identidad funcional y acceso | [HU-002](../03-historias-usuario/100-SistemaPartes/HU-002-identidad-funcional-y-acceso.md) · [TR-002](../04-tareas/100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md) |
+| [SPEC-003](100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) | Maestros y catálogos | [HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) · [TR-003](../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |
+| [SPEC-004](100-SistemaPartes/SPEC-004-operacion-carga-diaria.md) | Operación / carga diaria | [HU-004](../03-historias-usuario/100-SistemaPartes/HU-004-operacion-carga-diaria.md) · [TR-004](../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md) |
+| [SPEC-005](100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) | Supervisión / proceso masivo | [HU-005](../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) · [TR-005](../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
+| [SPEC-006](100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) | Consultas, dashboard y navegación | [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) |
+| [SPEC-007](100-SistemaPartes/SPEC-007-mobile-capacitor.md) | Mobile Capacitor del módulo | [HU-007](../03-historias-usuario/100-SistemaPartes/HU-007-mobile-capacitor.md) · [TR-007](../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) |
+| [SPEC-008](100-SistemaPartes/SPEC-008-asistente-ia-chat-documental.md) | Asistente IA — chat documental (adopción GEN-21) | [HU-008](../03-historias-usuario/100-SistemaPartes/HU-008-asistente-ia-chat-documental.md) · TR-008 *(pendiente)* |
+
+### 001 – Generalidades (`001-Generalidades/`) — bloque vigente
+
+Ver índice principal: [README de 001-Generalidades](001-Generalidades/README.md).
+
+Este bloque es la referencia vigente para generalidades de `SistemaPartes` y productos que reutilicen la base replicada desde PedidosWeb.
+
+### 000 – Generalidades (`000-Generalidades/`) — histórico / deprecado
+
+Este bloque se conserva por trazabilidad documental. Para trabajo nuevo o regeneración de HU/TR/SPEC, usar `001-Generalidades/`.
 
 | SPEC | Título | HU |
 |------|--------|-----|
