@@ -24,18 +24,6 @@ export default defineConfig(({ mode }) => {
         ),
         devextreme: path.resolve(__dirname, 'node_modules/devextreme'),
         'devextreme-react': path.resolve(__dirname, 'node_modules/devextreme-react'),
-        '@paqsuite/react-core/auth.css': path.resolve(
-          __dirname,
-          '../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/ui/auth/authLayout.css',
-        ),
-        '@paqsuite/react-core/shell.css': path.resolve(
-          __dirname,
-          '../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/ui/shell/shellLayout.css',
-        ),
-        '@paqsuite/react-core': path.resolve(
-          __dirname,
-          '../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/index.ts',
-        ),
       },
     },
     server: {

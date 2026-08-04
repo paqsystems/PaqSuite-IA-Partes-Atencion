@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
-# Asegura que Composer encuentre paqsuite/laravel-core vía path relativo
-# (backend/composer.json → ../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core).
+# LEGADO / emergencia — Partes 1.2.0+ usa VCS paqsystems/laravel-core
+# (docs/01-arquitectura/deploy-sdk-package-repos.md). No usar en Deploy Script nuevo.
 #
-# Uso en Laravel Forge — pegar ANTES de `composer install` (desde el root del release):
-#   bash backend/scripts/forge-ensure-framework.sh
-#
-# Requiere: deploy key / acceso SSH del server al repo PaqSuite-IA-FRAMEWORK.
+# Histórico: path ../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core
 set -euo pipefail
 
 FRAMEWORK_REPO="${PAQSUITE_FRAMEWORK_REPO:-git@github.com:paqsystems/PaqSuite-IA-FRAMEWORK.git}"

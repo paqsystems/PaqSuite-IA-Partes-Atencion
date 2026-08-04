@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d9a054441b389581b1b85e98d954a35",
+    "content-hash": "a450e619893994bfe461acb4c9c99658",
     "packages": [
         {
             "name": "brick/math",
@@ -2557,11 +2557,17 @@
         },
         {
             "name": "paqsuite/laravel-core",
-            "version": "1.3.0",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:paqsystems/laravel-core.git",
+                "reference": "92601cb9d25b77c86f3aa8faf6e5682eb9512870"
+            },
             "dist": {
-                "type": "path",
-                "url": "../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core",
-                "reference": "4e758e0dcbbd8789df2788b2b944c16175d57456"
+                "type": "zip",
+                "url": "https://api.github.com/repos/paqsystems/laravel-core/zipball/92601cb9d25b77c86f3aa8faf6e5682eb9512870",
+                "reference": "92601cb9d25b77c86f3aa8faf6e5682eb9512870",
+                "shasum": ""
             },
             "require": {
                 "illuminate/console": "^10.0",
@@ -2601,10 +2607,12 @@
                 "proprietary"
             ],
             "description": "Núcleo compartido PaqSuite: envelope API, tenancy, config",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "homepage": "https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK",
+            "support": {
+                "source": "https://github.com/paqsystems/laravel-core",
+                "issues": "https://github.com/paqsystems/laravel-core/issues"
+            },
+            "time": "2026-08-04T20:06:52+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -8608,9 +8616,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "paqsuite/laravel-core": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

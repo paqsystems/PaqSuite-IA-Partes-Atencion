@@ -8,19 +8,15 @@ Framework: `PaqSuite-IA-FRAMEWORK` vía `paqsuite/laravel-core` + `@paqsuite/rea
 
 ## Dependencias
 
-| Capa | Paquete | Resolución local |
-|------|---------|------------------|
-| Backend | `paqsuite/laravel-core: @dev` | `../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core` (symlink) |
-| Frontend | `@paqsuite/react-core` | `file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core` + alias Vite al `src/index.ts` + `auth.css` / `shell.css` |
+| Capa | Paquete | Resolución (1.2.0+) |
+|------|---------|---------------------|
+| Backend | `paqsuite/laravel-core: ^1.3.1` | VCS `paqsystems/laravel-core` |
+| Frontend | `@paqsuite/react-core` | `github:paqsystems/react-core#v2.2.0` |
 
+Deploy / auth Forge+Vercel: [`deploy-sdk-package-repos.md`](./deploy-sdk-package-repos.md).  
+Canónico Framework: `PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-sdk-registry.md`.
 
-Frontend local (sin registry npm):
-
-```json
-"@paqsuite/react-core": "file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core"
-```
-
-> `npm install` con `"*"` falla si el paquete no está publicado; usar `file:`.
+Debug local del SDK (modo C, no committear): link path temporal — ver runbook Framework §4.
 
 ### Auth UI (GEN-01) — Must
 
@@ -31,7 +27,7 @@ En este host:
 | Pieza | Estado |
 |-------|--------|
 | `import '@paqsuite/react-core/auth.css'` + `shell.css` en `main.tsx` | Sí |
-| Alias Vite + `paths` TS a CSS y `src/index.ts` | Sí |
+| Resolución desde `node_modules` (`github:paqsystems/react-core`) | Sí |
 | `AuthLoginLayout` / `AuthCardLayout` / `ShellLayout` | Sí |
 | i18n login + shell + dashboard (5 locales) | Sí |
 | Helper auth hero | `frontend/src/features/auth/partesAuthHero.ts` |
