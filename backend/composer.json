@@ -27,7 +27,7 @@
             "type": "path",
             "url": "../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core",
             "options": {
-                "symlink": true
+                "symlink": false
             }
         }
     ],
