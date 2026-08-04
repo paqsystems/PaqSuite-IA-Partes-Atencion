@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Schema;
 /**
  * GEN-16 BYOK — adopción host Partes (TR-008).
  * Acceso productivo vía SP pq_sp_llm_* (BASE 74).
+ *
+ * Tras migrate en cada entorno SQL Server, desplegar los 7 scripts:
+ *   backend/database/sp/pq_sp_llm_*.sql
+ * (canónicos: PaqSuite-IA-FRAMEWORK/packages/php/laravel-core/database/sp/).
+ * Guía Framework: docs/06-operacion/adopcion-gen-16-byok.md
  */
 return new class extends Migration
 {

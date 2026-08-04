@@ -10,7 +10,12 @@ use App\Repositories\Sp\SpAccesoTotalChecker;
 use App\Repositories\Sp\SpLlmCredentialRepository;
 use App\Services\ChatAssistant\ManifestChatCorpusProvider;
 use App\Services\Llm\HostHttpLlmChatCompletionClient;
+use App\Services\Partes\SmartCapture\LlmPartesSmartCaptureProposal;
+use App\Services\Partes\SmartCapture\PartesSmartCaptureProposalPort;
+use App\Services\Partes\SmartCapture\PartesTareaSmartCaptureCatalogResolver;
+use App\Services\Partes\SmartCapture\PartesTareaSmartCaptureTurnService;
 use PaqSuite\LaravelCore\ChatAssistant\ChatAssistantTurnService;
+use PaqSuite\LaravelCore\SmartCapture\SmartCaptureTurnGuard;
 use PaqSuite\LaravelCore\ChatAssistant\ChatAssistantTurnValidator;
 use PaqSuite\LaravelCore\ChatAssistant\Contracts\ChatCorpusProvider;
 use PaqSuite\LaravelCore\ChatAssistant\Contracts\LlmChatCompletionClient;
@@ -129,6 +134,12 @@ class AppServiceProvider extends ServiceProvider
                 new LocaleNormalizer(config('paqsuite.supported_locales', ['es', 'en', 'pt', 'fr', 'it'])),
             );
         });
+
+        // GEN-03 Smart Capture (TR-010)
+        $this->app->singleton(SmartCaptureTurnGuard::class);
+        $this->app->singleton(PartesTareaSmartCaptureCatalogResolver::class);
+        $this->app->singleton(PartesSmartCaptureProposalPort::class, LlmPartesSmartCaptureProposal::class);
+        $this->app->singleton(PartesTareaSmartCaptureTurnService::class);
 
         // GEN-14 Excel import (TR-009)
         $this->app->singleton(\App\Repositories\Sp\ExcelImport\SpExcelImportRepository::class);

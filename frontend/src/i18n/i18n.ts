@@ -26,6 +26,9 @@ void i18n.use(initReactI18next).init({
   lng: initialLocale,
   fallbackLng: 'es',
   defaultNS: 'common',
+  // Claves planas con puntos (`partes.smartCapture.*`, `chatAssistant.*`, …).
+  keySeparator: false,
+  nsSeparator: ':',
   interpolation: { escapeValue: false },
 })
 

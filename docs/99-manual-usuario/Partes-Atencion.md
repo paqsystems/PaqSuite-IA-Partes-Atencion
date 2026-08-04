@@ -61,6 +61,8 @@ Tras el login válido, el sistema abre el **Dashboard** (Inicio). El menú later
 3. Si aún no tenés una configuración de modelo (LLM), el sistema te pedirá ir a **Preferencias** para cargar tu propia clave (BYOK).
 4. Con configuración válida, escribí tu pregunta sobre cómo usar Partes o las generalidades del Framework. El asistente **orienta**; no crea ni modifica tareas.
 
+Para **completar el formulario** de una tarea con ayuda del modelo (texto/audio/imagen), usá la **captura inteligente** dentro del modal de Carga diaria — no el Asistente IA del avatar. Detalle en [SPEC-004](./SPEC-004-operacion-carga-diaria.md).
+
 ## Particularidades transversales
 
 - La **delimitación de datos** (qué filas ves) la define tu perfil funcional; el menú solo oculta pantallas.

@@ -38,19 +38,42 @@ En este host:
 
 Config producto: `PAQSUITE_PROYECTO=partesatencion`, `PAQSUITE_TENANCY=single`, `PAQSUITE_DB=unified`.
 
-Instalación demo: fila `EMPRESAS_CONEXION` (`proyecto=partesatencion`, `cliente=demo`) + mapa config `DEMO|partesatencion`.
+### Lookup instalación (GEN-18)
 
-`.env` local apunta a SQL Server `PAQSYSTEMS_PARTESATENCION_DEMO` (`DB_CONNECTION=sqlsrv`). Completar `DB_PASSWORD` con la clave SQL de `Axoft`.
+| Modo | Variable | Uso |
+|------|----------|-----|
+| SQL (lab/prod multi-cliente) | `PAQSUITE_INSTALACION_RESOLVER=sql` | Conexión `paqsuite_central` → BD `PAQSYSTEMS` + SP `pq_sp_empresas_conexion_get` |
+| Config (PHPUnit / fallback) | `=config` | Mapa `DEMO\|partesatencion` en `config/paqsuite.php` |
+
+Guía Framework: [`adopcion-instalacion-sql.md`](../../PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-instalacion-sql.md).
+
+Fila canónica: `proyecto=partesatencion`, `cliente=DEMO` (UPPERCASE) → destino operativo `PAQSYSTEMS_PARTESATENCION_DEMO`.
+
+**Opción A (actual):** el middleware solo valida la fila; la app sigue en `DB_*` / `sqlsrv`.
+
+`.env` local: `DB_*` → operativa; `PAQSUITE_CENTRAL_*` → `PAQSYSTEMS`. Completar passwords `Axoft`.
 
 ---
 
 ## Deploy local (migrate + seed + SP)
 
-Orden en la BD operativa (`PAQSYSTEMS_PARTESATENCION_DEMO`) — **ya ejecutado en lab DEMO**:
+### Catálogo PAQSYSTEMS (lookup instalación)
+
+```bash
+# En BD PAQSYSTEMS (una vez / tras cambios)
+sqlcmd -S "192.168.41.2,1433" -U Axoft -P <pass> -d PAQSYSTEMS -C -i ../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core/database/sp/pq_sp_empresas_conexion_get.sql
+# Fila DEMO|partesatencion (si no existe): ver seed en Framework docs/06-modelo-datos/ o backend/database/sp/seed_empresas_conexion_partesatencion_demo.sql
+```
+
+`.env`: `PAQSUITE_INSTALACION_RESOLVER=sql` + `PAQSUITE_CENTRAL_*`.
+
+### BD operativa (`PAQSYSTEMS_PARTESATENCION_DEMO`)
+
+Orden — **ya ejecutado en lab DEMO**:
 
 ```bash
 cd backend
-# 1) SP (sqlcmd) — una vez / tras cambios de scripts
+# 1) SP de negocio (sqlcmd) — una vez / tras cambios de scripts
 sqlcmd -S "192.168.41.2,1433" -U Axoft -P <pass> -d PAQSYSTEMS_PARTESATENCION_DEMO -C -i database/sp/<script>.sql
 # 2) esquema + datos
 php artisan migrate:fresh --force --seed
@@ -58,7 +81,7 @@ php artisan migrate:fresh --force --seed
 
 Smoke: `POST /api/v1/auth/login` con `X-Paq-Cliente: DEMO` → `admin`/`Paqsystems` o `PQ`/`PaqSystems26*` → 200 + token.
 
-PHPUnit sigue en sqlite in-memory (`phpunit.xml`); no usa la BD demo.
+PHPUnit sigue en sqlite in-memory (`phpunit.xml`) con `PAQSUITE_INSTALACION_RESOLVER=config`; no usa PAQSYSTEMS.
 
 Notas SQL Server host:
 - FK self-ref `pq_menus.parent_id` sin `ON DELETE SET NULL` (restricción SQL Server).

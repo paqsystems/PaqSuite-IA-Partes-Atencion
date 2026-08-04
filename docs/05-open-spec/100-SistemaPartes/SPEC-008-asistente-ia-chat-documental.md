@@ -44,7 +44,7 @@
 ### 2.2 Fuera de alcance
 
 - **Ayuda externa por URL** en el avatar (`showHelp` permanece deshabilitado) — D-AI-01.
-- **Smart Capture** / asistente operativo embebido en carga diaria (evolución; `07` / SPEC-001-03).
+- **Smart Capture** / asistente operativo embebido en carga diaria — ver [SPEC-010](./SPEC-010-smart-capture-carga-diaria.md) (canal distinto; no es este SPEC).
 - Inventar o redefinir el canal GEN (UI canónica, envelope `4300–4399`, shape del turno): se **adopta**, no se bifurca.
 - Mutación de datos de negocio vía chat (alta/edición tareas, masivo, ABM).
 - Consulta de datos vivos de clientes/tareas como si fuera el ERP.

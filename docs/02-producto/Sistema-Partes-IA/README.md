@@ -35,6 +35,7 @@ La carpeta no reemplaza al contexto comun del framework en `docs/00-contexto/_mo
 11. `11-checklist-temas-definidos-del-modulo.md`
 12. `12-asistente-ia-ayuda-y-chat-documental.md` — Asistente IA (chat documental) desde menú avatar; corpus Partes + generalidades Framework
 13. `13-importacion-partes-excel.md` — Importación de partes (tareas) desde Excel bajo Carga de Partes
+14. `14-smart-capture.md` — Smart Capture (asistente operativo) en el modal de alta/edición de tarea (Carga diaria)
 
 ## Relacion con otras carpetas
 
