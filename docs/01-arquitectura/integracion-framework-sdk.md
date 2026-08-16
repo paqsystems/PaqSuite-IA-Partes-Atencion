@@ -10,7 +10,7 @@ Framework: `PaqSuite-IA-FRAMEWORK` vía `paqsuite/laravel-core` + `@paqsuite/rea
 
 | Capa | Paquete | Resolución (`1.2.0-FINAL`+) |
 |------|---------|------------------------------|
-| Backend | `paqsuite/laravel-core: ^1.3.2` | Satis `http://100.110.69.93/satis` |
+| Backend | `paqsuite/laravel-core: ^1.3.3` | Satis `http://100.110.69.93/satis` (corpus GEN empaquetado) |
 | Frontend | `@paqsuite/react-core: 2.2.1` | Verdaccio `http://100.110.69.93:4873` |
 
 Deploy / bump: [`deploy-sdk-package-repos.md`](./deploy-sdk-package-repos.md).  

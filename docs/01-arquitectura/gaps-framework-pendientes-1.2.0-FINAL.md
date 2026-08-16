@@ -1,38 +1,36 @@
 # Gaps Framework pendientes — cutover `1.2.0-FINAL`
 
 Fecha: 2026-08-14 · Actualizado: 2026-08-15  
-Contexto: migración Partes a consumo Satis + Verdaccio (`laravel-core@^1.3.3`, `react-core@2.2.1`) según plan rediseño SDK paquetes.
+Contexto: Partes consume Satis + Verdaccio (`laravel-core@^1.3.3` lock **1.3.3**, `react-core@2.2.1`; scaffold Framework `create-app@0.1.8`).
 
-Ítems que **no se pudieron transformar del todo** (o quedan como deuda) porque la **infra** de publicación / red aún no cubre el caso.
+Ítems que **siguen abiertos** por **infra de red / builder**, no por falta de paquete publicado.
 
 ---
 
 ## Tabla de gaps
 
-| Ítem / capacidad | Por qué no se transformó | Evidencia | Workaround temporal en Partes | Seguimiento |
-|------------------|--------------------------|-----------|-------------------------------|-------------|
-| ~~**Corpus GEN**~~ | **Cerrado en Framework** (`laravel-core` **1.3.3**): `resources/manual-usuario-gen/` + `GenManualDocsRoot`; sync `tools/sdk/sync-gen-manual-corpus.ps1` | Paquete + config Partes `chat_assistant_corpus.php` | Hasta publicar Satis 1.3.3: path local de lab o quedarse en 1.3.2 sin GEN | Tag `php-laravel-core-v1.3.3` + rebuild Satis; luego `composer update` en Partes |
-| ~~**Templates Framework**~~ | **Cerrado**: `docs/06-operacion/templates/*` + template `create-app` → Satis/Verdaccio (`^1.3.3` / `^2.2.1`); CLI bump **0.1.8** | templates + `tools/template` | Publicar `@paqsuite/create-app@0.1.8` en Verdaccio | Publish Verdaccio |
-| **Vercel → Verdaccio (Tailscale)** | `100.110.69.93` no es alcanzable desde builders Vercel públicos sin subnet router / CI con Tailscale | Red; plan prohíbe volver a `git+https` | Build local/CI con Tailscale que publique `dist`, o habilitar Verdaccio alcanzable desde Vercel | Infra: subnet router Tailscale en Vercel o pipeline prebuild |
-| **Forge → Satis** | Mismo requisito de red a `srv-pq` en el server Forge | Deploy Script `composer install` | Forge en VPN/Tailscale, o CI que suba release con `vendor/` | Infra Forge + Tailscale / artefact CI |
-| **SP SQL canónicos** desde monorepo vs vendor | Parte de la doc histórica apuntaba a `PaqSuite-IA-FRAMEWORK/packages/.../sp`; el paquete Satis **sí** incluye `vendor/paqsuite/laravel-core/database/sp/` | Verificado en install 1.3.2 | Usar scripts bajo `vendor/paqsuite/laravel-core/database/sp/` (doc Partes actualizada) | Ninguno bloqueante si se usa vendor |
-| **Auth Verdaccio** (`authorization required` en metadata HTTP cruda) | Algunos endpoints Verdaccio piden auth; `npm view`/`npm install` anónimo funcionó para `@paqsuite/react-core@2.2.1` | `curl` a `/:package` → 401; `npm install` OK | Ninguno hoy | Framework/ops: documentar si publish/install requiere token en CI |
-| **GEN-13 Tareas / GEN-23 Grupos** (guía actualización create-app) | Fuera de alcance MONO Partes en esta oleada (opt-in) | `GUIA_ACTUALIZACION_PROYECTO` pasos 2/6 multi | No adoptado | Producto: decidir adopción en épica aparte |
+| Ítem / capacidad | Estado | Evidencia | Workaround temporal en Partes | Seguimiento |
+|------------------|--------|-----------|-------------------------------|-------------|
+| ~~**Corpus GEN**~~ | **Cerrado** — `laravel-core@1.3.3` incluye `resources/manual-usuario-gen/` + `GenManualDocsRoot`; Partes lo usa en `chat_assistant_corpus.php` | Satis zip 1.3.3; vendor con class + markdown | — | — |
+| ~~**Templates / create-app**~~ | **Cerrado** — templates Satis/Verdaccio; `@paqsuite/create-app@0.1.8` en Verdaccio | `npm view` 0.1.8 | — | — |
+| **Vercel → Verdaccio (Tailscale)** | Abierto | `100.110.69.93` no alcanzable desde builders Vercel públicos | Build local/CI con Tailscale que publique `dist` | Infra: subnet router o pipeline prebuild |
+| **Forge → Satis** | Abierto | Deploy Script `composer install` necesita ruta a `srv-pq` | Forge en VPN/Tailscale, o CI con `vendor/` | Infra Forge + Tailscale / artefact CI |
+| **SP SQL canónicos** | OK vía vendor | `vendor/paqsuite/laravel-core/database/sp/` | Usar scripts del vendor | — |
+| **Auth Verdaccio** (metadata HTTP cruda 401) | Menor | `npm install` anónimo OK para `@paqsuite/*` | Ninguno hoy | Documentar token CI si hace falta |
+| **GEN-13 Tareas / GEN-23 Grupos** | Fuera de alcance MONO | Guía actualización create-app | No adoptado | Épica aparte |
 
 ---
 
-## Lo que sí quedó transformado
+## Lo que quedó transformado
 
-- `composer.json` → Satis + `^1.3.2` (acepta **1.3.3** cuando Satis lo publique; hoy lock **1.3.2** + overlay local de corpus en lab).
+- `composer.json` / lock → Satis + **`^1.3.3`** (lock **1.3.3**, corpus GEN en vendor).
 - `package.json` + `.npmrc` → Verdaccio + **2.2.1**.
-- Sin contrato `git+https` / VCS GitHub / path monorepo en manifests.
-- `forge-ensure-framework.sh` deprecado (exit 1).
-- Corpus GEN: default vía `GenManualDocsRoot` cuando el paquete trae `resources/manual-usuario-gen` (sin sibling Framework).
-- Templates SDK Framework alineados a Satis/Verdaccio (`create-app` **0.1.8** pendiente publish Verdaccio).
-- Docs ops + TR-008/009/010 + D1-010 + SPEC-009 (supuesto distribución).
+- Sin `git+https` / VCS / path monorepo en manifests.
+- `forge-ensure-framework.sh` deprecado.
+- Corpus GEN por `GenManualDocsRoot` (override opcional `PAQSUITE_GEN_DOCS_ROOT`).
 
 ---
 
 ## Criterio para cerrar gaps restantes
 
-Cuando la infra de build (Forge/Vercel) tenga ruta estable a Satis/Verdaccio y esté publicado `laravel-core@1.3.3` (+ create-app 0.1.8), tachar filas de red y retirar workarounds de deploy.
+Cuando Forge/Vercel tengan ruta estable a Satis/Verdaccio (o pipeline de artefacto), tachar las filas de red.

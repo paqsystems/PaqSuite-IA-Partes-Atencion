@@ -7,7 +7,7 @@
 | **Épica** | 100 — Sistema Partes |
 | **Prioridad** | MUST-HAVE |
 | **Roles** | Asistente / supervisor / cliente (sesión Partes usable) |
-| **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md) (shell post-login); paquetes Framework `@paqsuite/react-core@2.2.1` (Verdaccio) + `paqsuite/laravel-core@^1.3.2` (Satis); GEN TR-GEN-21-chat-ui, TR-GEN-21-contrato-turno, TR-GEN-16-*, TR-GEN-08; [TR-007](./TR-007-mobile-capacitor.md) (policy mobile) |
+| **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md) (shell post-login); paquetes Framework `@paqsuite/react-core@2.2.1` (Verdaccio) + `paqsuite/laravel-core@^1.3.3` (Satis, corpus GEN); GEN TR-GEN-21-chat-ui, TR-GEN-21-contrato-turno, TR-GEN-16-*, TR-GEN-08; [TR-007](./TR-007-mobile-capacitor.md) (policy mobile) |
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Pendiente de Revisión |
 | **Última actualización** | 2026-08-01 |
@@ -310,7 +310,7 @@ No Must: E2E con proveedor LLM de pago en CI.
 
 ### Supuestos
 
-- Paquetes `@paqsuite/react-core@2.2.1` (Verdaccio) + `paqsuite/laravel-core@^1.3.2` (Satis) exponen `ChatAssistantPage`, `postChatAssistantTurn`, servicios PHP Chat/Llm.
+- Paquetes `@paqsuite/react-core@2.2.1` (Verdaccio) + `paqsuite/laravel-core@^1.3.3` (Satis) exponen `ChatAssistantPage`, `postChatAssistantTurn`, servicios PHP Chat/Llm + corpus GEN (`GenManualDocsRoot`).
 - APP_KEY Laravel válida para `Crypt` del secreto BYOK.
 
 ### Preguntas humanas

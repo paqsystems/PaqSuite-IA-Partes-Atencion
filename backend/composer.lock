@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "09c908e3663415ae3829c56f5b61c386",
+    "content-hash": "e965a81d5f5e53562d007090d7ba69bc",
     "packages": [
         {
             "name": "brick/math",
@@ -2557,17 +2557,17 @@
         },
         {
             "name": "paqsuite/laravel-core",
-            "version": "1.3.2",
+            "version": "1.3.3",
             "source": {
                 "type": "git",
-                "url": "git@github.com:paqsystems/laravel-core.git",
-                "reference": "393a8baf64a885a927bcae4ee25914cf7f058e9e"
+                "url": "https://github.com/paqsystems/laravel-core.git",
+                "reference": "784524235fb5f04ae40fff289247d335477037f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://100.110.69.93/satis/dist/paqsuite/laravel-core/paqsuite-laravel-core-393a8baf64a885a927bcae4ee25914cf7f058e9e-zip-6470f7.zip",
-                "reference": "393a8baf64a885a927bcae4ee25914cf7f058e9e",
-                "shasum": "aee5d2aa401743674f8d071213f401120f7f963e"
+                "url": "http://100.110.69.93/satis/dist/paqsuite/laravel-core/paqsuite-laravel-core-1.3.3-b38f77.zip",
+                "reference": "784524235fb5f04ae40fff289247d335477037f1",
+                "shasum": "74999033a2a1d79ff0bf17ca9c697c432199ecdb"
             },
             "require": {
                 "illuminate/console": "^10.0",
@@ -2609,10 +2609,9 @@
             "description": "Núcleo compartido PaqSuite: envelope API, tenancy, config",
             "homepage": "https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK",
             "support": {
-                "source": "https://github.com/paqsystems/laravel-core",
-                "issues": "https://github.com/paqsystems/laravel-core/issues"
+                "source": "https://github.com/paqsystems/laravel-core"
             },
-            "time": "2026-08-14T17:00:21+00:00"
+            "time": "2026-08-16T01:26:35+00:00"
         },
         {
             "name": "phpoption/phpoption",

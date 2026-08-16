@@ -6,8 +6,9 @@ Igual que actualizar `laravel/framework` o `devextreme`: cambiar el pin, regener
 
 | Paquete | Constraint | Registry |
 |---------|------------|----------|
-| `paqsuite/laravel-core` | `^1.3.2` | Satis `http://100.110.69.93/satis` |
+| `paqsuite/laravel-core` | `^1.3.3` (lock **1.3.3**) | Satis `http://100.110.69.93/satis` |
 | `@paqsuite/react-core` | `2.2.1` | Verdaccio `http://100.110.69.93:4873` |
+| `@paqsuite/create-app` (scaffold) | `0.1.8` | Verdaccio (no es dep runtime de Partes) |
 
 ## Backend
 
