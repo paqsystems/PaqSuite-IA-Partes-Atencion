@@ -1,17 +1,8 @@
 #!/usr/bin/env bash
-# Vercel Install Command — clona deps git privadas por HTTPS + token (no SSH).
-# Requiere env GITHUB_TOKEN o GH_TOKEN con lectura a paqsystems/react-core.
+# Install FE — @paqsuite/* desde Verdaccio (srv-pq).
+# Requiere red a http://100.110.69.93:4873 (Tailscale / builder con acceso).
+# El contrato del producto es registry, no git+https.
 set -euo pipefail
 
-TOKEN="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
-if [[ -z "${TOKEN}" ]]; then
-  echo "vercel-install: falta GITHUB_TOKEN (o GH_TOKEN) con lectura a paqsystems/react-core" >&2
-  exit 1
-fi
-
-git config --global url."https://x-access-token:${TOKEN}@github.com/".insteadOf "https://github.com/"
-git config --global url."https://x-access-token:${TOKEN}@github.com/".insteadOf "ssh://git@github.com/"
-git config --global url."https://x-access-token:${TOKEN}@github.com/".insteadOf "git@github.com:"
-
-echo "vercel-install: git HTTPS con token configurado; npm install…"
+echo "paqsuite-install: npm install (Verdaccio @paqsuite)…"
 npm install

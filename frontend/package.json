@@ -20,7 +20,7 @@
     "test:all": "npm run test && npm run test:e2e"
   },
   "dependencies": {
-    "@paqsuite/react-core": "git+https://github.com/paqsystems/react-core.git#v2.2.0",
+    "@paqsuite/react-core": "2.2.1",
     "axios": "^1.16.0",
     "devextreme": "^25.2.7",
     "devextreme-react": "^25.2.7",

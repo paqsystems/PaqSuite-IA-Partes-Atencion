@@ -1,28 +1,44 @@
-# Deploy Partes — SDK vía repos de paquete (F2/F4)
+# Deploy Partes — SDK vía Satis + Verdaccio (modelo empaquetado)
 
-Fecha: 2026-08-04 · Rama producto: `1.2.0`
+Fecha: 2026-08-14 · Rama: `1.2.0-FINAL`  
+Target: `paqsuite/laravel-core@^1.3.2` · `@paqsuite/react-core@2.2.1`
 
-> **Canónico Framework:** [`adopcion-sdk-registry.md`](../../PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-sdk-registry.md)  
-> **Legado path/clone:** [`forge-deploy-framework-path.md`](./forge-deploy-framework-path.md) (no usar en sitios nuevos)
-
----
-
-## Contrato Partes
-
-| Capa | Dependencia |
-|------|-------------|
-| Backend | `paqsuite/laravel-core: ^1.3.1` → VCS `https://github.com/paqsystems/laravel-core.git` |
-| Frontend | `@paqsuite/react-core` → `git+https://github.com/paqsystems/react-core.git#v2.2.0` |
-
-**Sin** path a `PaqSuite-IA-FRAMEWORK`. **Sin** `forge-ensure-framework.sh` en el Deploy Script.
+> Guías Framework: `GUIA_PRUEBA_INSTALACION.md`, `GUIA_ACTUALIZACION_PROYECTO.md`  
+> Adopción: `PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-sdk-registry.md` (evoluciona a registries)  
+> Legado path/clone: [`forge-deploy-framework-path.md`](./forge-deploy-framework-path.md)
 
 ---
 
-## F2 — Auth en Forge (backend)
+## Contrato
 
-1. En el server Forge: deploy key o GitHub App con **lectura** a `paqsystems/laravel-core` (además del repo Partes).
-2. Composer resuelve el VCS en `composer install` (HTTPS con credenciales del server, o SSH si la key está cargada).
-3. Deploy Script sugerido:
+| Capa | Dependencia | Registry |
+|------|-------------|----------|
+| Backend | `paqsuite/laravel-core: ^1.3.2` | Satis `http://100.110.69.93/satis` |
+| Frontend | `@paqsuite/react-core: 2.2.1` | Verdaccio `http://100.110.69.93:4873` (`frontend/.npmrc`) |
+
+**Sin** path/`file:` al monorepo Framework.  
+**Sin** `git+https` / VCS GitHub como contrato de producto.  
+**Sin** `forge-ensure-framework.sh` en Deploy Script.
+
+El install/build produce el artefacto; el deploy sirve **vendor** + **dist** ya resueltos (como Laravel/DevExtreme).
+
+---
+
+## Prerrequisito de red
+
+El **builder** (local, Forge o CI) debe alcanzar `srv-pq` (Tailscale → `100.110.69.93`).
+
+| Entorno | Acción |
+|---------|--------|
+| Dev local | Tailscale activo; `.npmrc` + Satis en `composer.json` |
+| Forge | Server con ruta a Satis; `composer install` en Deploy Script |
+| Vercel | Build con acceso a Verdaccio (subnet router / CI que prebuild) |
+
+Si Vercel no ve Tailscale: el fallo es de **infra del builder**, no se vuelve a `git+https` en `package.json`.
+
+---
+
+## Forge (backend)
 
 ```bash
 cd $FORGE_RELEASE_DIRECTORY/backend
@@ -34,50 +50,37 @@ php artisan view:cache
 php artisan queue:restart || true
 ```
 
-Web Directory típico: `backend/public` (repo completo Partes, no solo subfolder backend como root sin ajustar paths).
+`composer.json` ya trae `"secure-http": false` y el repo Satis.
 
 ---
 
-## F2 — Auth en Vercel (frontend)
+## Vercel (frontend)
 
-### Causa típica del fallo
+- Root Directory: `frontend`
+- Install: `npm install` (lee `.npmrc` → Verdaccio)
+- Build: `npm run build` → `dist/` (SDK bundlado)
+- `VITE_API_BASE_URL` según [`frontend-api-base-url-y-env.md`](./frontend-api-base-url-y-env.md)
 
-```text
-git@github.com: Permission denied (publickey)
-ls-remote ssh://git@github.com/paqsystems/react-core.git
+---
+
+## Bump de versión SDK
+
+```bash
+# Backend
+cd backend && composer update paqsuite/laravel-core
+
+# Frontend
+cd frontend && npm update @paqsuite/react-core
 ```
 
-Vercel **no tiene SSH** hacia repos privados. Hay que clonar por **HTTPS + PAT**.
-
-### Configuración Must
-
-1. **Environment Variable** en el proyecto Vercel (Production + Preview):
-   - Name: `GITHUB_TOKEN`
-   - Value: PAT (classic `repo` o fine-grained con Contents: Read sobre `paqsystems/react-core`)
-   - Sensitive / encrypted
-
-2. **Root Directory:** `frontend` (si el site apunta al monorepo Partes).
-
-3. **Install / Build** (ya en `frontend/vercel.json`):
-   - Install: `bash scripts/vercel-install.sh` (reescribe git→HTTPS con el token + `npm install`)
-   - Build: `npm run build`
-   - Output: `dist`
-
-4. Mantener `VITE_API_BASE_URL` según [`frontend-api-base-url-y-env.md`](./frontend-api-base-url-y-env.md).
-
-### Checklist Vercel
-
-- [ ] `GITHUB_TOKEN` con lectura a `react-core`
-- [ ] Root Directory = `frontend`
-- [ ] Redeploy tras setear el token
-- [ ] Log de install **sin** `Permission denied (publickey)`
+Verificar: `composer show paqsuite/laravel-core` · `npm list @paqsuite/react-core`
 
 ---
 
 ## Checklist cutover
 
-- [ ] Acceso git Forge → `laravel-core`
-- [ ] `GITHUB_TOKEN` en Vercel → `react-core`
-- [ ] Deploy Script Forge **sin** `forge-ensure-framework.sh`
-- [ ] `composer.lock` / `package-lock.json` con deps nuevas
-- [ ] Smoke: `GET /api/v1/health` + build FE Vercel verde
+- [ ] Satis responde `1.3.2`; Verdaccio `2.2.1`
+- [ ] Locks committeados
+- [ ] Deploy Script sin ensure-framework
+- [ ] Smoke `GET /api/v1/health` + login
+- [ ] Build FE produce `dist/`

@@ -1,35 +1,6 @@
 #!/usr/bin/env bash
-# LEGADO / emergencia — Partes 1.2.0+ usa VCS paqsystems/laravel-core
-# (docs/01-arquitectura/deploy-sdk-package-repos.md). No usar en Deploy Script nuevo.
-#
-# Histórico: path ../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core
-set -euo pipefail
-
-FRAMEWORK_REPO="${PAQSUITE_FRAMEWORK_REPO:-git@github.com:paqsystems/PaqSuite-IA-FRAMEWORK.git}"
-FRAMEWORK_REF="${PAQSUITE_FRAMEWORK_REF:-main}"
-FRAMEWORK_HOME="${PAQSUITE_FRAMEWORK_HOME:-${HOME}/PaqSuite-IA-FRAMEWORK}"
-
-# Este script vive en backend/scripts/ → root del release = ../..
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RELEASE_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-# Desde backend/, ../../PaqSuite-IA-FRAMEWORK = <releases>/PaqSuite-IA-FRAMEWORK
-RELEASES_DIR="$(cd "${RELEASE_ROOT}/.." && pwd)"
-FRAMEWORK_LINK="${RELEASES_DIR}/PaqSuite-IA-FRAMEWORK"
-
-echo "forge-ensure-framework: home=${FRAMEWORK_HOME} link=${FRAMEWORK_LINK} ref=${FRAMEWORK_REF}"
-
-if [[ ! -d "${FRAMEWORK_HOME}/.git" ]]; then
-  git clone "${FRAMEWORK_REPO}" "${FRAMEWORK_HOME}"
-fi
-
-git -C "${FRAMEWORK_HOME}" fetch origin
-git -C "${FRAMEWORK_HOME}" checkout "${FRAMEWORK_REF}"
-git -C "${FRAMEWORK_HOME}" reset --hard "origin/${FRAMEWORK_REF}"
-
-if [[ ! -f "${FRAMEWORK_HOME}/packages/php/laravel-core/composer.json" ]]; then
-  echo "forge-ensure-framework: ERROR — no existe packages/php/laravel-core en el Framework" >&2
-  exit 1
-fi
-
-ln -sfn "${FRAMEWORK_HOME}" "${FRAMEWORK_LINK}"
-echo "forge-ensure-framework: OK → ${FRAMEWORK_LINK}/packages/php/laravel-core"
+# LEGADO — no usar en Deploy Script.
+# El host consume paqsuite/laravel-core vía Satis (composer), no path al monorepo Framework.
+# Ver: docs/01-arquitectura/deploy-sdk-package-repos.md
+echo "forge-ensure-framework.sh está deprecado. Usá composer install con Satis (paqsuite/laravel-core)." >&2
+exit 1

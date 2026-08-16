@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a450e619893994bfe461acb4c9c99658",
+    "content-hash": "09c908e3663415ae3829c56f5b61c386",
     "packages": [
         {
             "name": "brick/math",
@@ -2557,17 +2557,17 @@
         },
         {
             "name": "paqsuite/laravel-core",
-            "version": "1.3.1",
+            "version": "1.3.2",
             "source": {
                 "type": "git",
                 "url": "git@github.com:paqsystems/laravel-core.git",
-                "reference": "92601cb9d25b77c86f3aa8faf6e5682eb9512870"
+                "reference": "393a8baf64a885a927bcae4ee25914cf7f058e9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paqsystems/laravel-core/zipball/92601cb9d25b77c86f3aa8faf6e5682eb9512870",
-                "reference": "92601cb9d25b77c86f3aa8faf6e5682eb9512870",
-                "shasum": ""
+                "url": "http://100.110.69.93/satis/dist/paqsuite/laravel-core/paqsuite-laravel-core-393a8baf64a885a927bcae4ee25914cf7f058e9e-zip-6470f7.zip",
+                "reference": "393a8baf64a885a927bcae4ee25914cf7f058e9e",
+                "shasum": "aee5d2aa401743674f8d071213f401120f7f963e"
             },
             "require": {
                 "illuminate/console": "^10.0",
@@ -2612,7 +2612,7 @@
                 "source": "https://github.com/paqsystems/laravel-core",
                 "issues": "https://github.com/paqsystems/laravel-core/issues"
             },
-            "time": "2026-08-04T20:06:52+00:00"
+            "time": "2026-08-14T17:00:21+00:00"
         },
         {
             "name": "phpoption/phpoption",

@@ -7,7 +7,7 @@
 | **Épica** | 100 — Sistema Partes |
 | **Prioridad** | MUST-HAVE |
 | **Roles** | Asistente / supervisor / cliente (sesión Partes usable) |
-| **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md) (shell post-login); paquetes Framework `@paqsuite/react-core` + `paqsuite/laravel-core` (path local); GEN TR-GEN-21-chat-ui, TR-GEN-21-contrato-turno, TR-GEN-16-*, TR-GEN-08; [TR-007](./TR-007-mobile-capacitor.md) (policy mobile) |
+| **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md) (shell post-login); paquetes Framework `@paqsuite/react-core@2.2.1` (Verdaccio) + `paqsuite/laravel-core@^1.3.2` (Satis); GEN TR-GEN-21-chat-ui, TR-GEN-21-contrato-turno, TR-GEN-16-*, TR-GEN-08; [TR-007](./TR-007-mobile-capacitor.md) (policy mobile) |
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Pendiente de Revisión |
 | **Última actualización** | 2026-08-01 |
@@ -126,7 +126,7 @@ R-AI-01…20 del SPEC/HU. Mapeo técnico:
 | RN-TR-05 | Acceso datos LLM: **MUST SP** `pq_sp_llm_*` del paquete Framework (no Eloquent CRUD en APIs de producto). Migración host crea `pq_llm_credentials` + columna `users.active_llm_credential_id`. |
 | RN-TR-06 | Binding `ChatCorpusProvider` → implementación Partes (`ManifestChatCorpusProvider`). Sin binding → corpus vacío permitido (GEN); Partes **Must** registrar el binding. |
 | RN-TR-07 | Cliente LLM: usar implementación default del paquete (`ProviderRoutingLlmChatCompletionClient` o equivalente exportado). Timeout HTTP hacia proveedor = **`config('paqsuite.chatAssistant.llmTimeoutSeconds')`** default **60** (env `PAQSUITE_CHAT_LLM_TIMEOUT_SECONDS`). |
-| RN-TR-08 | Manifest corpus: archivo de config PHP o JSON versionado en el host (p. ej. `backend/config/chat_assistant_corpus.php`) listando paths relativos Partes bajo `base_path('../docs/99-manual-usuario')` y paths GEN bajo `env('PAQSUITE_GEN_DOCS_ROOT')` (default sugerido: sibling `../PaqSuite-IA-FRAMEWORK/docs/...` en dev). **Prohibido** copiar markdown GEN al repo Partes. |
+| RN-TR-08 | Manifest corpus: archivo de config PHP o JSON versionado en el host (p. ej. `backend/config/chat_assistant_corpus.php`) listando paths relativos Partes bajo `base_path('../docs/99-manual-usuario')` y paths GEN bajo env `PAQSUITE_GEN_DOCS_ROOT` (path instalado; **sin** asumir sibling monorepo Framework). **Prohibido** copiar markdown GEN al repo Partes. |
 | RN-TR-09 | Resolución corpus v1 (**sin RAG**): leer markdown de las entradas del manifest; filtrar por coincidencia simple de tokens del `message` (case-insensitive) y/o devolver un subconjunto acotado (tope chars documentado en código, p. ej. 24–32 KiB texto). Devolver `CorpusChunk` (`title`, `content`, `locator?`). Si GEN root ausente: solo Partes + log warning; no 500. |
 | RN-TR-10 | Mobile: agregar **`/chat-assistant`** a `partesMobileAllowlist`; tests Vitest policy. Chat full-screen in-app (mismo componente). |
 | RN-TR-11 | No SP de negocio Partes para el turno (plumbing IA/auth — excepción framework listada). |
@@ -310,7 +310,7 @@ No Must: E2E con proveedor LLM de pago en CI.
 
 ### Supuestos
 
-- Paquetes path `file:../../PaqSuite-IA-FRAMEWORK/packages/...` ya exponen `ChatAssistantPage`, `postChatAssistantTurn`, servicios PHP Chat/Llm.
+- Paquetes `@paqsuite/react-core@2.2.1` (Verdaccio) + `paqsuite/laravel-core@^1.3.2` (Satis) exponen `ChatAssistantPage`, `postChatAssistantTurn`, servicios PHP Chat/Llm.
 - APP_KEY Laravel válida para `Crypt` del secreto BYOK.
 
 ### Preguntas humanas
