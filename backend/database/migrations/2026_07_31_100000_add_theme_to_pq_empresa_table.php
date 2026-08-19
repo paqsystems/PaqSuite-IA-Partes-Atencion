@@ -13,7 +13,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pq_empresa', function (Blueprint $table) {
-            $table->string('theme', 64)->nullable()->default('generic.light')->after('activo');
+            if (!Schema::hasColumn('pq_empresa', 'theme')) {
+                $table->string('theme', 64)->nullable()->default('generic.light')->after('activo');
+            }
         });
     }
 
