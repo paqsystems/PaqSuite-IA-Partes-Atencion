@@ -21,8 +21,8 @@ Este documento ya no funciona como una lista cruda de preguntas, sino como un co
 
 ### Exportacion
 
-- la exportacion no integra el nucleo minimo del MVP base;
-- debe leerse como una **evolucion inmediata** del modulo, apoyada en el framework comun.
+- la **exportación Excel de grilla** no integra el nucleo minimo historico del MVP base; sigue apoyada en el framework (GEN-11) y **convive** con la emisión;
+- la **emisión documental** en Consulta detallada **sí** está definida: `15-reportes-emisiones.md`.
 
 ### Menu del modulo
 

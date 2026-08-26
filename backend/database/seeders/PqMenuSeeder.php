@@ -59,6 +59,7 @@ class PqMenuSeeder extends Seeder
             $this->folder(60000, null, 'parametros', 'Parámetros', 60000),
             $this->process(60100, 60000, 'parametros_auth', 'Parámetros Auth', '/parametros/Auth', 60100),
             $this->process(60200, 60000, 'parametros_partes', 'Parámetros Partes', '/parametros/Partes', 60200),
+            $this->process(60300, 60000, 'partes_disenador_emisiones', 'Diseñador de emisiones', '/emisiones/disenador', 60300),
         ];
 
         foreach ($rows as $row) {

@@ -85,7 +85,7 @@ La version mobile no debe incluir:
 - pivots;
 - cargas masivas;
 - operaciones con Excel;
-- informes impresos.
+- informes impresos / ventana **Emitir** y **diseñador** GEN-15 (la emisión documental de Consulta detallada es **web**; ver `15-reportes-emisiones.md`).
 
 Estas exclusiones no niegan su existencia en web. Solo delimitan el alcance de la experiencia mobile.
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ChatAssistant\ChatAssistantTurnsController;
+use App\Http\Controllers\Api\V1\Emissions\EmissionsController;
 use App\Http\Controllers\Api\V1\ExcelImport\ExcelImportController;
 use App\Http\Controllers\Api\V1\GridLayoutsController;
 use App\Http\Controllers\Api\V1\Llm\LlmCredentialsController;
@@ -31,7 +32,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::get('/health', HealthController::class);
 
-    Route::middleware('paqsuite.instalacion')->prefix('auth')->group(function () {
+    Route::middleware(['paqsuite.instalacion', 'paqsuite.instalacion.db'])->prefix('auth')->group(function () {
         Route::post('/login', LoginController::class);
         Route::post('/forgot-password', ForgotPasswordController::class)->middleware('throttle:5,1');
         Route::post('/reset-password', ResetPasswordController::class);
@@ -43,7 +44,7 @@ Route::prefix('v1')->group(function () {
         });
     });
 
-    Route::middleware(['paqsuite.instalacion', 'auth:sanctum'])->group(function () {
+    Route::middleware(['paqsuite.instalacion', 'paqsuite.instalacion.db', 'auth:sanctum'])->group(function () {
         Route::get('/user/menu', MenuController::class);
         Route::get('/user/preferences', [PreferencesController::class, 'show']);
         Route::patch('/user/preferences', [PreferencesController::class, 'update']);
@@ -110,6 +111,19 @@ Route::prefix('v1')->group(function () {
             Route::post('/permisos', [AdminPermisosController::class, 'store']);
             Route::post('/permisos/batch', [AdminPermisosController::class, 'batch']);
             Route::delete('/permisos/{id}', [AdminPermisosController::class, 'destroy']);
+        });
+
+        // GEN-15 emisiones (TR-011) — perfil Partes (cliente puede emitir su org)
+        Route::middleware(['partes.profile'])->group(function () {
+            $e = EmissionsController::class;
+            Route::get('/emissions/processes', [$e, 'processes']);
+            Route::get('/emissions/processes/{processCode}', [$e, 'showProcess']);
+            Route::post('/emissions/preview', [$e, 'preview']);
+            Route::post('/emissions/jobs', [$e, 'storeJob']);
+            Route::get('/emissions/jobs/{jobId}', [$e, 'showJob']);
+            Route::get('/emissions/jobs/{jobId}/download', [$e, 'download']);
+            Route::get('/emissions/design/processes/{processCode}/reports', [$e, 'designReports']);
+            Route::post('/emissions/design/reports/{reportId}/set-principal', [$e, 'designSetPrincipal'])->whereNumber('reportId');
         });
 
         // Lectura: dashboard / informes (incluye perfil cliente)

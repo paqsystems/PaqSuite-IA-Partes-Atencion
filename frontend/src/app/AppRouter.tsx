@@ -30,6 +30,7 @@ import {
   ConsultaDetalladaPage,
   ConsultasAgrupadasPage,
 } from '../features/partes/informes/PartesConsultasPages'
+import { ReportDesignerHostPage } from '../features/partes/informes/ReportDesignerHostPage'
 import { PaqueteHorasPage } from '../features/partes/informes/PaqueteHorasPage'
 import { ConsultaKardexMobilePage } from '../features/partes/mobile/ConsultaKardexMobilePage'
 import { ParametrosGeneralesPage } from '../features/admin/ParametrosGeneralesPage'
@@ -85,6 +86,7 @@ export function AppRouter() {
               <Route path="/partes/informes/paquete-horas" element={<PaqueteHorasPage />} />
               <Route path="/partes/informes/consulta-detallada" element={<ConsultaDetalladaPage />} />
               <Route path="/partes/informes/consultas-agrupadas" element={<ConsultasAgrupadasPage />} />
+              <Route path="/emisiones/disenador" element={<ReportDesignerHostPage />} />
               <Route
                 path="/parametros/:programa"
                 element={<ParametrosGeneralesPage />}

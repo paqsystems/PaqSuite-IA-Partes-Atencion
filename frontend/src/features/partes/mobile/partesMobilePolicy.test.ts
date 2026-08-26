@@ -14,6 +14,8 @@ describe('partesMobilePolicy', () => {
     expect(isPartesMobileRouteAllowed('/partes/proceso-masivo')).toBe(false)
     expect(isPartesMobileRouteAllowed('/partes/informes/consulta-detallada')).toBe(false)
     expect(isPartesMobileRouteAllowed('/partes/informes/consultas-agrupadas')).toBe(false)
+    expect(isPartesMobileRouteAllowed('/emisiones/disenador')).toBe(false)
+    expect(isPartesMobileRouteAllowed('/emisiones')).toBe(false)
   })
 
   it('filtra menú', () => {

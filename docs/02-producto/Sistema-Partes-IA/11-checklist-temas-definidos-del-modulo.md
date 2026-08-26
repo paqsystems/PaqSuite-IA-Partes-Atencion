@@ -114,7 +114,7 @@
 
 ## Consultas y analitica
 
-- [x] Consulta detallada de tareas *(duración UI `hh:mm`; columnas Erp Cliente / Erp Articulo)*
+- [x] Consulta detallada de tareas *(duración UI `hh:mm`; columnas Erp Cliente / Erp Articulo; **emisor GEN-15** — `15-reportes-emisiones.md`)*
 - [x] Consultas agrupadas *(totales tiempo UI `hh:mm`; atributos ERP en grilla/pivot)*
 - [x] Paquete de horas *(cuenta corriente: saldo inicial + columna Saldo; no filtra por `es_tarea`; pivot sin Saldo; mismos atributos que carga detallada)*
 - [x] Consulta detallada / agrupadas / dashboard: solo `es_tarea = true`
@@ -123,6 +123,7 @@
 - [x] Reutilizacion de grillas del framework
 - [x] Reutilizacion de layouts del framework
 - [x] Reutilizacion de exportaciones cuando se habiliten
+- [x] Emisión documental GEN-15 en Consulta detallada *(diseño de informes + salidas por proceso + ventana Emitir; `15-reportes-emisiones.md`; pendiente SPEC/HU/TR de adopción)*
 - [x] Uso eventual de pivots segun el proceso *(web: Pivot en **todo** Informe con grilla; dashboard no; mobile no)*
 - [x] Exportacion como evolucion inmediata
 
@@ -168,7 +169,7 @@
 - [x] Exclusiones mobile: pivots
 - [x] Exclusiones mobile: cargas masivas
 - [x] Exclusiones mobile: operaciones con Excel
-- [x] Exclusiones mobile: informes impresos
+- [x] Exclusiones mobile: informes impresos / Emitir GEN-15 *(emisión documental = web Consulta detallada; `15-reportes-emisiones.md`)*
 
 ## Modelo de datos tecnico
 
@@ -194,6 +195,7 @@
 - [x] Asistente IA ayuda/chat documental desde menú avatar *(definición D-AI-01…04 + implementación TR-008; F1 2026-08-01 Aprobado con observaciones — Pendiente de Revisión)*
 - [x] Carga cronometrada como evolucion posible
 - [x] Carga masiva desde Excel *(definición de producto cerrada: `13-importacion-partes-excel.md`; distinta de auditoría Excel+mails)*
+- [x] Reportes / emisiones GEN-15 *(definición de producto: `15-reportes-emisiones.md`; emisor en Consulta detallada; diseñador desktop)*
 
 ## Temas aun abiertos
 
@@ -205,3 +207,4 @@
 - [x] Especificacion concreta del Informe Paquete de Horas *(MVP: SPEC-007 §4.8)*
 - [x] Generación e implementación de SPEC-008 (Asistente IA chat documental) → A–F1 2026-08-01; HU/TR Pendiente de Revisión (`D-VERIFICACION-TR-008-asistente-ia-2026-08-01.md`)
 - [x] Generación SDD de importación Excel de partes (`13` → SPEC/HU/TR-009 A→D 2026-08-02; pendiente E/F1)
+- [ ] Generación SDD de reportes/emisiones (`15-reportes-emisiones.md` → adopción GEN-15; SPEC/HU/TR-011 A→C1+D1 2026-08-25; D pendiente)

@@ -9,6 +9,11 @@ export default defineConfig(({ mode }) => {
     env.VITE_API_PROXY_TARGET ||
     process.env.VITE_API_PROXY_TARGET ||
     'http://127.0.0.1:8010'
+  const dxReportingTarget = (
+    env.VITE_DX_REPORTING_HOST ||
+    process.env.VITE_DX_REPORTING_HOST ||
+    'http://127.0.0.1:5055'
+  ).replace(/\/+$/, '')
 
   return {
     plugins: [react()],
@@ -33,6 +38,10 @@ export default defineConfig(({ mode }) => {
           target: apiProxyTarget,
           changeOrigin: true,
         },
+        // ASP.NET DevExpress Reporting (diseñador / viewer / query builder)
+        '/DXXRD': { target: dxReportingTarget, changeOrigin: true },
+        '/DXXRDV': { target: dxReportingTarget, changeOrigin: true },
+        '/DXXQB': { target: dxReportingTarget, changeOrigin: true },
       },
     },
     test: {

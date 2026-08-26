@@ -91,11 +91,13 @@ final class PartesTareaOperations
         self::assertActorAsistente($params);
         $q = self::filteredQuery($params);
         $page = max(1, (int) ($params['p_page'] ?? 1));
-        $pageSize = min(200, max(1, (int) ($params['p_page_size'] ?? 50)));
+        $rawPageSize = (int) ($params['p_page_size'] ?? 50);
         $total = (clone $q)->count();
-        $rows = $q->orderByDesc('r.fecha')->orderByDesc('r.id')
-            ->forPage($page, $pageSize)
-            ->get(self::selectColumns());
+        $ordered = $q->orderByDesc('r.fecha')->orderByDesc('r.id');
+        // Sentinel 0 = todas las filas (emisión TR-011); el GET de pantalla sigue 1…200.
+        $rows = $rawPageSize === 0
+            ? $ordered->get(self::selectColumns())
+            : $ordered->forPage($page, min(200, max(1, $rawPageSize)))->get(self::selectColumns());
 
         $out = [];
         foreach ($rows as $row) {

@@ -20,8 +20,12 @@
     "test:all": "npm run test && npm run test:e2e"
   },
   "dependencies": {
-    "@paqsuite/react-core": "2.2.1",
+    "@devexpress/analytics-core": "^26.1.4",
+    "@paqsuite/react-core": "^2.3.0",
+    "ace-builds": "^1.44.0",
     "axios": "^1.16.0",
+    "devexpress-reporting": "^26.1.4",
+    "devexpress-reporting-react": "^26.1.4",
     "devextreme": "^25.2.7",
     "devextreme-react": "^25.2.7",
     "exceljs": "^4.4.0",
@@ -34,6 +38,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.59.1",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^24.12.2",

@@ -20,7 +20,7 @@ export function filterMenuForCliente(nodes: MenuNode[]): MenuNode[] {
     if (route === '/partes/carga-diaria' || route === '/partes/proceso-masivo' || route === '/partes/carga') {
       return true
     }
-    if (route.startsWith('/admin/') || route.startsWith('/parametros/')) {
+    if (route.startsWith('/admin/') || route.startsWith('/parametros/') || route.startsWith('/emisiones')) {
       return true
     }
     if (node.menuKey === 'seguridad' || node.menuKey === 'parametros') {

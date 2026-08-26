@@ -127,6 +127,13 @@ describe('filterMenuForCliente', () => {
           }),
         ],
       }),
+      stubNode({
+        id: 60300,
+        text: 'Diseñador',
+        menuKey: 'partes_disenador_emisiones',
+        routeName: '/emisiones/disenador',
+        nodeType: 'process',
+      }),
     ])
     expect(filtered).toHaveLength(1)
     expect(filtered[0].menuKey).toBe('inicio')

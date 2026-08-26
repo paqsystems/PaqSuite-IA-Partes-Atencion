@@ -37,7 +37,7 @@ Tras el login válido, el sistema abre el **Dashboard** (Inicio). El menú later
 | **Partes** | Carga diaria; proceso masivo | Asistente/supervisor; masivo solo supervisor |
 | **Informes** | Consulta detallada, consultas agrupadas, paquete de horas | Según perfil (cliente: solo su organización) |
 | **Seguridad** | Usuarios, roles, permisos (genérico del sistema) | Administradores / supervisor |
-| **Parámetros** | Parámetros Auth y Parámetros Partes | Administradores |
+| **Parámetros** | Parámetros Auth, Parámetros Partes y **Diseñador de emisiones** | Administradores / supervisor |
 | **Avatar** | Perfil Partes (solo lectura), **Asistente IA**, Preferencias LLM, idioma, apariencia, salir | Todos |
 
 **Cliente:** Inicio + Informes (+ perfil en el avatar). Sin Archivos, Partes, Seguridad ni Parámetros de administración.
@@ -67,7 +67,10 @@ Para **completar el formulario** de una tarea con ayuda del modelo (texto/audio/
 
 - La **delimitación de datos** (qué filas ves) la define tu perfil funcional; el menú solo oculta pantallas.
 - En **web**, los informes pueden usar vista **pivot**; en **móvil** no.
-- En **móvil** no hay maestros, proceso masivo, pivot ni administración de seguridad.
+- En **móvil** no hay maestros, proceso masivo, pivot, **emisión de reportes** ni administración de seguridad.
+- En **Consulta detallada** (solo escritorio) el botón **Emitir** genera un reporte del universo filtrado (PDF, impresión, Excel, CSV o correo). Es distinto del export de la grilla o del pivot: Emitir usa el reporte del proceso y los filtros de pantalla, no la página visible ni el filtro de filas de la grilla.
+- El **diseñador de emisiones** está en Parámetros → Diseñador de emisiones (escritorio; no móvil).
+
 - Duración máxima de una tarea: **1440 minutos** (24 h).
 - Si otro usuario modificó la misma tarea, el sistema pide **refrescar** e intentar de nuevo.
 

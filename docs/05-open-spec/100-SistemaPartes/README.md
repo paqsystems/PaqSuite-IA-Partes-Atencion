@@ -12,6 +12,7 @@ Fuente conceptual: `docs/02-producto/Sistema-Partes-IA/`.
 4. **Parte C (TR)** → [`docs/04-tareas/100-SistemaPartes/`](../../04-tareas/100-SistemaPartes/README.md) — 001–007 hechos; **008 Especificado** (C+C1 2026-08-01)
 5. **SPEC-008** Asistente IA — A→F1 (2026-08-01); revisión humana pendiente
 6. **SPEC-009** Importación Excel partes — A→C+C1 (2026-08-02); siguiente **D1**
+7. **SPEC-011** Reportes / emisiones (adopción GEN-15) — A→C1 + D1 (2026-08-25); siguiente **D**
 
 ## SPECs redactados
 
@@ -26,3 +27,5 @@ Fuente conceptual: `docs/02-producto/Sistema-Partes-IA/`.
 | [SPEC-007](./SPEC-007-mobile-capacitor.md) | Mobile Capacitor | [HU-007](../../03-historias-usuario/100-SistemaPartes/HU-007-mobile-capacitor.md) · [TR-007](../../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) | Pendiente (C1 OK → D1) |
 | [SPEC-008](./SPEC-008-asistente-ia-chat-documental.md) | Asistente IA — chat documental (adopción GEN-21) | [HU-008](../../03-historias-usuario/100-SistemaPartes/HU-008-asistente-ia-chat-documental.md) · [TR-008](../../04-tareas/100-SistemaPartes/TR-008-asistente-ia-chat-documental.md) | Especificado (C+C1 2026-08-01) |
 | [SPEC-009](./SPEC-009-importacion-partes-excel.md) | Importación de partes desde Excel | [HU-009](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) · [TR-009](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) | Pendiente (C+C1 2026-08-02; D1 pendiente) |
+| [SPEC-010](./SPEC-010-smart-capture-carga-diaria.md) | Smart Capture en carga diaria | [HU-010](../../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md) · [TR-010](../../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) | Pendiente (A→C) |
+| [SPEC-011](./SPEC-011-reportes-emisiones.md) | Reportes / emisiones (adopción GEN-15) | [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) · [TR-011](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) | Pendiente (A→C1+D1 2026-08-25; D pendiente) |

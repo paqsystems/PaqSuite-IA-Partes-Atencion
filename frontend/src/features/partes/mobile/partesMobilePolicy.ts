@@ -22,6 +22,7 @@ const partesMobileDenylistPrefixes = [
   '/partes/carga-diaria',
   '/partes/informes/consulta-detallada',
   '/partes/informes/consultas-agrupadas',
+  '/emisiones',
   '/admin',
   '/parametros',
 ] as const
