@@ -6,14 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use PaqSuite\LaravelCore\Http\Responses\ApiResponse;
 use PaqSuite\LaravelCore\Http\Responses\PaqSuiteEnvelopeCatalog;
 use PaqSuite\LaravelCore\Security\RolAtributosRepository;
 
 /**
  * Roles y atributos por opción de menú (GEN-06-roles-atributos).
- * Árbol de `pq_menus` habilitado viaja embebido en la misma respuesta GET (D1-06-10).
+ * Árbol jerárquico con menuTitulo/children/flags (SPEC, como template RolesController::atributos).
  */
 final class RolAtributosController extends Controller
 {
@@ -29,12 +28,32 @@ final class RolAtributosController extends Controller
             return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::RESOURCE_NOT_FOUND);
         }
 
+        $items = $this->rolAtributosRepository->listItems($id);
+        $flagsByMenu = [];
+        foreach ($items as $item) {
+            $flagsByMenu[(int) $item['menuId']] = $item;
+        }
+
+        $arbol = array_map(static function (array $node) use ($flagsByMenu): array {
+            $flags = $flagsByMenu[(int) $node['menuId']] ?? null;
+
+            return [
+                'menuId' => (int) $node['menuId'],
+                'padreId' => $node['padreId'],
+                'menuTitulo' => (string) $node['titulo'],
+                'esProceso' => (bool) $node['esProceso'],
+                'create' => (bool) ($flags['create'] ?? false),
+                'delete' => (bool) ($flags['delete'] ?? false),
+                'update' => (bool) ($flags['update'] ?? false),
+                'report' => (bool) ($flags['report'] ?? false),
+            ];
+        }, $this->rolAtributosRepository->arbolEnabled());
+
         return ApiResponse::success([
-            'accesoTotal' => $rol['accesoTotal'],
-            'codigo' => $rol['codigo'],
-            'nombre' => $rol['nombre'],
-            'items' => $rol['accesoTotal'] ? [] : $this->rolAtributosRepository->listItems($id),
-            'arbol' => $this->rolAtributosRepository->arbolEnabled(),
+            'accesoTotal' => (bool) $rol['accesoTotal'],
+            'rol' => $rol,
+            'items' => $items,
+            'arbol' => $this->buildTree($arbol),
         ]);
     }
 
@@ -45,22 +64,21 @@ final class RolAtributosController extends Controller
             return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::RESOURCE_NOT_FOUND);
         }
 
-        if ($rol['accesoTotal']) {
+        if ($rol['accesoTotal'] === true) {
             return ApiResponse::errorFromCatalog(
                 PaqSuiteEnvelopeCatalog::VALIDATION_FAILED,
-                ['respuesta' => 'roles.atributos.accesoTotalNoEditable']
+                ['respuesta' => 'roles.atributos.accesoTotal']
             );
         }
 
-        $validMenuIds = $this->rolAtributosRepository->menuIdsProcesoEnabled();
-
         $validator = Validator::make($request->all(), [
+            // `present` (no `required`): permite items=[] para vaciar el set (sync PUT).
             'items' => ['present', 'array'],
-            'items.*.menuId' => ['required', 'integer', 'distinct', Rule::in($validMenuIds)],
-            'items.*.permisoAlta' => ['sometimes', 'boolean'],
-            'items.*.permisoBaja' => ['sometimes', 'boolean'],
-            'items.*.permisoModi' => ['sometimes', 'boolean'],
-            'items.*.permisoRepo' => ['sometimes', 'boolean'],
+            'items.*.menuId' => ['required', 'integer'],
+            'items.*.create' => ['sometimes', 'boolean'],
+            'items.*.delete' => ['sometimes', 'boolean'],
+            'items.*.update' => ['sometimes', 'boolean'],
+            'items.*.report' => ['sometimes', 'boolean'],
         ]);
 
         if ($validator->fails()) {
@@ -70,22 +88,67 @@ final class RolAtributosController extends Controller
             );
         }
 
-        $items = array_map(static fn (array $item): array => [
-            'menuId' => (int) $item['menuId'],
-            'permisoAlta' => (bool) ($item['permisoAlta'] ?? false),
-            'permisoBaja' => (bool) ($item['permisoBaja'] ?? false),
-            'permisoModi' => (bool) ($item['permisoModi'] ?? false),
-            'permisoRepo' => (bool) ($item['permisoRepo'] ?? false),
-        ], $validator->validated()['items']);
+        $allowed = array_flip($this->rolAtributosRepository->menuIdsProcesoEnabled());
+        $items = [];
+        foreach ($validator->validated()['items'] as $item) {
+            $menuId = (int) $item['menuId'];
+            if (! isset($allowed[$menuId])) {
+                return ApiResponse::errorFromCatalog(
+                    PaqSuiteEnvelopeCatalog::VALIDATION_FAILED,
+                    ['respuesta' => 'roles.atributos.menuIdInvalid']
+                );
+            }
+            $items[] = $item;
+        }
 
         $this->rolAtributosRepository->replaceItems($id, $items);
 
-        return ApiResponse::success([
-            'accesoTotal' => false,
-            'codigo' => $rol['codigo'],
-            'nombre' => $rol['nombre'],
-            'items' => $this->rolAtributosRepository->listItems($id),
-            'arbol' => $this->rolAtributosRepository->arbolEnabled(),
-        ]);
+        return $this->show($id);
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $flat
+     * @return list<array<string, mixed>>
+     */
+    private function buildTree(array $flat): array
+    {
+        $nodes = [];
+        foreach ($flat as $node) {
+            $menuId = (int) $node['menuId'];
+            $nodes[$menuId] = [
+                'menuId' => $menuId,
+                'padreId' => $node['padreId'],
+                'menuTitulo' => (string) $node['menuTitulo'],
+                'esProceso' => (bool) $node['esProceso'],
+                'create' => (bool) $node['create'],
+                'delete' => (bool) $node['delete'],
+                'update' => (bool) $node['update'],
+                'report' => (bool) $node['report'],
+                'children' => [],
+            ];
+        }
+
+        $roots = [];
+        foreach ($nodes as $menuId => $node) {
+            $padreId = $node['padreId'] !== null ? (int) $node['padreId'] : null;
+            if ($padreId !== null && isset($nodes[$padreId])) {
+                $nodes[$padreId]['children'][] = $menuId;
+            } else {
+                $roots[] = $menuId;
+            }
+        }
+
+        $hydrate = function (int $menuId) use (&$hydrate, &$nodes): array {
+            $node = $nodes[$menuId];
+            $childIds = $node['children'];
+            $node['children'] = [];
+            foreach ($childIds as $childId) {
+                $node['children'][] = $hydrate((int) $childId);
+            }
+
+            return $node;
+        };
+
+        return array_map(static fn (int $id): array => $hydrate($id), $roots);
     }
 }

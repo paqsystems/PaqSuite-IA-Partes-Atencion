@@ -9,6 +9,7 @@ use Tests\TestCase;
 
 /**
  * GEN-06 ABM Seguridad (usuarios/empresas/roles/permisos) — gate `paqsuite.seguridadAdmin`.
+ * Contrato SPEC laravel-core 1.3.4 / react-core 2.3.0.
  */
 class ApiV1AdminSeguridadTest extends TestCase
 {
@@ -44,6 +45,7 @@ class ApiV1AdminSeguridadTest extends TestCase
         $response = $this->getJson('/api/v1/admin/usuarios', $this->authHeaders($token));
         $response->assertStatus(200);
         $this->assertNotEmpty($response->json('resultado.items'));
+        $this->assertArrayHasKey('codigo', $response->json('resultado.items.0'));
     }
 
     public function test_usuarios_crud_completo(): void
@@ -52,16 +54,21 @@ class ApiV1AdminSeguridadTest extends TestCase
         $headers = $this->authHeaders($token);
 
         $create = $this->postJson('/api/v1/admin/usuarios', [
-            'usuario' => 'nuevo1',
+            'codigo' => 'nuevo1',
             'nombre' => 'Usuario Nuevo',
             'email' => 'nuevo1@partes.local',
             'password' => 'Secret123!',
             'activo' => true,
         ], $headers);
-        $create->assertStatus(201)->assertJsonPath('resultado.item.usuario', 'nuevo1');
+        $create->assertStatus(201)->assertJsonPath('resultado.item.codigo', 'nuevo1');
         $id = (int) $create->json('resultado.item.id');
 
-        $update = $this->patchJson('/api/v1/admin/usuarios/'.$id, [
+        $show = $this->getJson('/api/v1/admin/usuarios/'.$id, $headers);
+        $show->assertStatus(200)
+            ->assertJsonPath('resultado.item.codigo', 'nuevo1')
+            ->assertJsonStructure(['resultado' => ['item' => ['asignaciones']]]);
+
+        $update = $this->putJson('/api/v1/admin/usuarios/'.$id, [
             'nombre' => 'Usuario Editado',
         ], $headers);
         $update->assertStatus(200)->assertJsonPath('resultado.item.nombre', 'Usuario Editado');
@@ -81,16 +88,18 @@ class ApiV1AdminSeguridadTest extends TestCase
         $list->assertStatus(200);
         $empresaId = (int) $list->json('resultado.items.0.id');
         $this->assertSame('generic.light', $list->json('resultado.items.0.theme'));
+        $this->assertArrayHasKey('nombreEmpresa', $list->json('resultado.items.0'));
+        $this->assertArrayHasKey('habilitada', $list->json('resultado.items.0'));
 
         $show = $this->getJson('/api/v1/admin/empresas/'.$empresaId, $headers);
         $show->assertStatus(200);
 
         $update = $this->putJson('/api/v1/admin/empresas/'.$empresaId, [
-            'nombre' => 'Partes Demo Editada',
+            'nombreEmpresa' => 'Partes Demo Editada',
             'theme' => 'material.blue.dark',
         ], $headers);
         $update->assertStatus(200)
-            ->assertJsonPath('resultado.item.nombre', 'Partes Demo Editada')
+            ->assertJsonPath('resultado.item.nombreEmpresa', 'Partes Demo Editada')
             ->assertJsonPath('resultado.item.theme', 'material.blue.dark');
     }
 
@@ -113,15 +122,17 @@ class ApiV1AdminSeguridadTest extends TestCase
         $headers = $this->authHeaders($token);
 
         $create = $this->postJson('/api/v1/admin/roles', [
-            'codigo' => 'OPERADOR',
             'nombre' => 'Operador',
+            'descripcion' => 'Rol operador',
             'accesoTotal' => false,
-            'activo' => true,
         ], $headers);
-        $create->assertStatus(201)->assertJsonPath('resultado.item.codigo', 'OPERADOR');
+        $create->assertStatus(201)
+            ->assertJsonPath('resultado.item.nombre', 'Operador')
+            ->assertJsonPath('resultado.item.descripcion', 'Rol operador')
+            ->assertJsonPath('resultado.item.accesoTotal', false);
         $id = (int) $create->json('resultado.item.id');
 
-        $update = $this->patchJson('/api/v1/admin/roles/'.$id, [
+        $update = $this->putJson('/api/v1/admin/roles/'.$id, [
             'nombre' => 'Operador Editado',
         ], $headers);
         $update->assertStatus(200)->assertJsonPath('resultado.item.nombre', 'Operador Editado');
@@ -130,10 +141,8 @@ class ApiV1AdminSeguridadTest extends TestCase
         $deleteOk->assertStatus(200)->assertJsonPath('resultado.deleted', true);
 
         $create2 = $this->postJson('/api/v1/admin/roles', [
-            'codigo' => 'OPERADOR2',
             'nombre' => 'Operador 2',
             'accesoTotal' => false,
-            'activo' => true,
         ], $headers);
         $create2->assertStatus(201);
         $id2 = (int) $create2->json('resultado.item.id');
@@ -141,7 +150,7 @@ class ApiV1AdminSeguridadTest extends TestCase
         $empresaId = (int) DB::table('pq_empresa')->value('id');
         $user = User::factory()->create(['usuario' => 'roldeletetest']);
         $this->postJson('/api/v1/admin/permisos', [
-            'userId' => $user->id,
+            'usuarioId' => $user->id,
             'empresaId' => $empresaId,
             'rolId' => $id2,
         ], $headers)->assertStatus(201);
@@ -162,28 +171,26 @@ class ApiV1AdminSeguridadTest extends TestCase
         $user = User::factory()->create(['usuario' => 'permisotest']);
 
         $create = $this->postJson('/api/v1/admin/permisos', [
-            'userId' => $user->id,
+            'usuarioId' => $user->id,
             'empresaId' => $empresaId,
             'rolId' => $rolId,
         ], $headers);
-        $create->assertStatus(201);
+        $create->assertStatus(201)->assertJsonPath('resultado.item.usuarioId', $user->id);
         $permisoId = (int) $create->json('resultado.item.id');
 
-        $list = $this->getJson('/api/v1/admin/permisos', $headers);
+        $list = $this->getJson('/api/v1/admin/permisos?usuarioId='.$user->id, $headers);
         $list->assertStatus(200);
         $this->assertNotEmpty($list->json('resultado.items'));
 
         $otroRolId = (int) $this->postJson('/api/v1/admin/roles', [
-            'codigo' => 'OPERADOR',
             'nombre' => 'Operador',
             'accesoTotal' => false,
-            'activo' => true,
         ], $headers)->json('resultado.item.id');
 
         $batch = $this->postJson('/api/v1/admin/permisos/batch', [
             'items' => [
-                ['userId' => $user->id, 'empresaId' => $empresaId, 'rolId' => $rolId],
-                ['userId' => $user->id, 'empresaId' => $empresaId, 'rolId' => $otroRolId],
+                ['usuarioId' => $user->id, 'empresaId' => $empresaId, 'rolId' => $rolId],
+                ['usuarioId' => $user->id, 'empresaId' => $empresaId, 'rolId' => $otroRolId],
             ],
         ], $headers);
         $batch->assertStatus(200)
@@ -200,37 +207,35 @@ class ApiV1AdminSeguridadTest extends TestCase
         $headers = $this->authHeaders($token);
 
         $rolId = (int) $this->postJson('/api/v1/admin/roles', [
-            'codigo' => 'CONSULTA',
             'nombre' => 'Consulta',
             'accesoTotal' => false,
-            'activo' => true,
         ], $headers)->json('resultado.item.id');
 
         $get = $this->getJson('/api/v1/admin/roles/'.$rolId.'/atributos', $headers);
         $get->assertStatus(200)
             ->assertJsonPath('resultado.accesoTotal', false)
-            ->assertJsonPath('resultado.codigo', 'CONSULTA')
-            ->assertJsonPath('resultado.nombre', 'Consulta')
+            ->assertJsonPath('resultado.rol.nombre', 'Consulta')
             ->assertJsonPath('resultado.items', []);
         $this->assertNotEmpty($get->json('resultado.arbol'));
+        $this->assertArrayHasKey('menuTitulo', $get->json('resultado.arbol.0'));
+        $this->assertArrayHasKey('children', $get->json('resultado.arbol.0'));
 
         $menuId = (int) DB::table('pq_menus')->where('codigo', 'admin_roles')->value('id');
 
         $put = $this->putJson('/api/v1/admin/roles/'.$rolId.'/atributos', [
             'items' => [
-                ['menuId' => $menuId, 'permisoAlta' => true, 'permisoBaja' => false, 'permisoModi' => true, 'permisoRepo' => false],
+                ['menuId' => $menuId, 'create' => true, 'delete' => false, 'update' => true, 'report' => false],
             ],
         ], $headers);
         $put->assertStatus(200);
         $put->assertJsonFragment([
             'menuId' => $menuId,
-            'permisoAlta' => true,
-            'permisoBaja' => false,
-            'permisoModi' => true,
-            'permisoRepo' => false,
+            'create' => true,
+            'delete' => false,
+            'update' => true,
+            'report' => false,
         ]);
 
-        // Reemplazo total: un segundo PUT sin ese menuId lo quita del set.
         $putEmpty = $this->putJson('/api/v1/admin/roles/'.$rolId.'/atributos', ['items' => []], $headers);
         $putEmpty->assertStatus(200)->assertJsonPath('resultado.items', []);
     }
@@ -253,14 +258,14 @@ class ApiV1AdminSeguridadTest extends TestCase
 
         $put = $this->putJson('/api/v1/admin/roles/'.$rolId.'/atributos', [
             'items' => [
-                ['menuId' => $folderId, 'permisoAlta' => true],
+                ['menuId' => $folderId, 'create' => true],
             ],
         ], $headers);
         $put->assertStatus(422);
 
         $put2 = $this->putJson('/api/v1/admin/roles/'.$rolId.'/atributos', [
             'items' => [
-                ['menuId' => 999999, 'permisoAlta' => true],
+                ['menuId' => 999999, 'create' => true],
             ],
         ], $headers);
         $put2->assertStatus(422);
@@ -327,7 +332,7 @@ class ApiV1AdminSeguridadTest extends TestCase
         $token = (string) $login->json('resultado.token');
 
         $response = $this->postJson('/api/v1/admin/usuarios', [
-            'usuario' => 'noPermitido',
+            'codigo' => 'noPermitido',
             'nombre' => 'No Permitido',
             'email' => 'no@permitido.local',
             'password' => 'Secret123!',

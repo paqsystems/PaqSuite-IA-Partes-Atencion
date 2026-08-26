@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@devexpress/analytics-core": "^26.1.4",
-    "@paqsuite/react-core": "^2.3.0",
+    "@paqsuite/react-core": "^2.3.1",
     "ace-builds": "^1.44.0",
     "axios": "^1.16.0",
     "devexpress-reporting": "^26.1.4",

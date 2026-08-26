@@ -6,6 +6,7 @@ use PaqSuite\LaravelCore\Security\PermisoAdminRepository;
 
 /**
  * ABM permisos usuario x empresa x rol (GEN-06) vía SP `pq_sp_admin_permisos_*`.
+ * Contrato SPEC: usuarioId / empresaId / rolId.
  */
 final class SpPermisoAdminRepository implements PermisoAdminRepository
 {
@@ -16,22 +17,45 @@ final class SpPermisoAdminRepository implements PermisoAdminRepository
 
     public function listByUserId(int $userId): array
     {
-        $rows = $this->spCaller->call('pq_sp_admin_permisos_list_by_user', ['user_id' => $userId]);
-
-        return array_map(fn (object $row): array => $this->mapRow($row), $rows);
+        return $this->listAll(['usuarioId' => $userId]);
     }
 
-    public function listAll(): array
+    public function listAll(array $filters = []): array
     {
-        $rows = $this->spCaller->call('pq_sp_admin_permisos_list', []);
+        $usuarioId = isset($filters['usuarioId']) ? (int) $filters['usuarioId'] : 0;
+        if ($usuarioId > 0) {
+            $rows = $this->spCaller->call('pq_sp_admin_permisos_list_by_user', ['user_id' => $usuarioId]);
+        } else {
+            $rows = $this->spCaller->call('pq_sp_admin_permisos_list', []);
+        }
 
-        return array_map(fn (object $row): array => $this->mapRow($row), $rows);
+        $items = array_map(fn (object $row): array => $this->mapRow($row), $rows);
+
+        $empresaId = isset($filters['empresaId']) ? (int) $filters['empresaId'] : 0;
+        if ($empresaId > 0) {
+            $items = array_values(array_filter(
+                $items,
+                static fn (array $item): bool => (int) $item['empresaId'] === $empresaId
+            ));
+        }
+
+        $rolId = isset($filters['rolId']) ? (int) $filters['rolId'] : 0;
+        if ($rolId > 0) {
+            $items = array_values(array_filter(
+                $items,
+                static fn (array $item): bool => (int) $item['rolId'] === $rolId
+            ));
+        }
+
+        return $items;
     }
 
     public function create(array $data): array
     {
+        $userId = (int) ($data['usuarioId'] ?? $data['userId'] ?? 0);
+
         $row = $this->spCaller->callFirst('pq_sp_admin_permisos_create', [
-            'user_id' => (int) $data['userId'],
+            'user_id' => $userId,
             'empresa_id' => (int) $data['empresaId'],
             'rol_id' => (int) $data['rolId'],
         ]);
@@ -45,8 +69,9 @@ final class SpPermisoAdminRepository implements PermisoAdminRepository
         $omitidos = 0;
 
         foreach ($items as $item) {
+            $userId = (int) ($item['usuarioId'] ?? $item['userId'] ?? 0);
             $row = $this->spCaller->callFirst('pq_sp_admin_permisos_create_if_absent', [
-                'user_id' => (int) $item['userId'],
+                'user_id' => $userId,
                 'empresa_id' => (int) $item['empresaId'],
                 'rol_id' => (int) $item['rolId'],
             ]);
@@ -75,13 +100,11 @@ final class SpPermisoAdminRepository implements PermisoAdminRepository
     {
         return [
             'id' => (int) $row->id,
-            'userId' => (int) $row->userId,
-            'usuario' => (string) ($row->usuario ?? ''),
+            'usuarioId' => (int) ($row->usuarioId ?? $row->userId ?? 0),
             'usuarioNombre' => (string) ($row->usuarioNombre ?? ''),
             'empresaId' => (int) $row->empresaId,
             'empresaNombre' => (string) $row->empresaNombre,
             'rolId' => (int) $row->rolId,
-            'rolCodigo' => (string) $row->rolCodigo,
             'rolNombre' => (string) $row->rolNombre,
         ];
     }

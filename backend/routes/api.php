@@ -89,28 +89,31 @@ Route::prefix('v1')->group(function () {
         // Lectura amplia (lookup maestros Partes vía ?soloActivos= + listado Admin Seguridad).
         Route::get('/admin/usuarios', [AdminUsuariosController::class, 'index']);
 
-        // ABM Seguridad GEN-06 (AccesoTotal empresa activa).
+        // ABM Seguridad GEN-06 (AccesoTotal empresa activa). Contrato SPEC laravel-core.
         Route::middleware('paqsuite.seguridadAdmin')->prefix('admin')->group(function () {
+            Route::get('/usuarios/{id}', [AdminUsuariosController::class, 'show'])->whereNumber('id');
             Route::post('/usuarios', [AdminUsuariosController::class, 'store']);
-            Route::patch('/usuarios/{id}', [AdminUsuariosController::class, 'update']);
-            Route::delete('/usuarios/{id}', [AdminUsuariosController::class, 'destroy']);
+            Route::put('/usuarios/{id}', [AdminUsuariosController::class, 'update'])->whereNumber('id');
+            Route::patch('/usuarios/{id}', [AdminUsuariosController::class, 'update'])->whereNumber('id');
+            Route::delete('/usuarios/{id}', [AdminUsuariosController::class, 'destroy'])->whereNumber('id');
 
             // MONO: empresas sin alta/baja — solo consulta y edición.
             Route::get('/empresas', [AdminEmpresasController::class, 'index']);
-            Route::get('/empresas/{id}', [AdminEmpresasController::class, 'show']);
-            Route::put('/empresas/{id}', [AdminEmpresasController::class, 'update']);
+            Route::get('/empresas/{id}', [AdminEmpresasController::class, 'show'])->whereNumber('id');
+            Route::put('/empresas/{id}', [AdminEmpresasController::class, 'update'])->whereNumber('id');
 
             Route::get('/roles', [AdminRolesController::class, 'index']);
             Route::post('/roles', [AdminRolesController::class, 'store']);
-            Route::patch('/roles/{id}', [AdminRolesController::class, 'update']);
-            Route::delete('/roles/{id}', [AdminRolesController::class, 'destroy']);
+            Route::put('/roles/{id}', [AdminRolesController::class, 'update'])->whereNumber('id');
+            Route::patch('/roles/{id}', [AdminRolesController::class, 'update'])->whereNumber('id');
+            Route::delete('/roles/{id}', [AdminRolesController::class, 'destroy'])->whereNumber('id');
             Route::get('/roles/{id}/atributos', [AdminRolAtributosController::class, 'show'])->whereNumber('id');
             Route::put('/roles/{id}/atributos', [AdminRolAtributosController::class, 'update'])->whereNumber('id');
 
             Route::get('/permisos', [AdminPermisosController::class, 'index']);
             Route::post('/permisos', [AdminPermisosController::class, 'store']);
             Route::post('/permisos/batch', [AdminPermisosController::class, 'batch']);
-            Route::delete('/permisos/{id}', [AdminPermisosController::class, 'destroy']);
+            Route::delete('/permisos/{id}', [AdminPermisosController::class, 'destroy'])->whereNumber('id');
         });
 
         // GEN-15 emisiones (TR-011) — perfil Partes (cliente puede emitir su org)
@@ -123,6 +126,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/emissions/jobs/{jobId}', [$e, 'showJob']);
             Route::get('/emissions/jobs/{jobId}/download', [$e, 'download']);
             Route::get('/emissions/design/processes/{processCode}/reports', [$e, 'designReports']);
+            Route::post('/emissions/design/processes/{processCode}/reports', [$e, 'designCreateReport']);
+            Route::put('/emissions/design/reports/{reportId}/layout', [$e, 'designUpdateLayout'])->whereNumber('reportId');
             Route::post('/emissions/design/reports/{reportId}/set-principal', [$e, 'designSetPrincipal'])->whereNumber('reportId');
         });
 
