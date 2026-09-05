@@ -6,7 +6,11 @@ import {
   resolveClienteCode,
 } from '@paqsuite/react-core'
 import { getAuthSession } from './authSessionStore'
-import { resolveLandingClienteCode } from './partesCanonicalCliente'
+import {
+  isVercelFrontDoorHostname,
+  resolveLandingClienteCode,
+  shouldHonorLandingCliente,
+} from './partesCanonicalCliente'
 
 const browserPersistence = {
   getCookie: (name: string) => {
@@ -53,6 +57,7 @@ export function resolvePlatformCliente(overrideTenant?: string): string {
   const hostname =
     typeof window !== 'undefined' ? window.location.hostname : 'localhost'
   const search = typeof window !== 'undefined' ? window.location.search : ''
+  const referrer = typeof document !== 'undefined' ? document.referrer : ''
   const isDev = import.meta.env.DEV
   const persisted = readPersistedClienteCode(browserPersistence)
   const explicit =
@@ -66,11 +71,18 @@ export function resolvePlatformCliente(overrideTenant?: string): string {
   const landingCliente = resolveLandingClienteCode({
     hostname,
     search,
+    referrer,
     overrideTenant,
   })
 
+  if (landingCliente && shouldHonorLandingCliente({ hostname, isDevBuild: isDev })) {
+    return persistClienteCode(landingCliente, browserPersistence)
+  }
+
+  const vercelFrontDoor = isVercelFrontDoorHostname(hostname)
   const cliente = resolveClienteCode({
-    isDevOrNonCanonicalUrl: isDevOrNonCanonicalHostname(hostname, isDev),
+    isDevOrNonCanonicalUrl:
+      !vercelFrontDoor && isDevOrNonCanonicalHostname(hostname, isDev),
     queryCliente: landingCliente,
     cookieCliente: persisted.cookieCliente,
     sessionCliente: persisted.sessionCliente,

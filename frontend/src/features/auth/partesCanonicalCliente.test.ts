@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
   clienteCodeFromCanonicalHostname,
+  clienteCodeFromReferrer,
   clienteCodeFromSearchParams,
+  isVercelFrontDoorHostname,
   resolveLandingClienteCode,
+  shouldHonorLandingCliente,
 } from './partesCanonicalCliente'
 
 describe('clienteCodeFromCanonicalHostname', () => {
@@ -15,6 +18,12 @@ describe('clienteCodeFromCanonicalHostname', () => {
     )
     expect(
       clienteCodeFromCanonicalHostname('estudiogb.partesatenciones.paqsystems.com'),
+    ).toBe('estudiogb')
+  })
+
+  it('acepta www.{cliente}.partesatencion', () => {
+    expect(
+      clienteCodeFromCanonicalHostname('www.estudiogb.partesatencion.paqsystems.com'),
     ).toBe('estudiogb')
   })
 
@@ -39,6 +48,44 @@ describe('clienteCodeFromSearchParams', () => {
   })
 })
 
+describe('clienteCodeFromReferrer', () => {
+  it('lee el subdominio del origen del redirect', () => {
+    expect(
+      clienteCodeFromReferrer('https://estudiogb.partesatencion.paqsystems.com/'),
+    ).toBe('estudiogb')
+    expect(clienteCodeFromReferrer('https://partesatencionpaqsystems.vercel.app/')).toBe(
+      null,
+    )
+  })
+})
+
+describe('isVercelFrontDoorHostname', () => {
+  it('detecta el FE en Vercel', () => {
+    expect(isVercelFrontDoorHostname('partesatencionpaqsystems.vercel.app')).toBe(true)
+    expect(isVercelFrontDoorHostname('demo.partesatencion.paqsystems.com')).toBe(false)
+  })
+})
+
+describe('shouldHonorLandingCliente', () => {
+  it('en Vercel honra landing aunque el build no sea DEV', () => {
+    expect(
+      shouldHonorLandingCliente({
+        hostname: 'partesatencionpaqsystems.vercel.app',
+        isDevBuild: false,
+      }),
+    ).toBe(true)
+  })
+
+  it('en localhost DEV no pisa el force-DEMO del SDK', () => {
+    expect(
+      shouldHonorLandingCliente({
+        hostname: 'localhost',
+        isDevBuild: true,
+      }),
+    ).toBe(false)
+  })
+})
+
 describe('resolveLandingClienteCode', () => {
   it('override gana, luego query, luego hostname', () => {
     expect(
@@ -60,5 +107,21 @@ describe('resolveLandingClienteCode', () => {
         search: '',
       }),
     ).toBe('paq')
+  })
+
+  it('en vercel.app usa query y, si falta, el referrer del subdominio', () => {
+    expect(
+      resolveLandingClienteCode({
+        hostname: 'partesatencionpaqsystems.vercel.app',
+        search: '?cliente=ESTUDIOGB',
+      }),
+    ).toBe('ESTUDIOGB')
+    expect(
+      resolveLandingClienteCode({
+        hostname: 'partesatencionpaqsystems.vercel.app',
+        search: '',
+        referrer: 'https://estudiogb.partesatencion.paqsystems.com/',
+      }),
+    ).toBe('estudiogb')
   })
 })

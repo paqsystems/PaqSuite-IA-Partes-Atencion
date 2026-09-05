@@ -45,6 +45,8 @@ await bootstrapApiBaseUrl({
 | `demo.partesatencion.paqsystems.com` | operativo Vercel | prod | `https://backend.partesatencion.paqsystems.com` |
 | `paq.partesatencion.paqsystems.com` | operativo Vercel | prod | `https://backend.partesatencion.paqsystems.com` |
 
+Si el panel hace **HTTP redirect** a `*.vercel.app` (no CNAME), el path debe conservar `?cliente={CODIGO}` (ej. `ESTUDIOGB`). El pie de shell muestra `pq_empresa.nombre` de la BD de ese código: hace falta fila `EMPRESAS_CONEXION` (`proyecto=partesatencion`, `cliente=ESTUDIOGB`) y que esa BD no sea la de DEMO.
+
 ---
 
 ## Variables
