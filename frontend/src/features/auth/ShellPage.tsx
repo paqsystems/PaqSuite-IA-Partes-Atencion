@@ -79,6 +79,7 @@ export function AuthenticatedShell() {
     const match = session?.empresas.find((empresa) => empresa.id === activeId)
     return match?.nombreEmpresa ?? session?.empresas[0]?.nombreEmpresa ?? '—'
   }, [session])
+  const cliente = resolvePlatformCliente()
 
   const showChangeEmpresa =
     session?.tenancy === 'multi' && (session?.empresas?.length ?? 0) > 1
@@ -203,6 +204,7 @@ export function AuthenticatedShell() {
         }
         footer={{
           brandLabel: t('shell.footer.brand'),
+          cliente,
           user: `${t('shell.session')}: ${session?.user.usuario ?? '—'}`,
           empresa: empresaNombre,
           version: t('shell.footer.version', { version: appVersion }),
