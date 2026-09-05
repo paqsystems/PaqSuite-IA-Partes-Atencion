@@ -12,17 +12,26 @@ import '@paqsuite/react-core/shell.css'
 import { AppRouter } from './app/AppRouter.tsx'
 import { ThemeProvider } from './app/providers/ThemeProvider'
 import { installApiAuthFetch } from './features/auth/installApiAuthFetch'
+import { installCapacitorPreferencesAdapter } from './features/auth/installCapacitorPreferencesAdapter'
+import { bootstrapPlatformCliente } from './features/auth/platformContext'
 import i18n from './i18n/i18n'
 import './index.css'
+import './features/partes/mobile/partesMobileProcess.css'
 
 async function bootstrap(): Promise<void> {
+  bootstrapPlatformCliente()
   installApiAuthFetch()
+  await installCapacitorPreferencesAdapter()
   await bootstrapApiBaseUrl({
     envBaseUrl: import.meta.env.VITE_API_BASE_URL,
     projectSlug: 'partesatencion',
     isNative: isNativeApp(),
   })
   syncDevExtremeLocale('es')
+
+  if (isNativeApp()) {
+    document.documentElement.classList.add('pq-native-app')
+  }
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>

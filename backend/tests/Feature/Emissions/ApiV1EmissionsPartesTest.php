@@ -411,6 +411,30 @@ class ApiV1EmissionsPartesTest extends TestCase
             $this->authHeaders($token)
         )
             ->assertStatus(200)
-            ->assertJsonPath('resultado.designer', 'stub');
+            ->assertJsonPath('resultado.designer', 'dx');
+    }
+
+    public function test_design_save_as_crea_reporte_en_catalogo(): void
+    {
+        $token = $this->login();
+        $this->postJson(
+            '/api/v1/emissions/design/processes/partes.informes.consultaDetallada/reports',
+            [
+                'code' => 'partes.consultaDetallada.copia',
+                'name' => 'Copia',
+                'layoutMime' => 'application/xml',
+                'layoutDefinition' => '<XtraReportsLayoutSerializer/>',
+            ],
+            $this->authHeaders($token)
+        )
+            ->assertStatus(200)
+            ->assertJsonPath('resultado.item.code', 'partes.consultaDetallada.copia')
+            ->assertJsonPath('resultado.item.name', 'Copia');
+
+        $this->assertDatabaseHas('pq_emission_reports', [
+            'process_code' => 'partes.informes.consultaDetallada',
+            'report_code' => 'partes.consultaDetallada.copia',
+            'name' => 'Copia',
+        ]);
     }
 }

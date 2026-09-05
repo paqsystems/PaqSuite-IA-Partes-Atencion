@@ -1,7 +1,8 @@
-import { EmissionReportDesignerPage, isNativeApp } from '@paqsuite/react-core'
+import { isNativeApp } from '@paqsuite/react-core'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { DxReportDesignerPanel, type PartesReportDesignerContext } from './DxReportDesignerPanel'
+import { EmissionReportDesignerPage } from './EmissionReportDesignerPage'
 import { readInitialProcessCodeFromSearch } from './reportDesignerInitialProcess'
 
 /**
@@ -29,3 +30,5 @@ export function ReportDesignerHostPage() {
     </div>
   )
 }
+
+export default ReportDesignerHostPage

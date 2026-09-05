@@ -272,4 +272,118 @@ final class SpEmissionRepository implements EmissionRepository
             'mailTemplates' => $process->mailTemplates,
         ];
     }
+
+    /**
+     * @return array{id: int, code: string, name: string, isPrincipal: bool}|null
+     */
+    public function findDesignReportById(int $reportId): ?array
+    {
+        $row = DB::table('pq_emission_reports')->where('id', $reportId)->first();
+        if ($row === null) {
+            return null;
+        }
+
+        return $this->mapDesignReportRow($row);
+    }
+
+    /**
+     * @return array{id: int, code: string, name: string, isPrincipal: bool}
+     */
+    public function upsertDesignReport(
+        string $processCode,
+        string $code,
+        string $name,
+        ?string $layoutDefinition,
+        ?string $layoutMime,
+        bool $setPrincipal,
+    ): array {
+        $now = now();
+        $existing = DB::table('pq_emission_reports')
+            ->where('process_code', $processCode)
+            ->where('report_code', $code)
+            ->first();
+
+        if ($existing !== null) {
+            $payload = [
+                'name' => $name,
+                'is_active' => 1,
+                'updated_at' => $now,
+            ];
+            if (is_string($layoutDefinition)) {
+                $payload['layout_definition'] = $layoutDefinition;
+            }
+            if (is_string($layoutMime) && $layoutMime !== '') {
+                $payload['layout_mime'] = $layoutMime;
+            }
+            DB::table('pq_emission_reports')->where('id', $existing->id)->update($payload);
+            $reportId = (int) $existing->id;
+        } else {
+            $reportId = (int) DB::table('pq_emission_reports')->insertGetId([
+                'process_code' => $processCode,
+                'report_code' => $code,
+                'name' => $name,
+                'is_standard' => 0,
+                'is_principal' => 0,
+                'visible_mobile' => 1,
+                'layout_definition' => is_string($layoutDefinition) ? $layoutDefinition : null,
+                'layout_mime' => is_string($layoutMime) && $layoutMime !== '' ? $layoutMime : null,
+                'is_active' => 1,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+
+        if ($setPrincipal) {
+            $this->setDesignReportPrincipal($reportId);
+        }
+
+        $mapped = $this->findDesignReportById($reportId);
+        if ($mapped === null) {
+            throw new \RuntimeException('pq_emission_reports upsert sin fila');
+        }
+
+        return $mapped;
+    }
+
+    public function updateDesignReportLayout(int $reportId, string $layoutMime, ?string $layoutDefinition): bool
+    {
+        $updated = DB::table('pq_emission_reports')->where('id', $reportId)->update([
+            'layout_mime' => $layoutMime,
+            'layout_definition' => $layoutDefinition,
+            'updated_at' => now(),
+        ]);
+
+        return $updated > 0;
+    }
+
+    public function setDesignReportPrincipal(int $reportId): bool
+    {
+        $row = DB::table('pq_emission_reports')->where('id', $reportId)->first();
+        if ($row === null) {
+            return false;
+        }
+
+        DB::table('pq_emission_reports')
+            ->where('process_code', $row->process_code)
+            ->update(['is_principal' => 0, 'updated_at' => now()]);
+        DB::table('pq_emission_reports')->where('id', $reportId)->update([
+            'is_principal' => 1,
+            'updated_at' => now(),
+        ]);
+
+        return true;
+    }
+
+    /**
+     * @return array{id: int, code: string, name: string, isPrincipal: bool}
+     */
+    private function mapDesignReportRow(object $report): array
+    {
+        return [
+            'id' => (int) $report->id,
+            'code' => (string) $report->report_code,
+            'name' => (string) $report->name,
+            'isPrincipal' => (bool) $report->is_principal,
+        ];
+    }
 }

@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import {
   BrowserRouter,
   Navigate,
   Route,
   Routes,
+  useLocation,
   useNavigate,
   useParams,
 } from 'react-router-dom'
@@ -46,7 +47,7 @@ import {
   ConsultaDetalladaPage,
   ConsultasAgrupadasPage,
 } from '../features/partes/informes/PartesConsultasPages'
-import { ReportDesignerHostPage } from '../features/partes/informes/ReportDesignerHostPage'
+const ReportDesignerHostPage = lazy(() => import('../features/partes/informes/ReportDesignerHostPage'))
 import { PaqueteHorasPage } from '../features/partes/informes/PaqueteHorasPage'
 import { ConsultaKardexMobilePage } from '../features/partes/mobile/ConsultaKardexMobilePage'
 import { ParametrosGeneralesPage } from '../features/admin/ParametrosGeneralesPage'
@@ -76,6 +77,11 @@ function RolAtributosRoutePage() {
   )
 }
 
+function RedirectToLogin() {
+  const location = useLocation()
+  return <Navigate to={{ pathname: '/login', search: location.search }} replace />
+}
+
 function AuthBootstrap() {
   const navigate = useNavigate()
 
@@ -99,7 +105,8 @@ export function AppRouter() {
   return (
     <BrowserRouter>
       <AuthBootstrap />
-      <Routes>
+      <Suspense fallback={null}>
+        <Routes>
         <Route element={<GuestOnly />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -143,9 +150,10 @@ export function AppRouter() {
           </Route>
         </Route>
 
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+        <Route path="/" element={<RedirectToLogin />} />
+        <Route path="*" element={<RedirectToLogin />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   )
 }

@@ -185,7 +185,7 @@ Producto dejaba «menú o administración» al SPEC. Cierre:
 | Superficie | Página desktop que monta **`EmissionReportDesignerPage`** (GEN); el host inyecta `renderDesigner` DX. **No** sustituir por un picker Partes ni por `ReportDesignerHost` con `processCode` fijo como única entrada. |
 | Entrada | **Ítem de menú** propio, **no** embebido en Consulta detallada |
 | Código de menú | **`partes_disenador_emisiones`** |
-| Carpeta | **Parámetros** (`pq_menus` padre parámetros; no Informes) |
+| Carpeta | **Soporte Técnico** (`pq_menus` padre `soporte_tecnico` id **70000**; no Parámetros ni Informes) |
 | Ruta | **`/emisiones/disenador`** |
 | `tipo_proceso` | **`C`** |
 | Visibilidad | Desktop; oculto/denegado en native (policy SPEC-007) |
@@ -301,7 +301,7 @@ Authz diseñar: **`emission.design`** → **4709**.
 | D-EM-09 | Excel de grilla y Excel de emisión conviven |
 | D-EM-10 | Canales v1: PDF, impresión, Excel/CSV de reporte, mail+PDF |
 
-**Cierre adicional Parte A (no estaba numerado en producto):** acceso al diseñador = menú `partes_disenador_emisiones` bajo Parámetros, ruta `/emisiones/disenador` (§4.8). Destinatarios mail v1 = manual en ventana.
+**Cierre adicional Parte A (no estaba numerado en producto):** acceso al diseñador = menú `partes_disenador_emisiones` bajo **Soporte Técnico**, ruta `/emisiones/disenador` (§4.8). Destinatarios mail v1 = manual en ventana.
 
 **Cierres A1 (2026-08-25):** universo de emisión ≠ lo visible en grilla/pivot (D-EM-09); todas las filas del filtro de pantalla; MONO sin selector GEN-23 (R-EM-23).
 
@@ -326,6 +326,7 @@ Ninguna bloqueante tras A1. Refinamientos → B/C / TR:
 
 | Fecha | Cambio |
 |-------|--------|
+| 2026-08-30 | §4.8: diseñador bajo **Soporte Técnico** (`70000`/`70100`), no Parámetros. |
 | 2026-08-25 | Parte A: SPEC-011 desde `15-reportes-emisiones.md` (D-EM-01…10) + adopción GEN-15 / SPEC-001-15. |
 | 2026-08-25 | A1: universo = filtros de pantalla (todas las filas; no filter-row/pivot/página); R-EM-23 MONO sin GEN-23; (texto «diseñador fijo» **retirado** en CC Q13). |
 | 2026-08-25 | CC Q13 / adopción: §4.8 → `EmissionReportDesignerPage` + lista GEN Must (también N=1); sin hardcode `processCode`; alinea SPEC-001-15 C1-15-36..39. |

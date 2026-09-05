@@ -91,6 +91,28 @@ namespace App\OpenApi;
  *   @OA\Response(response=403, description="Sin permiso de diseño (4709)")
  * )
  *
+ * @OA\Post(
+ *   path="/api/v1/emissions/design/processes/{processCode}/reports",
+ *   operationId="emissionsDesignCreateReport",
+ *   tags={"Emisiones"},
+ *   summary="Alta de diseño (Save As DX) en el catálogo del proceso",
+ *   security={{"sanctum":{}},{"tenant":{}}},
+ *   @OA\Parameter(name="processCode", in="path", required=true, @OA\Schema(type="string")),
+ *   @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope")),
+ *   @OA\Response(response=403, description="Sin permiso de diseño (4709)")
+ * )
+ *
+ * @OA\Put(
+ *   path="/api/v1/emissions/design/reports/{reportId}/layout",
+ *   operationId="emissionsDesignUpdateLayout",
+ *   tags={"Emisiones"},
+ *   summary="Persiste el layout (Save DX)",
+ *   security={{"sanctum":{}},{"tenant":{}}},
+ *   @OA\Parameter(name="reportId", in="path", required=true, @OA\Schema(type="integer")),
+ *   @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope")),
+ *   @OA\Response(response=403, description="Sin permiso de diseño (4709)")
+ * )
+ *
  * @OA\Schema(
  *   schema="ConsultaDetalladaHostContext",
  *   type="object",

@@ -1,4 +1,7 @@
-const partesCanonicalHostSuffix = '.partesatencion.paqsystems.com'
+const partesCanonicalHostSuffixes = [
+  '.partesatencion.paqsystems.com',
+  '.partesatenciones.paqsystems.com',
+]
 
 const reservedCanonicalLabels = new Set([
   'www',
@@ -23,11 +26,12 @@ export function clienteCodeFromSearchParams(search: string): string | null {
  */
 export function clienteCodeFromCanonicalHostname(hostname: string): string | null {
   const host = hostname.trim().toLowerCase()
-  if (!host.endsWith(partesCanonicalHostSuffix)) {
+  const suffix = partesCanonicalHostSuffixes.find((item) => host.endsWith(item))
+  if (!suffix) {
     return null
   }
 
-  const label = host.slice(0, host.length - partesCanonicalHostSuffix.length)
+  const label = host.slice(0, host.length - suffix.length)
   if (label === '' || label.includes('.') || reservedCanonicalLabels.has(label)) {
     return null
   }

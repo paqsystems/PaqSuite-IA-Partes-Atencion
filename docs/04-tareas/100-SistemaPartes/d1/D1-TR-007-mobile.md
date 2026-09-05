@@ -1,52 +1,65 @@
-# Plan de implementación - TR-007
+# Plan de implementación - TR-007 (D delta GEN-22)
 
 ## Alcance entendido
 
-Capacitor native Partes: config URL+health; login empresa→`X-Paq-Cliente`; dashboard (pull, sin timer); kardex CRUD; informe paquete horas (fachada + Chart bar); policy `partesMobilePolicy`; exclusiones ABM/pivot/masivo.
+Sustituir clones mobile del host por exports GEN-22 de `@paqsuite/react-core@2.2.1`. Conservar dominio Partes (allowlist, mappers, form tarea, Chart `bar`, fachada informe ya hecha). Completar scaffold Capacitor.
 
 ## Fuentes leídas
-- SPEC-007, HU-007, TR-007 (C1 OK); normas BASE mobile
+
+- SPEC-007, HU-007, TR-007 (realineado 2026-08-17)
+- Paquete `react-core` `src/mobile/*` + `DashboardContainer` / `AuthLoginLayout` / `ShellLayout`
 
 ## Impacto esperado
+
 ### Base de datos
-- Seed menú `partes_informe_paquete_horas` (opcional SP compuesto Should)
+
+- Sin cambio (seed informe ya existe)
 
 ### Backend
-- Fachada `GET /partes/informes/paquete-horas` (orquesta dashboard + agrupado×2)
-- Reuso APIs TR-004/006
+
+- Sin reabrir fachada `GET /partes/informes/paquete-horas`
 
 ### Frontend
-- `partesMobilePolicy` + tests; ramas `isNativeApp()`
-- Vistas kardex/dashboard/informe; Preferences GEN
-- Chart bar DX
+
+- `createMobilePolicy` + const allowlist (eliminar engine/denylist propios)
+- `MobileRouteGuard`, `MobileMenuShell`, `MobileConfigPanel`, `ConsultaKardexList`
+- Dashboard/informe native: `DashboardContainer` + kardex; **no** `ProcessDataGrid`
+- Login: `loginTenant` + persistencia GEN cliente
+- Scaffold Capacitor `android/` `ios/` + `build:mobile`
 
 ### Tests
-- Vitest policy; Feature fachada; smoke emulador manual; `build:mobile`
+
+- Vitest policy sobre policy GEN; mapper kardex; humo emulador
 
 ### Documentación
-- OpenAPI fachada; checklist humo emulador
 
-### DevOps
-- `npm run build:mobile` + `npx cap sync`
+- Runbook smoke: testids GEN (`consultaKardexList`, `mobileConfig*`)
 
 ## Orden de trabajo
-1. Policy + filtro menú/deep-link
-2. Dashboard/kardex/form native
-3. Fachada + informe + chart
-4. build:mobile + humo
+
+1. Policy GEN + guard + menú native
+2. Config + login tenant
+3. Kardex `ConsultaKardexList` + form compartido
+4. Dashboard/informe sin DataGrid native
+5. Capacitor + humo
 
 ## Riesgos
-- Bypass deep-link → guard policy
-- Chart DX Capacitor → solo bar
-- Capacitor scaffold incompleto en este clone → evaluar en D (puede requerir bootstrap GEN)
+
+- `isNativeApp()` false hasta Capacitor (T6)
+- `MobileConfigPanel` pide tenant para health → cablear login/persistido, no campo en popup
+- No duplicar form carga
 
 ## Tests a ejecutar
-- `partesMobilePolicy.test.ts`; Feature paquete-horas; build:mobile
+
+- `partesMobilePolicy.test.ts` (API `createMobilePolicy`)
+- Feature paquete-horas (regresión)
+- `build:mobile` + `cap sync`
 
 ## Dudas / bloqueos
-- **Bloqueo D:** TR-002…006 + scaffold Capacitor GEN (hoy: sin `build:mobile` / android-ios cableados; `isNativeApp={false}` fijo en shell)
-- Fachada: orquestación PHP Must; SP compuesto = Should
-- Chart: DX **bar**, default serie por cliente
+
+- Scaffold Capacitor ausente en este clone → T6 Must
+- Allowlist y mapper **no** se suben al Framework (producto)
 
 ## Confirmación de alcance
-- Sin cambio fuera SPEC/HU/TR: **Sí**
+
+- Sin cambio funcional fuera SPEC/HU/TR: **Sí** (solo adopción GEN-22)

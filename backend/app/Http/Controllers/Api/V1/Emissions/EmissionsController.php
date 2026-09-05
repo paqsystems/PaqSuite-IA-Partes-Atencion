@@ -218,7 +218,83 @@ final class EmissionsController extends CapabilityEnvelopeController
 
         return ApiResponse::success([
             'items' => $process->reports,
-            'designer' => 'stub',
+            'designer' => 'dx',
+        ]);
+    }
+
+    public function designCreateReport(Request $request, string $processCode): JsonResponse
+    {
+        $disabled = $this->disabledResponse();
+        if ($disabled !== null) {
+            return $disabled;
+        }
+
+        $designForbidden = $this->designForbiddenResponse();
+        if ($designForbidden !== null) {
+            return $designForbidden;
+        }
+
+        $process = $this->repository->findProcess($processCode);
+        if ($process === null || ! $process->active) {
+            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::EMISSION_PROCESS_NOT_FOUND);
+        }
+
+        $name = trim((string) $request->input('name', ''));
+        $code = trim((string) $request->input('code', ''));
+        if ($name === '' || $code === '' || strlen($code) > 64 || strlen($name) > 200) {
+            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::EMISSION_VALIDATION_FAILED);
+        }
+
+        $layoutDefinition = $request->input('layoutDefinition');
+        $layoutMime = $request->input('layoutMime');
+        $item = $this->repository->upsertDesignReport(
+            $processCode,
+            $code,
+            $name,
+            is_string($layoutDefinition) ? $layoutDefinition : null,
+            is_string($layoutMime) ? $layoutMime : null,
+            (bool) $request->boolean('setPrincipal', false),
+        );
+
+        return ApiResponse::success([
+            'item' => $item,
+            'designer' => 'dx',
+        ]);
+    }
+
+    public function designUpdateLayout(Request $request, int $reportId): JsonResponse
+    {
+        $disabled = $this->disabledResponse();
+        if ($disabled !== null) {
+            return $disabled;
+        }
+
+        $designForbidden = $this->designForbiddenResponse();
+        if ($designForbidden !== null) {
+            return $designForbidden;
+        }
+
+        $layoutMime = $request->input('layoutMime');
+        if (! is_string($layoutMime) || $layoutMime === '') {
+            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::EMISSION_VALIDATION_FAILED);
+        }
+
+        $layoutDefinition = $request->input('layoutDefinition');
+        $updated = $this->repository->updateDesignReportLayout(
+            $reportId,
+            $layoutMime,
+            is_string($layoutDefinition) ? $layoutDefinition : null,
+        );
+        if (! $updated) {
+            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::EMISSION_VALIDATION_FAILED);
+        }
+
+        return ApiResponse::success([
+            'item' => [
+                'reportId' => $reportId,
+                'layoutMime' => $layoutMime,
+                'designer' => 'dx',
+            ],
         ]);
     }
 
@@ -234,11 +310,15 @@ final class EmissionsController extends CapabilityEnvelopeController
             return $designForbidden;
         }
 
+        if (! $this->repository->setDesignReportPrincipal($reportId)) {
+            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::EMISSION_VALIDATION_FAILED);
+        }
+
         return ApiResponse::success([
             'item' => [
                 'reportId' => $reportId,
                 'isPrincipal' => true,
-                'designer' => 'stub',
+                'designer' => 'dx',
             ],
         ]);
     }

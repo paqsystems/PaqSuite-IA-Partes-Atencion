@@ -2,8 +2,11 @@
 
 interface ImportMetaEnv {
   readonly VITE_APP_VERSION: string
-  readonly VITE_DEVEXTREME_LICENSE: string
+  readonly VITE_DEVEXTREME_LICENSE?: string
+  /** Clave LCP DX 26.1 (canónica). El JWT eyJ de 25.2 no se usa. */
+  readonly VITE_DEVEXPRESS_LICENSE_KEY?: string
   readonly VITE_API_PROXY_TARGET: string
+  readonly VITE_DX_REPORTING_HOST?: string
   /**
    * URL absoluta del backend (Forge) en builds Vercel / multidominio.
    * Ejemplo: https://backend.partesatencion.paqsystems.com

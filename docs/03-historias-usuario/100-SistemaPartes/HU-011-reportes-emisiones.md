@@ -40,7 +40,7 @@
 | `EmissionEnabled` Sí al adoptar; No → no monta Emitir ni diseñador (R-EM-14, D-EM-06) | Precondiciones; CA-05 |
 | Async / bitácora GEN; sin historial Partes (R-EM-12/13) | Alcance; CA-12 |
 | Diseñar = `emission.design` + desktop (R-EM-15…20, D-EM-01…03); selección proceso GEN Q13 | Actores; CA-13…16 |
-| Menú diseñador Parámetros `/emisiones/disenador` (§4.8) | CA-13 |
+| Menú diseñador Soporte Técnico `/emisiones/disenador` (§4.8) | CA-13 |
 | Diseñador = page GEN con lista+confirmación; seed Must = Consulta detallada (§4.8 CC) | CA-15 |
 | MONO sin selector grupo (R-EM-23, A1 Q3) | CA-09 |
 | Mobile sin Emitir ni diseñador (R-EM-06 mobile / §4.9) | Fuera de alcance; CA-17 |
@@ -99,7 +99,7 @@ El dataset **no** es «lo visible en pantalla»: es el universo de **filtros de 
 - Dataset = filtros **de pantalla** + perfil + `es_tarea`; **todas** las filas; duración técnica en minutos y **`hh:mm`** en el documento. Atributos: fecha, cliente (código + nombre), asistente (código + nombre), tipo (código + descripción), duración, sin cargo, presencial, cerrado, observación, Erp Cliente, Erp Articulo. Filter-row, filtros de columna, agrupación, column chooser, pivot y página **no** recortan. El servidor revalida; los filtros no amplían el universo. El snapshot viaja con preview/job (no solo «último filtro en sesión»).
 - Canales: PDF, impresión (mismo PDF + diálogo de impresión), Excel de reporte, CSV de reporte, mail con cuerpo **breve** + PDF (sin tabla enorme en el correo). Destinatarios: el usuario los indica en la ventana.
 - Convive con exportar Excel/CSV de **grilla**.
-- Diseñador desktop: ítem **Parámetros** `partes_disenador_emisiones` → `/emisiones/disenador` (`tipo_proceso = C`), anclado al único proceso Must; exige `emission.design`. Sin ese permiso, no abre (autorización GEN). El menú se asigna a roles que deban diseñar; el seed no lo da al cliente por defecto.
+- Diseñador desktop: ítem **Soporte Técnico** `partes_disenador_emisiones` → `/emisiones/disenador` (`tipo_proceso = C`), anclado al único proceso Must; exige `emission.design`. Sin ese permiso, no abre (autorización GEN). El menú se asigna a roles que deban diseñar; el seed no lo da al cliente por defecto.
 - i18n e identificadores de prueba del canal GEN (efectivo `emissions.*`); copy Partes solo toolbar/empty si hace falta.
 - Manual de usuario: cómo emitir y quién puede diseñar.
 - Solo web para esta capacidad.
@@ -168,7 +168,7 @@ El dataset **no** es «lo visible en pantalla»: es el universo de **filtros de 
 - [ ] **CA-10** El export Excel/CSV de **grilla** sigue disponible junto a Emitir.
 - [ ] **CA-11** Canal mail: cuerpo breve + PDF adjunto (sin tabla enorme en el correo); destinatarios indicados en la ventana (sin lista automática). Si GEN no muestra el campo, no se inventa otra pantalla (gap a TR).
 - [ ] **CA-12** Una emisión correcta deja evento en bitácora general (`source=emission`); no hay pantalla/tabla de historial Partes. Emisión pesada (umbrales GEN 5 MB **o** 2000 filas): aviso por bandeja GEN, no inbox Partes.
-- [ ] **CA-13** Ítem de menú diseñador bajo Parámetros, código `partes_disenador_emisiones`, ruta `/emisiones/disenador`, tipo `C`; native no lo expone.
+- [ ] **CA-13** Ítem de menú diseñador bajo Soporte Técnico, código `partes_disenador_emisiones`, ruta `/emisiones/disenador`, tipo `C`; native no lo expone.
 - [ ] **CA-14** Sin `emission.design` el diseñador no se abre (autorización GEN, p. ej. 4709). Emitir sin menú de la consulta se deniega (autorización del proceso host, p. ej. 4703).
 - [ ] **CA-15** La página del diseñador monta la superficie GEN (`EmissionReportDesignerPage`) **sin** hardcodear `processCode`. Con el seed Must (un solo proceso activo `partes.informes.consultaDetallada`) la lista de procesos es visible (unitaria) y el DX no opera hasta confirmar el proceso; tras confirmar, schema/reportes = ese proceso. Seed tabular cubre atributos §4.4; un principal de reporte y uno de plantilla mail. Estética fina (márgenes, totales) → diseñador post-seed / TR, no bloquea Must. Opcional: `initialProcessCode` / `?processCode=` solo preselecciona (no omite confirmación).
 - [ ] **CA-16** Quien tiene `emission.design` y el menú del diseñador puede diseñar aunque no tenga menú de Consulta detallada.
@@ -228,7 +228,7 @@ Feature: Emisión documental en Consulta detallada
 
   Scenario: Diseñador desktop y exclusión mobile / otras pantallas
     Given un usuario con permiso de diseño y el menú del diseñador
-    When abre Parámetros / diseñador de emisiones
+    When abre Soporte Técnico / diseñador de emisiones
     Then ve la lista GEN de procesos emisibles (aunque haya uno solo)
     And el diseñador DX no opera hasta confirmar el proceso
     When confirma el proceso Consulta detallada
@@ -288,6 +288,7 @@ Ninguna bloquea Parte C.
 
 | Fecha | Cambio |
 |-------|--------|
+| 2026-08-30 | CA-13: diseñador bajo **Soporte Técnico**, no Parámetros. |
 | 2026-08-25 | Parte B: HU-011 desde SPEC-011 (post A1). |
 | 2026-08-25 | Parte B1: atributos §4.4, impresión=PDF, preview opcional, umbrales, revalidación servidor, CA-21 tests, Gherkin 6 escenarios, actores perfil. |
 | 2026-08-25 | CC Q13: CA-15 deja proceso fijo; monta `EmissionReportDesignerPage` con lista GEN (N=1 visible) + confirmación. |

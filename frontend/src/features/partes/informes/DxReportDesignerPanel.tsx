@@ -1,14 +1,23 @@
 import { Suspense, lazy, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { readDxReportingConfig } from './dxReportingConfig'
+import { readDxReportingConfig, resolveDxDesignerReportUrl } from './dxReportingConfig'
 
 const LazyDxReportDesignerApp = lazy(() => import('./DxReportDesignerApp'))
 
-/** Espejo del context GEN ReportDesignerHost (el paquete no reexporta el type). */
+export type PartesDxReportSavedEvent = {
+  url: string
+  layoutDefinition?: string
+  isNew: boolean
+}
+
+/** Espejo del context GEN ReportDesignerHost (el paquete 2.3.x no reexporta el type completo). */
 export type PartesReportDesignerContext = {
   reportId: number | null
+  reportCode?: string | null
   processCode: string
   designerEndpoint: string
+  knownReportCodes?: string[]
+  onDxReportSaved?: (event: PartesDxReportSavedEvent) => void | Promise<void>
 }
 
 type DxReportDesignerPanelProps = {
@@ -32,8 +41,11 @@ export function DxReportDesignerPanel({ context }: DxReportDesignerPanelProps) {
     )
   }
 
-  const reportUrl =
-    context.reportId != null ? String(context.reportId) : config.reportUrl || context.processCode
+  const reportUrl = resolveDxDesignerReportUrl({
+    reportCode: context.reportCode,
+    reportUrlDefault: config.reportUrl,
+    processCode: context.processCode,
+  })
 
   return (
     <div
@@ -42,9 +54,12 @@ export function DxReportDesignerPanel({ context }: DxReportDesignerPanelProps) {
     >
       <Suspense fallback={<div data-testid="emissions.designer.loading">{t('emissions.designer.loading')}</div>}>
         <LazyDxReportDesignerApp
+          key={reportUrl}
           reportUrl={reportUrl}
           host={config.host}
           getDesignerModelAction={config.getDesignerModelAction}
+          knownReportCodes={context.knownReportCodes ?? []}
+          onDxReportSaved={context.onDxReportSaved}
         />
       </Suspense>
     </div>

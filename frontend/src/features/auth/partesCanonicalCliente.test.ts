@@ -13,6 +13,9 @@ describe('clienteCodeFromCanonicalHostname', () => {
     expect(clienteCodeFromCanonicalHostname('paq.partesatencion.paqsystems.com')).toBe(
       'paq',
     )
+    expect(
+      clienteCodeFromCanonicalHostname('estudiogb.partesatenciones.paqsystems.com'),
+    ).toBe('estudiogb')
   })
 
   it('ignora vercel, localhost y labels reservados', () => {

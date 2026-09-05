@@ -79,3 +79,19 @@ export function reportingProxyTarget(env: Record<string, string>): string {
   const raw = env.VITE_DX_REPORTING_HOST?.trim() || DEFAULT_DX_REPORTING_HOST
   return trimSlash(raw)
 }
+
+/**
+ * URL que consume DXXRD. El sidecar indexa layouts/schemas por código
+ * (`partes.consultaDetallada.principal`), no por id numérico del catálogo GEN.
+ */
+export function resolveDxDesignerReportUrl(input: {
+  reportCode?: string | null
+  reportUrlDefault: string
+  processCode: string
+}): string {
+  const code = input.reportCode?.trim() ?? ''
+  if (code !== '' && !/^\d+$/.test(code)) {
+    return code
+  }
+  return input.reportUrlDefault.trim() || input.processCode
+}

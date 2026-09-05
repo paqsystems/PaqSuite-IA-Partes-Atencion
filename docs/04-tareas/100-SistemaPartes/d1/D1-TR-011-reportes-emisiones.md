@@ -8,7 +8,7 @@ Adoptar **GEN-15 Reportes / emisiones** en Partes **solo** en **Consulta detalla
 - Puerto `PartesConsultaDetalladaEmissionPort` → `pq_sp_partes_tarea_list` / `PartesTareaOperations::list` con **`p_page_size=0`** (todas las filas).
 - `hostContext` en preview/jobs; persistencia por `jobId` para `runQueued`.
 - FE: filtros de pantalla (SPEC-006) + `EmissionDialog` en grilla y pivot; `EmissionEnabled=S`.
-- Diseñador: menú `60300` / `partes_disenador_emisiones` → `/emisiones/disenador` (`EmissionReportDesignerPage` GEN + `renderDesigner` DX; **sin** `processCode` fijo — CC Q13; lista+confirmación también N=1).
+- Diseñador: menú `70100` / `partes_disenador_emisiones` bajo Soporte Técnico (`70000`) → `/emisiones/disenador` (`EmissionReportDesignerPage` GEN + `renderDesigner` DX; **sin** `processCode` fijo — CC Q13; lista+confirmación también N=1).
 - Native: deny `/emisiones`; Consulta detallada ya denegada.
 - Manual + OpenAPI + tests Feature / Vitest / E2E humo.
 
@@ -36,7 +36,7 @@ Adoptar **GEN-15 Reportes / emisiones** en Partes **solo** en **Consulta detalla
 | Desplegar | Copiar `laravel-core/database/sp/pq_sp_emission_core.sql` → `backend/database/sp/` |
 | Seed params | Insert-if-absent Programa `Emission`: `EmissionEnabled` tipo **L** `N`, MB=5, rows=2000, days=30. **Adopción Partes:** update **solo** `EmissionEnabled` → **`S`**. Fixture tests puede forzar `N` para 4704 |
 | Seed catálogo | Proceso `partes.informes.consultaDetallada`; canales pdf/print/excel/csv/mail; zip=0; consolidado=1; segmentado=0; preview=0; `menu_process_code=partes_consulta_detallada`; reporte `partes.consultaDetallada.principal` tabular; plantilla `partes.consultaDetallada.mail` breve |
-| Seed menú | `PqMenuSeeder` id **60300**, padre 60000, código `partes_disenador_emisiones`, ruta `/emisiones/disenador`, `process_type` **igual** a consulta detallada (`A`); nunca `E` |
+| Seed menú | `PqMenuSeeder` id **70100**, padre 70000 (Soporte Técnico), código `partes_disenador_emisiones`, ruta `/emisiones/disenador`, `process_type` **igual** a consulta detallada (`A`); nunca `E` |
 | Seed permiso | `emission.design` (seeder GEN); **no** asignar a CLIENTE/ASISTENTE. SUPERVISOR demo (`admin`/`PQ`) ya tiene `acceso_total` |
 | Modificar | `PartesTareaOperations::list`: sentinel **`p_page_size=0`** = sin `forPage` ni clamp 1…200. GET informe **sigue** default 50 |
 | Sin | Tabla de historial Partes; SP paralelo de listado |
@@ -114,7 +114,7 @@ Adoptar **GEN-15 Reportes / emisiones** en Partes **solo** en **Consulta detalla
 
 ### Documentación
 
-- `docs/99-manual-usuario/Partes-Atencion.md`: Emitir ≠ export grilla; diseñador bajo Parámetros; no mobile
+- `docs/99-manual-usuario/Partes-Atencion.md`: Emitir ≠ export grilla; diseñador bajo Soporte Técnico; no mobile
 - OpenAPI: `OpenApiPathsEmissions.php` (familia + `hostContext`) + tag en `SwaggerRoot.php`
 - Tras D: nota en este D1 / checklist producto
 
@@ -129,7 +129,7 @@ Adoptar **GEN-15 Reportes / emisiones** en Partes **solo** en **Consulta detalla
 
 1. **T0 pin** — `composer install` / `npm` si falta `vendor/paqsuite`; confirmar exports GEN-15 en `laravel-core` 1.3.3 y `react-core` 2.2.1 (`EmissionDialog`, registry, migraciones); bump Satis si falta 
 2. **T1 DB** — migración + `pq_sp_emission_core.sql` + sentinel `pageSize=0` en `PartesTareaOperations::list`  
-3. **T2 Seed** — params + proceso/reporte/plantilla + menú 60300 + `EmissionEnabled=S` + `emission.design`  
+3. **T2 Seed** — params + proceso/reporte/plantilla + menú 70100 + `EmissionEnabled=S` + `emission.design`  
 4. **T3 BE plumbing** — repository SP + controller + routes + DI + `hostContext` store + 4703 vía menú  
 5. **T4 Puerto** — `PartesConsultaDetalladaEmissionPort` + Feature dataset/rol/async snapshot  
 6. **T5 FE consulta** — filtros + fetch interceptor `hostContext` + Emitir grilla/pivot + dialog  

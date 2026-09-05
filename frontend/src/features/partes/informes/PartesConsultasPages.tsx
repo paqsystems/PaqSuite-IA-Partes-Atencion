@@ -8,13 +8,13 @@ import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source'
 import type dxPivotGrid from 'devextreme/ui/pivot_grid'
 import { useTranslation } from 'react-i18next'
 import {
-  EmissionDialog,
   getPivotLocalizedUiTexts,
   isNativeApp,
   PivotLayoutsBar,
   ProcessDataGrid,
   getEmissionProcess,
 } from '@paqsuite/react-core'
+import { PartesEmissionDialog as EmissionDialog } from './PartesEmissionDialog'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'

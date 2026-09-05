@@ -80,7 +80,7 @@ describe('filterMenuForCliente', () => {
     expect(filtered[0].children[0].menuKey).toBe('partes_dashboard')
   })
 
-  it('oculta seguridad y parametros', () => {
+  it('oculta seguridad, parametros y soporte tecnico', () => {
     const filtered = filterMenuForCliente([
       stubNode({
         id: 50000,
@@ -128,11 +128,19 @@ describe('filterMenuForCliente', () => {
         ],
       }),
       stubNode({
-        id: 60300,
-        text: 'Diseñador',
-        menuKey: 'partes_disenador_emisiones',
-        routeName: '/emisiones/disenador',
-        nodeType: 'process',
+        id: 70000,
+        text: 'Soporte Técnico',
+        menuKey: 'soporte_tecnico',
+        nodeType: 'group',
+        children: [
+          stubNode({
+            id: 70100,
+            text: 'Diseñador',
+            menuKey: 'partes_disenador_emisiones',
+            routeName: '/emisiones/disenador',
+            nodeType: 'process',
+          }),
+        ],
       }),
     ])
     expect(filtered).toHaveLength(1)

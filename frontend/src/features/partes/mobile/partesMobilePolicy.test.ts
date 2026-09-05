@@ -5,17 +5,21 @@ describe('partesMobilePolicy', () => {
   it('permite dashboard, kardex e informe paquete', () => {
     expect(isPartesMobileRouteAllowed('/partes')).toBe(true)
     expect(isPartesMobileRouteAllowed('/partes/consulta')).toBe(true)
+    expect(isPartesMobileRouteAllowed('/partes/carga')).toBe(true)
     expect(isPartesMobileRouteAllowed('/partes/informes/paquete-horas')).toBe(true)
     expect(isPartesMobileRouteAllowed('/chat-assistant')).toBe(true)
   })
 
-  it('deniega ABM, masivo y consultas pivot web', () => {
+  it('deniega ABM, masivo, consultas pivot web y emisiones', () => {
     expect(isPartesMobileRouteAllowed('/archivos/partes/asistentes')).toBe(false)
     expect(isPartesMobileRouteAllowed('/partes/proceso-masivo')).toBe(false)
+    expect(isPartesMobileRouteAllowed('/partes/carga-diaria')).toBe(false)
     expect(isPartesMobileRouteAllowed('/partes/informes/consulta-detallada')).toBe(false)
     expect(isPartesMobileRouteAllowed('/partes/informes/consultas-agrupadas')).toBe(false)
     expect(isPartesMobileRouteAllowed('/emisiones/disenador')).toBe(false)
     expect(isPartesMobileRouteAllowed('/emisiones')).toBe(false)
+    expect(isPartesMobileRouteAllowed('/admin/usuarios')).toBe(false)
+    expect(isPartesMobileRouteAllowed('/parametros/Partes')).toBe(false)
   })
 
   it('filtra menú', () => {

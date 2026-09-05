@@ -39,4 +39,6 @@ test('disenador lista proceso N=1 y monta DX solo tras confirmar', async ({ page
 
   await page.getByTestId('emission.design.confirmProcess').click()
   await expect(page.getByTestId('emission.design.host')).toBeVisible({ timeout: 20_000 })
+  await expect(page.getByTestId('emission.design.report')).toBeVisible({ timeout: 20_000 })
+  await expect(page.getByTestId('emission.design.setPrincipal')).toBeVisible()
 })

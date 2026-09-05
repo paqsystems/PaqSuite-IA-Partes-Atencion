@@ -19,6 +19,8 @@ import { saveLoginSession } from './authSessionStore'
 import { bootstrapAuthenticatedSession } from './authBootstrap'
 import { resolvePostLoginRoute } from './postLoginRouter'
 import { resolvePartesAuthHero } from './partesAuthHero'
+import { resolvePlatformCliente } from './platformContext'
+import { PartesMobileConfigHost } from '../partes/mobile/PartesMobileConfigHost'
 
 export function LoginPage() {
   const { t } = useTranslation()
@@ -27,6 +29,7 @@ export function LoginPage() {
   const sessionExpired = searchParams.get('expired') === '1'
   const blocked = searchParams.get('blocked') === '1'
 
+  const [tenant, setTenant] = useState(() => resolvePlatformCliente())
   const [usuario, setUsuario] = useState('')
   const [password, setPassword] = useState('')
   const [locale, setLocale] = useState<LocaleCode>(
@@ -58,7 +61,8 @@ export function LoginPage() {
     setIsSubmitting(true)
 
     try {
-      const result = await loginRequest({ usuario, password, locale })
+      resolvePlatformCliente(tenant)
+      const result = await loginRequest({ usuario, password, locale, tenant })
 
       if (result.kind === 'ok') {
         const session = saveLoginSession(result.envelope.resultado)
@@ -86,13 +90,16 @@ export function LoginPage() {
       cardTitle={t('login.welcome')}
       cardHint={t('login.hint')}
       toolbar={
-        <LanguageSelector
-          testId="authLanguageSelect"
-          locale={locale}
-          onLocaleChange={(next) => {
-            void handleLocaleChange(next)
-          }}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <LanguageSelector
+            testId="authLanguageSelect"
+            locale={locale}
+            onLocaleChange={(next) => {
+              void handleLocaleChange(next)
+            }}
+          />
+          <PartesMobileConfigHost getTenant={() => tenant.trim() || null} />
+        </div>
       }
       footer={
         <Link data-testid="loginForgotLink" to="/forgot-password">
@@ -108,6 +115,16 @@ export function LoginPage() {
       ) : null}
 
       <form className={authClassNames.form} onSubmit={handleSubmit}>
+        <label className={authClassNames.field}>
+          <span className={authClassNames.fieldLabel}>{t('login.tenant')}</span>
+          <TextBox
+            stylingMode="outlined"
+            value={tenant}
+            onValueChanged={(event) => setTenant(String(event.value ?? ''))}
+            elementAttr={{ 'data-testid': 'loginTenant' }}
+          />
+        </label>
+
         <label className={authClassNames.field}>
           <span className={authClassNames.fieldLabel}>{t('login.username')}</span>
           <TextBox

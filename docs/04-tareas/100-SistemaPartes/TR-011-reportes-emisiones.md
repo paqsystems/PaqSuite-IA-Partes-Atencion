@@ -61,8 +61,8 @@ Como usuario con acceso a Consulta detallada quiero emitir PDF / impresión / Ex
 | Columnas dataset | camelCase alineadas a la grilla TR-006: `fecha`, `clienteCode`, `clienteNombre`, `usuarioCode`, `usuarioNombre`, `tipoTareaCode`, `tipoTareaDescripcion`, `duracionMinutos`, `sinCargo`, `presencial`, `cerrado`, `observacion`, `erpCliente`, `erpArticulo`. **Sin** `diaSemana` (es enriquecimiento solo FE). |
 | `EmissionEnabled` | Seeder Partes de adopción **pone `S`**. Umbrales 5 / 2000 / 30: insert-if-absent GEN; **no** pisar numéricos ya editados. |
 | Selector grupo | `EmissionDialog` con **`permiteConsolidado={false}`** (prop GEN-23). El proceso sí declara modo consolidado (un documento). |
-| Menú diseñador | id **`60300`**, padre `60000`, código **`partes_disenador_emisiones`**, ruta **`/emisiones/disenador`**. `process_type` **igual** a `partes_consulta_detallada` (hoy `A` en `PqMenuSeeder`); **nunca `E`**. |
-| Roles `emission.design` | **No** CLIENTE ni ASISTENTE. Seed Must: permiso + menú `60300` al rol **`SUPERVISOR`** (usuarios demo `admin`/`PQ` ya van por ese rol). Otros roles → ABM seguridad, no esta TR. |
+| Menú diseñador | id **`70100`**, padre `70000` (Soporte Técnico), código **`partes_disenador_emisiones`**, ruta **`/emisiones/disenador`**. `process_type` **igual** a `partes_consulta_detallada` (hoy `A` en `PqMenuSeeder`); **nunca `E`**. |
+| Roles `emission.design` | **No** CLIENTE ni ASISTENTE. Seed Must: permiso + menú `70100` al rol **`SUPERVISOR`** (usuarios demo `admin`/`PQ` ya van por ese rol). Otros roles → ABM seguridad, no esta TR. |
 | mailTo / DX | Canal mail Must en camino **síncrono** (`mailTo` del body GEN). **No** implementar `MailRecipientsEmissionDatasetPort`. Si GEN async re-resuelve destinatarios y pierde `mailTo`, D1 documenta el gap; el Feature Must de mail usa N filas **<** `EmissionAsyncMaxRows`. Sin modal Partes paralelo. Runtime DX: paquete; FakeDx = smoke stub. |
 | Filtros UI faltantes | Consulta detallada hoy solo tiene periodo. Esta TR **monta** filtros de pantalla SPEC-006 que ya expone el API (`clienteId`, `usuarioId` solo supervisor, `tipoTareaId`, `estadoCerrado`) para que el snapshot sea completo. |
 
@@ -86,7 +86,7 @@ Mapear HU CA-01…21:
 | CA-10 | Export grilla/pivot GEN-11/12 intacto |
 | CA-11 | Mail: plantilla breve + PDF; `mailTo` GEN; sin `MailRecipientsEmissionDatasetPort` |
 | CA-12 | Writer GEN `source=emission`; sin tabla Partes; async umbral OR GEN |
-| CA-13 | Menú 60300 + ruta; native deny `/emisiones` |
+| CA-13 | Menú 70100 + ruta; native deny `/emisiones` |
 | CA-14 | Design 4709; emitir sin menú 4703 |
 | CA-15 | `EmissionReportDesignerPage` **sin** `processCode` fijo; lista GEN + confirmación (C1-15-36; no skip N=1); seed tabular §1; opcional `initialProcessCode` / `?processCode=` solo preselecciona |
 | CA-16 | Ruta diseñador no exige menú consulta (solo `emission.design` + ítem menú) |
@@ -118,11 +118,11 @@ Los 6 de HU-011 (PDF universo, vacío/capacidad off, pivot no recorta, permisos,
 | RN-TR-10 | Botón **Emitir** en `toolbarLeading` de `ProcessDataGrid` **y** en `leadingSlot` de `PivotLayoutsBar` (Must visible en ambos modos). `disabled={loading \|\| total===0}` (`total` del envelope del último Buscar). No montar si `isNativeApp()` o `EmissionEnabled=No`. |
 | RN-TR-11 | `EmissionDialog` `processCode="partes.informes.consultaDetallada"` `permiteConsolidado={false}` `isNative={false}`. Al emitir/preview, el host envía `hostContext` del estado de filtros **en ese momento** (extender `createEmissionJob` / `createEmissionPreview` si `useEmission` no lo acepta). |
 | RN-TR-12 | Página host en `/emisiones/disenador` monta **`EmissionReportDesignerPage`** (export canónico GEN). **Prohibido** hardcodear `processCode` como única entrada. Opcional: mapear query `?processCode=` → `initialProcessCode` (preselección; no auto-confirma). `isNative` → excluded GEN. `renderDesigner` = inyección DX del host o placeholder GEN si el paquete aún es stub. Tras bump `react-core` con CA-09..12 GEN. |
-| RN-TR-13 | `PqMenuSeeder`: ítem 60300. `partesMobilePolicy`: prefijo deny **`/emisiones`**. |
+| RN-TR-13 | `PqMenuSeeder`: ítem 70100 bajo `70000` Soporte Técnico. `partesMobilePolicy`: prefijo deny **`/emisiones`**. |
 | RN-TR-14 | Envelope `respuesta`: claves GEN **`emission.*`** (catálogo PHP, p. ej. `emission.forbidden`). UI/testids smoke: **`emissions.*`**. Copy Partes `partes.informe.emitir` solo en el botón toolbar. Host testid `partesConsultaDetalladaEmit`. |
 | RN-TR-15 | Controles DevExtreme; caption filtros a la izquierda (regla formularios). Selectores de catálogo: código + descripción + «Cargando…» (regla 29). |
 | RN-TR-16 | OpenAPI: documentar adopción familia `/emissions/*` + campo `hostContext` en jobs/preview (tag Partes Informes / Emisiones). |
-| RN-TR-17 | Manual usuario: Emitir vs export grilla; diseñador bajo Parámetros; no mobile. |
+| RN-TR-17 | Manual usuario: Emitir vs export grilla; diseñador bajo Soporte Técnico; no mobile. |
 | RN-TR-18 | Acceso datos Must SP. Sin Eloquent CRUD de tareas. |
 
 ---
@@ -134,7 +134,7 @@ Los 6 de HU-011 (PDF universo, vacío/capacidad off, pivot no recorta, permisos,
 | Tablas GEN | `PQ_EMISSION_PROCESSES` / `REPORTS` / `MAIL_TEMPLATES` (+ jobs GEN si aplica) — migrate paquete |
 | SP GEN | `pq_sp_emission_*` del paquete |
 | SP / operations | **`pq_sp_partes_tarea_list`** + **`PartesTareaOperations::list`**: `p_page_size=0` = todas las filas (sin clamp 1…200). El GET informe **sigue** paginando (pageSize default 50). |
-| Seed | Proceso + reporte + plantilla Partes; `EmissionEnabled=S`; menú 60300; permiso `emission.design` (GEN) sin rol cliente |
+| Seed | Proceso + reporte + plantilla Partes; `EmissionEnabled=S`; menú 70100; permiso `emission.design` (GEN) sin rol cliente |
 | Params | Programa `Emission`; no umbrales hardcode |
 | Rollback | Desregistrar puerto; `EmissionEnabled=N` o inactivar proceso; no borrar bitácora GEN |
 
@@ -192,7 +192,7 @@ Códigos a respetar (GEN): **4701** validación (`hostContext` / `mailTo` vacío
 | ID | Tipo | Descripción | DoD | Deps | Est. |
 |----|------|-------------|-----|------|------|
 | T1 | DB | Migraciones/SP GEN-15 en host + sentinel `p_page_size=0` en `PartesTareaOperations::list` (y T-SQL si aplica) | migrate + list all rows sin clamp 200 | — | L |
-| T2 | Seed | Params Emission* + proceso/reporte/plantilla + menú 60300 + `EmissionEnabled=S` + permiso diseño (no cliente) | seed idempotente; GET process 200 | T1 | M |
+| T2 | Seed | Params Emission* + proceso/reporte/plantilla + menú 70100 + `EmissionEnabled=S` + permiso diseño (no cliente) | seed idempotente; GET process 200 | T1 | M |
 | T3 | Backend | Registry puerto + rutas `/emissions/*` + `hostContext` | Feature: 4706 sin puerto; dataset respeta filtros/rol | T2 | L |
 | T4 | Backend | `PartesConsultaDetalladaEmissionPort` → SP list sin paginar | Feature: todas las filas; cliente no ve otros | T3 | L |
 | T5 | Frontend | Filtros pantalla + botón Emitir grilla/pivot + `EmissionDialog` + `hostContext` | CA-03,04,07–11 | T3 | L |
@@ -238,7 +238,7 @@ Códigos a respetar (GEN): **4701** validación (`hostContext` / `mailTo` vacío
 - [x] Rutas `/api/v1/emissions/*` + 401/4701/4703/4704/4706/4709
 - [x] Emitir en Consulta detallada (grilla y pivot); empty disabled
 - [x] Dataset = SP list todas las filas + rol
-- [x] Diseñador `/emisiones/disenador` + menú 60300 + native deny
+- [x] Diseñador `/emisiones/disenador` + menú 70100 (Soporte Técnico) + native deny
 - [x] `EmissionEnabled=S`; sin ZIP/segmentado/GEN-23
 - [x] Manual + OpenAPI + tests Feature (Vitest/E2E: Parte E)
 - [x] Sin historial Partes; sin menú `E`
@@ -309,6 +309,7 @@ Ninguna bloqueante.
 
 | Fecha | Cambio |
 |-------|--------|
+| 2026-08-30 | Menú diseñador: id **70100** bajo carpeta **Soporte Técnico** (`70000`); deja de vivir en Parámetros (`60300`). |
 | 2026-08-25 | Parte C: TR-011 desde SPEC-011 + HU-011; cierres hostContext, SP list sin página, menú 60300, EmissionEnabled=S. |
 | 2026-08-25 | Parte C1: apto con obs.; persistencia hostContext por jobId; sentinel pageSize 0 en Operations; 4704; mail sync; roles SUPERVISOR. |
 | 2026-08-25 | Parte D1: plan [D1-TR-011](./d1/D1-TR-011-reportes-emisiones.md). |
@@ -339,7 +340,7 @@ Ninguna bloqueante.
 
 - `PartesTareaOperations::list` sentinel `p_page_size=0`
 - `SpParametroRepository` encode tipo `L` (params Emission usan `S` + `'S'`/`'N'` porque el codec 1.3.3 no incluye `L`)
-- `PqMenuSeeder` ítem 60300; `DatabaseSeeder`; `AppServiceProvider`; `routes/api.php`; `CapabilityEnvelopeController`
+- `PqMenuSeeder` ítem 70100 bajo 70000; `DatabaseSeeder`; `AppServiceProvider`; `routes/api.php`; `CapabilityEnvelopeController`
 - `ConsultaDetalladaPage` filtros + Emitir + `EmissionDialog`; interceptor `installApiAuthFetch`; router; mobile policy; menú cliente
 - i18n `es/en/pt/fr/it`; manual usuario; `SwaggerRoot`
 

@@ -3,6 +3,8 @@ import {
   readDxReportingConfig,
   resolveDxReportingClientHost,
   reportingProxyTarget,
+  resolveDxDesignerReportUrl,
+  DEFAULT_DX_REPORT_URL,
 } from './dxReportingConfig'
 
 describe('dxReportingConfig', () => {
@@ -43,5 +45,22 @@ describe('dxReportingConfig', () => {
     expect(reportingProxyTarget({ VITE_DX_REPORTING_HOST: 'http://127.0.0.1:5055/' })).toBe(
       'http://127.0.0.1:5055',
     )
+  })
+
+  it('resolveDxDesignerReportUrl no usa id numérico', () => {
+    expect(
+      resolveDxDesignerReportUrl({
+        reportCode: '1',
+        reportUrlDefault: DEFAULT_DX_REPORT_URL,
+        processCode: 'partes.informes.consultaDetallada',
+      }),
+    ).toBe(DEFAULT_DX_REPORT_URL)
+    expect(
+      resolveDxDesignerReportUrl({
+        reportCode: 'partes.consultaDetallada.principal',
+        reportUrlDefault: DEFAULT_DX_REPORT_URL,
+        processCode: 'partes.informes.consultaDetallada',
+      }),
+    ).toBe('partes.consultaDetallada.principal')
   })
 })

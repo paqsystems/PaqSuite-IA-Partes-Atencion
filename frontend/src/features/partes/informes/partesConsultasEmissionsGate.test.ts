@@ -18,4 +18,14 @@ describe('emisión solo en Consulta detallada', () => {
     expect(agrupadas).not.toContain('EmissionDialog')
     expect(agrupadas).not.toContain('partesConsultaDetalladaEmit')
   })
+
+  it('el diálogo Emitir del host no usa fieldRender (DX E1010)', () => {
+    const dialogSource = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), 'PartesEmissionDialog.tsx'),
+      'utf8',
+    )
+    expect(dialogSource).not.toMatch(/fieldRender\s*=/)
+    expect(dialogSource).toContain("displayExpr=\"label\"")
+    expect(dialogSource).toContain('modeItems.length > 1')
+  })
 })
