@@ -223,7 +223,7 @@ Códigos Must a respetar (GEN): **4603** forbidden; **4604** capability off; **4
 
 ### Supuestos
 
-- Paquetes Framework path ya exponen `ExcelImportToolbar`, handlers registry, migraciones/SP Excel y envelope `4601–4611`.
+- Paquetes Framework vía Satis/Verdaccio (`laravel-core@^1.3.3`, `react-core@2.2.1`) exponen `ExcelImportToolbar`, handlers registry, migraciones/SP Excel y envelope `4601–4611`.
 - Rutas `/api/v1/excel-import/*` se registran como en smoke/GEN (paquete o thin host) — D1 elige el patrón ya usado en TR-008.
 - Cliente funcional **no** tiene permiso efectivo de `partes_carga_diaria` (o se deniega por gate de identidad además del menú).
 

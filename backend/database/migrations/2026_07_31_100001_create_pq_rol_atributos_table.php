@@ -12,19 +12,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('pq_rol_atributos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('rol_id')->constrained('pq_roles')->cascadeOnDelete();
-            $table->unsignedBigInteger('menu_id');
-            $table->boolean('permiso_alta')->default(false);
-            $table->boolean('permiso_baja')->default(false);
-            $table->boolean('permiso_modi')->default(false);
-            $table->boolean('permiso_repo')->default(false);
-            $table->timestamps();
+        if (! Schema::hasTable('pq_rol_atributos')) {
+            Schema::create('pq_rol_atributos', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('rol_id')->constrained('pq_roles')->cascadeOnDelete();
+                $table->unsignedBigInteger('menu_id');
+                $table->boolean('permiso_alta')->default(false);
+                $table->boolean('permiso_baja')->default(false);
+                $table->boolean('permiso_modi')->default(false);
+                $table->boolean('permiso_repo')->default(false);
+                $table->timestamps();
 
-            $table->foreign('menu_id')->references('id')->on('pq_menus');
-            $table->unique(['rol_id', 'menu_id']);
-        });
+                $table->foreign('menu_id')->references('id')->on('pq_menus');
+                $table->unique(['rol_id', 'menu_id']);
+            });
+        }
     }
 
     public function down(): void

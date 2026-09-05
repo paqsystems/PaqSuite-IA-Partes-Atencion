@@ -9,14 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('open_in_new_tab')->default(false)->nullable()->after('locale');
+            if (! Schema::hasColumn('users', 'open_in_new_tab')) {
+                $table->boolean('open_in_new_tab')->default(false)->nullable()->after('locale');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('open_in_new_tab');
+            if (Schema::hasColumn('users', 'open_in_new_tab')) {
+                $table->dropColumn('open_in_new_tab');
+            }
         });
     }
 };

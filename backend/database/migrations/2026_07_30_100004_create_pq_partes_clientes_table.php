@@ -9,26 +9,28 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('PQ_PARTES_CLIENTES', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->string('nombre', 255);
-            $table->unsignedBigInteger('tipo_cliente_id');
-            $table->string('code', 50);
-            $table->string('email', 255)->nullable();
-            $table->boolean('activo')->default(true);
-            $table->boolean('inhabilitado')->default(false);
-            $table->dateTime('created_at', 3)->nullable();
-            $table->dateTime('updated_at', 3)->nullable();
+        if (! Schema::hasTable('PQ_PARTES_CLIENTES')) {
+            Schema::create('PQ_PARTES_CLIENTES', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->string('nombre', 255);
+                $table->unsignedBigInteger('tipo_cliente_id');
+                $table->string('code', 50);
+                $table->string('email', 255)->nullable();
+                $table->boolean('activo')->default(true);
+                $table->boolean('inhabilitado')->default(false);
+                $table->dateTime('created_at', 3)->nullable();
+                $table->dateTime('updated_at', 3)->nullable();
 
-            $table->unique('code', 'pq_partes_clientes_code_uq');
-            $table->foreign('tipo_cliente_id', 'pq_partes_clientes_tipo_cliente_fk')
-                ->references('id')
-                ->on('PQ_PARTES_TIPOS_CLIENTE');
-            $table->foreign('user_id', 'pq_partes_clientes_user_id_fk')
-                ->references('id')
-                ->on('users');
-        });
+                $table->unique('code', 'pq_partes_clientes_code_uq');
+                $table->foreign('tipo_cliente_id', 'pq_partes_clientes_tipo_cliente_fk')
+                    ->references('id')
+                    ->on('PQ_PARTES_TIPOS_CLIENTE');
+                $table->foreign('user_id', 'pq_partes_clientes_user_id_fk')
+                    ->references('id')
+                    ->on('users');
+            });
+        }
 
         $driver = Schema::getConnection()->getDriverName();
         if ($driver === 'sqlsrv') {

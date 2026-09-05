@@ -1,10 +1,13 @@
-type MenuItemLike = {
-  routeName?: string | null
-  menuKey?: string
-  children?: MenuItemLike[]
-}
+import {
+  createMobilePolicy,
+  genMobileExclusions,
+  type GenMobileExclusion,
+} from '@paqsuite/react-core'
 
-/** Allowlist exacta native Partes (TR-007). */
+/**
+ * Allowlist native Partes (TR-007 RN-TR-02).
+ * `/partes` es prefijo GEN: los hijos web-only se cortan con `partesWebOnlyExclusions`.
+ */
 export const partesMobileAllowlist = [
   '/partes',
   '/partes/consulta',
@@ -16,44 +19,36 @@ export const partesMobileAllowlist = [
   '/select-empresa',
 ] as const
 
-const partesMobileDenylistPrefixes = [
-  '/archivos/partes',
-  '/partes/proceso-masivo',
-  '/partes/carga-diaria',
-  '/partes/informes/consulta-detallada',
-  '/partes/informes/consultas-agrupadas',
-  '/admin',
-  '/parametros',
-] as const
+/** Exclusiones de producto (hijos de `/partes`, maestros y emisiones). El engine sigue siendo GEN. */
+const partesWebOnlyExclusions: GenMobileExclusion[] = [
+  {
+    family: 'partesWebOnly',
+    patterns: [
+      '/archivos/partes',
+      '/archivos/partes/*',
+      '/partes/proceso-masivo',
+      '/partes/proceso-masivo/*',
+      '/partes/carga-diaria',
+      '/partes/carga-diaria/*',
+      '/partes/informes/consulta-detallada',
+      '/partes/informes/consulta-detallada/*',
+      '/partes/informes/consultas-agrupadas',
+      '/partes/informes/consultas-agrupadas/*',
+      '/emisiones',
+      '/emisiones/*',
+      '/admin',
+      '/admin/*',
+      '/parametros',
+      '/parametros/*',
+    ],
+  },
+]
 
-function isDenied(routeName: string): boolean {
-  return partesMobileDenylistPrefixes.some(
-    (entry) => routeName === entry || routeName.startsWith(`${entry}/`)
-  )
-}
+export const partesMobilePolicy = createMobilePolicy({
+  allowlistRouteNames: [...partesMobileAllowlist],
+  exclusions: [...genMobileExclusions, ...partesWebOnlyExclusions],
+})
 
 export function isPartesMobileRouteAllowed(routeName: string): boolean {
-  const route = routeName.trim()
-  if (!route || isDenied(route)) {
-    return false
-  }
-  return (partesMobileAllowlist as readonly string[]).includes(route)
-}
-
-function filterMenuItems<T extends MenuItemLike>(items: T[]): T[] {
-  const result: T[] = []
-  for (const item of items) {
-    const children = item.children ? filterMenuItems(item.children as T[]) : []
-    const route = item.routeName?.trim() || ''
-    const keepProcess = route !== '' && isPartesMobileRouteAllowed(route)
-    if (keepProcess || children.length > 0) {
-      result.push({ ...item, children })
-    }
-  }
-  return result
-}
-
-export const partesMobilePolicy = {
-  isAllowed: (routeName: string) => isPartesMobileRouteAllowed(routeName),
-  filterItems: filterMenuItems,
+  return partesMobilePolicy.isAllowed(routeName)
 }

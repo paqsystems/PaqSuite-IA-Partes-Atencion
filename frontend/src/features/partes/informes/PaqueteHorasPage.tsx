@@ -7,7 +7,9 @@ import PivotGrid, { FieldChooser, FieldPanel, type PivotGridRef } from 'devextre
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source'
 import type dxPivotGrid from 'devextreme/ui/pivot_grid'
 import { useTranslation } from 'react-i18next'
+import Chart, { CommonSeriesSettings, Series, ArgumentAxis, ValueAxis, Legend } from 'devextreme-react/chart'
 import {
+  ConsultaKardexList,
   getPivotLocalizedUiTexts,
   isNativeApp,
   PivotLayoutsBar,
@@ -27,6 +29,8 @@ import { monthRange, currentMonthValue } from './PartesDashboardPage'
 import { fetchPaqueteHoras } from './partesInformeApi'
 import { buildPaqueteHorasPivotFields } from './partesInformePivotFields'
 import { enrichRowsWithDiaSemana } from './partesInformeDiaSemana'
+import { aggregatePaqueteHorasDesglose } from '../mobile/aggregatePaqueteHorasDesglose'
+import { mapDesgloseToKardexItem } from '../mobile/mapPartesTareaToKardexItem'
 
 function formatDuracionCell(cell: { value?: unknown }) {
   return formatMinutosAsHhMm(Number(cell.value ?? 0))
@@ -60,6 +64,8 @@ export function PaqueteHorasPage() {
   const [pivotRemountKey, setPivotRemountKey] = useState(0)
   const pivotRef = useRef<PivotGridRef>(null)
 
+  const [ejeChart, setEjeChart] = useState<'cliente' | 'tipo'>('cliente')
+
   const rows = useMemo(
     () => enrichRowsWithDiaSemana(rawRows, t, 'fecha'),
     [rawRows, t, i18n.language]
@@ -69,6 +75,16 @@ export function PaqueteHorasPage() {
     () => rows.filter((row) => !row.esSaldoInicial),
     [rows]
   )
+
+  const desgloseCliente = useMemo(
+    () => aggregatePaqueteHorasDesglose(rawRows, 'cliente'),
+    [rawRows],
+  )
+  const desgloseTipo = useMemo(
+    () => aggregatePaqueteHorasDesglose(rawRows, 'tipo'),
+    [rawRows],
+  )
+  const chartSource = ejeChart === 'cliente' ? desgloseCliente : desgloseTipo
 
   useEffect(() => {
     if (esCliente) {
@@ -127,6 +143,97 @@ export function PaqueteHorasPage() {
   )
 
   const pivotInstanceKey = `${pivotRemountKey}-${i18n.language}`
+
+  if (native) {
+    return (
+      <div className="pqProcessPage partesMobileProcess" data-testid="partesPaqueteHorasPage">
+        <div className="pqProcessHeader partesMobileProcessHeader">
+          <h2 className="pqProcessTitle">{t('dashboard.linkPaqueteHoras')}</h2>
+          <div className="pqProcessToolbar partesMobileProcessToolbar">
+            <DateBox
+              value={fechaDesde}
+              type="date"
+              displayFormat={dateDisplayFormat}
+              dateSerializationFormat={dateSerializationFormat}
+              elementAttr={{ 'data-testid': 'partesPaqueteFechaDesde' }}
+              onValueChanged={(e) => {
+                const next = isoDateFromDateBox(e)
+                if (next !== null) {
+                  setFechaDesde(next)
+                }
+              }}
+            />
+            <DateBox
+              value={fechaHasta}
+              type="date"
+              displayFormat={dateDisplayFormat}
+              dateSerializationFormat={dateSerializationFormat}
+              elementAttr={{ 'data-testid': 'partesPaqueteFechaHasta' }}
+              onValueChanged={(e) => {
+                const next = isoDateFromDateBox(e)
+                if (next !== null) {
+                  setFechaHasta(next)
+                }
+              }}
+            />
+            <Button
+              text={t('dashboard.refresh')}
+              onClick={() => void load()}
+              disabled={loading}
+              elementAttr={{ 'data-testid': 'partesPaqueteBuscar' }}
+            />
+          </div>
+        </div>
+        <div className="pqProcessStats partesMobileKpiBlock">
+          <strong>{t('partes.mobile.saldoInicial')}:</strong> {formatMinutosAsHhMm(saldoInicial)}
+        </div>
+        {error ? <div role="alert">{error}</div> : null}
+        <div className="partesMobileChartToggle">
+          <Button
+            text={t('dashboard.colCliente')}
+            type={ejeChart === 'cliente' ? 'default' : 'normal'}
+            onClick={() => setEjeChart('cliente')}
+          />
+          <Button
+            text={t('partes.informe.field.tipoTareaDescripcion')}
+            type={ejeChart === 'tipo' ? 'default' : 'normal'}
+            onClick={() => setEjeChart('tipo')}
+          />
+        </div>
+        <div className="partesMobileChartWrap" data-testid="partesPaqueteChart">
+          <Chart dataSource={chartSource}>
+            <CommonSeriesSettings argumentField="title" type="bar" />
+            <Series valueField="totalMinutos" name={t('dashboard.colMinutos')} />
+            <ArgumentAxis />
+            <ValueAxis />
+            <Legend visible={false} />
+          </Chart>
+        </div>
+        <section className="partesMobileSection">
+          <h3 className="partesMobileSectionTitle">{t('dashboard.colCliente')}</h3>
+          <ConsultaKardexList
+            items={desgloseCliente.map((row) =>
+              mapDesgloseToKardexItem(row, (key) => t(key), formatMinutosAsHhMm),
+            )}
+            onItemTap={() => undefined}
+            t={(key) => t(key)}
+          />
+        </section>
+        <section className="partesMobileSection">
+          <h3 className="partesMobileSectionTitle">
+            {t('partes.informe.field.tipoTareaDescripcion')}
+          </h3>
+          <ConsultaKardexList
+            items={desgloseTipo.map((row) =>
+              mapDesgloseToKardexItem(row, (key) => t(key), formatMinutosAsHhMm),
+            )}
+            onItemTap={() => undefined}
+            t={(key) => t(key)}
+          />
+        </section>
+      </div>
+    )
+  }
 
   return (
     <div data-testid="partesPaqueteHorasPage" style={{ padding: 16 }}>
@@ -190,7 +297,7 @@ export function PaqueteHorasPage() {
         <strong>Saldo inicial:</strong> {formatMinutosAsHhMm(saldoInicial)}
       </div>
       {error ? <div role="alert">{error}</div> : null}
-      {mode === 'grid' || native ? (
+      {mode === 'grid' ? (
         <div data-testid="partesPaqueteHorasGrid">
           <ProcessDataGrid
             dataSource={rows}

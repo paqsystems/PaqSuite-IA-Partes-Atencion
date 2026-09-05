@@ -2,10 +2,13 @@
 
 namespace App\Repositories\Sp;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use PaqSuite\LaravelCore\Security\RolAdminRepository;
 
 /**
  * ABM roles (GEN-06) vía SP `pq_sp_admin_roles_*`.
+ * Contrato SPEC: nombre, descripcion, accesoTotal.
  */
 final class SpRolAdminRepository implements RolAdminRepository
 {
@@ -21,11 +24,26 @@ final class SpRolAdminRepository implements RolAdminRepository
         return array_map(fn (object $row): array => $this->mapRow($row), $rows);
     }
 
+    public function findById(int $id): ?array
+    {
+        $row = $this->spCaller->callFirst('pq_sp_admin_roles_get', ['id' => $id]);
+
+        return $row === null ? null : $this->mapRow($row);
+    }
+
     public function create(array $data): array
     {
+        $nombre = (string) $data['nombre'];
+        $codigo = isset($data['codigo']) && is_string($data['codigo']) && $data['codigo'] !== ''
+            ? (string) $data['codigo']
+            : $this->uniqueCodigoFromNombre($nombre);
+
         $row = $this->spCaller->callFirst('pq_sp_admin_roles_create', [
-            'codigo' => (string) $data['codigo'],
-            'nombre' => (string) $data['nombre'],
+            'codigo' => $codigo,
+            'nombre' => $nombre,
+            'descripcion' => array_key_exists('descripcion', $data)
+                ? ($data['descripcion'] !== null ? (string) $data['descripcion'] : null)
+                : null,
             'acceso_total' => (bool) ($data['accesoTotal'] ?? $data['acceso_total'] ?? false),
             'activo' => (bool) ($data['activo'] ?? true),
         ]);
@@ -37,11 +55,14 @@ final class SpRolAdminRepository implements RolAdminRepository
     {
         $params = ['id' => $id];
 
-        if (array_key_exists('codigo', $data)) {
+        if (array_key_exists('codigo', $data) && is_string($data['codigo']) && $data['codigo'] !== '') {
             $params['codigo'] = (string) $data['codigo'];
         }
         if (array_key_exists('nombre', $data)) {
             $params['nombre'] = (string) $data['nombre'];
+        }
+        if (array_key_exists('descripcion', $data)) {
+            $params['descripcion'] = $data['descripcion'] !== null ? (string) $data['descripcion'] : null;
         }
         if (array_key_exists('accesoTotal', $data) || array_key_exists('acceso_total', $data)) {
             $params['acceso_total'] = (bool) ($data['accesoTotal'] ?? $data['acceso_total']);
@@ -76,12 +97,30 @@ final class SpRolAdminRepository implements RolAdminRepository
      */
     private function mapRow(object $row): array
     {
+        $descripcion = $row->descripcion ?? null;
+
         return [
             'id' => (int) $row->id,
-            'codigo' => (string) $row->codigo,
             'nombre' => (string) $row->nombre,
+            'descripcion' => $descripcion !== null ? (string) $descripcion : null,
             'accesoTotal' => (bool) $row->accesoTotal,
-            'activo' => (bool) $row->activo,
         ];
+    }
+
+    private function uniqueCodigoFromNombre(string $nombre): string
+    {
+        $base = Str::upper(Str::slug($nombre, '_'));
+        if ($base === '') {
+            $base = 'ROL';
+        }
+        $base = Str::limit($base, 48, '');
+        $codigo = $base;
+        $suffix = 1;
+        while (DB::table('pq_roles')->where('codigo', $codigo)->exists()) {
+            $codigo = Str::limit($base, 48, '').'_'.$suffix;
+            $suffix++;
+        }
+
+        return $codigo;
     }
 }

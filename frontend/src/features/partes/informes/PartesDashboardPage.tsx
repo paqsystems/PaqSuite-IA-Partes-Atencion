@@ -1,15 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
 import { Column, Paging, Pager } from 'devextreme-react/data-grid'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { isNativeApp, LoadingOverlay, ProcessDataGrid } from '@paqsuite/react-core'
+import {
+  ConsultaKardexList,
+  DashboardContainer,
+  isNativeApp,
+  LoadingOverlay,
+  ProcessDataGrid,
+} from '@paqsuite/react-core'
 import { getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
 import { formatMinutosAsHhMm, todayIsoDate } from '../carga/partesTareaDuration'
 import { fetchDashboard, fetchDashboardParametros } from './partesInformeApi'
+import { mapDashboardTopToKardexItem } from '../mobile/mapPartesTareaToKardexItem'
 
 function currentMonthValue(date = new Date()): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
@@ -86,6 +93,88 @@ export function PartesDashboardPage() {
   }, [load, refreshSeg, native])
 
   const range = monthRange(mes)
+  const topKardex = useMemo(
+    () =>
+      top.map((row) =>
+        mapDashboardTopToKardexItem(row, (key) => t(key), formatMinutosAsHhMm),
+      ),
+    [top, t],
+  )
+
+  const mesPicker = (
+    <DateBox
+      value={mes}
+      type="date"
+      displayFormat="yyyy-MM"
+      calendarOptions={{ zoomLevel: 'year', maxZoomLevel: 'year', minZoomLevel: 'century' }}
+      onValueChanged={(e) => {
+        if (e.value) {
+          setMes(currentMonthValue(new Date(e.value as Date)))
+        }
+      }}
+    />
+  )
+
+  if (native) {
+    return (
+      <div className="pqProcessPage partesMobileProcess" data-testid="partesDashboardRoot">
+        <div className="pqProcessHeader partesMobileProcessHeader">
+          <h2 className="pqProcessTitle">{t('dashboard.title')}</h2>
+          <div className="pqProcessToolbar partesMobileProcessToolbar">
+            {mesPicker}
+            <Button
+              text={t('dashboard.refresh')}
+              onClick={() => void load()}
+              elementAttr={{ 'data-testid': 'partesDashboardRefresh' }}
+            />
+            <Link
+              className="partesMobileTextLink"
+              to="/partes/informes/paquete-horas"
+              data-testid="partesDashboardLinkPaquete"
+            >
+              {t('dashboard.linkPaqueteHoras')}
+            </Link>
+          </div>
+        </div>
+        <DashboardContainer
+          loading={loading}
+          error={error}
+          emptyTitle={t('dashboard.title')}
+          onRefresh={() => void load()}
+          widgets={[
+            {
+              id: 'partes-native-dashboard',
+              title: t('dashboard.periodo'),
+              render: () => (
+                <>
+                  <div className="pqProcessStats partesMobileKpiBlock">
+                    <div data-testid="partesDashboardTotalMinutos">
+                      <strong>{t('dashboard.totalMinutos')}:</strong>{' '}
+                      {formatMinutosAsHhMm(totalMinutos)}
+                    </div>
+                    <div data-testid="partesDashboardCantidad">
+                      <strong>{t('dashboard.cantidadTareas')}:</strong> {cantidadTareas}
+                    </div>
+                    <div className="pqProcessMuted">
+                      {range.fechaDesde} → {range.fechaHasta}
+                    </div>
+                  </div>
+                  <section className="partesMobileSection">
+                    <h3 className="partesMobileSectionTitle">{t('dashboard.topClientes')}</h3>
+                    <ConsultaKardexList
+                      items={topKardex}
+                      onItemTap={() => undefined}
+                      t={(key) => t(key)}
+                    />
+                  </section>
+                </>
+              ),
+            },
+          ]}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="pqProcessPage" data-testid="partesDashboardRoot">

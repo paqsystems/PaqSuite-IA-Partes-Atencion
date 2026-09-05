@@ -6,7 +6,8 @@ use PaqSuite\LaravelCore\Security\EmpresaAdminRepository;
 
 /**
  * Consulta/edición empresas (GEN-06) vía SP `pq_sp_admin_empresas_*`.
- * MONO: sin alta/baja — solo `update` (nombre, activo).
+ * MONO: sin alta/baja — solo `update`. Contrato SPEC: nombreEmpresa / habilitada / theme.
+ * Persistencia interna: `nombre` ↔ nombreEmpresa, `activo` ↔ habilitada.
  */
 final class SpEmpresaAdminRepository implements EmpresaAdminRepository
 {
@@ -33,14 +34,14 @@ final class SpEmpresaAdminRepository implements EmpresaAdminRepository
     {
         $params = ['id' => $id];
 
-        if (array_key_exists('nombre', $data)) {
-            $params['nombre'] = (string) $data['nombre'];
+        if (array_key_exists('nombreEmpresa', $data) || array_key_exists('nombre', $data)) {
+            $params['nombre'] = (string) ($data['nombreEmpresa'] ?? $data['nombre']);
         }
-        if (array_key_exists('activo', $data)) {
-            $params['activo'] = (bool) $data['activo'];
+        if (array_key_exists('habilitada', $data) || array_key_exists('activo', $data)) {
+            $params['activo'] = (bool) ($data['habilitada'] ?? $data['activo']);
         }
         if (array_key_exists('theme', $data)) {
-            $params['theme'] = (string) $data['theme'];
+            $params['theme'] = $data['theme'] !== null ? (string) $data['theme'] : 'generic.light';
         }
 
         $row = $this->spCaller->callFirst('pq_sp_admin_empresas_update', $params);
@@ -55,8 +56,8 @@ final class SpEmpresaAdminRepository implements EmpresaAdminRepository
     {
         return [
             'id' => (int) $row->id,
-            'nombre' => (string) $row->nombre,
-            'activo' => (bool) $row->activo,
+            'nombreEmpresa' => (string) $row->nombre,
+            'habilitada' => (bool) $row->activo,
             'theme' => $row->theme !== null ? (string) $row->theme : 'generic.light',
         ];
     }

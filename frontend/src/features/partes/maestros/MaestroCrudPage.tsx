@@ -224,7 +224,7 @@ export function MaestroCrudPage({
                   value={form[field.key] ?? null}
                   valueExpr="id"
                   displayExpr={(item) =>
-                    item ? `${item.usuario} — ${item.nombre}` : ''
+                    item ? `${item.codigo ?? item.usuario} — ${item.nombre}` : ''
                   }
                   searchEnabled
                   onValueChanged={(e) => setForm((prev) => ({ ...prev, [field.key]: e.value }))}

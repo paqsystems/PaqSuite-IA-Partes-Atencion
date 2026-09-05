@@ -8,7 +8,7 @@
 | Título | Mobile Capacitor del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Pendiente |
-| Última actualización | 2026-07-30 |
+| Última actualización | 2026-08-17 |
 | HU relacionada(s) | [HU-007-mobile-capacitor](../../03-historias-usuario/100-SistemaPartes/HU-007-mobile-capacitor.md) |
 | TR relacionada(s) | [TR-007-mobile-capacitor](../../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md) … [SPEC-006](./SPEC-006-consultas-dashboard-navegacion.md) (mismas reglas de dominio; distinta UX) |
@@ -97,8 +97,7 @@ Pipeline: resolver instalación con `X-Paq-Cliente` → credenciales → gate Pa
 
 ### 4.4 Shell y menú mobile
 
-- Shell autenticado Framework adaptado a native (`isNativeApp()`).
-- Ítems desde menú API / `pq_menus`, **filtrados** para quitar: ABM archivos maestros, pivots, masivo, excel, admin seguridad GEN si aplica exclusión.
+- Shell autenticado Framework (`ShellLayout`) + menú native **`MobileMenuShell`**; ítems desde menú API / `pq_menus`, filtrados con **`createMobilePolicy`** (exclusiones GEN) y reglas de identidad Partes (SPEC-002).
 - Navegación siempre in-app.
 
 ### 4.5 Dashboard mobile
@@ -154,7 +153,7 @@ Proceso **propio** mobile (no solo un widget del dashboard).
 | R-MO-08 | Periodo default consulta partes = día actual. Kardex = superficie principal con acciones agregar/editar/eliminar. |
 | R-MO-08b | Menú «Carga» opcional sin pantallas/reglas divergentes del formulario kardex. IA fuera del MVP. |
 | R-MO-09 | Informe Paquete de Horas = total + desgloses + gráfico simple; datos híbridos; menú Informes + atajo dashboard; gráfico = más simple DX (TR). |
-| R-MO-10 | Menú filtrado; `isNativeApp()` / policy de rutas. |
+| R-MO-10 | Menú filtrado; `isNativeApp()` / `createMobilePolicy` GEN-22 + allowlist de rutas del host. |
 | R-MO-11 | i18n + `data-testid` mobile estables. |
 
 ---
@@ -176,12 +175,14 @@ Proceso **propio** mobile (no solo un widget del dashboard).
 
 ## 6. Impacto técnico (visión para TR)
 
+**Adopción GEN-22 (MUST):** montar exports de `@paqsuite/react-core` (`MobileConfigPanel`, `ConsultaKardexList`, `MobileRouteGuard`, `MobileMenuShell`, `createMobilePolicy`, `DashboardContainer`, `AuthLoginLayout` / `ShellLayout`). El host no clona esos presentadores. Queda en el host: allowlist de rutas Partes, mapper dominio → `KardexItem`, formulario de tarea (SPEC-004) y Chart `bar` del informe.
+
 | Capa | Impacto |
 |------|---------|
-| Frontend | Ramas `isNativeApp()`; policy mobile Partes; vistas kardex/carga/informe; Preferences |
-| Backend | Reutiliza SP dashboard (totales) + agregaciones desglose; fachada informe opcional que orquesta ambas |
-| Menú | Flags/filtrado native en seed o client-side policy |
-| Tests | Policy unit tests; E2E web no sustituye smoke dispositivo (manual/CI según repo) |
+| Frontend | Ramas `isNativeApp()`; policy = `createMobilePolicy` + allowlist producto; kardex/config/guard/menú native = GEN |
+| Backend | Reutiliza SP dashboard (totales) + agregaciones desglose; fachada informe que orquesta ambas |
+| Menú | Seed informe + filtrado native GEN (`filterItems`) + filtro identidad SPEC-002 |
+| Tests | Policy unit tests sobre policy GEN; E2E web no sustituye smoke dispositivo |
 | Docs | Cierra empresa mobile + definición MVP informe paquete horas |
 
 ---
@@ -195,7 +196,7 @@ Proceso **propio** mobile (no solo un widget del dashboard).
 | Detalle UI del informe (gráficos) | **Cerrado MVP:** un gráfico simple Must; tipo = el más simple en DX Capacitor (TR); polish → mejora posterior. |
 | Menú informe paquete horas | **Cerrado:** ítem Informes **y** atajo desde dashboard. |
 | Permisos finos por acción en kardex | **Cerrado:** kardex con acciones CRUD; formulario = misma UX; hereda SPEC-004 |
-| Capacitor ya usado en otros productos | Reutilizar patrones GEN; no inventar stack |
+| Capacitor ya usado en otros productos | Reutilizar exports GEN-22 de `@paqsuite/react-core`; no inventar stack ni clonar presentadores |
 
 ---
 
@@ -211,6 +212,7 @@ Proceso **propio** mobile (no solo un widget del dashboard).
 | 2026-07-30 | Batch HU: informe horas datos híbridos (dashboard + desgloses). |
 | 2026-07-30 | Batch HU: informe = menú Informes + atajo dashboard; gráfico = más simple DX (TR). |
 | 2026-07-30 | Enlace TR-007 (Parte C+C1); gráfico = DX Chart `bar`; policy `partesMobilePolicy`. |
+| 2026-08-17 | TR-007 realineado: adoptar GEN-22 (`ConsultaKardexList`, `MobileConfigPanel`, `createMobilePolicy`, etc.); allowlist y mappers de dominio en el host. |
 
 ---
 

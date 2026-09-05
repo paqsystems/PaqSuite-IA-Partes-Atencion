@@ -17,6 +17,7 @@ namespace App\OpenApi;
  * @OA\Tag(name="Auth", description="Autenticación API (Bearer Sanctum)")
  * @OA\Tag(name="Chat Assistant", description="Asistente IA documental")
  * @OA\Tag(name="Excel Import", description="Importación Excel (GEN-14)")
+ * @OA\Tag(name="Emisiones", description="Emisión de reportes GEN-15")
  * @OA\Tag(name="FrameWork", description="Health y estado del sistema (scaffold / plataforma)")
  * @OA\Tag(name="Grid Layouts", description="Layouts de grilla DevExtreme")
  * @OA\Tag(name="LLM", description="Credenciales LLM (BYOK)")

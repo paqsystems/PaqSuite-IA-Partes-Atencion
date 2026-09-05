@@ -95,23 +95,21 @@ return [
 
         /*
          * Catálogo central PAQSYSTEMS (lookup X-Paq-Cliente → EMPRESAS_CONEXION).
-         * Opción A: valida instalación; la BD operativa sigue en sqlsrv/DB_*.
+         * Vacío en CENTRAL_* cae a DB_* (mismo RDS). Opción B pisa sqlsrv por request.
          */
         'paqsuite_central' => [
             'driver' => 'sqlsrv',
-            'host' => env('PAQSUITE_CENTRAL_HOST', env('DB_HOST', 'localhost')),
-            'port' => env('PAQSUITE_CENTRAL_PORT', env('DB_PORT', '1433')),
-            'database' => env('PAQSUITE_CENTRAL_DATABASE', 'PAQSYSTEMS'),
-            'username' => env('PAQSUITE_CENTRAL_USERNAME', env('DB_USERNAME', 'forge')),
-            'password' => env('PAQSUITE_CENTRAL_PASSWORD', env('DB_PASSWORD', '')),
+            'host' => env('PAQSUITE_CENTRAL_HOST') ?: env('DB_HOST', 'localhost'),
+            'port' => env('PAQSUITE_CENTRAL_PORT') ?: env('DB_PORT', '1433'),
+            'database' => env('PAQSUITE_CENTRAL_DATABASE') ?: 'PAQSYSTEMS',
+            'username' => env('PAQSUITE_CENTRAL_USERNAME') ?: env('DB_USERNAME', 'forge'),
+            'password' => env('PAQSUITE_CENTRAL_PASSWORD') ?: env('DB_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
-            'encrypt' => env('PAQSUITE_CENTRAL_ENCRYPT', env('DB_ENCRYPT', 'yes')),
-            'trust_server_certificate' => env(
-                'PAQSUITE_CENTRAL_TRUST_SERVER_CERTIFICATE',
-                env('DB_TRUST_SERVER_CERTIFICATE', 'true')
-            ),
+            'encrypt' => env('PAQSUITE_CENTRAL_ENCRYPT') ?: env('DB_ENCRYPT', 'yes'),
+            'trust_server_certificate' => env('PAQSUITE_CENTRAL_TRUST_SERVER_CERTIFICATE')
+                ?: env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
         ],
 
     ],

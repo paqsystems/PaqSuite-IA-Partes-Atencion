@@ -11,7 +11,7 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
-        "paqsuite/laravel-core": "@dev"
+        "paqsuite/laravel-core": "^1.3.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -24,11 +24,8 @@
     },
     "repositories": [
         {
-            "type": "path",
-            "url": "../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core",
-            "options": {
-                "symlink": false
-            }
+            "type": "composer",
+            "url": "http://100.110.69.93/satis"
         }
     ],
     "autoload": {
@@ -70,6 +67,7 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
+        "secure-http": false,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true

@@ -9,7 +9,7 @@
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
 | Estado | Pendiente |
-| Última actualización | 2026-07-30 |
+| Última actualización | 2026-08-17 |
 | SPEC origen | [SPEC-007-mobile-capacitor](../../05-open-spec/100-SistemaPartes/SPEC-007-mobile-capacitor.md) |
 | TR relacionada(s) | [TR-007-mobile-capacitor](../../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) |
 
@@ -20,7 +20,7 @@
 | Entregable / criterio SPEC-007 | Dónde en esta HU |
 |--------------------------------|------------------|
 | Capacitor Android+iOS §2.1 | Alcance |
-| Config URL + health pre-login §4.2, R-MO-02 | CA-01; R-MO-02 |
+| Config URL + health pre-login §4.2, R-MO-02 | CA-01, CA-01b; R-MO-02 |
 | Login empresa+usuario+password §4.3, R-MO-03 | CA-01, CA-02; R-MO-03 |
 | Gate `resultado.partes` §3 | CA-03 |
 | Exclusiones ABM/pivot/masivo/Excel §2.2, R-MO-05 | CA-04; R-MO-05 |
@@ -53,13 +53,13 @@ Mobile **no** es un clon de la web: comparte dominio, envelope, `X-Paq-Cliente` 
 ## Alcance incluido
 
 - **Plataforma Capacitor** (Android + iOS) sobre el mismo `frontend/` del producto.
-- **Pantalla inicial pre-login:** acceso a login + configuración de **URL base API** (override) con test de conectividad (`GET .../health` o endpoint GEN) **antes** de guardar; persistencia `@capacitor/preferences`; `data-testid`: `mobileConfigOpen`, `mobileConfigApiUrl`, `mobileConfigTestConnection`, `mobileConfigSave`.
+- **Pantalla inicial pre-login:** acceso a login + configuración de **URL base API** (override) con test de conectividad (`GET .../health` o endpoint GEN) **antes** de guardar; persistencia `@capacitor/preferences`; esa URL es la que usa **toda** operación posterior (login, menú, kardex, informes, chat). `data-testid`: `mobileConfigOpen`, `mobileConfigApiUrl`, `mobileConfigTestConnection`, `mobileConfigSave`.
 - **Login mobile:** empresa + usuario + contraseña (orden UI: empresa primero); `empresa` → `X-Paq-Cliente` (MONO instalación, no `X-Company-Id`); `data-testid`: `loginTenant`; i18n `login.tenant` / claves mobile.
 - **Gate e identidad funcional:** mismos que SPEC-002 (`resultado.partes`).
 - **Shell y menú native** (`isNativeApp()`): ítems desde API / `pq_menus`, filtrados (sin ABM maestros, pivot, masivo, excel, admin seguridad GEN si aplica); navegación **in-app** únicamente.
 - **Dashboard mobile:** misma delimitación por rol que SPEC-006; indicadores mínimos en cards (total tiempo, cantidad, resumen); periodo inicial mes calendario coherente con web; refresco **solo manual + pull-to-refresh** (sin timer automático).
 - **Consulta de partes en Kardex (superficie principal):** tarjetas verticales; tap → detalle; filtros con default periodo = **día actual**; acciones **agregar / editar / eliminar** en tarjeta y/o detalle según rol y `cerrado` (SPEC-004); cliente = solo lectura.
-- **Formulario de una tarea:** misma UX invocada desde kardex (alta/edición); menú «Carga» opcional sin reglas divergentes; validaciones SPEC-004; **IA fuera del MVP**.
+- **Formulario de una tarea:** misma UX invocada desde kardex (alta/edición); menú «Carga» opcional sin reglas divergentes; validaciones SPEC-004; **Smart Capture / IA operativa en carga = fuera de esta HU** (TR-010 no monta panel en native). El Asistente IA documental del avatar (GEN-21 / HU-008) **sí** puede usarse in-app; no forma parte de los CA de esta HU.
 - **Informe Paquete de Horas** (proceso propio mobile): periodo default mes calendario; total minutos/horas; desglose por cliente y por tipo; kardex/cards; **un gráfico simple** Must (tipo = el más simple en DevExtreme Capacitor, TR); solo lectura. **Navegación:** ítem menú **Informes** + atajo desde dashboard. **Datos híbridos:** totales vía dashboard; desgloses vía agregación; fachada opcional.
 - i18n (`mobile.*`, `partes.*`) + `data-testid` estables.
 
@@ -85,16 +85,16 @@ Mobile **no** es un clon de la web: comparte dominio, envelope, `X-Paq-Cliente` 
 | ID | Regla |
 |----|--------|
 | R-MO-01 | Mismo dominio y backend que web; distinta UX native. |
-| R-MO-02 | Config pre-login = URL API + test health; tenant/empresa solo en login. |
+| R-MO-02 | Config pre-login = URL API + test health; esa URL es la base de **todas** las llamadas de la app native; tenant/empresa solo en login. |
 | R-MO-03 | Campo `empresa` mobile = código instalación → header `X-Paq-Cliente` (MONO). |
 | R-MO-04 | Incluye: dashboard, kardex partes, carga individual, informe paquete horas. |
 | R-MO-05 | Excluye: ABM, pivot, masivo, Excel, impresos, `openInNewTab`. |
 | R-MO-06 | Consultas/listados = Kardex, no DataGrid desktop. |
 | R-MO-07 | Formulario de una tarea hereda SPEC-004; no cliente; misma UX desde kardex. |
 | R-MO-08 | Periodo default consulta partes = día actual. Kardex = superficie principal con acciones CRUD. |
-| R-MO-08b | Menú Carga opcional sin divergencia; IA fuera del MVP. |
+| R-MO-08b | Menú Carga opcional sin divergencia. Smart Capture / IA operativa en el form = fuera de esta HU (no native). Chat documental avatar = HU-008 (in-app). |
 | R-MO-09 | Informe Paquete de Horas = total + desgloses + gráfico simple; datos híbridos; menú Informes + atajo dashboard; gráfico = más simple DX (TR). |
-| R-MO-10 | Menú filtrado vía `isNativeApp()` / policy de rutas mobile Partes. |
+| R-MO-10 | Menú filtrado vía `isNativeApp()` / `createMobilePolicy` GEN-22 + allowlist de rutas Partes. |
 | R-MO-11 | i18n + `data-testid` mobile estables. |
 
 Actores mobile: **asistente** — dashboard, kardex, carga individual, informe; CRUD propios no cerrados. **Supervisor** — igual + terceros no cerrados en carga/consulta; **sin** proceso masivo. **Cliente** — dashboard, kardex e informe de su org; **sin** carga.
@@ -104,6 +104,7 @@ Actores mobile: **asistente** — dashboard, kardex, carga individual, informe; 
 ## Criterios de aceptación
 
 - [ ] **CA-01** App native abre config URL, testea health y persiste; login pide empresa + usuario + contraseña (empresa primero en UI).
+- [ ] **CA-01b** Tras guardar la URL del engranaje, login y el resto de operaciones (menú, kardex, informes) hablan con **ese** servidor; no con el origen de la WebView ni con otra base embebida.
 - [ ] **CA-02** Header `X-Paq-Cliente` enviado desde el campo empresa; instalación inválida → error tenant GEN (`tenant.invalid`), no mensaje de contraseña.
 - [ ] **CA-03** Tras login, `resultado.partes` gobierna menú y pantallas (cliente sin carga ni rutas excluidas).
 - [ ] **CA-04** No hay rutas/menú de ABM, pivot, masivo ni Excel en native.
@@ -132,6 +133,7 @@ Feature: Mobile Capacitor Sistema Partes
     And ejecuta test de conexión contra health
     Then solo puede guardar si el test es exitoso
     And la URL persiste en almacenamiento local
+    And las operaciones siguientes (login, consultas) usan esa misma URL de API
 
   Scenario: Login con empresa inválida
     Given un usuario en login mobile con empresa, usuario y contraseña
@@ -168,10 +170,10 @@ Feature: Mobile Capacitor Sistema Partes
 
 ## Supuestos explícitos
 
-- Capacitor y patrones GEN mobile (config, login tenant MONO, exclusiones BASE) ya existen en el repo; esta HU extiende policy y vistas Partes sin inventar stack nuevo.
-- Backend: informe paquete horas = **híbrido** (totales dashboard + agregación desgloses); fachada opcional en TR.
+- Capacitor y exports GEN-22 se montan desde `@paqsuite/react-core`; el host no clona presentadores. Allowlist de rutas y mapper dominio→kardex quedan en Partes (detalle en TR-007).
+- Backend: informe paquete horas = **híbrido** (totales dashboard + agregación desgloses); fachada `GET /partes/informes/paquete-horas` Must (TR-007).
 - Post-login mobile aterriza en dashboard cuando el shell native lo permita (misma convención que web SPEC-006).
-- IA chatbot en carga es complemento opcional; no sustituye confirmación humana ni validaciones SPEC-004.
+- «IA fuera del MVP» en esta HU = Smart Capture / asistente operativo en el formulario de carga. El chat documental del avatar es HU-008 / TR-008 (allowlist in-app).
 - Cuenta corriente de horas / facturación = evolución (`07`); informe paquete horas no las implementa.
 
 ---
@@ -179,7 +181,7 @@ Feature: Mobile Capacitor Sistema Partes
 ## Preguntas abiertas
 
 - Detalle de botones de acción en kardex: ~~cerrado~~ — kardex CRUD; formulario misma UX; IA fuera MVP.
-- Policy / fachada / gráfico / smoke: ~~pendiente~~ → **cerrado en [TR-007](../../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md):** `partesMobilePolicy`; `GET /partes/informes/paquete-horas`; DX Chart `bar`; smoke = unit + `build:mobile` + humo emulador manual.
+- Policy / fachada / gráfico / smoke: ~~pendiente~~ → **cerrado en [TR-007](../../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md):** `createMobilePolicy` + allowlist host; `GET /partes/informes/paquete-horas`; DX Chart `bar`; presentadores GEN-22; smoke = unit + `build:mobile` + humo emulador manual.
 - Origen datos informe / menú: ~~cerrado~~ — híbrido; Informes + atajo dashboard.
 
 ---
@@ -210,3 +212,5 @@ Feature: Mobile Capacitor Sistema Partes
 | 2026-07-30 | Batch: informe horas datos híbridos (dashboard + desgloses). |
 | 2026-07-30 | Batch: informe = menú Informes + atajo dashboard; gráfico = más simple DX (TR). |
 | 2026-07-30 | Enlace TR-007 (Parte C+C1); policy/Chart bar/fachada cerrados. |
+| 2026-08-17 | Alineación TR-007 GEN-22: montar componentes Framework; allowlist + mapper dominio en el host. |
+| 2026-08-17 | Antes de D: CA-01b (URL engranaje = única base API); R-MO-08b aclara IA operativa ≠ chat HU-008; fachada informe Must. |

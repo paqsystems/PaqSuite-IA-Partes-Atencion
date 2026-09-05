@@ -20,19 +20,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true,
-
-    "paths": {
-      "@paqsuite/react-core": [
-        "../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/index.ts"
-      ],
-      "@paqsuite/react-core/auth.css": [
-        "../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/ui/auth/authLayout.css"
-      ],
-      "@paqsuite/react-core/shell.css": [
-        "../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/ui/shell/shellLayout.css"
-      ]
-    }
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["src"]
 }

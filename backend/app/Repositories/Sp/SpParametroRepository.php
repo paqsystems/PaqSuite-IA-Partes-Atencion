@@ -118,6 +118,7 @@ final class SpParametroRepository implements \PaqSuite\LaravelCore\Parametros\Co
     {
         return match ($tipoValor) {
             'S' => ['valor_string' => $valor === null ? null : (string) $valor],
+            'L' => ['valor_string' => $valor === null ? null : strtoupper((string) $valor)],
             'T' => ['valor_texto' => $valor === null ? null : (string) $valor],
             'I' => ['valor_int' => $valor === null ? null : (int) $valor],
             'D' => ['valor_decimal' => $valor === null ? null : (string) $valor],

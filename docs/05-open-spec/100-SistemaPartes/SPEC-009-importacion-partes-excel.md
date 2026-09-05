@@ -206,7 +206,7 @@ Si el procesamiento **graba al menos una fila**, el host debe **volver a cargar*
 
 | Tema | Tratamiento |
 |------|-------------|
-| Motor GEN disponible vía `@paqsuite/react-core` / `laravel-core` | Supuesto: path packages Framework ya en el host (como chat/LLM). |
+| Motor GEN disponible vía `@paqsuite/react-core` / `laravel-core` | Supuesto: host consume paquetes versionados (Verdaccio/Satis), no path monorepo. |
 | Confirmación “preguntar” vs. botón Procesar GEN | Must: acción explícita Procesar con `allowPartial=true` cumple D-IMP-02; dialog extra = Should. |
 | Tope de filas / async | Umbrales GEN; si el lote es grande puede ir `queued` — host debe manejar `onComplete` queued/partial/done sin romper refresco (detalle TR). |
 | Plantilla distinta asistente vs supervisor | Should: una plantilla con `asistente` opcional documentada; o dos descargas. |

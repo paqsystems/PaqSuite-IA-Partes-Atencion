@@ -1,12 +1,35 @@
-import { isNativeApp } from '@paqsuite/react-core'
-import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { isPartesMobileRouteAllowed } from './mobile/partesMobilePolicy'
+import { isNativeApp, MobileRouteGuard } from '@paqsuite/react-core'
+import { useCallback } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { partesMobilePolicy } from './mobile/partesMobilePolicy'
 
-/** En native, deniega deep-links fuera de allowlist. */
+/** En native, deniega deep-links fuera de allowlist GEN-22. */
 export function RequirePartesMobilePolicy() {
   const location = useLocation()
-  if (isNativeApp() && !isPartesMobileRouteAllowed(location.pathname)) {
-    return <Navigate to="/partes" replace state={{ mobileRouteExcluded: true }} />
+  const navigate = useNavigate()
+  const { t } = useTranslation()
+  const onRedirect = useCallback(
+    (homePath: string) => {
+      navigate(homePath, { replace: true })
+    },
+    [navigate],
+  )
+
+  if (!isNativeApp()) {
+    return <Outlet />
   }
-  return <Outlet />
+
+  return (
+    <MobileRouteGuard
+      homePath="/partes"
+      pathname={location.pathname}
+      isAllowed={(pathname) => partesMobilePolicy.isAllowed(pathname)}
+      onRedirect={onRedirect}
+      bypassPaths={['/dashboard']}
+      t={(key) => t(key)}
+    >
+      <Outlet />
+    </MobileRouteGuard>
+  )
 }

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use PaqSuite\LaravelCore\ChatAssistant\ChatAssistantDomainException;
+use PaqSuite\LaravelCore\Emissions\EmissionException;
+use PaqSuite\LaravelCore\ExcelImport\ExcelImportException;
 use PaqSuite\LaravelCore\Http\Responses\ApiResponse;
 use PaqSuite\LaravelCore\Llm\LlmDomainException;
 use PaqSuite\LaravelCore\SmartCapture\SmartCaptureDomainException;
@@ -45,6 +47,16 @@ abstract class CapabilityEnvelopeController extends Controller
                             ? ['configurationRequired' => true]
                             : []
                     ),
+            ),
+            $exception instanceof EmissionException => ApiResponse::error(
+                $exception->errorCode,
+                $exception->messageKey,
+                $exception->httpStatus,
+            ),
+            $exception instanceof ExcelImportException => ApiResponse::error(
+                $exception->errorCode,
+                $exception->messageKey,
+                $exception->httpStatus,
             ),
             default => throw $exception,
         };
