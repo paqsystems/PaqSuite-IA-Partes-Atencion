@@ -1,5 +1,5 @@
 {
-  "installCommand": "npm install",
+  "installCommand": "bash scripts/vercel-install.sh",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite"
