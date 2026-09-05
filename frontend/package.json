@@ -28,7 +28,7 @@
     "@capacitor/ios": "^7.4.4",
     "@capacitor/preferences": "^7.0.2",
     "@devexpress/analytics-core": "26.1.4",
-    "@paqsuite/react-core": "^2.3.1",
+    "@paqsuite/react-core": "^2.4.6",
     "ace-builds": "^1.44.0",
     "axios": "^1.16.0",
     "devexpress-reporting": "26.1.4",
