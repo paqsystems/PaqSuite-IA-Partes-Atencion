@@ -1,4 +1,5 @@
 import config from 'devextreme/core/config'
+import { parseDevExtremeLicenseKey } from './parseDevExtremeLicenseKey'
 
 /**
  * Licencia DevExtreme — MUST ejecutarse antes de montar widgets.
@@ -6,24 +7,10 @@ import config from 'devextreme/core/config'
  * El JWT `eyJ…` de 25.2 no vale en 26.1 y dispara el banner de evaluación.
  */
 function readLicenseKey(): string {
-  const candidates = [
+  return parseDevExtremeLicenseKey([
     import.meta.env.VITE_DEVEXPRESS_LICENSE_KEY,
     import.meta.env.VITE_DEVEXTREME_LICENSE,
-  ]
-  for (const raw of candidates) {
-    const key = String(raw ?? '')
-      .trim()
-      .replace(/^['"]|['"]$/g, '')
-      .replace(/[\r\n\t]/g, '')
-    if (!key) {
-      continue
-    }
-    if (key.startsWith('eyJ')) {
-      continue
-    }
-    return key
-  }
-  return ''
+  ])
 }
 
 const licenseKey = readLicenseKey()
