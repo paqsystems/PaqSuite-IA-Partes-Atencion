@@ -56,10 +56,15 @@ php artisan queue:restart || true
 
 ## Vercel (frontend)
 
+El builder público **no** resuelve Tailscale (`srv-pq.tail*.ts.net` ni `100.110.69.93`). No usar Funnel/Verdaccio como `registry` por defecto: npm reescribe tarballs públicos (`yauzl`, etc.) y el build termina en `ENOTFOUND`.
+
 - Root Directory: `frontend`
-- Install: `npm install` (lee `.npmrc` → Verdaccio)
+- Install: `bash scripts/vercel-install.sh` (npmjs + tarball `vendor/paqsuite-react-core-*.tgz`)
 - Build: `npm run build` → `dist/` (SDK bundlado)
+- En el dashboard Vercel: **no** definir `NPM_CONFIG_REGISTRY` / registry Tailscale
 - `VITE_API_BASE_URL` según [`frontend-api-base-url-y-env.md`](./frontend-api-base-url-y-env.md)
+
+Bump de `react-core`: en `frontend/` con Tailscale, `npm pack @paqsuite/react-core --pack-destination vendor` y actualizar el nombre del tarball en `vercel-install.sh`.
 
 ---
 
