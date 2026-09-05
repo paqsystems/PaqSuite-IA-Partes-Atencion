@@ -5,6 +5,7 @@ import {
   LanguageSelector,
   authClassNames,
   getGuestLocale,
+  isNativeApp,
   normalizeLocale,
   type LocaleCode,
 } from '@paqsuite/react-core'
@@ -26,10 +27,13 @@ export function LoginPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const native = isNativeApp()
   const sessionExpired = searchParams.get('expired') === '1'
   const blocked = searchParams.get('blocked') === '1'
 
-  const [tenant, setTenant] = useState(() => resolvePlatformCliente())
+  const [tenant, setTenant] = useState(() =>
+    native ? resolvePlatformCliente() : '',
+  )
   const [usuario, setUsuario] = useState('')
   const [password, setPassword] = useState('')
   const [locale, setLocale] = useState<LocaleCode>(
@@ -61,8 +65,15 @@ export function LoginPage() {
     setIsSubmitting(true)
 
     try {
-      resolvePlatformCliente(tenant)
-      const result = await loginRequest({ usuario, password, locale, tenant })
+      if (native) {
+        resolvePlatformCliente(tenant)
+      }
+      const result = await loginRequest({
+        usuario,
+        password,
+        locale,
+        tenant: native ? tenant : undefined,
+      })
 
       if (result.kind === 'ok') {
         const session = saveLoginSession(result.envelope.resultado)
@@ -115,15 +126,17 @@ export function LoginPage() {
       ) : null}
 
       <form className={authClassNames.form} onSubmit={handleSubmit}>
-        <label className={authClassNames.field}>
-          <span className={authClassNames.fieldLabel}>{t('login.tenant')}</span>
-          <TextBox
-            stylingMode="outlined"
-            value={tenant}
-            onValueChanged={(event) => setTenant(String(event.value ?? ''))}
-            elementAttr={{ 'data-testid': 'loginTenant' }}
-          />
-        </label>
+        {native ? (
+          <label className={authClassNames.field}>
+            <span className={authClassNames.fieldLabel}>{t('login.tenant')}</span>
+            <TextBox
+              stylingMode="outlined"
+              value={tenant}
+              onValueChanged={(event) => setTenant(String(event.value ?? ''))}
+              elementAttr={{ 'data-testid': 'loginTenant' }}
+            />
+          </label>
+        ) : null}
 
         <label className={authClassNames.field}>
           <span className={authClassNames.fieldLabel}>{t('login.username')}</span>
