@@ -6,17 +6,8 @@ import {
   Routes,
   useLocation,
   useNavigate,
-  useParams,
 } from 'react-router-dom'
-import {
-  EmpresasAdminPage,
-  PermisosAdminPage,
-  RolAtributosPage,
-  RolesAdminPage,
-  UsuariosAdminPage,
-  createSeguridadTranslator,
-  isNativeApp,
-} from '@paqsuite/react-core'
+import { isNativeApp } from '@paqsuite/react-core'
 import {
   registerAuthNavigator,
   restoreSessionOnBoot,
@@ -51,31 +42,12 @@ const ReportDesignerHostPage = lazy(() => import('../features/partes/informes/Re
 import { PaqueteHorasPage } from '../features/partes/informes/PaqueteHorasPage'
 import { ConsultaKardexMobilePage } from '../features/partes/mobile/ConsultaKardexMobilePage'
 import { ParametrosGeneralesPage } from '../features/admin/ParametrosGeneralesPage'
+import { EmpresasAdminPage } from '../features/admin/security/EmpresasAdminPage'
+import { PermisosAdminPage } from '../features/admin/security/PermisosAdminPage'
+import { RoleAtributosPage } from '../features/admin/security/RoleAtributosPage'
+import { RolesAdminPage } from '../features/admin/security/RolesAdminPage'
+import { UsuariosAdminPage } from '../features/admin/security/UsuariosAdminPage'
 import { ChatAssistantHostPage } from '../features/chatAssistant/ChatAssistantHostPage'
-
-const seguridadT = createSeguridadTranslator('es')
-
-function RolesAdminRoutePage() {
-  const navigate = useNavigate()
-  return (
-    <RolesAdminPage
-      t={seguridadT}
-      onOpenAtributos={(rolId) => navigate(`/admin/roles/${rolId}/atributos`)}
-    />
-  )
-}
-
-function RolAtributosRoutePage() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  return (
-    <RolAtributosPage
-      rolId={Number(id)}
-      t={seguridadT}
-      onBack={() => navigate('/admin/roles')}
-    />
-  )
-}
 
 function RedirectToLogin() {
   const location = useLocation()
@@ -132,11 +104,11 @@ export function AppRouter() {
                 path="/parametros/:programa"
                 element={<ParametrosGeneralesPage />}
               />
-              <Route path="/admin/usuarios" element={<UsuariosAdminPage t={seguridadT} />} />
-              <Route path="/admin/empresas" element={<EmpresasAdminPage t={seguridadT} />} />
-              <Route path="/admin/roles" element={<RolesAdminRoutePage />} />
-              <Route path="/admin/roles/:id/atributos" element={<RolAtributosRoutePage />} />
-              <Route path="/admin/permisos" element={<PermisosAdminPage t={seguridadT} />} />
+              <Route path="/admin/usuarios" element={<UsuariosAdminPage />} />
+              <Route path="/admin/empresas" element={<EmpresasAdminPage />} />
+              <Route path="/admin/roles" element={<RolesAdminPage />} />
+              <Route path="/admin/roles/:id/atributos" element={<RoleAtributosPage />} />
+              <Route path="/admin/permisos" element={<PermisosAdminPage />} />
               <Route element={<RequirePartesMaestrosAccess />}>
                 <Route path="/archivos/partes/asistentes" element={<AsistentesPage />} />
                 <Route path="/archivos/partes/clientes" element={<ClientesPage />} />
