@@ -22,7 +22,7 @@ Adoptar **GEN-03 Smart Capture** en Partes **solo** dentro del **Popup** de alta
 - GEN: `TR-GEN-03-contrato-turno.md`, `TR-GEN-03-panel-ui.md`; FE `smartCapture/*`; PHP `SmartCaptureTurnGuard`, `SmartCaptureErrorCodes` (4201–4207 en `PaqSuiteEnvelopeCatalog`)
 - Host: `CargaDiariaPage.tsx` (Popup + form), `partesTareaApi.ts`, `ChatAssistantTurnsController`, `LlmPreferencesModalHost`, `routes/api.php` (`partes.notCliente`), `paqsuite.llmTimeoutSeconds`
 - Ref. comportamiento (no copiar): PedidosWeb `CargaAsistenteTurnController` / TurnService
-- `@paqsuite/react-core`: `file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core` (exports SC OK)
+- `@paqsuite/react-core@2.2.1` (Verdaccio): exports SC OK (`SmartCapturePanel` + helpers)
 
 ## Impacto esperado
 

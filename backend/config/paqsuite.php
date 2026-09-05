@@ -116,13 +116,25 @@ return [
     |--------------------------------------------------------------------------
     | Mapa instalaciones (solo si PAQSUITE_INSTALACION_RESOLVER=config)
     |--------------------------------------------------------------------------
-    | Producción / lab multi-cliente: resolver=sql + fila en PAQSYSTEMS.
-    | Guía: Framework docs/06-operacion/adopcion-instalacion-sql.md
+    | Fallback si PAQSUITE_INSTALACION_RESOLVER=config (PHPUnit / local sin PAQSYSTEMS).
+    | Multidominio Forge: resolver=sql + EMPRESAS_CONEXION (no este mapa).
     */
     'instalaciones' => [
         'DEMO|partesatencion' => [
             'activo' => true,
             'nombre' => 'Partes Demo',
+            'connection' => env('DB_CONNECTION', 'sqlsrv'),
+            'singleCompanyId' => 1,
+            'host' => env('DB_HOST'),
+            'port' => (int) env('DB_PORT', 1433),
+            'database_name' => env('DB_DATABASE'),
+            'username' => env('DB_USERNAME'),
+            'password' => env('DB_PASSWORD'),
+            'dictionary_database' => env('DB_DATABASE'),
+        ],
+        'PAQ|partesatencion' => [
+            'activo' => true,
+            'nombre' => 'Partes Paq',
             'connection' => env('DB_CONNECTION', 'sqlsrv'),
             'singleCompanyId' => 1,
             'host' => env('DB_HOST'),

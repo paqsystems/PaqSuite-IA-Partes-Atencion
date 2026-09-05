@@ -177,7 +177,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT r.id, r.codigo, r.nombre, r.acceso_total AS accesoTotal, r.activo
+    SELECT r.id, r.codigo, r.nombre, r.descripcion, r.acceso_total AS accesoTotal, r.activo
     FROM dbo.pq_roles r WITH (NOLOCK)
     ORDER BY r.codigo;
 END;
@@ -190,7 +190,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT r.id, r.codigo, r.nombre, r.acceso_total AS accesoTotal, r.activo
+    SELECT r.id, r.codigo, r.nombre, r.descripcion, r.acceso_total AS accesoTotal, r.activo
     FROM dbo.pq_roles r WITH (NOLOCK)
     WHERE r.id = @id;
 END;
@@ -199,18 +199,19 @@ GO
 CREATE OR ALTER PROCEDURE dbo.pq_sp_admin_roles_create
     @codigo NVARCHAR(64),
     @nombre NVARCHAR(255),
+    @descripcion NVARCHAR(500) = NULL,
     @acceso_total BIT = 0,
     @activo BIT = 1
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    INSERT INTO dbo.pq_roles (codigo, nombre, acceso_total, activo, created_at, updated_at)
-    VALUES (@codigo, @nombre, @acceso_total, @activo, SYSUTCDATETIME(), SYSUTCDATETIME());
+    INSERT INTO dbo.pq_roles (codigo, nombre, descripcion, acceso_total, activo, created_at, updated_at)
+    VALUES (@codigo, @nombre, @descripcion, @acceso_total, @activo, SYSUTCDATETIME(), SYSUTCDATETIME());
 
     DECLARE @newId INT = CAST(SCOPE_IDENTITY() AS INT);
 
-    SELECT r.id, r.codigo, r.nombre, r.acceso_total AS accesoTotal, r.activo
+    SELECT r.id, r.codigo, r.nombre, r.descripcion, r.acceso_total AS accesoTotal, r.activo
     FROM dbo.pq_roles r WITH (NOLOCK)
     WHERE r.id = @newId;
 END;
@@ -220,6 +221,7 @@ CREATE OR ALTER PROCEDURE dbo.pq_sp_admin_roles_update
     @id INT,
     @codigo NVARCHAR(64) = NULL,
     @nombre NVARCHAR(255) = NULL,
+    @descripcion NVARCHAR(500) = NULL,
     @acceso_total BIT = NULL,
     @activo BIT = NULL
 AS
@@ -230,12 +232,13 @@ BEGIN
     SET
         codigo = COALESCE(@codigo, codigo),
         nombre = COALESCE(@nombre, nombre),
+        descripcion = COALESCE(@descripcion, descripcion),
         acceso_total = COALESCE(@acceso_total, acceso_total),
         activo = COALESCE(@activo, activo),
         updated_at = SYSUTCDATETIME()
     WHERE id = @id;
 
-    SELECT r.id, r.codigo, r.nombre, r.acceso_total AS accesoTotal, r.activo
+    SELECT r.id, r.codigo, r.nombre, r.descripcion, r.acceso_total AS accesoTotal, r.activo
     FROM dbo.pq_roles r WITH (NOLOCK)
     WHERE r.id = @id;
 END;

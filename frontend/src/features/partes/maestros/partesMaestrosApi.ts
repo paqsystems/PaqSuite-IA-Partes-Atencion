@@ -44,7 +44,7 @@ export async function deletePartesResource(path: string, id: number) {
 }
 
 export async function listAdminUsuarios(soloActivos = '1') {
-  return apiRequest<{ items: Array<{ id: number; usuario: string; nombre: string }> }>(
+  return apiRequest<{ items: Array<{ id: number; codigo: string; usuario?: string; nombre: string }> }>(
     `/api/v1/admin/usuarios?soloActivos=${soloActivos}`,
     {
       method: 'GET',

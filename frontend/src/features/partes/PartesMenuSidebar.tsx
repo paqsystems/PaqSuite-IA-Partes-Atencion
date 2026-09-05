@@ -20,10 +20,10 @@ export function filterMenuForCliente(nodes: MenuNode[]): MenuNode[] {
     if (route === '/partes/carga-diaria' || route === '/partes/proceso-masivo' || route === '/partes/carga') {
       return true
     }
-    if (route.startsWith('/admin/') || route.startsWith('/parametros/')) {
+    if (route.startsWith('/admin/') || route.startsWith('/parametros/') || route.startsWith('/emisiones')) {
       return true
     }
-    if (node.menuKey === 'seguridad' || node.menuKey === 'parametros') {
+    if (node.menuKey === 'seguridad' || node.menuKey === 'parametros' || node.menuKey === 'soporte_tecnico') {
       return true
     }
     return false
@@ -64,6 +64,22 @@ type PartesMenuSidebarProps = {
   onItemsLoaded?: (items: MenuNode[]) => void
 }
 
+export function transformPartesMenuItems(
+  raw: MenuNode[],
+  input: { hideMaestros: boolean; hideMasivo: boolean; native: boolean },
+): MenuNode[] {
+  let next = raw
+  if (input.hideMaestros) {
+    next = filterMenuForCliente(next)
+  } else if (input.hideMasivo) {
+    next = filterMenuForNonSupervisor(next)
+  }
+  if (input.native) {
+    next = partesMobilePolicy.filterItems(next)
+  }
+  return next
+}
+
 /** Menú shell GEN-07 + filtros AC cliente / supervisor / mobile. */
 export function PartesMenuSidebar({
   platform,
@@ -78,18 +94,12 @@ export function PartesMenuSidebar({
   const hideMasivo = !session?.partes?.esSupervisor
 
   const transformItems = useCallback(
-    (raw: MenuNode[]) => {
-      let next = raw
-      if (hideMaestros) {
-        next = filterMenuForCliente(next)
-      } else if (hideMasivo) {
-        next = filterMenuForNonSupervisor(next)
-      }
-      if (isNativeApp()) {
-        next = partesMobilePolicy.filterItems(next)
-      }
-      return next
-    },
+    (raw: MenuNode[]) =>
+      transformPartesMenuItems(raw, {
+        hideMaestros,
+        hideMasivo,
+        native: isNativeApp(),
+      }),
     [hideMaestros, hideMasivo],
   )
 

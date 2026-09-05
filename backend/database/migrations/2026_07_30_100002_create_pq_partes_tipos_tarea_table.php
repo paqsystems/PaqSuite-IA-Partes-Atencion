@@ -8,19 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('PQ_PARTES_TIPOS_TAREA', function (Blueprint $table) {
-            $table->id();
-            $table->string('code', 50);
-            $table->string('descripcion', 255);
-            $table->boolean('is_generico')->default(false);
-            $table->boolean('is_default')->default(false);
-            $table->boolean('activo')->default(true);
-            $table->boolean('inhabilitado')->default(false);
-            $table->dateTime('created_at', 3)->nullable();
-            $table->dateTime('updated_at', 3)->nullable();
+        if (! Schema::hasTable('PQ_PARTES_TIPOS_TAREA')) {
+            Schema::create('PQ_PARTES_TIPOS_TAREA', function (Blueprint $table) {
+                $table->id();
+                $table->string('code', 50);
+                $table->string('descripcion', 255);
+                $table->boolean('is_generico')->default(false);
+                $table->boolean('is_default')->default(false);
+                $table->boolean('activo')->default(true);
+                $table->boolean('inhabilitado')->default(false);
+                $table->dateTime('created_at', 3)->nullable();
+                $table->dateTime('updated_at', 3)->nullable();
 
-            $table->unique('code', 'pq_partes_tipos_tarea_code_uq');
-        });
+                $table->unique('code', 'pq_partes_tipos_tarea_code_uq');
+            });
+        }
     }
 
     public function down(): void

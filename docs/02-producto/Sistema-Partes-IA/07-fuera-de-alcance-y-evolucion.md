@@ -19,9 +19,11 @@ Toda idea futura es valida como orientacion, pero no debe contaminar la fuente d
 
 ### Exportacion
 
-La exportacion a Excel de **consultas / informes** sigue siendo una extension cercana apoyada en el framework.
+La **exportación Excel de grilla** (GEN-11) sigue como capacidad de toolbar y **convive** con la emisión.
 
-En cambio, la **exportacion a Excel del proceso masivo** forma parte de la definicion vigente de ese proceso (ver `05-operacion-diaria-y-supervision.md`): no se trata como linea postergada.
+La **emisión documental** (PDF, Excel de reporte, mail, impresión) sobre **Consulta detallada** queda definida en [`15-reportes-emisiones.md`](./15-reportes-emisiones.md) y **sí forma parte** de la definición vigente (adopción GEN-15). No se trata como línea postergada.
+
+Otras consultas (agrupadas, Paquete de horas) **no** montan Emitir en esa definición; pueden adoptarlo después.
 
 ### Cuenta corriente de horas / Paquete de Horas
 
@@ -94,6 +96,7 @@ Por ejemplo:
 - layouts de pivots;
 - exportaciones;
 - menu avatar (catálogo GEN; Partes solo declara adopción del Asistente IA en `12-…`);
+- **reportes / emisiones** (GEN-15; Partes declara adopción en `15-reportes-emisiones.md`);
 - multilingual;
 - seguridad base;
 - menu lateral comun.

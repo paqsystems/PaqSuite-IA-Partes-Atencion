@@ -8,19 +8,16 @@ Framework: `PaqSuite-IA-FRAMEWORK` vía `paqsuite/laravel-core` + `@paqsuite/rea
 
 ## Dependencias
 
-| Capa | Paquete | Resolución local |
-|------|---------|------------------|
-| Backend | `paqsuite/laravel-core: @dev` | `../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core` (symlink) |
-| Frontend | `@paqsuite/react-core` | `file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core` + alias Vite al `src/index.ts` + `auth.css` / `shell.css` |
+| Capa | Paquete | Resolución (`1.2.0-FINAL`+) |
+|------|---------|------------------------------|
+| Backend | `paqsuite/laravel-core: ^1.3.3` | Satis `http://100.110.69.93/satis` (corpus GEN empaquetado) |
+| Frontend | `@paqsuite/react-core: 2.2.1` | Verdaccio `http://100.110.69.93:4873` |
 
+Deploy / bump: [`deploy-sdk-package-repos.md`](./deploy-sdk-package-repos.md).  
+Guías Framework: `GUIA_PRUEBA_INSTALACION.md`, `GUIA_ACTUALIZACION_PROYECTO.md`.
 
-Frontend local (sin registry npm):
+Debug local del SDK (modo C, no committear): link path temporal — ver Framework `adopcion-sdk-registry.md` §4.
 
-```json
-"@paqsuite/react-core": "file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core"
-```
-
-> `npm install` con `"*"` falla si el paquete no está publicado; usar `file:`.
 
 ### Auth UI (GEN-01) — Must
 
@@ -31,7 +28,7 @@ En este host:
 | Pieza | Estado |
 |-------|--------|
 | `import '@paqsuite/react-core/auth.css'` + `shell.css` en `main.tsx` | Sí |
-| Alias Vite + `paths` TS a CSS y `src/index.ts` | Sí |
+| Resolución desde `node_modules` (Verdaccio `@paqsuite/react-core`) | Sí |
 | `AuthLoginLayout` / `AuthCardLayout` / `ShellLayout` | Sí |
 | i18n login + shell + dashboard (5 locales) | Sí |
 | Helper auth hero | `frontend/src/features/auth/partesAuthHero.ts` |
@@ -60,9 +57,9 @@ Fila canónica: `proyecto=partesatencion`, `cliente=DEMO` (UPPERCASE) → destin
 ### Catálogo PAQSYSTEMS (lookup instalación)
 
 ```bash
-# En BD PAQSYSTEMS (una vez / tras cambios)
-sqlcmd -S "192.168.41.2,1433" -U Axoft -P <pass> -d PAQSYSTEMS -C -i ../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core/database/sp/pq_sp_empresas_conexion_get.sql
-# Fila DEMO|partesatencion (si no existe): ver seed en Framework docs/06-modelo-datos/ o backend/database/sp/seed_empresas_conexion_partesatencion_demo.sql
+# En BD PAQSYSTEMS (una vez / tras cambios) — SP desde vendor del host
+sqlcmd -S "192.168.41.2,1433" -U Axoft -P <pass> -d PAQSYSTEMS -C -i vendor/paqsuite/laravel-core/database/sp/pq_sp_empresas_conexion_get.sql
+# Fila DEMO|partesatencion (si no existe): backend/database/sp/seed_empresas_conexion_partesatencion_demo.sql
 ```
 
 `.env`: `PAQSUITE_INSTALACION_RESOLVER=sql` + `PAQSUITE_CENTRAL_*`.

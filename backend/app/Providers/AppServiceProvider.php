@@ -183,6 +183,57 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\PaqSuite\LaravelCore\ExcelImport\ExcelImportValidationOrchestrator::class);
         $this->app->singleton(\PaqSuite\LaravelCore\ExcelImport\ExcelImportProcessOrchestrator::class);
 
+        // GEN-15 emisiones (TR-011)
+        $this->app->singleton(\App\Repositories\Sp\Emissions\SpEmissionRepository::class);
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\Emissions\Contracts\EmissionRepository::class,
+            \App\Repositories\Sp\Emissions\SpEmissionRepository::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\Emissions\Contracts\DxReportingEngine::class,
+            \App\Services\Emissions\MinimalDxReportingEngine::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\Emissions\Contracts\EmissionArtifactStorage::class,
+            \App\Services\Emissions\DbEmissionArtifactStorage::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\Emissions\Contracts\EmissionPreviewSessionStore::class,
+            \App\Services\Emissions\DbEmissionPreviewSessionStore::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\Emissions\Contracts\EmissionMailPort::class,
+            \App\Services\Emissions\NullEmissionMailPort::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\Emissions\Contracts\EmissionAuditPort::class,
+            \App\Services\Emissions\NullEmissionAuditPort::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\Emissions\Contracts\EmissionNotificationPort::class,
+            \App\Services\Emissions\NullEmissionNotificationPort::class
+        );
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\Emissions\Contracts\EmissionTaskDispatcher::class,
+            \App\Services\Emissions\SyncNoopEmissionTaskDispatcher::class
+        );
+        $this->app->singleton(\App\Services\Emissions\PartesEmissionHostContextStore::class);
+        $this->app->singleton(\App\Services\Emissions\PartesConsultaDetalladaEmissionPort::class);
+        $this->app->singleton(\PaqSuite\LaravelCore\Emissions\EmissionSettings::class);
+        $this->app->singleton(\PaqSuite\LaravelCore\Emissions\EmissionCapabilityGuard::class);
+        $this->app->singleton(\PaqSuite\LaravelCore\Emissions\EmissionAsyncThreshold::class);
+        $this->app->singleton(\PaqSuite\LaravelCore\Emissions\EmissionDatasetPortRegistry::class, function ($app) {
+            $registry = new \PaqSuite\LaravelCore\Emissions\EmissionDatasetPortRegistry();
+            $registry->register(
+                \App\Services\Emissions\PartesConsultaDetalladaEmissionPort::PROCESS_CODE,
+                $app->make(\App\Services\Emissions\PartesConsultaDetalladaEmissionPort::class)
+            );
+
+            return $registry;
+        });
+        $this->app->singleton(\PaqSuite\LaravelCore\Emissions\EmissionPreviewService::class);
+        $this->app->singleton(\PaqSuite\LaravelCore\Emissions\EmissionOrchestrator::class);
+
         $this->app->bind(
             \App\Domain\Repositories\SystemStatusRepositoryInterface::class,
             \App\Infrastructure\Repositories\ConfigSystemStatusRepository::class
@@ -197,6 +248,10 @@ class AppServiceProvider extends ServiceProvider
             $router->aliasMiddleware($alias, $class);
         }
 
+        $router->aliasMiddleware(
+            'paqsuite.instalacion.db',
+            \App\Http\Middleware\ApplyInstalacionDatabaseMiddleware::class
+        );
         $router->aliasMiddleware('paqsuite.firstLogin', EnsureFirstLoginCompletedMiddleware::class);
         $router->aliasMiddleware('partes.profile', EnsurePartesFunctionalProfile::class);
         $router->aliasMiddleware('partes.notCliente', EnsurePartesNotCliente::class);

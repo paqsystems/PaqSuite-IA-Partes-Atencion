@@ -36,6 +36,8 @@ Estas columnas estan disponibles en **grilla y pivot** de la consulta detallada.
 
 Su finalidad es permitir lectura directa del trabajo realizado, sin perder trazabilidad del registro original.
 
+En **web**, esta pantalla es el primer proceso que monta la ventana **Emitir** del Framework (GEN-15). El dataset de la emisión es el mismo universo filtrado de la consulta. Detalle: [`15-reportes-emisiones.md`](./15-reportes-emisiones.md).
+
 **Filtro `es_tarea`:** la consulta detallada, las consultas agrupadas y el dashboard **solo consideran** registros con `es_tarea = true` (tareas de carga). Las compras de horas quedan fuera de estas vistas.
 
 ## Consultas agrupadas
@@ -102,11 +104,11 @@ La decision de ofrecer o no pivot depende del proceso, no de una obligacion univ
 
 ## Exportacion
 
-La exportacion no forma parte del nucleo cerrado del MVP base.
+La **exportación Excel/CSV de grilla o pivot** (lo visible en pantalla) sigue siendo capacidad GEN-11/12. En Consulta detallada **convive** con la **emisión** GEN-15 (PDF, Excel de reporte, mail, impresión).
 
-Debe leerse como una evolucion inmediata soportada por el framework comun y aplicable a las consultas del modulo cuando se la habilite formalmente.
+La emisión documental **sí forma parte** de la definición vigente del módulo para **Consulta detallada**: ver [`15-reportes-emisiones.md`](./15-reportes-emisiones.md). No se confunde con el botón Exportar de la toolbar de la grilla.
 
-Cuando una consulta habilite exportacion:
+Cuando una consulta habilite exportacion de grilla:
 
 - debe respetar exactamente el conjunto de datos visible para el usuario;
 - debe mantener coherencia con los filtros aplicados;
@@ -182,10 +184,10 @@ Como organizacion del negocio, el modulo puede agruparse asi:
 
 ### Informes
 
-- consultas detalladas;
+- consultas detalladas (con **emisor documental** GEN-15; ver `15-reportes-emisiones.md`);
 - consultas agrupadas;
 - **paquete de horas** (cuenta corriente de horas por cliente);
-- exportaciones cuando correspondan.
+- exportaciones de grilla cuando correspondan.
 
 ## Informe Paquete de Horas (cuenta corriente)
 

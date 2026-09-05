@@ -14,6 +14,7 @@ use PaqSuite\LaravelCore\Security\PermisoAdminRepository;
 
 /**
  * ABM permisos usuario x empresa x rol (GEN-06).
+ * Contrato SPEC: usuarioId / empresaId / rolId (+ filtros en index).
  */
 final class PermisosController extends Controller
 {
@@ -26,22 +27,26 @@ final class PermisosController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $userId = (int) $request->query('userId', 0);
-        if ($userId > 0) {
-            return ApiResponse::success([
-                'items' => $this->permisoAdminRepository->listByUserId($userId),
-            ]);
+        $filters = [];
+        if ($request->filled('usuarioId')) {
+            $filters['usuarioId'] = (int) $request->query('usuarioId');
+        }
+        if ($request->filled('empresaId')) {
+            $filters['empresaId'] = (int) $request->query('empresaId');
+        }
+        if ($request->filled('rolId')) {
+            $filters['rolId'] = (int) $request->query('rolId');
         }
 
         return ApiResponse::success([
-            'items' => $this->permisoAdminRepository->listAll(),
+            'items' => $this->permisoAdminRepository->listAll($filters),
         ]);
     }
 
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'userId' => ['required', 'integer', Rule::exists('users', 'id')],
+            'usuarioId' => ['required', 'integer', Rule::exists('users', 'id')],
             'empresaId' => ['required', 'integer', Rule::exists('pq_empresa', 'id')],
             'rolId' => ['required', 'integer', Rule::exists('pq_roles', 'id')],
         ]);
@@ -69,7 +74,7 @@ final class PermisosController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'items' => ['required', 'array', 'min:1', 'max:'.self::BATCH_MAX_ITEMS],
-            'items.*.userId' => ['required', 'integer', Rule::exists('users', 'id')],
+            'items.*.usuarioId' => ['required', 'integer', Rule::exists('users', 'id')],
             'items.*.empresaId' => ['required', 'integer', Rule::exists('pq_empresa', 'id')],
             'items.*.rolId' => ['required', 'integer', Rule::exists('pq_roles', 'id')],
         ]);
@@ -81,17 +86,7 @@ final class PermisosController extends Controller
             );
         }
 
-        /** @var list<array{userId: int, empresaId: int, rolId: int}> $items */
-        $items = array_map(
-            static fn (array $item): array => [
-                'userId' => (int) $item['userId'],
-                'empresaId' => (int) $item['empresaId'],
-                'rolId' => (int) $item['rolId'],
-            ],
-            $validator->validated()['items']
-        );
-
-        $resultado = $this->permisoAdminRepository->createBatch($items);
+        $resultado = $this->permisoAdminRepository->createBatch($validator->validated()['items']);
 
         return ApiResponse::success($resultado);
     }

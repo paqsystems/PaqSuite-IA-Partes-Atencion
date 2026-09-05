@@ -23,9 +23,10 @@ import { applyGuestLocale } from '../../i18n/i18n'
 import { logoutAndRedirect } from './authBootstrap'
 import { getAuthSession, patchAuthSession } from './authSessionStore'
 import { PartesProfilePanel } from './PartesProfilePanel'
-import { buildAuthPlatformHeaders } from './platformContext'
+import { buildAuthPlatformHeaders, resolvePlatformCliente } from './platformContext'
 import { PartesMenuSidebar } from '../partes/PartesMenuSidebar'
-import { partesMobilePolicy } from '../partes/mobile/partesMobilePolicy'
+import { PartesMobileMenu } from '../partes/PartesMobileMenu'
+import { PartesMobileConfigHost } from '../partes/mobile/PartesMobileConfigHost'
 import { LlmPreferencesModalHost } from '../llmCredentials/LlmPreferencesModalHost'
 import { resolveAuthMessage } from './authMessages'
 import {
@@ -134,10 +135,13 @@ export function AuthenticatedShell() {
         sidebarVisible={menuPresentation.sidebarVisible}
         onToggleSidebarVisible={menuPresentation.toggleSidebarVisible}
         languageSlot={
-          <LanguageSelector
-            locale={locale}
-            onLocaleChange={(next) => void handleLocaleChange(next)}
-          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <LanguageSelector
+              locale={locale}
+              onLocaleChange={(next) => void handleLocaleChange(next)}
+            />
+            <PartesMobileConfigHost getTenant={() => resolvePlatformCliente() || null} />
+          </div>
         }
         avatarSlot={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -178,18 +182,24 @@ export function AuthenticatedShell() {
           </div>
         }
         menuSlot={
-          <PartesMenuSidebar
-            platform={platform}
-            presentation={menuPresentation}
-            onItemsLoaded={handleMenuItemsLoaded}
-            onNavigate={(routeName) => {
-              if (isNativeApp() && !partesMobilePolicy.isAllowed(routeName)) {
-                navigate('/partes')
-                return
-              }
-              navigate(routeName)
-            }}
-          />
+          isNativeApp() ? (
+            <PartesMobileMenu
+              platform={platform}
+              onItemsLoaded={handleMenuItemsLoaded}
+              onNavigate={(routeName) => {
+                navigate(routeName)
+              }}
+            />
+          ) : (
+            <PartesMenuSidebar
+              platform={platform}
+              presentation={menuPresentation}
+              onItemsLoaded={handleMenuItemsLoaded}
+              onNavigate={(routeName) => {
+                navigate(routeName)
+              }}
+            />
+          )
         }
         footer={{
           brandLabel: t('shell.footer.brand'),

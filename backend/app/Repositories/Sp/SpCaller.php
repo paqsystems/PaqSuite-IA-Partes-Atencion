@@ -248,10 +248,10 @@ final class SpCaller
             ),
             'pq_sp_admin_empresas_update' => $this->sqliteAdminEmpresasUpdate($params),
             'pq_sp_admin_roles_list' => DB::select(
-                'SELECT id, codigo, nombre, acceso_total AS accesoTotal, activo FROM pq_roles ORDER BY codigo'
+                'SELECT id, codigo, nombre, descripcion, acceso_total AS accesoTotal, activo FROM pq_roles ORDER BY codigo'
             ),
             'pq_sp_admin_roles_get' => DB::select(
-                'SELECT id, codigo, nombre, acceso_total AS accesoTotal, activo FROM pq_roles WHERE id = ?',
+                'SELECT id, codigo, nombre, descripcion, acceso_total AS accesoTotal, activo FROM pq_roles WHERE id = ?',
                 [(int) $params['id']]
             ),
             'pq_sp_admin_roles_create' => $this->sqliteAdminRolesCreate($params),
@@ -511,6 +511,10 @@ final class SpCaller
         if (array_key_exists('inhabilitado', $params) && $params['inhabilitado'] !== null) {
             $patch['inhabilitado'] = (bool) $params['inhabilitado'];
         }
+        if (array_key_exists('password_hash', $params) && is_string($params['password_hash']) && $params['password_hash'] !== '') {
+            $patch['password'] = (string) $params['password_hash'];
+            $patch['first_login'] = true;
+        }
 
         DB::table('users')->where('id', $id)->update($patch);
 
@@ -599,6 +603,9 @@ final class SpCaller
         $id = DB::table('pq_roles')->insertGetId([
             'codigo' => (string) $params['codigo'],
             'nombre' => (string) $params['nombre'],
+            'descripcion' => array_key_exists('descripcion', $params)
+                ? ($params['descripcion'] !== null ? (string) $params['descripcion'] : null)
+                : null,
             'acceso_total' => (bool) ($params['acceso_total'] ?? false),
             'activo' => (bool) ($params['activo'] ?? true),
             'created_at' => now(),
@@ -606,7 +613,7 @@ final class SpCaller
         ]);
 
         return DB::select(
-            'SELECT id, codigo, nombre, acceso_total AS accesoTotal, activo FROM pq_roles WHERE id = ?',
+            'SELECT id, codigo, nombre, descripcion, acceso_total AS accesoTotal, activo FROM pq_roles WHERE id = ?',
             [$id]
         );
     }
@@ -626,6 +633,9 @@ final class SpCaller
         if (array_key_exists('nombre', $params) && $params['nombre'] !== null) {
             $patch['nombre'] = (string) $params['nombre'];
         }
+        if (array_key_exists('descripcion', $params)) {
+            $patch['descripcion'] = $params['descripcion'] !== null ? (string) $params['descripcion'] : null;
+        }
         if (array_key_exists('acceso_total', $params) && $params['acceso_total'] !== null) {
             $patch['acceso_total'] = (bool) $params['acceso_total'];
         }
@@ -636,7 +646,7 @@ final class SpCaller
         DB::table('pq_roles')->where('id', $id)->update($patch);
 
         return DB::select(
-            'SELECT id, codigo, nombre, acceso_total AS accesoTotal, activo FROM pq_roles WHERE id = ?',
+            'SELECT id, codigo, nombre, descripcion, acceso_total AS accesoTotal, activo FROM pq_roles WHERE id = ?',
             [$id]
         );
     }

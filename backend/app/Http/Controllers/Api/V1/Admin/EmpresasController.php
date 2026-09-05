@@ -14,6 +14,7 @@ use PaqSuite\LaravelCore\Security\EmpresaAdminRepository;
 
 /**
  * Consulta/edición empresas (GEN-06). MONO: sin alta/baja — solo `update`.
+ * Contrato SPEC: nombreEmpresa / habilitada / theme.
  */
 final class EmpresasController extends Controller
 {
@@ -42,9 +43,9 @@ final class EmpresasController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'nombre' => ['sometimes', 'string', 'max:255'],
-            'activo' => ['sometimes', 'boolean'],
-            'theme' => ['sometimes', 'string', Rule::in(EmpresaThemeCatalog::values())],
+            'nombreEmpresa' => ['sometimes', 'string', 'max:255'],
+            'habilitada' => ['sometimes', 'boolean'],
+            'theme' => ['sometimes', 'nullable', 'string', Rule::in(EmpresaThemeCatalog::values())],
         ]);
 
         if ($validator->fails()) {

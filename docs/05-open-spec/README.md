@@ -28,7 +28,10 @@ Documentos **SPEC-CTX-***: alcance de épica redactado como **insumo previo** al
 | [SPEC-005](100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) | Supervisión / proceso masivo | [HU-005](../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) · [TR-005](../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 | [SPEC-006](100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) | Consultas, dashboard y navegación | [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) |
 | [SPEC-007](100-SistemaPartes/SPEC-007-mobile-capacitor.md) | Mobile Capacitor del módulo | [HU-007](../03-historias-usuario/100-SistemaPartes/HU-007-mobile-capacitor.md) · [TR-007](../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) |
-| [SPEC-008](100-SistemaPartes/SPEC-008-asistente-ia-chat-documental.md) | Asistente IA — chat documental (adopción GEN-21) | [HU-008](../03-historias-usuario/100-SistemaPartes/HU-008-asistente-ia-chat-documental.md) · TR-008 *(pendiente)* |
+| [SPEC-008](100-SistemaPartes/SPEC-008-asistente-ia-chat-documental.md) | Asistente IA — chat documental (adopción GEN-21) | [HU-008](../03-historias-usuario/100-SistemaPartes/HU-008-asistente-ia-chat-documental.md) · [TR-008](../04-tareas/100-SistemaPartes/TR-008-asistente-ia-chat-documental.md) |
+| [SPEC-009](100-SistemaPartes/SPEC-009-importacion-partes-excel.md) | Importación de partes desde Excel | [HU-009](../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) · [TR-009](../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) |
+| [SPEC-010](100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md) | Smart Capture en carga diaria | [HU-010](../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md) · [TR-010](../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) |
+| [SPEC-011](100-SistemaPartes/SPEC-011-reportes-emisiones.md) | Reportes / emisiones (adopción GEN-15) | [HU-011](../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) · [TR-011](../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
 
 ### 001 – Generalidades (`001-Generalidades/`) — bloque vigente
 

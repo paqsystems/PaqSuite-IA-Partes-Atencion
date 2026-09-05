@@ -1,10 +1,12 @@
 import {
   isDevOrNonCanonicalHostname,
+  isNativeApp,
   persistClienteCode,
   readPersistedClienteCode,
   resolveClienteCode,
 } from '@paqsuite/react-core'
 import { getAuthSession } from './authSessionStore'
+import { resolveLandingClienteCode } from './partesCanonicalCliente'
 
 const browserPersistence = {
   getCookie: (name: string) => {
@@ -34,17 +36,42 @@ const browserPersistence = {
   },
 }
 
+export function readStoredClienteCode(): string {
+  const persisted = readPersistedClienteCode(browserPersistence)
+  return (persisted.sessionCliente || persisted.cookieCliente || '').trim()
+}
+
+/**
+ * Persiste `{cliente}` mientras la URL de landing todavía tiene `?cliente=`
+ * (antes de que React Router reemplace `/` → `/login` y pierda el query).
+ */
+export function bootstrapPlatformCliente(): string {
+  return resolvePlatformCliente()
+}
+
 export function resolvePlatformCliente(overrideTenant?: string): string {
   const hostname =
     typeof window !== 'undefined' ? window.location.hostname : 'localhost'
+  const search = typeof window !== 'undefined' ? window.location.search : ''
   const isDev = import.meta.env.DEV
-
   const persisted = readPersistedClienteCode(browserPersistence)
-  const fromOverride = overrideTenant?.trim()
+  const explicit =
+    overrideTenant?.trim() ||
+    (isNativeApp() ? persisted.sessionCliente || persisted.cookieCliente : null)
+
+  if (explicit) {
+    return persistClienteCode(explicit, browserPersistence)
+  }
+
+  const landingCliente = resolveLandingClienteCode({
+    hostname,
+    search,
+    overrideTenant,
+  })
 
   const cliente = resolveClienteCode({
     isDevOrNonCanonicalUrl: isDevOrNonCanonicalHostname(hostname, isDev),
-    queryCliente: fromOverride ?? null,
+    queryCliente: landingCliente,
     cookieCliente: persisted.cookieCliente,
     sessionCliente: persisted.sessionCliente,
   })

@@ -11,6 +11,7 @@ export async function loginRequest(input: {
   usuario: string
   password: string
   locale?: string
+  tenant?: string
 }) {
   return apiRequest<LoginSessionResultado>('/api/v1/auth/login', {
     method: 'POST',
@@ -20,7 +21,7 @@ export async function loginRequest(input: {
       locale: input.locale ?? 'es',
     }),
     platform: {
-      cliente: buildAuthPlatformHeaders().cliente,
+      cliente: buildAuthPlatformHeaders(input.tenant).cliente,
     },
     skipUnauthorizedHandler: true,
   })

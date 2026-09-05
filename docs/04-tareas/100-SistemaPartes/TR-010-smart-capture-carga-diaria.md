@@ -234,7 +234,7 @@ APIs de persistencia (**sin cambio de contrato**):
 
 | Riesgo | Mitigación |
 |--------|------------|
-| Paquete SC incompleto en versión npm del host | Verificar exports `@paqsuite/react-core`; alinear path packages Framework como TR-008/009 |
+| Paquete SC incompleto en versión npm del host | Verificar exports `@paqsuite/react-core@2.2.1` (Verdaccio); bump pin si falta export |
 | LLM inestable | Validar siempre en host post-modelo; no inventar ids |
 | Popup altura / panel 280px | `dialogMaxHeightPx` ajustable; scroll GEN |
 | Confusión chat vs SC | Manual + copy hint |
@@ -272,7 +272,7 @@ APIs de persistencia (**sin cambio de contrato**):
 - Nombres exactos `chooseCliente` / `chooseTipoTarea` / `chooseAsistente`: fijar en D1 si el paquete GEN ya trae kinds; no bloquear.
 - Texto concreto de `partes.smartCapture.hint`: copy en i18n en T6 (contenido libre mientras la clave exista).
 - Auditoría GEN-03 / bitácora `17`: Should; no Must Partes en esta TR salvo que el paquete lo exija al adoptar.
-- Verificar en D1 que la versión de `@paqsuite/react-core` del host exporte `SmartCapturePanel` + helpers (path packages como TR-008).
+- Verificar en D1 que la versión de `@paqsuite/react-core` del host (`2.2.1` vía Verdaccio) exporte `SmartCapturePanel` + helpers.
 
 ### Contradicciones TR ↔ HU ↔ SPEC
 
