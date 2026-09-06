@@ -32,6 +32,8 @@ export type AuthSession = {
   db: PaqSuiteDb
   empresas: AuthEmpresa[]
   activeCompanyId?: number
+  /** Código X-Paq-Cliente con el que se emitió el token (Sanctum por BD). */
+  cliente?: string
   partes?: PartesSessionContext
 }
 

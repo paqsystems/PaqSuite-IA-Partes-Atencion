@@ -4,6 +4,8 @@ const authMessageMap: Record<string, string> = {
   'auth.invalidCredentials': 'Usuario o contraseña incorrectos.',
   'auth.emailNotFound': 'El mail no existe.',
   'auth.sessionExpired': 'Su sesión ha vencido por inactividad.',
+  'auth.sessionUnauthorized':
+    'La sesión no es válida para esta empresa. Inicie sesión nuevamente.',
   'auth.password.policyUnsafe': 'La contraseña no cumple la política de seguridad.',
   'auth.password.tooShort': 'La contraseña es demasiado corta.',
   'auth.password.mismatch': 'Las contraseñas no coinciden.',

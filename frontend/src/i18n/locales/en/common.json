@@ -208,6 +208,7 @@
   "auth.invalidCredentials": "Incorrect username or password.",
   "auth.emailNotFound": "The email does not exist.",
   "auth.sessionExpired": "Your session has expired due to inactivity.",
+  "auth.sessionUnauthorized": "This session is not valid for this company. Please sign in again.",
   "auth.resetTokenInvalid": "The reset link is invalid or has expired.",
   "shell.blockedNoCompany": "You have no companies enabled.",
   "infra.transport": "Connection error. Please try again.",

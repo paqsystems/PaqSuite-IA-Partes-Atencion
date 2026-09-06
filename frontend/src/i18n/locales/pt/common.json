@@ -191,6 +191,7 @@
   "auth.invalidCredentials": "Usuário ou senha incorretos.",
   "auth.emailNotFound": "O e-mail não existe.",
   "auth.sessionExpired": "Sua sessão expirou por inatividade.",
+  "auth.sessionUnauthorized": "A sessão não é válida para esta empresa. Faça login novamente.",
   "auth.resetTokenInvalid": "O link de redefinição é inválido ou expirou.",
   "shell.blockedNoCompany": "Você não tem empresas habilitadas.",
   "infra.transport": "Erro de conexão. Tente novamente.",

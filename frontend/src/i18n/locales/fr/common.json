@@ -191,6 +191,7 @@
   "auth.invalidCredentials": "Nom d'utilisateur ou mot de passe incorrect.",
   "auth.emailNotFound": "L'e-mail n'existe pas.",
   "auth.sessionExpired": "Votre session a expiré pour cause d'inactivité.",
+  "auth.sessionUnauthorized": "La session n'est pas valide pour cette entreprise. Veuillez vous reconnecter.",
   "auth.resetTokenInvalid": "Le lien de réinitialisation est invalide ou a expiré.",
   "shell.blockedNoCompany": "Vous n'avez aucune société activée.",
   "infra.transport": "Erreur de connexion. Veuillez réessayer.",

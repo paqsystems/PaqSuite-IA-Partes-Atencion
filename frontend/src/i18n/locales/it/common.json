@@ -191,6 +191,7 @@
   "auth.invalidCredentials": "Utente o password non corretti.",
   "auth.emailNotFound": "L'email non esiste.",
   "auth.sessionExpired": "La sessione è scaduta per inattività.",
+  "auth.sessionUnauthorized": "La sessione non è valida per questa azienda. Accedere di nuovo.",
   "auth.resetTokenInvalid": "Il link di reimpostazione non è valido o è scaduto.",
   "shell.blockedNoCompany": "Non hai aziende abilitate.",
   "infra.transport": "Errore di connessione. Riprova.",

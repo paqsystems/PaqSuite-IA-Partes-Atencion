@@ -29,6 +29,7 @@ export function LoginPage() {
   const [searchParams] = useSearchParams()
   const native = isNativeApp()
   const sessionExpired = searchParams.get('expired') === '1'
+  const expiredReason = searchParams.get('reason')
   const blocked = searchParams.get('blocked') === '1'
 
   const [tenant, setTenant] = useState(() =>
@@ -46,13 +47,16 @@ export function LoginPage() {
 
   const bannerMessage = useMemo(() => {
     if (sessionExpired) {
+      if (expiredReason === 'unauthorized') {
+        return resolveAuthMessage('auth.sessionUnauthorized')
+      }
       return resolveAuthMessage('auth.sessionExpired')
     }
     if (blocked) {
       return resolveAuthMessage('shell.blockedNoCompany')
     }
     return null
-  }, [blocked, sessionExpired, t])
+  }, [blocked, expiredReason, sessionExpired, t])
 
   async function handleLocaleChange(next: LocaleCode) {
     setLocale(next)
@@ -76,10 +80,15 @@ export function LoginPage() {
       })
 
       if (result.kind === 'ok') {
-        const session = saveLoginSession(result.envelope.resultado)
+        const clienteCode = resolvePlatformCliente(native ? tenant : undefined)
+        const session = saveLoginSession(result.envelope.resultado, clienteCode)
         bootstrapAuthenticatedSession(session)
         const decision = resolvePostLoginRoute(session)
-        navigate(`${decision.route}${decision.search ?? ''}`)
+        const clienteQuery = searchParams.get('cliente')?.trim()
+        const search =
+          decision.search ??
+          (clienteQuery ? `?cliente=${encodeURIComponent(clienteQuery)}` : '')
+        navigate(`${decision.route}${search}`)
         return
       }
 

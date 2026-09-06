@@ -5,7 +5,7 @@ import {
   readPersistedClienteCode,
   resolveClienteCode,
 } from '@paqsuite/react-core'
-import { getAuthSession } from './authSessionStore'
+import { getAuthSession, invalidateSessionIfClienteMismatch } from './authSessionStore'
 import {
   isVercelFrontDoorHostname,
   resolveLandingClienteCode,
@@ -48,9 +48,12 @@ export function readStoredClienteCode(): string {
 /**
  * Persiste `{cliente}` mientras la URL de landing todavía tiene `?cliente=`
  * (antes de que React Router reemplace `/` → `/login` y pierda el query).
+ * Si había sesión de otro tenant en el mismo vercel.app, la invalida.
  */
 export function bootstrapPlatformCliente(): string {
-  return resolvePlatformCliente()
+  const cliente = resolvePlatformCliente()
+  invalidateSessionIfClienteMismatch(cliente)
+  return cliente
 }
 
 export function resolvePlatformCliente(overrideTenant?: string): string {
