@@ -66,4 +66,27 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'permission' => \App\Http\Middleware\EnsurePermission::class,
     ];
+
+    /**
+     * MUST: ResolveInstalacion + ApplyInstalacionDatabase antes de Authenticate.
+     * Si auth:sanctum corre primero, busca el token Sanctum en la BD default (PAQ)
+     * y ESTUDIOGB/DEMO fallan con 401 tras un login OK.
+     *
+     * @var array<int, class-string>
+     */
+    protected $middlewarePriority = [
+        \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
+        \Illuminate\Cookie\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \PaqSuite\LaravelCore\Http\Middleware\ResolveInstalacionMiddleware::class,
+        \App\Http\Middleware\ApplyInstalacionDatabaseMiddleware::class,
+        \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        \Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
+        \Illuminate\Contracts\Session\Middleware\AuthenticatesSessions::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \Illuminate\Auth\Middleware\Authorize::class,
+    ];
 }
