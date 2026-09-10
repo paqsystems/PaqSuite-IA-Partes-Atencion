@@ -72,6 +72,9 @@ class Kernel extends HttpKernel
      * Si auth:sanctum corre primero, busca el token Sanctum en la BD default (PAQ)
      * y ESTUDIOGB/DEMO fallan con 401 tras un login OK.
      *
+     * Tras bump a laravel-core ≥ 1.3.5 el provider antepone la misma prioridad;
+     * esta lista host puede reducirse cuando el package esté en Satis.
+     *
      * @var array<int, class-string>
      */
     protected $middlewarePriority = [

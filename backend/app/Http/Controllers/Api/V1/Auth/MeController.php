@@ -27,6 +27,9 @@ final class MeController extends Controller
         $user = $request->user();
         $empresas = $this->userEmpresasResolver->resolveForUser($user);
         $minutosWeb = (new SessionIdleMinutes($this->parametroStore))->resolve();
+        $complejidad = strtolower((string) ($this->parametroStore->getString('PasswordComplejidad', 'simple') ?? 'simple'));
+        $passwordComplejidad = $complejidad === 'segura' ? 'segura' : 'simple';
+        $passwordLongitudMin = max(1, (int) ($this->parametroStore->getInt('PasswordLongitudMin', 8) ?? 8));
 
         /** @var array<string, mixed> $partes */
         $partes = $request->attributes->get(EnsurePartesFunctionalProfile::REQUEST_ATTR, []);
@@ -42,6 +45,8 @@ final class MeController extends Controller
             'minutosWeb' => $minutosWeb,
             'empresas' => $empresas,
         ]);
+        $resultado['passwordComplejidad'] = $passwordComplejidad;
+        $resultado['passwordLongitudMin'] = $passwordLongitudMin;
 
         $resultado['partes'] = $partes;
 

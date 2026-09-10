@@ -100,7 +100,7 @@ Sin filtros de fecha aplicados, la grilla **no** carga el universo completo hist
 |-------|--------|
 | `fecha` | Obligatoria; fecha de **negocio** (no solo `created_at`). Presentación amigable (locale). Si `fecha` > fecha del sistema → **advertencia** confirmable; **no** bloqueo duro. |
 | `cliente_id` | Obligatorio; solo cliente usable (SPEC-003). Al cambiar cliente, recalcular tipos disponibles; si el `tipo_tarea_id` actual no pertenece al nuevo universo → **limpiar** `tipo_tarea_id` (queda vacío hasta nueva elección). |
-| `tipo_tarea_id` | Obligatorio (no nulo/vacío al grabar); ∈ universo SPEC-003 §4.7 para ese cliente. Default sugerido al alta: tipo con `is_default = 1` si está en el universo. Tras limpiar por cambio de cliente, no se puede grabar hasta elegir tipo válido. |
+| `tipo_tarea_id` | Obligatorio (no nulo/vacío al grabar); ∈ universo SPEC-003 §4.7 para ese cliente. **Default al abrir alta:** preseleccionar el tipo con `is_default = 1` (genéricos disponibles sin cliente); al elegir cliente, mantenerlo si sigue en el universo o reasignar el default del universo. Tras limpiar por cambio de cliente, no se puede grabar hasta elegir tipo válido. |
 | `duracion_minutos` | Entero; obligatorio; `> 0`; **múltiplo del tramo** parametrizado en `PQ_PARAMETROS_GRAL` (clave p. ej. `PartesDuracionTramoMin`; **default 15**); máximo **1440** (24 h). Persiste minutos. **UI captura:** selector de tramos en formato **`hh:mm`** (value interno = minutos). |
 | `observacion` | Obligatoria; no vacía ni solo whitespace. |
 | `sin_cargo` | Bit; **default `0` (false)** en alta y en UI nueva fila. No es “dato faltante”: siempre tiene valor. Visible como columna en grilla (column chooser). |

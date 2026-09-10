@@ -129,7 +129,7 @@ Documentar paths + 403/409/422 + `resultado.partes` no aplica aquí.
 | Filtros | Fechas (default hoy), cliente opcional, asistente (solo supervisor), estado cerrado (default todas) |
 | Grid | DX ProcessDataGrid paginado; Cliente/Tipo = descripción; Sin cargo/Presencial visibles; duración celda `hh:mm` + campo `duracionHoras` (decimal) con sumatoria; códigos/minutos ocultos por defecto (chooser); filas `cerrado` read-only |
 | Duración | SelectBox de tramos etiquetados `hh:mm` (`value` = minutos); valida múltiplo del tramo |
-| Alta | Defaults bits false; tipo default del universo si existe |
+| Alta | Defaults bits false; preseleccionar tipo `is_default` (genéricos al abrir; revalidar al elegir cliente) |
 | Cambio cliente | Limpia tipo si no ∈ universo; mensaje i18n |
 | Fecha futura | Confirm dialog → re-POST con flag |
 | Cerrar/reabrir | Botones fila solo si `esSupervisor` |

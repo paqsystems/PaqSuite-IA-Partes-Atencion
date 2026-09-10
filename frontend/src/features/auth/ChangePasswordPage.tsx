@@ -1,16 +1,36 @@
 import type { FormEvent } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Button from 'devextreme-react/button'
 import TextBox from 'devextreme-react/text-box'
 import { useNavigate } from 'react-router-dom'
-import { changePasswordRequest } from './authApi'
-import { passwordPolicyHint, resolveAuthMessage } from './authMessages'
+import { changePasswordRequest, passwordPolicyRequest } from './authApi'
+import {
+  normalizePasswordComplejidad,
+  passwordPolicyHint,
+  resolveAuthMessage,
+} from './authMessages'
 import { getAuthSession, patchAuthSession } from './authSessionStore'
 import { resolvePostLoginRoute } from './postLoginRouter'
 
 export function ChangePasswordPage() {
   const navigate = useNavigate()
   const session = getAuthSession()
+  const [policyMode, setPolicyMode] = useState<'simple' | 'segura'>(() =>
+    normalizePasswordComplejidad(session?.passwordComplejidad)
+  )
+  const [policyMin, setPolicyMin] = useState(session?.passwordLongitudMin ?? 8)
+
+  useEffect(() => {
+    if (session?.passwordComplejidad) {
+      return
+    }
+    void passwordPolicyRequest().then((result) => {
+      if (result.kind === 'ok') {
+        setPolicyMode(normalizePasswordComplejidad(result.envelope.resultado.passwordComplejidad))
+        setPolicyMin(Number(result.envelope.resultado.passwordLongitudMin) || 8)
+      }
+    })
+  }, [session?.passwordComplejidad])
 
   const [passwordActual, setPasswordActual] = useState('')
   const [password, setPassword] = useState('')
@@ -64,7 +84,7 @@ export function ChangePasswordPage() {
       {session?.firstLogin ? (
         <p className="authHint">Debe cambiar la contraseña antes de continuar.</p>
       ) : null}
-      <p className="authHint">{passwordPolicyHint('simple')}</p>
+      <p className="authHint">{passwordPolicyHint(policyMode, policyMin)}</p>
 
       {errorMessage ? <p className="error">{errorMessage}</p> : null}
 

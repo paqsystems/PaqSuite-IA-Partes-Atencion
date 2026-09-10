@@ -28,6 +28,8 @@ export type AuthSession = {
   user: AuthUser
   firstLogin: boolean
   minutosWeb: number
+  passwordComplejidad?: 'simple' | 'segura'
+  passwordLongitudMin?: number
   tenancy: PaqSuiteTenancy
   db: PaqSuiteDb
   empresas: AuthEmpresa[]

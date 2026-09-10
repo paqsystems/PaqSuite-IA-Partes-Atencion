@@ -230,11 +230,8 @@ export function CargaDiariaPage() {
   }, [load])
 
   async function loadUniverso(clienteId: number | null) {
-    if (!clienteId) {
-      setTipos([])
-      return
-    }
-    const result = await listCatalogo('tipos-tarea', `?clienteId=${clienteId}`)
+    const query = clienteId ? `?clienteId=${clienteId}` : ''
+    const result = await listCatalogo('tipos-tarea', query)
     if (result.kind === 'ok') {
       const items = result.envelope.resultado.items ?? []
       setTipos(items)
@@ -244,14 +241,24 @@ export function CargaDiariaPage() {
     return []
   }
 
-  function openCreate() {
+  function resolveDefaultTipoId(items: Record<string, unknown>[] | undefined): number | null {
+    if (!items || items.length === 0) {
+      return null
+    }
+    const defaultTipo =
+      items.find((item) => Boolean(item.isDefault) || Boolean(item.is_default)) ?? items[0]
+    return defaultTipo ? Number(defaultTipo.id) : null
+  }
+
+  async function openCreate() {
     setEditingId(null)
     setFormCerrado(false)
     const initial = emptyForm(asistenteId)
     initial.duracionMinutos = tramo
+    const generics = await loadUniverso(null)
+    initial.tipoTareaId = resolveDefaultTipoId(generics)
     formRef.current = initial
     setForm(initial)
-    setTipos([])
     resetSmartCaptureState()
     setFormOpen(true)
   }
@@ -283,16 +290,11 @@ export function CargaDiariaPage() {
   async function handleClienteChange(clienteId: number | null) {
     const items = await loadUniverso(clienteId)
     patchForm((prev) => {
-      const stillValid = items?.some((item) => Number(item.id) === prev.tipoTareaId)
-      const defaultTipo = items?.find((item) => item.isDefault) ?? items?.[0]
+      const stillValid = items.some((item) => Number(item.id) === prev.tipoTareaId)
       return {
         ...prev,
         clienteId,
-        tipoTareaId: stillValid
-          ? prev.tipoTareaId
-          : defaultTipo
-            ? Number(defaultTipo.id)
-            : null,
+        tipoTareaId: stillValid ? prev.tipoTareaId : resolveDefaultTipoId(items),
       }
     })
   }

@@ -62,6 +62,9 @@ final class LoginController extends Controller
         $token = $user->createToken('auth')->plainTextToken;
         $empresas = $this->userEmpresasResolver->resolveForUser($user);
         $minutosWeb = (new SessionIdleMinutes($this->parametroStore))->resolve();
+        $complejidad = strtolower((string) ($this->parametroStore->getString('PasswordComplejidad', 'simple') ?? 'simple'));
+        $passwordComplejidad = $complejidad === 'segura' ? 'segura' : 'simple';
+        $passwordLongitudMin = max(1, (int) ($this->parametroStore->getInt('PasswordLongitudMin', 8) ?? 8));
 
         $resultado = SessionPayloadBuilder::buildSessionResultado([
             'token' => $token,
@@ -75,6 +78,8 @@ final class LoginController extends Controller
             'minutosWeb' => $minutosWeb,
             'empresas' => $empresas,
         ]);
+        $resultado['passwordComplejidad'] = $passwordComplejidad;
+        $resultado['passwordLongitudMin'] = $passwordLongitudMin;
 
         if (isset($gateExtra['partes']) && is_array($gateExtra['partes'])) {
             $resultado['partes'] = $gateExtra['partes'];

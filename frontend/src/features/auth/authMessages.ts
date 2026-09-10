@@ -6,12 +6,20 @@ const authMessageMap: Record<string, string> = {
   'auth.sessionExpired': 'Su sesión ha vencido por inactividad.',
   'auth.sessionUnauthorized':
     'La sesión no es válida para esta empresa. Inicie sesión nuevamente.',
-  'auth.password.policyUnsafe': 'La contraseña no cumple la política de seguridad.',
-  'auth.password.tooShort': 'La contraseña es demasiado corta.',
+  'auth.password.policyUnsafe': 'La contraseña no cumple con todas las condiciones.',
+  'auth.password.tooShort': 'La contraseña no cumple con todas las condiciones.',
+  'auth.password.missingUppercase': 'La contraseña no cumple con todas las condiciones.',
+  'auth.password.missingLowercase': 'La contraseña no cumple con todas las condiciones.',
+  'auth.password.missingDigit': 'La contraseña no cumple con todas las condiciones.',
+  'auth.password.missingSpecial': 'La contraseña no cumple con todas las condiciones.',
+  'auth.password.fieldsRequired': 'Complete contraseña actual, nueva y confirmación.',
   'auth.password.mismatch': 'Las contraseñas no coinciden.',
   'auth.password.sameAsCurrent': 'La nueva contraseña debe ser distinta a la actual.',
   'auth.password.currentInvalid': 'La contraseña actual no es válida.',
+  'auth.password.invalidCurrent': 'La contraseña actual no es válida.',
+  'auth.password.resetInvalid': 'El enlace de restablecimiento no es válido o expiró.',
   'auth.resetTokenInvalid': 'El enlace de restablecimiento no es válido o expiró.',
+  'validation.failed': 'La contraseña no cumple con todas las condiciones.',
   'tenant.invalid': 'Instalación o tenant no válido.',
   'partes.auth.noFunctionalProfile':
     'No tiene perfil funcional de Partes habilitado. Contacte al administrador.',
@@ -93,9 +101,17 @@ export function resolveAuthMessage(respuesta: string, fallback?: string): string
   return respuesta
 }
 
-export function passwordPolicyHint(mode: 'simple' | 'segura' = 'simple'): string {
+export function passwordPolicyHint(
+  mode: 'simple' | 'segura' = 'simple',
+  longitudMin = 8
+): string {
+  const min = Math.max(1, Number(longitudMin) || 8)
   if (mode === 'segura') {
-    return 'Mínimo 8 caracteres, mayúscula, minúscula, dígito y signo autorizado.'
+    return `Mínimo ${min} caracteres, mayúscula, minúscula, dígito y signo autorizado (!@#$%&*_-+=.?).`
   }
-  return 'Mínimo 8 caracteres.'
+  return `Mínimo ${min} caracteres.`
+}
+
+export function normalizePasswordComplejidad(value: unknown): 'simple' | 'segura' {
+  return String(value ?? '').toLowerCase() === 'segura' ? 'segura' : 'simple'
 }

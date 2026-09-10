@@ -32,8 +32,17 @@ export function installApiAuthFetch(): void {
 
     const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined))
 
+    const isBinaryDownload =
+      /\/excel-import\/processes\/[^/?#]+\/template(?:\?|#|$)/.test(url) ||
+      /\/excel-import\/batches\/[^/?#]+\/errors\/export(?:\?|#|$)/.test(url)
+
     if (!headers.has('Accept')) {
-      headers.set('Accept', 'application/json')
+      headers.set(
+        'Accept',
+        isBinaryDownload
+          ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/octet-stream,*/*'
+          : 'application/json'
+      )
     }
 
     const token = getAuthToken()

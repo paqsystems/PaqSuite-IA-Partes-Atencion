@@ -4,7 +4,9 @@ import { getAuthToken } from '../../auth/authSessionStore'
 
 export type AdminUsuario = {
   id: number
+  /** Alias UI (columna login). API SPEC también expone `codigo`. */
   usuario: string
+  codigo?: string
   nombre: string
   email: string
   activo: boolean
@@ -52,6 +54,7 @@ export type RolAtributosResultado = {
 export type AdminPermiso = {
   id: number
   userId: number
+  usuarioId?: number
   usuario: string
   usuarioNombre: string
   empresaId: number
@@ -93,7 +96,14 @@ export async function createAdminUsuario(body: {
 }) {
   return request<{ item: AdminUsuario }>('/api/v1/admin/usuarios', {
     method: 'POST',
-    body: JSON.stringify(body),
+    // API SPEC: codigo; UI host: usuario (mismo valor).
+    body: JSON.stringify({
+      codigo: body.usuario,
+      nombre: body.nombre,
+      email: body.email,
+      password: body.password,
+      activo: body.activo,
+    }),
   })
 }
 
@@ -101,9 +111,25 @@ export async function updateAdminUsuario(
   id: number,
   body: Partial<Pick<AdminUsuario, 'usuario' | 'nombre' | 'email' | 'activo' | 'inhabilitado'>>
 ) {
+  const payload: Record<string, unknown> = {}
+  if (body.usuario !== undefined) {
+    payload.codigo = body.usuario
+  }
+  if (body.nombre !== undefined) {
+    payload.nombre = body.nombre
+  }
+  if (body.email !== undefined) {
+    payload.email = body.email
+  }
+  if (body.activo !== undefined) {
+    payload.activo = body.activo
+  }
+  if (body.inhabilitado !== undefined) {
+    payload.inhabilitado = body.inhabilitado
+  }
   return request<{ item: AdminUsuario }>(`/api/v1/admin/usuarios/${id}`, {
-    method: 'PATCH',
-    body: JSON.stringify(body),
+    method: 'PUT',
+    body: JSON.stringify(payload),
   })
 }
 

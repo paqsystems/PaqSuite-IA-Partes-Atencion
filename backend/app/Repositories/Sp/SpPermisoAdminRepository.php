@@ -98,14 +98,21 @@ final class SpPermisoAdminRepository implements PermisoAdminRepository
      */
     private function mapRow(object $row): array
     {
+        $userId = (int) ($row->usuarioId ?? $row->userId ?? 0);
+        $usuario = (string) ($row->usuario ?? '');
+        $usuarioNombre = (string) ($row->usuarioNombre ?? $row->nombre ?? '');
+
         return [
             'id' => (int) $row->id,
-            'usuarioId' => (int) ($row->usuarioId ?? $row->userId ?? 0),
-            'usuarioNombre' => (string) ($row->usuarioNombre ?? ''),
-            'empresaId' => (int) $row->empresaId,
-            'empresaNombre' => (string) $row->empresaNombre,
-            'rolId' => (int) $row->rolId,
-            'rolNombre' => (string) $row->rolNombre,
+            'userId' => $userId,
+            'usuarioId' => $userId,
+            'usuario' => $usuario,
+            'usuarioNombre' => $usuarioNombre,
+            'empresaId' => (int) ($row->empresaId ?? 0),
+            'empresaNombre' => (string) ($row->empresaNombre ?? ''),
+            'rolId' => (int) ($row->rolId ?? 0),
+            'rolCodigo' => (string) ($row->rolCodigo ?? ''),
+            'rolNombre' => (string) ($row->rolNombre ?? ''),
         ];
     }
 }

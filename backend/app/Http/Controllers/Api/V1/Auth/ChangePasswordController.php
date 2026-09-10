@@ -32,14 +32,22 @@ final class ChangePasswordController extends Controller
         $passwordConfirmation = (string) $request->input('passwordConfirmation', '');
 
         if ($passwordActual === '' || $password === '' || $passwordConfirmation === '') {
-            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::VALIDATION_FAILED);
+            return ApiResponse::error(
+                PaqSuiteEnvelopeCatalog::VALIDATION_FAILED,
+                'auth.password.fieldsRequired',
+                422
+            );
         }
 
         if ($password !== $passwordConfirmation) {
-            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::VALIDATION_FAILED);
+            return ApiResponse::error(
+                PaqSuiteEnvelopeCatalog::VALIDATION_FAILED,
+                'auth.password.mismatch',
+                422
+            );
         }
 
-        if (! Hash::check($passwordActual, $user->password)) {
+        if (!Hash::check($passwordActual, $user->password)) {
             return ApiResponse::error(
                 PaqSuiteEnvelopeCatalog::VALIDATION_FAILED,
                 'auth.password.currentInvalid',

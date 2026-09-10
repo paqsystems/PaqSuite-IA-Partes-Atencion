@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   AuthCardLayout,
   LanguageSelector,
@@ -13,8 +13,12 @@ import TextBox from 'devextreme-react/text-box'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { applyGuestLocale } from '../../i18n/i18n'
-import { resetPasswordRequest } from './authApi'
-import { passwordPolicyHint, resolveAuthMessage } from './authMessages'
+import { passwordPolicyRequest, resetPasswordRequest } from './authApi'
+import {
+  normalizePasswordComplejidad,
+  passwordPolicyHint,
+  resolveAuthMessage,
+} from './authMessages'
 import { resolvePartesAuthHero } from './partesAuthHero'
 
 export function ResetPasswordPage() {
@@ -30,8 +34,19 @@ export function ResetPasswordPage() {
   )
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [policyMode, setPolicyMode] = useState<'simple' | 'segura'>('simple')
+  const [policyMin, setPolicyMin] = useState(8)
 
   const authHero = resolvePartesAuthHero(t)
+
+  useEffect(() => {
+    void passwordPolicyRequest().then((result) => {
+      if (result.kind === 'ok') {
+        setPolicyMode(normalizePasswordComplejidad(result.envelope.resultado.passwordComplejidad))
+        setPolicyMin(Number(result.envelope.resultado.passwordLongitudMin) || 8)
+      }
+    })
+  }, [])
 
   async function handleLocaleChange(next: LocaleCode) {
     setLocale(next)
@@ -77,7 +92,7 @@ export function ResetPasswordPage() {
     <AuthCardLayout
       testId="authResetPage"
       title={t('reset.title')}
-      hint={passwordPolicyHint('simple')}
+      hint={passwordPolicyHint(policyMode, policyMin)}
       companyLogoUrl={authHero.companyLogoUrl}
       toolbar={
         <LanguageSelector

@@ -73,7 +73,7 @@ export function UsuariosAdminPage() {
   function openEdit(row: AdminUsuario) {
     setEditingId(row.id)
     setForm({
-      usuario: row.usuario,
+      usuario: row.usuario || row.codigo || '',
       nombre: row.nombre,
       email: row.email,
       password: '',
@@ -153,7 +153,11 @@ export function UsuariosAdminPage() {
         >
           <Paging defaultPageSize={20} />
           <Pager visible showPageSizeSelector />
-          <Column dataField="usuario" caption={t('admin.usuarios.field.usuario')} />
+          <Column
+            dataField="usuario"
+            caption={t('admin.usuarios.field.usuario')}
+            calculateCellValue={(row: AdminUsuario) => row.usuario || row.codigo || ''}
+          />
           <Column dataField="nombre" caption={t('admin.usuarios.field.nombre')} />
           <Column dataField="email" caption={t('admin.usuarios.field.email')} />
           <Column dataField="activo" caption={t('admin.common.activo')} dataType="boolean" />
