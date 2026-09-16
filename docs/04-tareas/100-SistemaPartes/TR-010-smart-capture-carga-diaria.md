@@ -9,9 +9,9 @@
 | **Roles** | Asistente / supervisor (cliente denegado) |
 | **Dependencias** | [TR-004](./TR-004-operacion-carga-diaria.md) (modal + upsert tarea); [TR-002](./TR-002-identidad-funcional-y-acceso.md); [TR-003](./TR-003-maestros-y-catalogos.md); [TR-008](./TR-008-asistente-ia-chat-documental.md) (BYOK + `PAQSUITE_CHAT_LLM_TIMEOUT_SECONDS`); `@paqsuite/react-core` (`SmartCapturePanel`, `postSmartCaptureTurn`, `applySmartCaptureActions`, `buildSmartCaptureTurnRequest`, `useSmartCapturePendingChoice`); GEN-03 / TR-GEN-03-* |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | En Control Calidad |
+| **Estado** | Finalizado |
 | **Revisión C1** | Apto con observaciones (ver §11) |
-| **Última actualización** | 2026-09-15 |
+| **Última actualización** | 2026-09-16 |
 
 **Origen:** [HU-010](../../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md)  
 **Referencia SPEC:** [SPEC-010](../../05-open-spec/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md)  
@@ -42,6 +42,7 @@ Como asistente o supervisor quiero usar Smart Capture en el modal de alta/edici�
 - Gates: BYOK, cerrado→disabled, no cliente, no native.
 - Timeout LLM = **`config('paqsuite.llmTimeoutSeconds')`** / `PAQSUITE_CHAT_LLM_TIMEOUT_SECONDS` (TR-008).
 - Hint i18n Partes; OpenAPI; tests; manual breve.
+- **(CC-PQ #3, 09/08)** `setField` visible en controles DX; apply parcial si duración inválida; orden cliente → recarga tipos → tipo; parser `h:mm` vs decimal (`1:25` = 85 min inválido; `1.25 h` = 75 min válido).
 
 ### Out of scope
 
@@ -83,6 +84,9 @@ Mapear HU CA-01…16:
 | CA-14 | Timeout turno = `paqsuite.llmTimeoutSeconds` (mismo env chat); FE `AbortSignal` acorde si aplica |
 | CA-15 | `isNativeApp()` → no montar panel |
 | CA-16 | Cliente: no llega al modal de carga; API turno → denegación `partes.notCliente` |
+| CA-CC3-07 | Feature: mensaje con códigos/nombres únicos → `actions` con `setField` clienteId y asistenteId; Vitest `applyPartesAction`; SelectBox `value` no null |
+| CA-CC3-08 | Duración 85 / `1:25`: sin `setField` duracionMinutos (o needsRefine); sí setField de lookups OK |
+| CA-CC3-09 | setField observacion/fecha/tipo se refleja en controles |
 
 ---
 
@@ -107,6 +111,10 @@ Mapear HU CA-01…16:
 | RN-TR-15 | OpenAPI: path en `OpenApiPathsPartesOperacion` (o tag **Partes Tareas** / Smart Capture). |
 | RN-TR-16 | Manual: párrafo en `docs/99-manual-usuario/Partes-Atencion.md` — SC en modal ≠ Asistente IA avatar. |
 | RN-TR-17 | Acceso datos maestros/tareas vía SP / ops existentes (MUST BASE); sin Eloquent CRUD nuevo de dominio. |
+| RN-TR-CC3-20 | `PartesTareaSmartCaptureTurnService`: lookups 1 → `setField`; duración inválida sin `return` temprano que descarte acciones acumuladas; fallback extractor si LLM devuelve prosa vacía. |
+| RN-TR-CC3-21 | `applyPartesAction` / `CargaDiariaPage`: `setForm` = state de SelectBox; **await** `onClienteIdChange` antes de aplicar `tipoTareaId`; `formRef` coherente. |
+| RN-TR-CC3-22 | Parser duración: `h:mm` reloj ≠ decimal horas (`1:25` vs `1.25`). |
+| RN-TR-CC3-23 | Feature LACAPOL+PQ; Vitest apply; E2E smoke modal con valor en `partesCargaCliente` / asistente. |
 
 ### Actions Must (nombres estables)
 
@@ -196,7 +204,7 @@ APIs de persistencia (**sin cambio de contrato**):
 | Panel | `SmartCapturePanel` `@paqsuite/react-core` |
 | Props | `enabled={!cerrado && !isNativeApp() && !isCliente}`; `hintKey`/`hintText` vía i18n `partes.smartCapture.hint`; credentials = mismas que chat/BYOK host; `onOpenPreferences` → modal LLM existente (TR-008) |
 | Turno | Helper host: armar request + `postSmartCaptureTurn('/api/v1/partes/tareas/asistente/turn')` |
-| Actions | `applySmartCaptureActions` + adapters setField/save/pendingChoice |
+| Actions | `applySmartCaptureActions` + adapters setField/save/pendingChoice; apply visible en controles DX tras cargar `dataSource` |
 | State | Thread + `pendingChoice` en estado del modal (reset al cerrar Popup) |
 | Mobile / cliente | No montar |
 | i18n | `partes.smartCapture.*` (+ claves GEN del panel si aplica `t`) |
@@ -291,3 +299,7 @@ APIs de persistencia (**sin cambio de contrato**):
 |-------|--------|
 | 2026-08-03 | Parte C: TR-010 desde SPEC-010 + HU-010 (post A1). |
 | 2026-08-03 | C1: 4201 (no 4301); pendingChoice fecha; fields canónicos; defaults FE; veredicto Apto con observaciones. |
+| 2026-09-15 | Parte D CC-PQ #3: `setField` parcial, parser reloj vs decimal, apply a SelectBox tras dataSource. |
+| 2026-09-16 | Fallback extractor cliente/asistente/duración si LLM devuelve prosa vacía; imágenes Anthropic/Gemini. |
+| 2026-09-16 | Parte F: F1/F Aprobado — [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-TR-010-update-CC-PQ-03-2026-09-16.md). |
+| 2026-09-16 | Parte I: fusionado TR-010-update (CC-PQ #3, 09/08) en esta TR; update eliminado. Estado → Finalizado. |

@@ -45,10 +45,7 @@ final class ExcelImportController extends CapabilityEnvelopeController
 
         $binary = $this->binaryExporter->template($process);
 
-        return response($binary, 200, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="'.$codigo.'-plantilla.xlsx"',
-        ]);
+        return $this->xlsxAttachment($binary, $codigo.'-plantilla.xlsx');
     }
 
     public function store(Request $request): JsonResponse
@@ -180,10 +177,7 @@ final class ExcelImportController extends CapabilityEnvelopeController
         $allErrors = $this->repository->errors($batchId, 1, 10_000);
         $binary = $this->binaryExporter->errors($allErrors);
 
-        return response($binary, 200, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="batch-'.$batchId.'-errors.xlsx"',
-        ]);
+        return $this->xlsxAttachment($binary, 'batch-'.$batchId.'-errors.xlsx');
     }
 
     public function process(Request $request, string $batchId): JsonResponse
@@ -234,6 +228,17 @@ final class ExcelImportController extends CapabilityEnvelopeController
         }
 
         return (int) $raw;
+    }
+
+    private function xlsxAttachment(string $binary, string $fileName): Response
+    {
+        return response($binary, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+            'Content-Length' => (string) strlen($binary),
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store',
+        ]);
     }
 
     private function fromException(ExcelImportException $exception): JsonResponse

@@ -47,6 +47,7 @@ const authMessageMap: Record<string, string> = {
   'partes.tarea.duracionInvalida':
     'La duración debe ser un múltiplo del tramo configurado, mayor a 0 y hasta 1440.',
   'partes.tarea.fechaFuturaConfirmacion': 'Confirme para registrar una fecha futura.',
+  'partes.tarea.fechaInvalida': 'La fecha no es válida.',
   'partes.tarea.conflictoVersion':
     'La tarea fue modificada por otro usuario. Refresque e intente nuevamente.',
   'partes.tarea.cerradaNoEditable': 'No se puede editar una tarea cerrada.',

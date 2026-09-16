@@ -3,6 +3,7 @@ import { Column, Paging, Pager, Selection } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
 import CheckBox from 'devextreme-react/check-box'
 import DateBox from 'devextreme-react/date-box'
+import Popup from 'devextreme-react/popup'
 import SelectBox from 'devextreme-react/select-box'
 import { confirm } from 'devextreme/ui/dialog'
 import { Navigate } from 'react-router-dom'
@@ -28,8 +29,11 @@ import {
   listTareaIds,
   masivoActualizar,
   masivoSetCerrado,
+  type MasivoCamposUpdate,
   type TareaIdItem,
 } from './partesMasivoApi'
+import { buildMasivoApplyPreview, type MasivoApplyPreview } from './masivoApplyPreview'
+import { masivoApplyFechaErrorKey } from './masivoApplyValidation'
 import { buildMasivoCamposUpdate } from './partesMasivoCampos'
 import {
   isSpuriousMasivoClear,
@@ -84,6 +88,16 @@ function ProcesoMasivoView() {
   const [applyUsuarioId, setApplyUsuarioId] = useState<number | null>(null)
   const [applyFecha, setApplyFecha] = useState<string>('')
   const [touchFecha, setTouchFecha] = useState(false)
+  const [applyConfirmOpen, setApplyConfirmOpen] = useState(false)
+  const [applyConfirmPreview, setApplyConfirmPreview] = useState<MasivoApplyPreview | null>(null)
+  const [applyConfirmError, setApplyConfirmError] = useState<string | null>(null)
+  const [applyErrorOpen, setApplyErrorOpen] = useState(false)
+  const [applyErrorMessage, setApplyErrorMessage] = useState('')
+  const [applySubmitting, setApplySubmitting] = useState(false)
+  const pendingApplyRef = useRef<{
+    campos: MasivoCamposUpdate
+    items: TareaIdItem[]
+  } | null>(null)
 
   const filters: TareaListQuery = useMemo(
     () => ({
@@ -294,10 +308,33 @@ function ProcesoMasivoView() {
     }
   }
 
+  function showApplyError(message: string) {
+    setApplyErrorMessage(message)
+    setApplyErrorOpen(true)
+  }
+
+  function closeApplyConfirm() {
+    setApplyConfirmOpen(false)
+    setApplyConfirmPreview(null)
+    setApplyConfirmError(null)
+    pendingApplyRef.current = null
+  }
+
+  function resetApplyCampos() {
+    setApplyTipoTareaId(null)
+    setTouchSinCargo(false)
+    setApplySinCargo(false)
+    setTouchPresencial(false)
+    setApplyPresencial(false)
+    setApplyUsuarioId(null)
+    setTouchFecha(false)
+    setApplyFecha('')
+  }
+
   async function runActualizarCampos() {
     const items = selectedItems()
     if (items.length === 0) {
-      setError(resolveAuthMessage('partes.masivo.emptySelection'))
+      showApplyError(resolveAuthMessage('partes.masivo.emptySelection'))
       return
     }
     const campos = buildMasivoCamposUpdate({
@@ -310,64 +347,71 @@ function ProcesoMasivoView() {
       fecha: touchFecha ? applyFecha : null,
     })
     if (!campos) {
-      setError(resolveAuthMessage('partes.masivo.atributoInvalido'))
+      showApplyError(resolveAuthMessage('partes.masivo.atributoInvalido'))
       return
     }
-    const tipoLabel =
-      applyTipoTareaId == null
-        ? '—'
-        : (() => {
-            const tipo = tiposTarea.find((row) => Number(row.id) === applyTipoTareaId)
-            return tipo
-              ? `${String(tipo.code ?? '')} — ${String(tipo.descripcion ?? '')}`
-              : String(applyTipoTareaId)
-          })()
-    const asistenteLabel =
-      applyUsuarioId == null
-        ? '(sin cambio)'
-        : (() => {
-            const asistente = asistentes.find((row) => Number(row.id) === applyUsuarioId)
-            return asistente
-              ? `${String(asistente.code ?? '')} — ${String(asistente.nombre ?? '')}`
-              : String(applyUsuarioId)
-          })()
-    const sample = items
-      .slice(0, 5)
-      .map((item) => `#${item.id} ${item.fecha ?? ''} ${item.usuarioCode ?? ''}`.trim())
-      .join('\n')
-    const ok = await confirm(
-      `Aplicar cambios a ${items.length} parte(s).\n` +
-        `Tipo de tarea: ${applyTipoTareaId == null ? '(sin cambio)' : tipoLabel}\n` +
-        `Sin cargo: ${touchSinCargo ? (applySinCargo ? 'Sí' : 'No') : '(sin cambio)'}\n` +
-        `Presencial: ${touchPresencial ? (applyPresencial ? 'Sí' : 'No') : '(sin cambio)'}\n` +
-        `Asistente: ${asistenteLabel}\n` +
-        `Fecha: ${touchFecha && applyFecha ? applyFecha : '(sin cambio)'}\n` +
-        `Rango filtro: ${fechaDesde} → ${fechaHasta}\n` +
-        `Muestra:\n${sample}`,
-      'Confirmar actualización masiva'
+    const fechaErrorKey = masivoApplyFechaErrorKey(touchFecha, applyFecha)
+    if (fechaErrorKey) {
+      showApplyError(resolveAuthMessage(fechaErrorKey))
+      return
+    }
+    pendingApplyRef.current = { campos, items }
+    setApplyConfirmPreview(
+      buildMasivoApplyPreview({
+        itemCount: items.length,
+        applyTipoTareaId,
+        tiposTarea,
+        touchSinCargo,
+        applySinCargo,
+        touchPresencial,
+        applyPresencial,
+        applyUsuarioId,
+        asistentes,
+        touchFecha,
+        applyFecha,
+        fechaDesde,
+        fechaHasta,
+        items,
+      })
     )
-    if (!ok) {
+    setApplyConfirmError(null)
+    setApplyConfirmOpen(true)
+  }
+
+  async function confirmApplyCampos() {
+    const pending = pendingApplyRef.current
+    if (!pending) {
+      closeApplyConfirm()
       return
     }
-    const result = await masivoActualizar(
-      campos,
-      items.map((item) => ({ id: item.id, rowVersion: item.rowVersion }))
-    )
-    if (result.kind === 'ok') {
-      clearSelection()
-      setApplyTipoTareaId(null)
-      setTouchSinCargo(false)
-      setApplySinCargo(false)
-      setTouchPresencial(false)
-      setApplyPresencial(false)
-      setApplyUsuarioId(null)
-      setTouchFecha(false)
-      setApplyFecha('')
-      void load()
+    const fechaErrorKey = masivoApplyFechaErrorKey(touchFecha, applyFecha)
+    if (fechaErrorKey) {
+      setApplyConfirmError(resolveAuthMessage(fechaErrorKey))
       return
     }
-    if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+    setApplyConfirmError(null)
+    setApplySubmitting(true)
+    try {
+      const result = await masivoActualizar(
+        pending.campos,
+        pending.items.map((item) => ({ id: item.id, rowVersion: item.rowVersion }))
+      )
+      if (result.kind === 'ok') {
+        closeApplyConfirm()
+        clearSelection()
+        resetApplyCampos()
+        void load()
+        return
+      }
+      if (result.kind === 'envelopeError') {
+        setApplyConfirmError(resolveAuthMessage(result.envelope.respuesta))
+        return
+      }
+      setApplyConfirmError(resolveAuthMessage(result.i18nKey || 'infra.transport'))
+    } catch {
+      setApplyConfirmError(resolveAuthMessage('infra.unexpected'))
+    } finally {
+      setApplySubmitting(false)
     }
   }
 
@@ -584,6 +628,106 @@ function ProcesoMasivoView() {
           {error}
         </div>
       ) : null}
+
+      <Popup
+        visible={applyConfirmOpen}
+        onHiding={() => {
+          if (!applySubmitting) {
+            closeApplyConfirm()
+          }
+        }}
+        title="Confirmar actualización masiva"
+        width={480}
+        height="auto"
+        showCloseButton={!applySubmitting}
+        wrapperAttr={{ 'data-testid': 'partesMasivoApplyConfirmDialog' }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 8 }}>
+          {applyConfirmError ? (
+            <div
+              role="alert"
+              data-testid="partesMasivoApplyConfirmError"
+              style={{
+                padding: '8px 10px',
+                borderRadius: 4,
+                background: 'var(--dx-color-danger, #fde7e9)',
+                color: 'var(--dx-color-danger, #d13438)',
+              }}
+            >
+              {applyConfirmError}
+            </div>
+          ) : null}
+          {applyConfirmPreview ? (
+            <div
+              data-testid="partesMasivoApplyConfirmSummary"
+              style={{ display: 'flex', flexDirection: 'column', gap: 6 }}
+            >
+              {applyConfirmPreview.rows.map((row) => (
+                <div
+                  key={row.label}
+                  style={{ display: 'flex', gap: 8, alignItems: 'baseline', flexWrap: 'wrap' }}
+                >
+                  <strong style={{ minWidth: 108, flexShrink: 0 }}>{row.label}:</strong>
+                  <span>{row.value}</span>
+                </div>
+              ))}
+              {applyConfirmPreview.muestra.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <strong>Muestra</strong>
+                  {applyConfirmPreview.muestra.map((line) => (
+                    <span key={line}>{line}</span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <Button
+              text="Cancelar"
+              disabled={applySubmitting}
+              onClick={closeApplyConfirm}
+              elementAttr={{ 'data-testid': 'partesMasivoApplyConfirmCancel' }}
+            />
+            <Button
+              text="Confirmar"
+              type="default"
+              disabled={applySubmitting}
+              onClick={() => void confirmApplyCampos()}
+              elementAttr={{ 'data-testid': 'partesMasivoApplyConfirmOk' }}
+            />
+          </div>
+        </div>
+      </Popup>
+
+      <Popup
+        visible={applyErrorOpen}
+        onHiding={() => {
+          setApplyErrorOpen(false)
+          setApplyErrorMessage('')
+        }}
+        title="Error al aplicar cambios"
+        width={480}
+        height="auto"
+        showCloseButton
+        wrapperAttr={{ 'data-testid': 'partesMasivoApplyErrorDialog' }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 8 }}>
+          <div role="alert" data-testid="partesMasivoApplyError">
+            {applyErrorMessage}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              text="Cerrar"
+              type="default"
+              onClick={() => {
+                setApplyErrorOpen(false)
+                setApplyErrorMessage('')
+              }}
+              elementAttr={{ 'data-testid': 'partesMasivoApplyErrorClose' }}
+            />
+          </div>
+        </div>
+      </Popup>
 
       <div data-testid="partesMasivoGrid" ref={gridHostRef}>
         <ProcessDataGrid

@@ -3,8 +3,10 @@
 namespace App\Services\Partes\SmartCapture;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use PaqSuite\LaravelCore\Llm\LlmCredentialResolver;
 use PaqSuite\LaravelCore\Llm\LlmDomainException;
+use PaqSuite\LaravelCore\SmartCapture\SmartCaptureDomainException;
 use PaqSuite\LaravelCore\SmartCapture\SmartCaptureGuardOptions;
 use PaqSuite\LaravelCore\SmartCapture\SmartCaptureTurnGuard;
 
@@ -19,8 +21,7 @@ final class PartesTareaSmartCaptureTurnService
         private readonly LlmCredentialResolver $credentialResolver,
         private readonly PartesSmartCaptureProposalPort $proposalPort,
         private readonly PartesTareaSmartCaptureCatalogResolver $catalogResolver,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array<string, mixed>  $body
@@ -63,15 +64,69 @@ final class PartesTareaSmartCaptureTurnService
             return $pendingResolution;
         }
 
-        $proposal = $this->proposalPort->propose(
-            $message,
-            $draftContext,
-            $pendingChoice,
-            $images,
-            $credential,
-        );
+        $llmFailed = false;
+        try {
+            $proposal = $this->proposalPort->propose(
+                $message,
+                $draftContext,
+                $pendingChoice,
+                $images,
+                $credential,
+            );
+        } catch (SmartCaptureDomainException $exception) {
+            throw $exception;
+        } catch (\Throwable $exception) {
+            $llmFailed = true;
+            Log::warning('partes.smartCapture.llmFailed', [
+                'exception' => $exception::class,
+                'detail' => $exception->getMessage(),
+            ]);
+            $proposal = [
+                'replyText' => '',
+                'save' => false,
+                'fields' => [],
+            ];
+        }
+
+        $proposal = $this->enrichProposalFromUtterance($message, $proposal, ! $llmFailed);
+        if ($llmFailed && ($proposal['fields'] ?? []) === []) {
+            return $this->noopResult('partes.smartCapture.turnError');
+        }
 
         return $this->buildResultFromProposal($proposal, $draftContext);
+    }
+
+    /**
+     * Completa `fields` desde el prompt (y la prosa del modelo) si el JSON vino vacío.
+     *
+     * @param  array{replyText: string, save: bool, fields: array<string, mixed>}  $proposal
+     * @return array{replyText: string, save: bool, fields: array<string, mixed>}
+     */
+    private function enrichProposalFromUtterance(string $message, array $proposal, bool $useReplyText): array
+    {
+        $fromMessage = PartesSmartCaptureFieldExtractor::fromText($message);
+        $replyText = trim((string) ($proposal['replyText'] ?? ''));
+        $fromReply = ['fields' => [], 'save' => false];
+        if ($useReplyText && $replyText !== '' && ! str_starts_with($replyText, 'partes.smartCapture.')) {
+            $fromReply = PartesSmartCaptureFieldExtractor::fromText($replyText);
+        }
+
+        $llmFields = is_array($proposal['fields'] ?? null) ? $proposal['fields'] : [];
+        $fields = PartesSmartCaptureFieldExtractor::mergeFields(
+            $fromMessage['fields'],
+            $fromReply['fields'],
+            $llmFields,
+        );
+
+        if ($replyText === '' && $fields !== []) {
+            $replyText = 'partes.smartCapture.ok';
+        }
+
+        return [
+            'replyText' => $replyText !== '' ? $replyText : 'partes.smartCapture.noop',
+            'save' => (bool) ($proposal['save'] ?? false) || $fromMessage['save'],
+            'fields' => $fields,
+        ];
     }
 
     /**
@@ -275,6 +330,7 @@ final class PartesTareaSmartCaptureTurnService
                 if ($parsed === null || ! PartesDuracionParser::isValidTramo($parsed, $tramo)) {
                     $actions[] = $this->action('needsRefine', ['field' => 'duracionMinutos']);
                     $replyParts[] = 'partes.smartCapture.duracionInvalida';
+
                     continue;
                 }
                 $value = $parsed;
