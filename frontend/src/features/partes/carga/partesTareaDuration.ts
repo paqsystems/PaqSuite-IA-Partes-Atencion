@@ -133,3 +133,24 @@ export const dateSerializationFormat = 'yyyy-MM-dd'
 export function isFechaFutura(fechaIso: string, hoyIso = todayIsoDate()): boolean {
   return fechaIso > hoyIso
 }
+
+/** Valida ISO `yyyy-MM-dd` de calendario real (rechaza años inválidos como 0000). */
+export function isValidIsoDate(value: string): boolean {
+  const trimmed = String(value ?? '').trim()
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed)
+  if (!match) {
+    return false
+  }
+  const year = Number(match[1])
+  const month = Number(match[2])
+  const day = Number(match[3])
+  if (year < 1900 || month < 1 || month > 12 || day < 1 || day > 31) {
+    return false
+  }
+  const parsed = new Date(year, month - 1, day)
+  return (
+    parsed.getFullYear() === year &&
+    parsed.getMonth() === month - 1 &&
+    parsed.getDate() === day
+  )
+}

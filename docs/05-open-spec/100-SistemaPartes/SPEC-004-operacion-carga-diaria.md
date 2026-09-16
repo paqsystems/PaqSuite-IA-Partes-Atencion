@@ -7,8 +7,8 @@
 | ID | SPEC-004 |
 | Título | Operación / carga diaria de tareas |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | En revisión |
-| Última actualización | 2026-09-15 |
+| Estado | Finalizado |
+| Última actualización | 2026-09-16 |
 | HU relacionada(s) | [HU-004-operacion-carga-diaria](../../03-historias-usuario/100-SistemaPartes/HU-004-operacion-carga-diaria.md) |
 | TR relacionada(s) | [TR-004-operacion-carga-diaria](../../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md) |
 | Depende de | [SPEC-001](./SPEC-001-modelo-datos-modulo.md), [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-003](./SPEC-003-maestros-y-catalogos.md) (§4.7 universo tipos) |
@@ -37,6 +37,9 @@
 - Advertencia (no bloqueo) ante fecha futura.
 - **Complemento IA fuera del MVP** de carga diaria (solo carga manual); evolutivo posterior sin sustituir confirmación ni validaciones.
 - i18n + `data-testid`; patrón DevExtreme (grilla + editores).
+- **Columna de duración en horas decimales** visible en la grilla (`duracion_minutos / 60`), además de `hh:mm`.
+- **Exportación Excel** del conjunto presentado en la grilla de carga diaria (capacidad GEN-11-export / `ProcessDataGrid`).
+- **Plantillas de layout GEN-11 compartidas** entre usuarios del mismo `proceso`+`gridId` (sin parámetro para ocultar ajenas).
 
 ### 2.2 Fuera de alcance
 
@@ -46,8 +49,7 @@
 - Carga **mobile** individual / kardex (SPEC-007); este SPEC es **web**.
 - Cliente funcional: no carga tareas.
 - Facturación, aprobación formal, automatizaciones IA (incluida ayuda en pantalla de carga en este MVP).
-- **Importación masiva desde Excel** → [SPEC-009](./SPEC-009-importacion-partes-excel.md) (no forma parte de este SPEC).
-- Exportación Excel como Must del MVP de carga.
+- **Importación masiva desde Excel** → [SPEC-009](./SPEC-009-importacion-partes-excel.md) (no forma parte de este SPEC). El **export** de grilla **no** es esa importación.
 
 ---
 
@@ -120,7 +122,12 @@ Mensajes: envelope + claves i18n `partes.tarea.*` (validación / permiso / cerra
   - **Cliente:** descripción (`clienteNombre`); código disponible vía column chooser (`clienteCode`).
   - **Tipo de tarea:** descripción (`tipoTareaDescripcion`); código disponible vía column chooser (`tipoTareaCode`).
   - **Sin cargo** y **Presencial:** columnas booleanas disponibles (visibles por defecto; ocultables con column chooser).
-  - **Duración:** celdas en **`hh:mm`**; exposición numérica en grilla como **horas decimales** (`duracionHoras = duracion_minutos / 60`) para permitir **sumatoria** DevExtreme (pie / menú contextual). Persistencia y API siguen en minutos. Columna técnica `duracionMinutos` oculta por defecto (chooser).
+  - **Duración (hh:mm):** columna visible; celdas en **`hh:mm`** (ej. `02:15`, `15:30`, `14:45`).
+  - **Duración decimal:** columna visible adicional; valor = `duracion_minutos / 60` (horas). Ejemplos: `02:15` → `2.25`; `15:30` → `15.5`; `14:45` → `14.75`.
+  - Persistencia y API siguen en minutos. `duracionMinutos` puede seguir oculta por defecto (column chooser).
+  - Sumatoria DevExtreme sobre la columna decimal (o equivalente `duracionHoras`).
+  - Ambas columnas de duración **salen en el Excel** exportado (valor numérico decimal en la columna decimal; `hh:mm` o texto equivalente en la de reloj, según el export GEN).
+- **Export Excel:** la grilla de carga diaria **debe** exponer export Excel del framework (`canExport` / toolbar GEN). No inventar un exporter propio.
 - **Insertar / actualizar:** validar §4.4; persistir vía SP (MUST). En **update**, el cliente envía `rowVersion` leído en el listado; si no coincide → **409** (conflicto); UI invita a refrescar.
 - **Eliminar:** solo si `cerrado = 0` y el actor tiene derecho sobre la fila (propia o supervisor); también con `rowVersion` (mismo criterio 409).
 - Tarea `cerrado = 1`: **no** editar campos de negocio ni eliminar en el flujo ordinario (lectura en grilla permitida).
@@ -137,6 +144,19 @@ Mensajes: envelope + claves i18n `partes.tarea.*` (validación / permiso / cerra
 | Reabrir `cerrado = 0` (fila individual) | No | Sí (acción explícita) |
 
 El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semántica de `cerrado`, otra UX).
+
+### 4.10 Plantillas de grilla (GEN-11)
+
+Carga diaria de [host Partes]: adoptar GEN-11. UI/motor = `ProcessDataGrid` + `GridLayoutToolbar`. No reimplementar.
+
+| ID | Norma |
+|----|--------|
+| R-OP-15 | El listado de plantillas del par `proceso`+`gridId` es **compartido**: cualquier usuario autenticado del módulo **ve y puede aplicar** las plantillas de otros usuarios del mismo par. |
+| R-OP-16 | **No** existe parámetro de instalación ni clave en `PQ_PARAMETROS_GRAL` para ocultar plantillas ajenas. El único flag GEN es `gridLayoutsEnabled` (oculta la toolbar de layouts; la grilla sigue operativa). |
+| R-OP-17 | Solo el **creador** actualiza o elimina su plantilla; ajenas: aplicar y «Guardar como» habilitados; Guardar/Eliminar deshabilitados. Propias: sufijo visual ` (*)` (no persistido). |
+| R-OP-18 | El contrato es el de GEN-11 (API `/api/v1/grid-layouts*`). El host no debe filtrar el listado solo por `user_id` del caller. |
+
+**Alcance de pantallas:** el hallazgo se reportó en Carga de Partes Diarios. La API de layouts es **única del host**; al corregir el listado compartido, **masivo e informes** que usen `ProcessDataGrid` heredan el mismo contrato.
 
 ### 4.7 Delimitación API (capa 1)
 
@@ -163,7 +183,8 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | R-OP-05b | Listado carga diaria: paginación estándar DevExtreme. |
 | R-OP-05c | Grilla: Cliente y Tipo de tarea muestran **descripción**; códigos opcionales vía column chooser. |
 | R-OP-05d | Grilla: columnas **Sin cargo** y **Presencial** disponibles. |
-| R-OP-05e | Grilla: duración visible en **`hh:mm`**; sumatoria sobre horas decimales (`duracionHoras`); API/DB en minutos. |
+| R-OP-05e | Grilla: duración visible en **`hh:mm` y en horas decimales** (`minutos/60`); sumatoria sobre decimales; API/DB en minutos. |
+| R-OP-05f | Grilla de carga diaria: export Excel GEN del conjunto presentado. |
 | R-OP-06 | `observacion` obligatoria (no blank). |
 | R-OP-07 | Cliente/tipo usables; tipo ∈ universo del cliente (SPEC-003). Al cambiar cliente con tipo fuera de universo → limpiar tipo; grabar con tipo vacío → rechazo. |
 | R-OP-07b | Alta/edición rechazada si falta cualquier campo obligatorio de captura (§4.4). `sin_cargo` / `presencial` default `0`. |
@@ -175,6 +196,7 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | R-OP-12 | IA **fuera del MVP** de carga diaria; no bloquea ni es requisito. Evolutivo: complementar sin sustituir confirmación ni validaciones. |
 | R-OP-13 | Listado de carga diaria filtra implícitamente `es_tarea = 1`; no muestra compras/movimientos de paquete de horas. |
 | R-OP-14 | Alta/edición desde carga diaria persiste siempre `es_tarea = 1` (no editable por el usuario en este proceso). |
+| R-OP-15…18 | Plantillas compartidas GEN-11; sin param opt-in; autoría del creador (§4.10). |
 
 ---
 
@@ -185,7 +207,13 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 - [ ] Cliente autenticado recibe 403 en APIs de carga / no ve menú de carga.
 - [ ] Alta rechaza duración no múltiplo del tramo (default 15), 0 y >1440; acepta valores válidos (p. ej. 15, 60, 1440 con tramo 15).
 - [ ] UI duración = selector tramos en **`hh:mm`**; grilla con paginación DevExtreme.
-- [ ] Grilla muestra descripción de Cliente y Tipo de tarea; columnas Sin cargo y Presencial disponibles; duración en hh:mm con sumatoria en horas decimales.
+- [x] Grilla muestra descripción de Cliente y Tipo de tarea; columnas Sin cargo y Presencial disponibles; duración en `hh:mm` **y** en decimal (`2.25` / `15.5` / `14.75` para los ejemplos del CC).
+- [x] El Excel exportado incluye ambas representaciones de duración (o al menos la decimal numérica además de `hh:mm`).
+- [x] Toolbar de export Excel usable en carga diaria (web).
+- [x] Usuario A ve y puede aplicar una plantilla guardada por usuario B en el mismo `proceso`+`gridId` (carga diaria).
+- [x] Usuario A no puede Guardar/Eliminar la plantilla de B (403 GEN); sí «Guardar como».
+- [x] No hay parámetro Partes para «ver plantillas de otros».
+- [x] Al abrir **Nueva tarea**, Tipo de tarea muestra el tipo con `is_default` (no queda en «Seleccionar…» si existe un default usable).
 - [ ] Alta rechaza observación vacía; rechaza cliente/tipo inhabilitados o tipo fuera de universo.
 - [ ] Fecha futura muestra advertencia y permite confirmar.
 - [ ] Tarea cerrada no se edita ni elimina en flujo ordinario; supervisor puede cerrar/reabrir una fila.
@@ -203,7 +231,8 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | Capa | Impacto |
 |------|---------|
 | Backend | SP list/filter/upsert/delete/setCerrado; validación servidor espejo de §4.4–4.7 |
-| Frontend | Feature carga diaria (filtros + DataGrid paginado DX + editores; duración hh:mm; columnas descripción + bits; sumatoria horas decimales); selectores catálogo SPEC-003; leer tramo desde param GRAL |
+| Frontend | Feature carga diaria (filtros + DataGrid paginado DX + editores; duración `hh:mm` + columna decimal; `canExport`; columnas descripción + bits; sumatoria decimales); selectores catálogo SPEC-003; leer tramo desde param GRAL; layouts GEN-11 compartidos |
+| Backend layouts | `GET /api/v1/grid-layouts` lista **todas** las plantillas del par (no solo `user_id`); DTO `isOwner` GEN-11 |
 | Menú | Ítem “Carga diaria” para asistente/supervisor |
 | Tests | Feature API por rol; Vitest validadores duración/fecha; E2E humo alta tarea |
 | Params | Seed `PartesDuracionTramoMin` (programa `Partes`) default `15` |
@@ -219,7 +248,7 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | Asistente cierra/reabre tareas | **Cerrado:** no; solo supervisor (individual y masivo). |
 | Atomicidad masiva | SPEC-005 |
 | Mobile | Misma reglas de dominio; otra UX en SPEC-007 |
-| Layouts persistentes de grilla | Framework GEN si aplica; no bloquea |
+| Layouts persistentes de grilla | GEN-11 compartido (§4.10); no bloquea |
 
 ---
 
@@ -241,7 +270,8 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | 2026-07-31 | Presentación grilla: Cliente/Tipo = descripción; bits Sin cargo/Presencial; duración UI `hh:mm` + sumatoria horas decimales (persistencia minutos). |
 | 2026-07-31 | CC-PQ #1 (31/07/2026): carga diaria filtra `es_tarea = 1` en listado y fuerza `es_tarea = 1` en alta/edición (R-OP-13/14). |
 | 2026-08-01 | Parte I: fusionado SPEC-004-update (CC-PQ #1, 31/07) en este original; update eliminado. Estado → Finalizado. |
-| 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): abierto [SPEC-004-update](../updates/100-SistemaPartes/SPEC-004-operacion-carga-diaria-update.md). Estado → En revisión. |
+| 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): duración decimal + Excel Must + plantillas GEN-11 compartidas. |
+| 2026-09-16 | Parte I: fusionado SPEC-004-update (CC-PQ #3, 09/08) en este original; update eliminado. Estado → Finalizado. |
 
 ---
 

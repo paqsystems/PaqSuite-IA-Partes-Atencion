@@ -9,8 +9,8 @@
 | **Roles** | Asistente / Supervisor (`resultado.partes`); **no** cliente |
 | **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md) (`row_version`), [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-003](./TR-003-maestros-y-catalogos.md) (catálogos / universo tipos) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | En Control Calidad |
-| **Última actualización** | 2026-09-15 |
+| **Estado** | Finalizado |
+| **Última actualización** | 2026-09-16 |
 
 **Origen:** [HU-004](../../03-historias-usuario/100-SistemaPartes/HU-004-operacion-carga-diaria.md)  
 **Referencia SPEC:** [SPEC-004](../../05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md)
@@ -28,9 +28,10 @@
 - Paginación DevExtreme; menú Partes; SP MUST.
 - Atajo texto mínimo a proceso masivo (SPEC-005) **sin** pasar filtros (solo UI link; sin lógica masiva aquí).
 - **(CC-PQ #1, 31/07)** `pq_sp_partes_tarea_list` filtra `es_tarea = 1`; `pq_sp_partes_tarea_upsert` fuerza `es_tarea = 1` siempre.
+- **(CC-PQ #3, 09/08)** Columna visible `duracionHoras`/`duracionDecimal` (number `minutos/60`) además de `hh:mm`; `canExport` GEN en carga diaria; listado `GET /api/v1/grid-layouts` compartido + `isOwner`; tipo default en alta (`isDefault`).
 
 ### Out of scope
-- Masivo (TR-005); consultas/dashboard; mobile kardex; IA; Excel; ABM maestros.
+- Masivo (TR-005); consultas/dashboard; mobile kardex; IA (TR-010); import Excel (SPEC-009); ABM maestros.
 
 ---
 
@@ -53,6 +54,10 @@
 | AC-11 | i18n `partes.tarea.*` + testids |
 | AC-12 | Update/delete con `rowVersion` stale → **409** + i18n refrescar |
 | AC-13 | Listado de carga (`pq_sp_partes_tarea_list`) no incluye filas con `es_tarea = 0`; upsert desde esta pantalla deja `esTarea = true` siempre |
+| AC-CC3-01 | Columna `hh:mm` + columna number `minutos/60` (precision 2). Vitest helper. |
+| AC-CC3-02 | `canExport={true}` (o eq. ProcessDataGrid); Excel con campo decimal numérico |
+| AC-CC3-03 | Feature: usuario B crea layout; usuario A `GET /grid-layouts` lo ve (`isOwner: false`); PUT/DELETE B → 403/3003 |
+| AC-CC3-04 | Vitest/E2E: `openCreate` deja `tipoTareaId` = default; SelectBox `value` coincidente; API catálogo expone `isDefault` |
 
 ### Gherkin
 HU-004 + escenario 409 y tramo param ≠15 si se cambia seed en test.
@@ -127,7 +132,8 @@ Documentar paths + 403/409/422 + `resultado.partes` no aplica aquí.
 | Ruta | `/partes/carga-diaria` |
 | Menú | Partes → Carga diaria (asistente + supervisor; no cliente) |
 | Filtros | Fechas (default hoy), cliente opcional, asistente (solo supervisor), estado cerrado (default todas) |
-| Grid | DX ProcessDataGrid paginado; Cliente/Tipo = descripción; Sin cargo/Presencial visibles; duración celda `hh:mm` + campo `duracionHoras` (decimal) con sumatoria; códigos/minutos ocultos por defecto (chooser); filas `cerrado` read-only |
+| Grid | DX ProcessDataGrid paginado; Cliente/Tipo = descripción; Sin cargo/Presencial visibles; duración celda `hh:mm` + columna decimal number (`minutos/60`, precision 2) con sumatoria; `canExport` GEN; códigos/minutos ocultos por defecto (chooser); filas `cerrado` read-only; layouts GEN-11 compartidos (`partes.carga.diaria` / `cargaDiaria`) |
+| Layouts | `GridLayoutsController::index` lista todas las plantillas del par `proceso`+`gridId`; DTO `isOwner`; PUT/DELETE solo owner |
 | Duración | SelectBox de tramos etiquetados `hh:mm` (`value` = minutos); valida múltiplo del tramo |
 | Alta | Defaults bits false; preseleccionar tipo `is_default` (genéricos al abrir; revalidar al elegir cliente) |
 | Cambio cliente | Limpia tipo si no ∈ universo; mensaje i18n |
@@ -153,8 +159,13 @@ IA: no UI.
 | T7 | Docs | OpenAPI | | S |
 | T8 | Backend | Filtro `es_tarea=1` en list + forzar en upsert (CC-PQ #1) | AC-13 | M |
 | T9 | Tests | Feature: carga no lista compras; upsert deja `esTarea=true` | AC-13 | S |
+| T10 | FE | Columnas duración hh:mm + decimal; i18n `partes.tarea.duracionDecimal` | AC-CC3-01 | S |
+| T11 | FE | `canExport` carga diaria | AC-CC3-02 | S |
+| T12 | BE | Listado layouts compartido + `isOwner` | AC-CC3-03 | M |
+| T13 | FE/BE | Tipo default en alta (catálogo + SelectBox) | AC-CC3-04 | M |
+| T14 | Tests | Feature layouts; Vitest decimal; E2E humo alta/export | T10–T13 | M |
 
-**Orden:** T1 → T2 → T3 → T4/T5 → T6 → T7; T8/T9 en CC-PQ #1 (tras TR-001 con `es_tarea`).
+**Orden:** T1 → T2 → T3 → T4/T5 → T6 → T7; T8/T9 en CC-PQ #1; T10–T14 en CC-PQ #3.
 
 ---
 
@@ -163,8 +174,9 @@ IA: no UI.
 | Capa | Casos |
 |------|--------|
 | Feature | Asistente 403 otro owner; cliente 403; duración; universo; cerrado; 409; setCerrado no asistente |
-| Vitest | Múltiplo tramo; formato `hh:mm`; horas decimales; limpiar tipo |
-| E2E | Abrir carga (fechas hoy) + alta mínima OK |
+| Vitest | Múltiplo tramo; formato `hh:mm`; horas decimales (`135 min → 2.25`); default tipo por `isDefault`; limpiar tipo |
+| Feature | `GET grid-layouts` incluye layout de otro user; PUT ajeno 403 |
+| E2E | Abrir carga (fechas hoy) + alta mínima OK; tipo no vacío; export visible |
 
 ---
 
@@ -223,7 +235,5 @@ IA: no UI.
 | 2026-07-31 | FE grilla: descripción Cliente/Tipo; Sin cargo/Presencial; duración `hh:mm` + sumatoria `duracionHoras`; Vitest helpers duración. |
 | 2026-07-31 | CC-PQ #1 (31/07/2026): `pq_sp_partes_tarea_list` filtra `es_tarea=1`; upsert fuerza `es_tarea=1` (AC-13, T8/T9); [D-VERIFICACION-CC-PQ-01](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md). |
 | 2026-08-01 | Parte I: fusionado TR-004-update (CC-PQ #1, 31/07) en esta TR; update eliminado. Estado → Finalizado. |
-
----
-
-**Siguiente:** F1 de TR-004, o D de TR-005 cuando se autorice.
+| 2026-09-15 | Parte D CC-PQ #3: columnas hh:mm + decimal, `exportEnabled`, layouts compartidos + `isOwner`, tipo default. |
+| 2026-09-16 | Parte I: fusionado TR-004-update (CC-PQ #3, 09/08) en esta TR; update eliminado. Estado → Finalizado. |

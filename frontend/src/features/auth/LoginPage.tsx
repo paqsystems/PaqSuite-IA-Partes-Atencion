@@ -12,12 +12,13 @@ import {
 import Button from 'devextreme-react/button'
 import TextBox from 'devextreme-react/text-box'
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { applyGuestLocale } from '../../i18n/i18n'
 import { loginRequest } from './authApi'
 import { resolveAuthMessage } from './authMessages'
 import { saveLoginSession } from './authSessionStore'
 import { bootstrapAuthenticatedSession } from './authBootstrap'
+import { searchHasResetToken } from './guestLanding'
 import { resolvePostLoginRoute } from './postLoginRouter'
 import { resolvePartesAuthHero } from './partesAuthHero'
 import { resolvePlatformCliente } from './platformContext'
@@ -58,6 +59,15 @@ export function LoginPage() {
     }
     return null
   }, [blocked, expiredReason, sessionExpired, t])
+
+  if (searchHasResetToken(searchParams.toString())) {
+    return (
+      <Navigate
+        to={{ pathname: '/reset-password', search: `?${searchParams.toString()}` }}
+        replace
+      />
+    )
+  }
 
   async function handleLocaleChange(next: LocaleCode) {
     setLocale(next)

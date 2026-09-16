@@ -83,9 +83,29 @@ class ApiV1ExcelImportPartesTest extends TestCase
     public function test_template_ok_y_capability_off(): void
     {
         $token = $this->login();
-        $this->get('/api/v1/excel-import/processes/partes.tareas.import/template', $this->authHeaders($token))
+        $response = $this->get(
+            '/api/v1/excel-import/processes/partes.tareas.import/template',
+            $this->authHeaders($token)
+        );
+        $response
             ->assertStatus(200)
             ->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        $binary = (string) $response->getContent();
+        $this->assertSame('PK', substr($binary, 0, 2));
+        $path = tempnam(sys_get_temp_dir(), 'xlsx').'.xlsx';
+        file_put_contents($path, $binary);
+        try {
+            $zip = new \ZipArchive();
+            $this->assertTrue($zip->open($path) === true);
+            $this->assertStringContainsString('<sheetViews>', (string) $zip->getFromName('xl/worksheets/sheet1.xml'));
+            $vml = (string) $zip->getFromName('xl/drawings/vmlDrawing1.vml');
+            $this->assertStringNotContainsString('<?xml', $vml);
+            $this->assertStringContainsString('_x0000_s1025', $vml);
+            $zip->close();
+        } finally {
+            @unlink($path);
+        }
 
         DB::table('pq_parametros_gral')
             ->where('programa', 'ExcelImport')

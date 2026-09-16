@@ -96,9 +96,7 @@ final class ApiV1PartesSmartCaptureTurnTest extends TestCase
         $this->app->instance(PartesSmartCaptureProposalPort::class, new class($proposal) implements PartesSmartCaptureProposalPort
         {
             /** @param array{replyText: string, save: bool, fields: array<string, mixed>} $proposal */
-            public function __construct(private readonly array $proposal)
-            {
-            }
+            public function __construct(private readonly array $proposal) {}
 
             public function propose(
                 string $message,
@@ -453,5 +451,113 @@ final class ApiV1PartesSmartCaptureTurnTest extends TestCase
                 && ($a['payload']['field'] ?? null) === 'observacion'
         ));
         $this->assertStringContainsString('duracionInvalida', (string) $response->json('resultado.replyText'));
+    }
+
+    public function test_turn_prosa_sin_fields_aplica_lookups_del_prompt(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $tipoClienteId = (int) DB::table('PQ_PARTES_CLIENTES')->where('id', $cat['clienteId'])->value('tipo_cliente_id');
+        $lacapolId = DB::table('PQ_PARTES_CLIENTES')->insertGetId([
+            'user_id' => null,
+            'code' => 'LACAPOL',
+            'nombre' => 'Lacapol SA',
+            'tipo_cliente_id' => $tipoClienteId,
+            'email' => null,
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $credentialId = $this->createCredential($token);
+        $this->bindProposal([
+            'replyText' => 'Registré al asistente PQ con el cliente LACAPOL y una duración de 85 minutos. ¿Querés guardar la tarea?',
+            'save' => false,
+            'fields' => [],
+        ]);
+
+        $response = $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'asistente PQ cliente LACAPOL duracion 1:25 hrs',
+            'modality' => 'texto',
+            'credentialId' => $credentialId,
+            'draftContext' => $this->draftContext($cat),
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token));
+
+        $response->assertOk()->assertJsonPath('error', 0);
+        $actions = collect($response->json('resultado.actions') ?? []);
+        $pqAsistenteId = (int) DB::table('PQ_PARTES_USUARIOS')->where('code', 'PQ')->value('id');
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'clienteId'
+                && (int) ($a['payload']['value'] ?? 0) === $lacapolId
+        ));
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'asistenteId'
+                && (int) ($a['payload']['value'] ?? 0) === $pqAsistenteId
+        ));
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'needsRefine'
+                && ($a['payload']['field'] ?? null) === 'duracionMinutos'
+        ));
+        $this->assertFalse($actions->contains(fn ($a) => ($a['action'] ?? null) === 'save'));
+    }
+
+    public function test_turn_llm_falla_y_igual_aplica_campos_del_prompt(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $tipoClienteId = (int) DB::table('PQ_PARTES_CLIENTES')->where('id', $cat['clienteId'])->value('tipo_cliente_id');
+        $lacapolId = DB::table('PQ_PARTES_CLIENTES')->insertGetId([
+            'user_id' => null,
+            'code' => 'LACAPOL',
+            'nombre' => 'Lacapol SA',
+            'tipo_cliente_id' => $tipoClienteId,
+            'email' => null,
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $credentialId = $this->createCredential($token);
+        $this->app->instance(PartesSmartCaptureProposalPort::class, new class implements PartesSmartCaptureProposalPort
+        {
+            public function propose(
+                string $message,
+                array $draftContext,
+                ?array $pendingChoice,
+                array $images,
+                object $credentialContext,
+            ): array {
+                throw new \RuntimeException('LLM provider request failed: HTTP 500');
+            }
+        });
+        $this->app->forgetInstance(\App\Services\Partes\SmartCapture\PartesTareaSmartCaptureTurnService::class);
+
+        $response = $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'asistente PQ cliente LACAPOL duracion 1:00',
+            'modality' => 'texto',
+            'credentialId' => $credentialId,
+            'draftContext' => $this->draftContext($cat),
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token));
+
+        $response->assertOk()->assertJsonPath('error', 0);
+        $actions = collect($response->json('resultado.actions') ?? []);
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'clienteId'
+                && (int) ($a['payload']['value'] ?? 0) === $lacapolId
+        ));
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'duracionMinutos'
+                && (int) ($a['payload']['value'] ?? 0) === 60
+        ));
     }
 }

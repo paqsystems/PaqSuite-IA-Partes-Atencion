@@ -9,8 +9,8 @@
 | **Roles** | Solo `resultado.partes.esSupervisor = true` |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-004](./TR-004-operacion-carga-diaria.md) (listado/tareas/`rowVersion`/tipos), GEN layouts/export grilla |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | En Control Calidad |
-| **Última actualización** | 2026-09-15 |
+| **Estado** | Finalizado |
+| **Última actualización** | 2026-09-16 |
 
 **Origen:** [HU-005](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md)  
 **Referencia SPEC:** [SPEC-005](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md)  
@@ -29,6 +29,7 @@
 - Lote atómico **actualizar atributos** — Must: `tipoTareaId`, `sinCargo`; Should: `presencial`, `usuarioId`, `fecha`.
 - Tope `PartesMasivoMaxIds`; i18n `partes.masivo.*` + testids.
 - **(CC-PQ #1, 31/07)** Listado/`list_ids` y lotes (`masivo_set_cerrado`, `masivo_actualizar`) operan solo sobre `es_tarea = 1`; id con `es_tarea = 0` en un lote → 422 atómico (`partes.masivo.noEsTarea`).
+- **(CC-PQ #3, 09/08)** Selección estable: `reduceMasivoSelection` + `isSpuriousMasivoClear`; conservar tildes ante re-render / `dataSource` / layout GEN.
 
 ### Out of scope
 - Atributos: cliente, duración/minutos, descripción.
@@ -48,6 +49,8 @@
 | AC-19 | Should: mismos endpoints/UI para `presencial` / `usuarioId` / `fecha` (tarea T7; no bloquea DoD Must si D1 lo marca diferido) |
 | AC-20 | Listado / `list_ids` del masivo no incluyen filas con `es_tarea = 0` |
 | AC-21 | Lote (`set_cerrado` o `actualizar`) con algún id `es_tarea = 0` → 422 `partes.masivo.noEsTarea`; cero cambios |
+| AC-CC3-05 | Vitest del handler: click fila no termina en `selectedKeys=[]`. E2E o smoke: tildar 1 fila → check sigue. |
+| AC-CC3-06 | Cabecera / select-all no se auto-limpia. |
 
 ---
 
@@ -70,6 +73,9 @@ R-SU-01…10 (SPEC/HU).
 | RN-TR-09 | Actualizar atributos **no** exige `cerrado = 0` (R-SU-10). |
 | RN-TR-10 | Error negocio lote atributos: 422 `partes.masivo.atributoInvalido` (o subclave tipo); conflicto versión: `partes.masivo.conflictoVersion`. |
 | RN-TR-11 | Listado / `list_ids` filtran implícitamente `es_tarea = 1`; `masivo_set_cerrado` y `masivo_actualizar` rechazan (atómico, 422 `partes.masivo.noEsTarea`) cualquier id con `es_tarea = 0`. |
+| RN-TR-CC3-10 | `onSelectionChanged`: ignorar vaciado espurio (`isSpuriousMasivoClear`); `reduceMasivoSelection` conserva claves off-page. |
+| RN-TR-CC3-11 | Estabilizar referencia de `dataSource` (`rows`) si no cambió el listado. |
+| RN-TR-CC3-12 | Vitest `masivoSelection.test.ts`; E2E humo tilde (opcional). |
 
 ---
 
@@ -153,8 +159,10 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 | T7g | Frontend/BE | Should: presencial, usuarioId, fecha | AC-19 | M |
 | T8 | Backend | Filtro `es_tarea=1` en list/list_ids + guarda `noEsTarea` en `masivo_set_cerrado`/`masivo_actualizar` (CC-PQ #1) | AC-20/21 | M |
 | T9 | Tests | Feature: masivo no lista compras; lote con compra → 422 | AC-20/21 | S |
+| T10 | FE | Estabilizar Selection vs re-render (`masivoSelection.ts`) | AC-CC3-05/06 | M |
+| T11 | Tests | Vitest handler + E2E humo tilde | T10 | M |
 
-**Orden sugerido ampliación:** T7a → T7b → T7c → T7d → T7e → T7f; T7g en cuanto Must esté estable (o en paralelo UI si no bloquea); T8/T9 en CC-PQ #1 (tras TR-001 con `es_tarea`).
+**Orden sugerido ampliación:** T7a → T7b → T7c → T7d → T7e → T7f; T7g en cuanto Must esté estable; T8/T9 CC-PQ #1; T10/T11 CC-PQ #3.
 
 ---
 
@@ -210,6 +218,8 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 | 2026-07-31 | F1: Aprobado con observaciones (sin E2E Playwright masivo; OpenAPI no versionado en repo). |
 | 2026-07-31 | CC-PQ #1 (31/07/2026): listado/`list_ids` filtran `es_tarea=1`; lotes rechazan ids `es_tarea=0` (AC-20/21, RN-TR-11, T8/T9); [D-VERIFICACION-CC-PQ-01](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md). |
 | 2026-08-01 | Parte I: fusionado TR-005-update (CC-PQ #1, 31/07) en esta TR; update eliminado. Estado → Finalizado. |
+| 2026-09-15 | Parte D CC-PQ #3: `reduceMasivoSelection` ignora vaciado espurio y conserva claves off-page. |
+| 2026-09-16 | Parte I: fusionado TR-005-update (CC-PQ #3, 09/08) en esta TR; update eliminado. Estado → Finalizado. |
 
 ---
 

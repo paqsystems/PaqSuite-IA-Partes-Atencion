@@ -59,6 +59,17 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
+    'frontend_url' => env('FRONTEND_URL', env('APP_URL', 'http://localhost')),
+
+    /*
+    | URL del SPA real para deep links (reset de contraseña).
+    | Los hosts canónicos `{cliente}.partesatencion.paqsystems.com` suelen
+    | hacer 302 Plesk a la raíz de Vercel y pierden `/reset-password`.
+    */
+    'frontend_spa_url' => env('FRONTEND_SPA_URL'),
+    'frontend_spa_url_prod' => env('FRONTEND_SPA_URL_PROD', 'https://partesatencionpaqsystems.vercel.app'),
+    'frontend_spa_url_dev' => env('FRONTEND_SPA_URL_DEV', 'https://partesatencionpaqsystemsdev.vercel.app'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

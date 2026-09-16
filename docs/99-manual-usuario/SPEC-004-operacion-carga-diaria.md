@@ -3,7 +3,7 @@ specId: SPEC-004
 titulo: Carga diaria de tareas
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-08-01
+ultimaActualizacion: 2026-09-16
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md
 ---
 
@@ -22,13 +22,15 @@ En **Partes → Carga diaria** registrás el trabajo del día (o de un rango de 
 1. Menú **Partes** → **Carga diaria**.
 2. Confirmá el filtro de fechas (por defecto el **día de hoy**; podés ampliar el rango).
 3. Actualizá el listado.
-4. Dá de alta una fila: fecha, cliente, tipo, duración en **hh:mm**, observación; marcas opcionales (sin cargo, presencial).
+4. Dá de alta una fila: fecha, cliente, tipo (al abrir **Nueva tarea** suele venir precargado el tipo marcado como **default**), duración en **hh:mm**, observación; marcas opcionales (sin cargo, presencial).
 5. Si sos supervisor, elegí el asistente propietario cuando corresponda.
 6. Guardá. Editá o eliminá solo si la tarea **no** está cerrada.
 7. Si la fecha es futura, el sistema pide **confirmación** (no bloquea del todo).
 8. Supervisor: cerrá o reabrí **una** fila con la acción explícita.
 
-En la grilla ves el **nombre del cliente** y la **descripción del tipo de tarea** (no el código como valor principal). Las columnas **Sin cargo** y **Presencial** están disponibles. La duración se muestra en **hh:mm** y podés **sumar** el total en horas (decimal) desde el pie / menú de la grilla.
+En la grilla ves el **nombre del cliente** y la **descripción del tipo de tarea** (no el código como valor principal). Las columnas **Sin cargo** y **Presencial** están disponibles. La duración se muestra en **hh:mm** y también en **horas decimales** (por ejemplo, `02:15` → `2.25`); podés **sumar** el total desde el pie / menú de la grilla.
+
+Desde la barra de la grilla podés **exportar a Excel** el listado filtrado (incluye ambas columnas de duración). También podés **guardar y aplicar plantillas de diseño** de la grilla: las plantillas de otros usuarios del mismo proceso son **visibles y aplicables**; solo el autor puede modificar o borrar la suya.
 
 ## Particularidades
 
@@ -77,8 +79,9 @@ La capacidad puede estar deshabilitada en la instalación (parámetro de importa
 Al dar de alta o editar una tarea (modal), debajo del formulario podés usar la **captura inteligente**:
 
 1. Escribí, dictá o adjuntá una imagen (si tu proveedor LLM lo permite) describiendo la tarea.
-2. El asistente **propone** valores en el formulario (cliente, tipo, duración, etc.).
-3. Revisá y, si corresponde, pedí **guardar**; se usan las mismas validaciones que el botón Guardar.
+2. El asistente **propone** valores en el formulario (cliente, tipo, duración, etc.) y deben **verse en los campos** del modal, no solo en el texto del chat.
+3. Si un dato no es válido (por ejemplo, una duración que no respeta el tramo de 15 minutos), el sistema lo indica en el hilo pero **no borra** los demás campos ya aplicados.
+4. Revisá y, si corresponde, pedí **guardar**; se usan las mismas validaciones que el botón Guardar.
 
 No confundir con el **Asistente IA** del menú del avatar (ese responde preguntas de ayuda; no completa el parte). En **mobile** la captura inteligente no está disponible. Si la tarea está **cerrada**, el panel queda deshabilitado. Sin credencial LLM configurada en Preferencias, el panel te pedirá configurarla.
 

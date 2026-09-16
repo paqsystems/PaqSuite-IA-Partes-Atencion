@@ -7,8 +7,8 @@
 | ID | SPEC-010 |
 | Título | Smart Capture (asistente operativo GEN-03) en el modal de alta/edición de tarea — Carga diaria |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | En revisión |
-| Última actualización | 2026-09-15 |
+| Estado | Finalizado |
+| Última actualización | 2026-09-16 |
 | HU relacionada(s) | [HU-010-smart-capture-carga-diaria](../../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md) |
 | TR relacionada(s) | [TR-010-smart-capture-carga-diaria](../../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-003](./SPEC-003-maestros-y-catalogos.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md), [SPEC-008](./SPEC-008-asistente-ia-chat-documental.md) (BYOK / timeout LLM host); Framework GEN-03 / SPEC-001-03 (docs en `PaqSuite-IA-FRAMEWORK`); provider GEN-16 |
@@ -93,7 +93,7 @@
 3. Envía texto, dicta o adjunta imagen(es) (parcial o completo).
 4. Host llama al endpoint de turno con `draftContext` (snapshot del form) y, si aplica, `pendingChoice` previo.
 5. Respuesta: `replyText` + `actions` + opcional `pendingChoice`.
-6. FE aplica `actions` al draft del modal (sin reinterpretar negocio).
+6. FE aplica `actions` al draft del modal (sin reinterpretar negocio). Cada dato resoluble **debe** reflejarse de inmediato en el control visible (SelectBox, DateBox, TextBox, CheckBox). Un `replyText` sin mutación de controles **no** cumple el criterio.
 7. Usuario corrige a mano si quiere; puede seguir turnos.
 8. Grabación: keyword SC (§4.6) **o** botón Guardar → mismas validaciones SPEC-004 → persistencia → cierre modal / refresco grilla con filtros vigentes (como hoy tras Guardar).
 
@@ -193,6 +193,9 @@ Confirmación de **fecha futura** (R-SC-14…16): palabras de aceptación del hi
 | R-SC-26 | Tras grabar OK: misma UX post-Guardar (cerrar modal según diseño actual + refrescar grilla con filtros vigentes). |
 | R-SC-29 | Edición: SC aporta solo cambios deseados; draft preexistente; validación integral al grabar. |
 | R-SC-30 | Lookup catálogo: **0** coincidencias → pedir refinar (`needsRefine` / mensaje); **1** segura → aplicar; **>1** → `needsChoice` (lista numerada). Detalle de scoring en TR. |
+| R-SC-31 | Cada dato **resoluble** (lookup 1 coincidencia, fecha no futura, duración válida, observación, flags) **debe** emitirse como `setField` (u action GEN equivalente) **y** el FE **debe** reflejarlo de inmediato en el control visible. Un `replyText` sin mutación de controles **no** cumple el criterio. |
+| R-SC-32 | Lo resoluble se aplica **aunque** otro campo del mismo turno sea inválido o ambiguo. Ejemplo CC: duración `1:25` / 85 min (no múltiplo del tramo) **no** impide aplicar asistente y cliente si el lookup es único. La duración inválida → `needsRefine` / mensaje; **sin** bloquear el resto. |
+| R-SC-33 | Tras `setField` de `clienteId`, el universo de tipos se recarga y el SelectBox de tipo muestra el valor aplicado (default o propuesto). Tras `setField` de `asistenteId` / `duracionMinutos`, el SelectBox correspondiente muestra la opción (no queda en placeholder «Seleccionar…»). |
 
 ---
 
@@ -202,7 +205,10 @@ Confirmación de **fecha futura** (R-SC-14…16): palabras de aceptación del hi
 - [ ] Alta y edición (tarea abierta) comparten panel; hint i18n Partes presente.
 - [ ] Tarea cerrada: SC deshabilitado (si el modal pudiera abrirse).
 - [ ] Sin LLM: gate Preferencias; no se envían turnos.
-- [ ] Turno texto aplica al menos un campo resoluble al draft (p. ej. descripción o duración).
+- [x] Turno texto aplica al menos un campo resoluble al draft (p. ej. descripción o duración).
+- [x] Turno con asistente único + cliente único aplica ambos SelectBox del modal (dejan de mostrar «Seleccionar…»).
+- [x] Si la duración no es múltiplo del tramo, el hilo lo indica y **igual** se ven cliente/asistente ya aplicados.
+- [x] Observación/fecha/tipo resolubles aparecen en sus controles, no solo en el chat del panel.
 - [ ] Cliente/tipo/asistente ambiguos → lista numerada; elección actualiza draft; resto de datos se conserva.
 - [ ] Fecha futura no se aplica al draft sin confirmación en el hilo; tras confirmar, sí.
 - [ ] Keyword / intención de grabación produce `save` vía turno (no auto-save por substring); FE persiste con el mismo API que Guardar.
@@ -261,4 +267,6 @@ Familias de `action` orientativas (nombres finales en TR): `setField`, lookups/`
 | 2026-08-03 | A1: LLM→save (no substring); FE→API Guardar; sin confirm overwrite; edición parcial + validación integral al grabar; lookup 0/1/N. |
 | 2026-08-03 | Parte B/B1: enlace HU-010. |
 | 2026-08-03 | Parte C: enlace TR-010. |
-| 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): abierto [SPEC-010-update](../updates/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria-update.md). Estado → En revisión. |
+| 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): R-SC-31…33 — controles visibles + apply parcial si duración inválida. |
+| 2026-09-16 | Parte F: criterios verificados — [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-010-update-CC-PQ-03-2026-09-16.md). |
+| 2026-09-16 | Parte I: fusionado SPEC-010-update (CC-PQ #3, 09/08) en este original; update eliminado. Estado → Finalizado. |

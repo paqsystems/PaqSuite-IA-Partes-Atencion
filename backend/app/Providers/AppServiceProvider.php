@@ -153,9 +153,10 @@ class AppServiceProvider extends ServiceProvider
             \PaqSuite\LaravelCore\ExcelImport\Contracts\ExcelWorkbookParser::class,
             \PaqSuite\LaravelCore\ExcelImport\ZipXmlExcelWorkbookParser::class
         );
+        $this->app->singleton(\PaqSuite\LaravelCore\ExcelImport\MinimalXlsxExcelImportBinaryExporter::class);
         $this->app->singleton(
             \PaqSuite\LaravelCore\ExcelImport\Contracts\ExcelImportBinaryExporter::class,
-            \PaqSuite\LaravelCore\ExcelImport\MinimalXlsxExcelImportBinaryExporter::class
+            \App\Services\ExcelImport\ExcelCompatibleXlsxBinaryExporter::class
         );
         $this->app->singleton(
             \PaqSuite\LaravelCore\ExcelImport\Contracts\ExcelImportAuditPort::class,

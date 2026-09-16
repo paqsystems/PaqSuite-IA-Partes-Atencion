@@ -8,8 +8,8 @@
 | Título | Operación / carga diaria de tareas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-09-15 |
+| Estado | Finalizado |
+| Última actualización | 2026-09-16 |
 | SPEC origen | [SPEC-004-operacion-carga-diaria](../../05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md) |
 | TR relacionada(s) | [TR-004-operacion-carga-diaria](../../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md) |
 
@@ -52,7 +52,7 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 - Pantalla web de carga diaria: DataGrid de trabajo + filtros previos obligatorios.
 - Insertar, editar y eliminar registros según rol y estado `cerrado`.
 - Campos de negocio: `fecha`, `cliente_id`, `tipo_tarea_id`, `duracion_minutos`, `observacion`, `sin_cargo`, `presencial`, `usuario_id`, `cerrado`.
-- Validaciones: no grabar si falta cualquier obligatorio (`fecha`, `cliente_id`, `tipo_tarea_id`, `duracion_minutos`, `observacion`, `usuario_id`); duración entera > 0, **múltiplo del tramo** (`PQ_PARAMETROS_GRAL`, default **15**), máximo 1440; UI duración = **selector de tramos en `hh:mm`**; grilla: Cliente/Tipo = **descripción**, columnas **Sin cargo** / **Presencial**, duración visible **`hh:mm`** con sumatoria en **horas decimales**; listado con **paginación DevExtreme**; cliente/tipo usables; tipo ∈ universo del cliente (SPEC-003 §4.7). Al cambiar cliente con tipo fuera de universo → **limpiar** tipo. `sin_cargo` / `presencial` default `0` (false).
+- Validaciones: no grabar si falta cualquier obligatorio (`fecha`, `cliente_id`, `tipo_tarea_id`, `duracion_minutos`, `observacion`, `usuario_id`); duración entera > 0, **múltiplo del tramo** (`PQ_PARAMETROS_GRAL`, default **15**), máximo 1440; UI duración = **selector de tramos en `hh:mm`**; grilla: Cliente/Tipo = **descripción**, columnas **Sin cargo** / **Presencial**, duración visible **`hh:mm` y en horas decimales** (`minutos/60`) con sumatoria en decimales; **export Excel GEN** de la grilla; **plantillas GEN-11 compartidas** (ver y aplicar las de otros; sin parámetro opt-in); listado con **paginación DevExtreme**; cliente/tipo usables; tipo ∈ universo del cliente (SPEC-003 §4.7). Al cambiar cliente con tipo fuera de universo → **limpiar** tipo. `sin_cargo` / `presencial` default `0` (false). Alta: SelectBox Tipo de tarea inicia con el registro `is_default = 1`.
 - Delimitación de filas visibles según `tipoFuncional` / `esSupervisor` (SPEC-002).
 - Columna Asistente: fija para asistente no supervisor; editable para supervisor con selector de asistentes usables.
 - Advertencia confirmable (no bloqueo) ante fecha futura.
@@ -73,7 +73,7 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 - Cliente funcional: no carga tareas.
 - Facturación, aprobación formal, automatizaciones IA (incluida ayuda en pantalla de carga en este MVP).
 - **Importación masiva desde Excel** → [HU-009](./HU-009-importacion-partes-excel.md) / [SPEC-009](../../05-open-spec/100-SistemaPartes/SPEC-009-importacion-partes-excel.md) (no forma parte de esta HU).
-- Exportación Excel como Must del MVP de carga.
+- Smart Capture (HU-010).
 - UI de alta de compras de horas (`es_tarea = false`); proceso a definir (SPEC-001).
 
 ---
@@ -89,7 +89,8 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 | R-OP-05 | `duracion_minutos` > 0, múltiplo del tramo (`PQ_PARAMETROS_GRAL`, default 15), ≤ 1440. UI = selector tramos en `hh:mm`. |
 | R-OP-05c | Grilla: Cliente y Tipo de tarea = descripción; códigos opcionales en column chooser. |
 | R-OP-05d | Grilla: Sin cargo y Presencial disponibles. |
-| R-OP-05e | Grilla: duración en `hh:mm`; sumatoria horas decimales; API en minutos. |
+| R-OP-05e | Grilla: duración en `hh:mm` y en horas decimales (`minutos/60`); sumatoria sobre decimales; API en minutos. |
+| R-OP-05f | Grilla de carga diaria: export Excel GEN del conjunto presentado. |
 | R-OP-05b | Listado: paginación estándar DevExtreme. |
 | R-OP-06 | `observacion` obligatoria (no blank). |
 | R-OP-07 | Cliente/tipo usables; tipo ∈ universo del cliente (SPEC-003). Cambio cliente fuera de universo → limpiar tipo; vacío no grabable. |
@@ -102,6 +103,7 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 | R-OP-12 | IA **fuera del MVP** de carga diaria; no bloquea ni es requisito. |
 | R-OP-13 | Listado de carga diaria filtra implícitamente `es_tarea = 1`; no muestra compras/movimientos de paquete de horas. |
 | R-OP-14 | Alta/edición desde carga diaria persiste siempre `es_tarea = 1` (no editable por el usuario en este proceso). |
+| R-OP-15…18 | Plantillas compartidas GEN-11; sin param opt-in; autoría del creador (SPEC-004 §4.10). |
 
 ---
 
@@ -111,7 +113,11 @@ El valor central del módulo es registrar dedicación con baja fricción sobre `
 - [ ] **CA-02** Supervisor ve columna Asistente editable y puede asignar cualquier asistente activo y usable (`activo = 1`, `inhabilitado = 0`).
 - [ ] **CA-03** Cliente autenticado recibe 403 en APIs de carga y no ve menú/ruta de carga diaria.
 - [ ] **CA-04** Alta rechaza duración no múltiplo del tramo (default 15), 0 y >1440; acepta p. ej. 15, 60, 1440 con tramo 15. UI = selector tramos en `hh:mm`; grilla con paginación DevExtreme.
-- [ ] **CA-04b** Grilla muestra descripción de Cliente y Tipo de tarea; columnas Sin cargo y Presencial disponibles; duración en `hh:mm` con sumatoria en horas decimales.
+- [x] **CA-04b** Grilla muestra descripción de Cliente y Tipo de tarea; columnas Sin cargo y Presencial disponibles; duración en `hh:mm` **y** en decimal (`2.25` / `15.5` / `14.75` para los ejemplos del CC).
+- [x] **CA-CC3-01** En la grilla de carga diaria se ve duración en `hh:mm` **y** en decimal (alias CA-04b).
+- [x] **CA-CC3-02** La grilla permite exportar a Excel (toolbar GEN); el archivo incluye la columna decimal (numérica) además de la de reloj.
+- [x] **CA-CC3-03** Dos usuarios en la misma instalación: cada uno ve las plantillas del otro en Carga de Partes Diarios y puede aplicarlas; no puede borrar las ajenas. No hay parámetro Partes para ocultarlas.
+- [x] **CA-CC3-04** Al abrir **Nueva tarea**, Tipo de tarea muestra el tipo con `is_default` (no queda en «Seleccionar…» si existe un default usable). Al elegir cliente, se mantiene si sigue en el universo o se reasigna el default del universo.
 - [ ] **CA-05** Alta rechaza observación vacía o solo whitespace; rechaza cliente/tipo inhabilitados o tipo fuera del universo del cliente.
 - [ ] **CA-06** Fecha de negocio futura muestra advertencia confirmable y permite completar el alta/edición.
 - [ ] **CA-07** Tarea con `cerrado = 1` no se edita ni elimina en flujo ordinario; supervisor puede cerrar y reabrir una fila mediante acción explícita.
@@ -182,6 +188,24 @@ Feature: Carga diaria de tareas Partes
     Then solo veo las filas con "esTarea" = true
     When doy de alta o edito una tarea desde esta pantalla
     Then el registro persiste con "esTarea" = true
+
+  Scenario: Duración decimal en grilla y Excel
+    Given una tarea de 135 minutos (02:15)
+    When listo carga diaria
+    Then veo duración "02:15" y decimal 2.25
+    When exporto a Excel
+    Then el archivo contiene 2.25 (o equivalente numérico)
+
+  Scenario: Plantilla ajena visible
+    Given el usuario B guardó un layout "Compacta" en carga diaria
+    When el usuario A abre Carga de Partes Diarios
+    Then A ve "Compacta" en el selector de plantillas
+    And A puede aplicarla y no puede eliminarla
+
+  Scenario: Tipo default en alta
+    Given existe un tipo de tarea usable con is_default = true
+    When abro Nueva tarea
+    Then el selector Tipo de tarea muestra ese tipo (no placeholder vacío)
 ```
 
 ---
@@ -239,3 +263,5 @@ Feature: Carga diaria de tareas Partes
 | 2026-07-31 | Grilla: descripción Cliente/Tipo; bits; duración hh:mm + sumatoria horas decimales. |
 | 2026-07-31 | CC-PQ #1 (31/07/2026): carga diaria filtra `es_tarea = 1` en listado y fuerza `es_tarea = 1` en alta/edición (CA-12, R-OP-13/14). |
 | 2026-08-01 | Parte I: fusionado HU-004-update (CC-PQ #1, 31/07) en esta HU; update eliminado. Estado → Finalizado. |
+| 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): decimal, Excel, layouts GEN-11, tipo default. |
+| 2026-09-16 | Parte I: fusionado HU-004-update (CC-PQ #3, 09/08) en esta HU; update eliminado. Estado → Finalizado. |
