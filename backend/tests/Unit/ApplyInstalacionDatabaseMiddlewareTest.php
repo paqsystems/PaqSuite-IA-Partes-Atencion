@@ -101,6 +101,34 @@ class ApplyInstalacionDatabaseMiddlewareTest extends TestCase
         $this->assertSame($plain, config('database.connections.sqlsrv.password'));
     }
 
+    public function test_rechaza_modo_gateway_agente(): void
+    {
+        $request = Request::create('/api/v1/auth/login', 'POST');
+        $request->attributes->set(
+            ResolveInstalacionMiddleware::REQUEST_ATTRIBUTE,
+            new InstalacionRecord(
+                cliente: 'DEMO',
+                proyecto: 'partesatencion',
+                habilitado: true,
+                host: '192.168.41.2',
+                port: 1433,
+                databaseName: 'PAQSYSTEMS_PARTESATENCION_DEMO',
+                username: 'Axoft',
+                agentId: 'agent-demo',
+                clientId: 'client-demo',
+            )
+        );
+
+        $middleware = new ApplyInstalacionDatabaseMiddleware();
+        $response = $middleware->handle($request, function () {
+            return response('ok');
+        });
+
+        $payload = json_decode($response->getContent(), true);
+        $this->assertSame(503, $response->getStatusCode());
+        $this->assertSame('tenant.gatewayNotSupported', $payload['respuesta'] ?? null);
+    }
+
     public function test_si_el_crypt_no_coincide_usa_db_password(): void
     {
         config(['database.default' => 'sqlsrv']);

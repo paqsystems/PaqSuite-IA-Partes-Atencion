@@ -20,6 +20,8 @@
   "avatar.chat": "Assistant IA",
   "partes.chatAssistant.welcome": "Posez des questions sur l'application {{project}} ou sur les généralités d'utilisation. Je n'effectue pas de tâches ; je réponds seulement aux questions et préoccupations",
   "partes.smartCapture.hint": "Dictez ou saisissez les données de la tâche. Demandez d’enregistrer quand c’est prêt. Cela remplit le formulaire ; ce n’est pas l’Assistant IA de l’avatar.",
+  "partes.tarea.duracion": "Durée",
+  "partes.tarea.duracionDecimal": "Durée décimale",
   "smartCapture.label.assistant": "Saisie intelligente",
   "smartCapture.cta.goToPreferences": "Aller aux Préférences",
   "smartCapture.configurationRequired": "Configurez une clé LLM dans Préférences pour utiliser la saisie intelligente.",

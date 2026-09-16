@@ -8,6 +8,7 @@ import {
 } from '@paqsuite/react-core'
 import type { FormState } from './cargaDiariaFormTypes'
 import { buildPartesDraftContext } from './buildPartesDraftContext'
+import { isValidDuracionMinutos, parseDuracionToMinutos } from './partesTareaDuration'
 
 const turnUrl = '/api/v1/partes/tareas/asistente/turn'
 
@@ -30,6 +31,7 @@ export type PartesSmartCaptureTurnHandlers = {
   clientes: Array<{ id: number; code?: string; nombre?: string }>
   asistentes: Array<{ id: number; code?: string; nombre?: string }>
   tipos: Array<{ id: number; code?: string; descripcion?: string }>
+  tramoMinutos?: number
   pendingChoice: PendingChoice | null
   activeCredentialId: number | null
   supportsVision: boolean
@@ -60,6 +62,7 @@ export async function handlePartesSmartCaptureSend(
     clientes: handlers.clientes,
     asistentes: handlers.asistentes,
     tipos: handlers.tipos,
+    tramoMinutos: handlers.tramoMinutos,
   })
 
   const body = buildSmartCaptureTurnRequest({
@@ -116,7 +119,7 @@ export function resolveSmartCaptureReplyText(
     .join('\n')
 }
 
-async function applyPartesAction(
+export async function applyPartesAction(
   action: SmartCaptureTurnAction,
   handlers: PartesSmartCaptureTurnHandlers
 ): Promise<void> {
@@ -135,19 +138,36 @@ async function applyPartesAction(
       await handlers.onClienteIdChange(value == null ? null : Number(value))
       return
     }
+    if (mapped === 'duracionMinutos') {
+      const parsed = parseDuracionToMinutos(value)
+      const tramo = handlers.tramoMinutos ?? 15
+      if (parsed == null || !isValidDuracionMinutos(parsed, tramo)) {
+        return
+      }
+      handlers.setForm((prev) => ({ ...prev, duracionMinutos: parsed }))
+      return
+    }
     handlers.setForm((prev) => ({
       ...prev,
-      [mapped]: coerceFieldValue(mapped, value),
+      [mapped]: coerceFieldValue(mapped, value, handlers.tramoMinutos ?? 15),
     }))
   }
 }
 
-function coerceFieldValue(field: keyof FormState, value: unknown): FormState[keyof FormState] {
+function coerceFieldValue(
+  field: keyof FormState,
+  value: unknown,
+  tramoMinutos: number
+): FormState[keyof FormState] {
   if (field === 'sinCargo' || field === 'presencial') {
     return Boolean(value)
   }
   if (field === 'duracionMinutos') {
-    return Number(value) || 15
+    const parsed = parseDuracionToMinutos(value)
+    if (parsed == null || !isValidDuracionMinutos(parsed, tramoMinutos)) {
+      return tramoMinutos
+    }
+    return parsed
   }
   if (field === 'usuarioId' || field === 'clienteId' || field === 'tipoTareaId') {
     return value == null || value === '' ? null : Number(value)

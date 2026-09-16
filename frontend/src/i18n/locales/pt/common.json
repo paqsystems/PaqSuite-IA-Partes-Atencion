@@ -20,6 +20,8 @@
   "avatar.chat": "Assistente IA",
   "partes.chatAssistant.welcome": "Pergunte sobre a aplicação {{project}} ou sobre as generalidades de uso. Não realizo tarefas; só respondo perguntas e dúvidas",
   "partes.smartCapture.hint": "Diga ou escreva os dados da tarefa. Peça para gravar quando estiver pronto. Isto preenche o formulário; não substitui o Assistente IA do avatar.",
+  "partes.tarea.duracion": "Duração",
+  "partes.tarea.duracionDecimal": "Duração decimal",
   "smartCapture.label.assistant": "Captura inteligente",
   "smartCapture.cta.goToPreferences": "Ir às Preferências",
   "smartCapture.configurationRequired": "Configure uma credencial LLM nas Preferências para usar a captura inteligente.",

@@ -17,4 +17,6 @@ test('carga diaria muestra toolbar importacion excel', async ({ page }) => {
   await expect(page.getByTestId('partesCargaPage')).toBeVisible({ timeout: 20_000 })
   await expect(page.getByTestId('excelImport.toolbar')).toBeVisible({ timeout: 15_000 })
   await expect(page.getByTestId('excelImport.template')).toBeVisible()
+  await expect(page.getByTestId('gridExport')).toBeVisible({ timeout: 15_000 })
+  await expect(page.getByText('toolbar.items[1].template')).toHaveCount(0)
 })

@@ -9,8 +9,8 @@
 | **Roles** | Asistente / Supervisor (`resultado.partes`); **no** cliente |
 | **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md) (`row_version`), [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-003](./TR-003-maestros-y-catalogos.md) (catálogos / universo tipos) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Finalizado |
-| **Última actualización** | 2026-08-01 |
+| **Estado** | En Control Calidad |
+| **Última actualización** | 2026-09-15 |
 
 **Origen:** [HU-004](../../03-historias-usuario/100-SistemaPartes/HU-004-operacion-carga-diaria.md)  
 **Referencia SPEC:** [SPEC-004](../../05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md)

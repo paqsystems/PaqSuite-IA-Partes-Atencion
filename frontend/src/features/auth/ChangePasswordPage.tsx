@@ -94,6 +94,7 @@ export function ChangePasswordPage() {
           <TextBox
             mode="password"
             value={passwordActual}
+            valueChangeEvent="input"
             onValueChanged={(event) => setPasswordActual(String(event.value ?? ''))}
             elementAttr={{ 'data-testid': 'changePasswordActual' }}
           />
@@ -104,6 +105,7 @@ export function ChangePasswordPage() {
           <TextBox
             mode="password"
             value={password}
+            valueChangeEvent="input"
             onValueChanged={(event) => setPassword(String(event.value ?? ''))}
             elementAttr={{ 'data-testid': 'changePassword' }}
           />
@@ -114,6 +116,7 @@ export function ChangePasswordPage() {
           <TextBox
             mode="password"
             value={passwordConfirmation}
+            valueChangeEvent="input"
             onValueChanged={(event) => setPasswordConfirmation(String(event.value ?? ''))}
             elementAttr={{ 'data-testid': 'changePasswordConfirmation' }}
           />

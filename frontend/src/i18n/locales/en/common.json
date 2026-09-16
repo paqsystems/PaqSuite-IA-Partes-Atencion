@@ -20,6 +20,8 @@
   "avatar.chat": "AI Assistant",
   "partes.chatAssistant.welcome": "Ask about the {{project}} application or about general usage. I do not perform tasks; I only answer questions and concerns",
   "partes.smartCapture.hint": "Say or type the task details (client, type, duration, notes…). Ask to save when ready. This fills the form; it does not replace the avatar AI Assistant.",
+  "partes.tarea.duracion": "Duration",
+  "partes.tarea.duracionDecimal": "Duration (decimal hours)",
   "partes.smartCapture.ok": "Done — form updated.",
   "partes.smartCapture.noop": "No changes to apply.",
   "partes.smartCapture.turnError": "Could not complete the capture turn.",

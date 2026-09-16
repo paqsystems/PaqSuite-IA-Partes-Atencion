@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { buildPartesDraftContext } from './buildPartesDraftContext'
 import {
+  applyPartesAction,
   handlePartesSmartCaptureSend,
   resolveSmartCaptureReplyText,
 } from './partesSmartCaptureTurn'
@@ -44,6 +45,7 @@ describe('buildPartesDraftContext', () => {
     expect(draft.asistenteId).toBe(7)
     expect(draft.tipoTareaCode).toBe('T1')
     expect(draft.presencial).toBe(true)
+    expect(draft.tramoMinutos).toBe(15)
   })
 })
 
@@ -139,5 +141,86 @@ describe('resolveSmartCaptureReplyText', () => {
     expect(text).toContain('Hay varios clientes posibles')
     expect(text).toContain('1 — FLEXO — Flexo')
     expect(text).not.toContain('partes.smartCapture.clienteAmbiguo')
+  })
+})
+
+describe('applyPartesAction', () => {
+  function handlersBase(form: FormState) {
+    let nextForm = form
+    return {
+      form,
+      getForm: () => nextForm,
+      editingId: null as number | null,
+      cerrado: false,
+      esSupervisor: true,
+      clientes: [{ id: 8, code: 'LACAPOL', nombre: 'Lacapol' }],
+      asistentes: [{ id: 3, code: 'PQ', nombre: 'PaqSystems' }],
+      tipos: [{ id: 9, code: 'GEN', descripcion: 'General' }],
+      pendingChoice: null,
+      activeCredentialId: 10,
+      supportsVision: false,
+      tramoMinutos: 15,
+      setForm: (updater: (prev: FormState) => FormState) => {
+        nextForm = updater(nextForm)
+      },
+      setPendingChoice: vi.fn(),
+      onClienteIdChange: async (id: number | null) => {
+        nextForm = { ...nextForm, clienteId: id }
+      },
+      onSave: vi.fn(),
+      onAssistantReply: vi.fn(),
+      onError: vi.fn(),
+      resolveMessage: (key: string) => key,
+    }
+  }
+
+  it('deja form con cliente y asistente únicos', async () => {
+    const form: FormState = {
+      usuarioId: null,
+      clienteId: null,
+      tipoTareaId: null,
+      fecha: '2026-09-15',
+      duracionMinutos: 15,
+      sinCargo: false,
+      presencial: false,
+      observacion: '',
+    }
+    const handlers = handlersBase(form)
+    await applyPartesAction(
+      { action: 'setField', payload: { field: 'clienteId', value: 8 }, resultado: 'ok' },
+      handlers
+    )
+    await applyPartesAction(
+      { action: 'setField', payload: { field: 'asistenteId', value: 3 }, resultado: 'ok' },
+      handlers
+    )
+    await applyPartesAction(
+      { action: 'setField', payload: { field: 'observacion', value: 'vía SC' }, resultado: 'ok' },
+      handlers
+    )
+    expect(handlers.getForm().clienteId).toBe(8)
+    expect(handlers.getForm().usuarioId).toBe(3)
+    expect(handlers.getForm().observacion).toBe('vía SC')
+  })
+
+  it('duración 85 / 1:25 no pisa lookups ni setea minutos inválidos', async () => {
+    const form: FormState = {
+      usuarioId: 3,
+      clienteId: 8,
+      tipoTareaId: 9,
+      fecha: '2026-09-15',
+      duracionMinutos: 15,
+      sinCargo: false,
+      presencial: false,
+      observacion: 'ok',
+    }
+    const handlers = handlersBase(form)
+    await applyPartesAction(
+      { action: 'setField', payload: { field: 'duracionMinutos', value: 85 }, resultado: 'ok' },
+      handlers
+    )
+    expect(handlers.getForm().duracionMinutos).toBe(15)
+    expect(handlers.getForm().clienteId).toBe(8)
+    expect(handlers.getForm().usuarioId).toBe(3)
   })
 })

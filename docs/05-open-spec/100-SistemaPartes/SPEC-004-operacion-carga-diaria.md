@@ -7,8 +7,8 @@
 | ID | SPEC-004 |
 | Título | Operación / carga diaria de tareas |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Finalizado |
-| Última actualización | 2026-08-01 |
+| Estado | En revisión |
+| Última actualización | 2026-09-15 |
 | HU relacionada(s) | [HU-004-operacion-carga-diaria](../../03-historias-usuario/100-SistemaPartes/HU-004-operacion-carga-diaria.md) |
 | TR relacionada(s) | [TR-004-operacion-carga-diaria](../../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md) |
 | Depende de | [SPEC-001](./SPEC-001-modelo-datos-modulo.md), [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-003](./SPEC-003-maestros-y-catalogos.md) (§4.7 universo tipos) |
@@ -241,6 +241,7 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | 2026-07-31 | Presentación grilla: Cliente/Tipo = descripción; bits Sin cargo/Presencial; duración UI `hh:mm` + sumatoria horas decimales (persistencia minutos). |
 | 2026-07-31 | CC-PQ #1 (31/07/2026): carga diaria filtra `es_tarea = 1` en listado y fuerza `es_tarea = 1` en alta/edición (R-OP-13/14). |
 | 2026-08-01 | Parte I: fusionado SPEC-004-update (CC-PQ #1, 31/07) en este original; update eliminado. Estado → Finalizado. |
+| 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): abierto [SPEC-004-update](../updates/100-SistemaPartes/SPEC-004-operacion-carga-diaria-update.md). Estado → En revisión. |
 
 ---
 

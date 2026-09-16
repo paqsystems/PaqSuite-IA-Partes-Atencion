@@ -270,12 +270,14 @@ final class PartesTareaSmartCaptureTurnService
             }
             $value = $fields[$scalarField];
             if ($scalarField === 'duracionMinutos') {
-                if (! is_numeric($value) || (int) $value <= 0) {
+                $tramo = self::tramoMinutosFromDraft($draftContext);
+                $parsed = PartesDuracionParser::toMinutos($value);
+                if ($parsed === null || ! PartesDuracionParser::isValidTramo($parsed, $tramo)) {
                     $actions[] = $this->action('needsRefine', ['field' => 'duracionMinutos']);
                     $replyParts[] = 'partes.smartCapture.duracionInvalida';
                     continue;
                 }
-                $value = (int) $value;
+                $value = $parsed;
             }
             if ($scalarField === 'sinCargo' || $scalarField === 'presencial') {
                 $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
@@ -518,5 +520,17 @@ final class PartesTareaSmartCaptureTurnService
         $int = (int) $value;
 
         return $int > 0 ? $int : null;
+    }
+
+    /** @param  array<string, mixed>  $draftContext */
+    private static function tramoMinutosFromDraft(array $draftContext): int
+    {
+        $tramo = $draftContext['tramoMinutos'] ?? $draftContext['tramo_minutos'] ?? 15;
+        if (! is_numeric($tramo)) {
+            return 15;
+        }
+        $int = (int) $tramo;
+
+        return $int > 0 ? $int : 15;
     }
 }

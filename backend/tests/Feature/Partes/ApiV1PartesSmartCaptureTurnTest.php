@@ -133,6 +133,7 @@ final class ApiV1PartesSmartCaptureTurnTest extends TestCase
             'sinCargo' => false,
             'presencial' => false,
             'esSupervisor' => $esSupervisor,
+            'tramoMinutos' => 15,
             'rowVersion' => null,
         ];
     }
@@ -385,5 +386,72 @@ final class ApiV1PartesSmartCaptureTurnTest extends TestCase
             'asistenteSoloSupervisor',
             (string) $response->json('resultado.replyText')
         );
+    }
+
+    public function test_turn_lookups_unicos_y_duracion_reloj_invalida_parcial(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $tipoClienteId = (int) \Illuminate\Support\Facades\DB::table('PQ_PARTES_CLIENTES')->where('id', $cat['clienteId'])->value('tipo_cliente_id');
+        $lacapolId = \Illuminate\Support\Facades\DB::table('PQ_PARTES_CLIENTES')->insertGetId([
+            'user_id' => null,
+            'code' => 'LACAPOL',
+            'nombre' => 'Lacapol SA',
+            'tipo_cliente_id' => $tipoClienteId,
+            'email' => null,
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $credentialId = $this->createCredential($token);
+        $this->bindProposal([
+            'replyText' => 'ok',
+            'save' => false,
+            'fields' => [
+                'cliente' => 'LACAPOL',
+                'asistente' => 'PQ',
+                'duracionMinutos' => '1:25',
+                'observacion' => 'turno CC3',
+            ],
+        ]);
+
+        $response = $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'asistente PQ cliente LACAPOL duracion 1:25 hrs',
+            'modality' => 'texto',
+            'credentialId' => $credentialId,
+            'draftContext' => $this->draftContext($cat),
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token));
+
+        $response->assertOk()->assertJsonPath('error', 0);
+        $actions = collect($response->json('resultado.actions') ?? []);
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'clienteId'
+                && (int) ($a['payload']['value'] ?? 0) === $lacapolId
+        ));
+        $pqAsistenteId = (int) \Illuminate\Support\Facades\DB::table('PQ_PARTES_USUARIOS')->where('code', 'PQ')->value('id');
+        $this->assertGreaterThan(0, $pqAsistenteId);
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'asistenteId'
+                && (int) ($a['payload']['value'] ?? 0) === $pqAsistenteId
+        ));
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'needsRefine'
+                && ($a['payload']['field'] ?? null) === 'duracionMinutos'
+        ));
+        $this->assertFalse($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'duracionMinutos'
+        ));
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'observacion'
+        ));
+        $this->assertStringContainsString('duracionInvalida', (string) $response->json('resultado.replyText'));
     }
 }

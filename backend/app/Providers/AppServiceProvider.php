@@ -39,6 +39,7 @@ use App\Repositories\Sp\SpUserEmpresasQueryRepository;
 use App\Repositories\Sp\SpUserPreferencesRepository;
 use App\Services\Auth\PartesPostLoginBusinessGate;
 use App\Services\Auth\PostLoginBusinessGate;
+use App\Services\Auth\SanctumAuthTokenIssuer;
 use App\Services\Auth\SpUserEmpresasResolver;
 use App\Services\Auth\UserEmpresasResolver;
 use App\Tenancy\HostMenuProcedimientoChecker;
@@ -76,6 +77,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(PostLoginBusinessGate::class, PartesPostLoginBusinessGate::class);
+        $this->app->singleton(SanctumAuthTokenIssuer::class);
         $this->app->singleton(UserEmpresasResolver::class, SpUserEmpresasResolver::class);
 
         $this->app->singleton(ParametroRepository::class, SpParametroRepository::class);

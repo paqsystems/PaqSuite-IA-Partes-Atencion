@@ -20,6 +20,8 @@
   "avatar.chat": "Asistente IA",
   "partes.chatAssistant.welcome": "Pregunta sobre la aplicación {{project}} o sobre las generalidades de uso. No realizo tareas, sólo respondo preguntas e inquietudes",
   "partes.smartCapture.hint": "Decí o escribí los datos de la tarea (cliente, tipo, duración, observación…). Pedí guardar cuando esté listo. Esto completa el formulario; no reemplaza el Asistente IA del menú avatar.",
+  "partes.tarea.duracion": "Duración",
+  "partes.tarea.duracionDecimal": "Duración decimal",
   "partes.smartCapture.ok": "Listo, actualicé el formulario.",
   "partes.smartCapture.noop": "No encontré cambios para aplicar.",
   "partes.smartCapture.turnError": "No se pudo completar el turno de captura.",

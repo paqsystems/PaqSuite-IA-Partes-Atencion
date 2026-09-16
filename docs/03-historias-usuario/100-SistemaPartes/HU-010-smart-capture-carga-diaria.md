@@ -8,8 +8,8 @@
 | Título | Completar y grabar tareas de Carga diaria con Smart Capture (texto, audio, imagen) |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente |
-| Última actualización | 2026-08-03 |
+| Estado | En Control Calidad |
+| Última actualización | 2026-09-15 |
 | SPEC origen | [SPEC-010-smart-capture-carga-diaria](../../05-open-spec/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md) |
 | TR relacionada(s) | [TR-010-smart-capture-carga-diaria](../../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) |
 

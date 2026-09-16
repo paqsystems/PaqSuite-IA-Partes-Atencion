@@ -17,6 +17,7 @@ export type PartesSmartCaptureDraftContext = {
   sinCargo: boolean
   presencial: boolean
   esSupervisor: boolean
+  tramoMinutos: number
   rowVersion: string | null
 }
 
@@ -30,8 +31,10 @@ export function buildPartesDraftContext(input: {
   clientes: CatalogItem[]
   asistentes: CatalogItem[]
   tipos: CatalogItem[]
+  tramoMinutos?: number
 }): PartesSmartCaptureDraftContext {
   const { form, editingId, cerrado, esSupervisor, clientes, asistentes, tipos } = input
+  const tramoMinutos = input.tramoMinutos && input.tramoMinutos > 0 ? input.tramoMinutos : 15
   const cliente = clientes.find((item) => Number(item.id) === form.clienteId)
   const asistente = asistentes.find((item) => Number(item.id) === form.usuarioId)
   const tipo = tipos.find((item) => Number(item.id) === form.tipoTareaId)
@@ -53,6 +56,7 @@ export function buildPartesDraftContext(input: {
     sinCargo: form.sinCargo,
     presencial: form.presencial,
     esSupervisor,
+    tramoMinutos,
     rowVersion: form.rowVersion ?? null,
   }
 }

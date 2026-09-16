@@ -426,6 +426,70 @@ test.describe('TR-010 Smart Capture E2E (mock turno)', () => {
     await expect(page.getByTestId('partesCargaError')).toBeVisible({ timeout: 10_000 })
   })
 
+  test('CC3: setField cliente y asistente visibles con duración inválida', async ({ page }) => {
+    test.setTimeout(90_000)
+    await loginAsAdmin(page)
+    await mockLlmCredentials(page)
+    const cat = await mockPartesCatalogAndSave(page)
+    await page.route('**/api/v1/partes/catalogos/asistentes', async (route) => {
+      if (route.request().method() !== 'GET') {
+        await route.continue()
+        return
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: 0,
+          respuesta: 'ok',
+          resultado: {
+            items: [{ id: 3, code: 'PQ', nombre: 'PaqSystems' }],
+          },
+        }),
+      })
+    })
+    await installTurnMock(page, {
+      replyText: 'partes.smartCapture.duracionInvalida',
+      actions: [
+        {
+          action: 'setField',
+          payload: { field: 'clienteId', value: cat.a },
+          resultado: 'ok',
+        },
+        {
+          action: 'setField',
+          payload: { field: 'asistenteId', value: 3 },
+          resultado: 'ok',
+        },
+        {
+          action: 'setField',
+          payload: { field: 'observacion', value: 'CC3 LACAPOL PQ' },
+          resultado: 'ok',
+        },
+        {
+          action: 'needsRefine',
+          payload: { field: 'duracionMinutos' },
+          resultado: 'ok',
+        },
+      ],
+      pendingChoice: null,
+      configurationRequired: false,
+    })
+    await openCargaCreateExpanded(page)
+    await sendSmartCapture(page, 'asistente PQ cliente LACAPOL duracion 1:25 hrs')
+    await expect(page.getByTestId('partesCargaCliente').locator('input[type="hidden"]')).toHaveValue(
+      String(cat.a),
+      { timeout: 10_000 }
+    )
+    await expect(page.getByTestId('partesCargaAsistente').locator('input[type="hidden"]')).toHaveValue(
+      '3',
+      { timeout: 10_000 }
+    )
+    await expect(page.getByTestId('partesCargaObservacion').locator('input')).toHaveValue(
+      'CC3 LACAPOL PQ'
+    )
+  })
+
   test('11 overwrite cliente via SC sin dialogo confirm', async ({ page }) => {
     test.setTimeout(90_000)
     await loginAsAdmin(page)

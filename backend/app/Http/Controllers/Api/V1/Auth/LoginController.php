@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\Auth\PostLoginBusinessGate;
 use App\Services\Auth\PostLoginBusinessGateException;
+use App\Services\Auth\SanctumAuthTokenIssuer;
 use App\Services\Auth\UserEmpresasResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,7 +26,8 @@ final class LoginController extends Controller
         private readonly UserEmpresasResolver $userEmpresasResolver,
         private readonly ParametroStore $parametroStore,
         private readonly UserPreferencesRepository $userPreferencesRepository,
-        private readonly LocaleNormalizer $localeNormalizer
+        private readonly LocaleNormalizer $localeNormalizer,
+        private readonly SanctumAuthTokenIssuer $sanctumAuthTokenIssuer
     ) {
     }
 
@@ -55,11 +57,11 @@ final class LoginController extends Controller
             $normalizedLocale = $this->localeNormalizer->normalize($localeRaw);
             if ($normalizedLocale !== null && $normalizedLocale !== $user->locale) {
                 $this->userPreferencesRepository->patchForUser((int) $user->id, ['locale' => $normalizedLocale]);
-                $user->refresh();
+                $user->locale = $normalizedLocale;
             }
         }
 
-        $token = $user->createToken('auth')->plainTextToken;
+        $token = $this->sanctumAuthTokenIssuer->issue($user, 'auth');
         $empresas = $this->userEmpresasResolver->resolveForUser($user);
         $minutosWeb = (new SessionIdleMinutes($this->parametroStore))->resolve();
         $complejidad = strtolower((string) ($this->parametroStore->getString('PasswordComplejidad', 'simple') ?? 'simple'));

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Column, Paging, Pager, Selection } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
 import CheckBox from 'devextreme-react/check-box'
@@ -31,6 +31,11 @@ import {
   type TareaIdItem,
 } from './partesMasivoApi'
 import { buildMasivoCamposUpdate } from './partesMasivoCampos'
+import {
+  isSpuriousMasivoClear,
+  reduceMasivoSelection,
+  type MasivoSelectionEvent,
+} from './masivoSelection'
 
 const PAGE_SIZE = 20
 
@@ -47,6 +52,11 @@ export function ProcesoMasivoPage() {
 
 function ProcesoMasivoView() {
   const hoy = todayIsoDate()
+  const session = getAuthSession()
+  const platform = useMemo(
+    () => buildAuthPlatformHeaders(),
+    [session?.activeCompanyId, session?.empresas[0]?.id, session?.tenancy]
+  )
   const [fechaDesde, setFechaDesde] = useState(hoy)
   const [fechaHasta, setFechaHasta] = useState(hoy)
   const [filtroClienteId, setFiltroClienteId] = useState<number | null>(null)
@@ -61,6 +71,11 @@ function ProcesoMasivoView() {
   const [tiposTarea, setTiposTarea] = useState<Record<string, unknown>[]>([])
   const [selectedKeys, setSelectedKeys] = useState<number[]>([])
   const [selectedMap, setSelectedMap] = useState<Record<number, TareaIdItem>>({})
+  const selectionRef = useRef({ keys: selectedKeys, map: selectedMap })
+  selectionRef.current = { keys: selectedKeys, map: selectedMap }
+  const restoringSelectionRef = useRef(false)
+  const userSelectionIntentRef = useRef(false)
+  const gridHostRef = useRef<HTMLDivElement>(null)
   const [applyTipoTareaId, setApplyTipoTareaId] = useState<number | null>(null)
   const [applySinCargo, setApplySinCargo] = useState(false)
   const [touchSinCargo, setTouchSinCargo] = useState(false)
@@ -102,6 +117,9 @@ function ProcesoMasivoView() {
       setLoading(false)
       return
     }
+    setSelectedKeys([])
+    setSelectedMap({})
+    selectionRef.current = { keys: [], map: {} }
     setLoading(true)
     setError(null)
     try {
@@ -145,7 +163,24 @@ function ProcesoMasivoView() {
     void load()
   }, [load])
 
+  useEffect(() => {
+    const root = gridHostRef.current
+    if (!root) {
+      return
+    }
+    const onPointerDown = (ev: Event) => {
+      const el = ev.target as HTMLElement | null
+      if (el?.closest('.dx-command-select, .dx-select-checkbox')) {
+        userSelectionIntentRef.current = true
+      }
+    }
+    root.addEventListener('pointerdown', onPointerDown, true)
+    return () => root.removeEventListener('pointerdown', onPointerDown, true)
+  }, [])
+
   function clearSelection() {
+    const empty = { keys: [] as number[], map: {} as Record<number, TareaIdItem> }
+    selectionRef.current = empty
     setSelectedKeys([])
     setSelectedMap({})
   }
@@ -190,32 +225,41 @@ function ProcesoMasivoView() {
     })
     setSelectedMap(map)
     setSelectedKeys(keys)
+    selectionRef.current = { keys, map }
   }
 
-  function onSelectionChanged(e: {
-    selectedRowKeys?: Array<string | number>
-    selectedRowsData?: PartesTareaItem[]
-  }) {
-    const keys = (e.selectedRowKeys ?? []).map((key) => Number(key))
-    setSelectedKeys(keys)
-    setSelectedMap((prev) => {
-      const next = { ...prev }
-      Object.keys(next).forEach((key) => {
-        if (!keys.includes(Number(key))) {
-          delete next[Number(key)]
+  const pageIds = useMemo(() => rows.map((row) => row.id), [rows])
+
+  const onSelectionChanged = useCallback(
+    (e: MasivoSelectionEvent) => {
+      const userIntent = userSelectionIntentRef.current
+      userSelectionIntentRef.current = false
+      const prev = selectionRef.current
+      if (isSpuriousMasivoClear(prev.keys, e, userIntent)) {
+        if (restoringSelectionRef.current) {
+          return
         }
-      })
-      ;(e.selectedRowsData ?? []).forEach((row) => {
-        next[row.id] = {
-          id: row.id,
-          rowVersion: row.rowVersion,
-          fecha: String(row.fecha).slice(0, 10),
-          usuarioCode: row.usuarioCode,
+        const restoreKeys = prev.keys
+        const selectRows = e.component?.selectRows
+        if (selectRows && restoreKeys.length > 0) {
+          restoringSelectionRef.current = true
+          queueMicrotask(() => {
+            try {
+              selectRows(restoreKeys, false)
+            } finally {
+              restoringSelectionRef.current = false
+            }
+          })
         }
-      })
-      return next
-    })
-  }
+        return
+      }
+      const next = reduceMasivoSelection(prev, e, pageIds, userIntent)
+      selectionRef.current = next
+      setSelectedKeys(next.keys)
+      setSelectedMap(next.map)
+    },
+    [pageIds]
+  )
 
   async function runAccion(accion: 'cerrar' | 'reabrir') {
     const items = selectedItems()
@@ -541,7 +585,7 @@ function ProcesoMasivoView() {
         </div>
       ) : null}
 
-      <div data-testid="partesMasivoGrid">
+      <div data-testid="partesMasivoGrid" ref={gridHostRef}>
         <ProcessDataGrid
           dataSource={rows}
           keyExpr="id"
@@ -549,7 +593,7 @@ function ProcesoMasivoView() {
           proceso="partes.masivo"
           gridId="procesoMasivo"
           accessToken={getAuthToken()}
-          platform={buildAuthPlatformHeaders()}
+          platform={platform}
           selectedRowKeys={selectedKeys}
           onSelectionChanged={onSelectionChanged}
           defaultTotalItems={duracionSummaryItems}

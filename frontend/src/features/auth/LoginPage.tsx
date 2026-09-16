@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import {
   AuthLoginLayout,
   LanguageSelector,
@@ -24,7 +24,8 @@ import { resolvePlatformCliente } from './platformContext'
 import { PartesMobileConfigHost } from '../partes/mobile/PartesMobileConfigHost'
 
 export function LoginPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const formRef = useRef<HTMLFormElement>(null)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const native = isNativeApp()
@@ -105,6 +106,7 @@ export function LoginPage() {
 
   return (
     <AuthLoginLayout
+      key={i18n.language}
       hero={authHero}
       badge={t('shell.footer.brand')}
       cardTitle={t('login.welcome')}
@@ -134,7 +136,7 @@ export function LoginPage() {
         <p className={authClassNames.messageError}>{errorMessage}</p>
       ) : null}
 
-      <form className={authClassNames.form} onSubmit={handleSubmit}>
+      <form ref={formRef} className={authClassNames.form} onSubmit={handleSubmit}>
         {native ? (
           <label className={authClassNames.field}>
             <span className={authClassNames.fieldLabel}>{t('login.tenant')}</span>
@@ -172,10 +174,11 @@ export function LoginPage() {
           text={isSubmitting ? t('login.loading') : t('login.submit')}
           type="default"
           stylingMode="contained"
-          useSubmitBehavior
+          useSubmitBehavior={false}
           disabled={isSubmitting}
           className={authClassNames.cta}
           elementAttr={{ 'data-testid': 'loginSubmit' }}
+          onClick={() => formRef.current?.requestSubmit()}
         />
       </form>
     </AuthLoginLayout>

@@ -40,16 +40,19 @@ import {
   formatMinutosAsHhMm,
   isFechaFutura,
   isoDateFromDateBox,
-  isValidDuracionMinutos,
   minutosToHorasDecimal,
   todayIsoDate,
 } from './partesTareaDuration'
 import { shouldRefreshCargaAfterImport } from './excelImportCargaHelpers'
 import { handlePartesSmartCaptureSend } from './partesSmartCaptureTurn'
+import { resolveDefaultTipoId } from './cargaDiariaTipoDefault'
+import { cargaDiariaPersistErrorKey } from './cargaDiariaPersistValidation'
+import { catalogItemId, isDxUserEvent, normalizeCatalogItems } from './catalogItems'
 
 type CargaDiariaGridRow = PartesTareaItem & {
   /** Horas decimales para sumatoria DevExtreme (persistencia = minutos). */
   duracionHoras: number
+  duracionHhMm: string
 }
 
 const emptyForm = (asistenteId: number | null): FormState => ({
@@ -90,6 +93,7 @@ export function CargaDiariaPage() {
   const [editingId, setEditingId] = useState<number | null>(null)
   const [formCerrado, setFormCerrado] = useState(false)
   const [form, setForm] = useState<FormState>(() => emptyForm(asistenteId))
+  const [isSaving, setIsSaving] = useState(false)
   const [scThread, setScThread] = useState<SmartCaptureThreadMessage[]>([])
   const [llmPreferencesVisible, setLlmPreferencesVisible] = useState(false)
   const [credentialsRevision, setCredentialsRevision] = useState(0)
@@ -118,7 +122,23 @@ export function CargaDiariaPage() {
 
   function closeForm() {
     setFormOpen(false)
+    setIsSaving(false)
     resetSmartCaptureState()
+  }
+
+  function renderFormErrorAlert() {
+    if (!error) {
+      return null
+    }
+    return (
+      <div
+        role="alert"
+        data-testid="partesCargaError"
+        style={{ color: 'var(--dx-color-danger, #d9534f)', fontWeight: 600 }}
+      >
+        {error}
+      </div>
+    )
   }
 
   function resolveSmartCaptureMessage(key: string): string {
@@ -138,6 +158,7 @@ export function CargaDiariaPage() {
       clientes: clientes as Array<{ id: number; code?: string; nombre?: string }>,
       asistentes: asistentes as Array<{ id: number; code?: string; nombre?: string }>,
       tipos: tipos as Array<{ id: number; code?: string; descripcion?: string }>,
+      tramoMinutos: tramo,
       pendingChoice,
       activeCredentialId: llmSelection.activeCredentialId,
       supportsVision: llmSelection.canAttachImages,
@@ -174,6 +195,7 @@ export function CargaDiariaPage() {
     return items.map((item) => ({
       ...item,
       duracionHoras: minutosToHorasDecimal(item.duracionMinutos),
+      duracionHhMm: formatMinutosAsHhMm(item.duracionMinutos),
     }))
   }
 
@@ -213,13 +235,13 @@ export function CargaDiariaPage() {
     })
     void listCatalogo('clientes').then((result) => {
       if (result.kind === 'ok') {
-        setClientes(result.envelope.resultado.items ?? [])
+        setClientes(normalizeCatalogItems(result.envelope.resultado.items ?? []))
       }
     })
     if (esSupervisor) {
       void listCatalogo('asistentes').then((result) => {
         if (result.kind === 'ok') {
-          setAsistentes(result.envelope.resultado.items ?? [])
+          setAsistentes(normalizeCatalogItems(result.envelope.resultado.items ?? []))
         }
       })
     }
@@ -233,7 +255,7 @@ export function CargaDiariaPage() {
     const query = clienteId ? `?clienteId=${clienteId}` : ''
     const result = await listCatalogo('tipos-tarea', query)
     if (result.kind === 'ok') {
-      const items = result.envelope.resultado.items ?? []
+      const items = normalizeCatalogItems(result.envelope.resultado.items ?? [])
       setTipos(items)
       return items
     }
@@ -241,18 +263,11 @@ export function CargaDiariaPage() {
     return []
   }
 
-  function resolveDefaultTipoId(items: Record<string, unknown>[] | undefined): number | null {
-    if (!items || items.length === 0) {
-      return null
-    }
-    const defaultTipo =
-      items.find((item) => Boolean(item.isDefault) || Boolean(item.is_default)) ?? items[0]
-    return defaultTipo ? Number(defaultTipo.id) : null
-  }
-
   async function openCreate() {
     setEditingId(null)
     setFormCerrado(false)
+    setError(null)
+    setIsSaving(false)
     const initial = emptyForm(asistenteId)
     initial.duracionMinutos = tramo
     const generics = await loadUniverso(null)
@@ -269,6 +284,8 @@ export function CargaDiariaPage() {
     }
     setEditingId(row.id)
     setFormCerrado(false)
+    setError(null)
+    setIsSaving(false)
     const next: FormState = {
       usuarioId: row.usuarioId,
       clienteId: row.clienteId,
@@ -290,7 +307,7 @@ export function CargaDiariaPage() {
   async function handleClienteChange(clienteId: number | null) {
     const items = await loadUniverso(clienteId)
     patchForm((prev) => {
-      const stillValid = items.some((item) => Number(item.id) === prev.tipoTareaId)
+      const stillValid = items.some((item) => Number(item.id) === Number(prev.tipoTareaId))
       return {
         ...prev,
         clienteId,
@@ -302,11 +319,13 @@ export function CargaDiariaPage() {
   async function persist(confirmFutura = false) {
     const current = formRef.current
     const currentEditingId = editingIdRef.current
-    if (!isValidDuracionMinutos(current.duracionMinutos, tramo)) {
-      setError(resolveAuthMessage('partes.tarea.duracionInvalida'))
+    const validationKey = cargaDiariaPersistErrorKey(current, tramo)
+    if (validationKey) {
+      setError(resolveAuthMessage(validationKey))
       return
     }
-    if (isFechaFutura(current.fecha) && !confirmFutura) {
+    let confirmedFutura = confirmFutura
+    if (isFechaFutura(current.fecha) && !confirmedFutura) {
       const ok = await confirm(
         'La fecha es futura. ¿Confirma el registro?',
         'Fecha futura'
@@ -314,35 +333,49 @@ export function CargaDiariaPage() {
       if (!ok) {
         return
       }
-      return persist(true)
+      confirmedFutura = true
     }
 
-    const body: Record<string, unknown> = {
-      usuarioId: current.usuarioId,
-      clienteId: current.clienteId,
-      tipoTareaId: current.tipoTareaId,
-      fecha: current.fecha,
-      duracionMinutos: current.duracionMinutos,
-      sinCargo: current.sinCargo,
-      presencial: current.presencial,
-      observacion: current.observacion,
-      confirmarFechaFutura: confirmFutura || undefined,
-    }
-    if (currentEditingId !== null) {
-      body.rowVersion = current.rowVersion
-    }
-
-    const result = await saveTarea(body, currentEditingId ?? undefined)
-    if (result.kind === 'ok') {
-      closeForm()
-      void load()
-      return
-    }
-    if (result.kind === 'envelopeError') {
-      if (result.envelope.respuesta === 'partes.tarea.fechaFuturaConfirmacion') {
-        return persist(true)
+    setError(null)
+    setIsSaving(true)
+    try {
+      const body: Record<string, unknown> = {
+        usuarioId: current.usuarioId,
+        clienteId: current.clienteId,
+        tipoTareaId: current.tipoTareaId,
+        fecha: current.fecha,
+        duracionMinutos: Number(current.duracionMinutos),
+        sinCargo: current.sinCargo,
+        presencial: current.presencial,
+        observacion: current.observacion.trim(),
+        confirmarFechaFutura: confirmedFutura || undefined,
       }
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      if (currentEditingId !== null) {
+        body.rowVersion = current.rowVersion
+      }
+
+      let result = await saveTarea(body, currentEditingId ?? undefined)
+      if (
+        result.kind === 'envelopeError' &&
+        result.envelope.respuesta === 'partes.tarea.fechaFuturaConfirmacion'
+      ) {
+        body.confirmarFechaFutura = true
+        result = await saveTarea(body, currentEditingId ?? undefined)
+      }
+      if (result.kind === 'ok') {
+        closeForm()
+        void load()
+        return
+      }
+      if (result.kind === 'envelopeError') {
+        setError(resolveAuthMessage(result.envelope.respuesta))
+        return
+      }
+      setError(resolveAuthMessage(result.i18nKey || 'infra.transport'))
+    } catch {
+      setError(resolveAuthMessage('infra.unexpected'))
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -471,11 +504,7 @@ export function CargaDiariaPage() {
         />
       ) : null}
 
-      {error ? (
-        <div role="alert" data-testid="partesCargaError">
-          {error}
-        </div>
-      ) : null}
+      {!formOpen ? renderFormErrorAlert() : null}
       <div data-testid="partesCargaGrid">
         <ProcessDataGrid
           dataSource={rows}
@@ -497,13 +526,12 @@ export function CargaDiariaPage() {
           {esSupervisor ? <Column dataField="usuarioCode" caption="Asistente" /> : null}
           <Column dataField="clienteNombre" caption="Cliente" />
           <Column dataField="tipoTareaDescripcion" caption="Tipo de Tarea" />
+          <Column dataField="duracionHhMm" caption={t('partes.tarea.duracion', 'Duración')} />
           <Column
             dataField="duracionHoras"
-            caption="Duración"
+            caption={t('partes.tarea.duracionDecimal', 'Duración decimal')}
             dataType="number"
-            customizeText={(cell) =>
-              formatMinutosAsHhMm(Math.round(Number(cell.value ?? 0) * 60))
-            }
+            format="#0.##"
           />
           <Column dataField="sinCargo" caption="Sin cargo" dataType="boolean" />
           <Column dataField="presencial" caption="Presencial" dataType="boolean" />
@@ -549,18 +577,23 @@ export function CargaDiariaPage() {
         showCloseButton
       >
         <div style={{ display: 'grid', gap: 10, padding: 8 }} data-testid="partesCargaForm">
+          {formOpen ? renderFormErrorAlert() : null}
           {esSupervisor ? (
             <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
               <label>Asistente</label>
               <SelectBox
                 dataSource={asistentes}
                 value={form.usuarioId}
-                valueExpr="id"
+                valueExpr={catalogItemId}
                 displayExpr={(item) => (item ? `${item.code} — ${item.nombre}` : '')}
                 searchEnabled
-                onValueChanged={(e) =>
-                  patchForm((prev) => ({ ...prev, usuarioId: e.value as number }))
-                }
+                elementAttr={{ 'data-testid': 'partesCargaAsistente' }}
+                onValueChanged={(e) => {
+                  if (!isDxUserEvent(e)) {
+                    return
+                  }
+                  patchForm((prev) => ({ ...prev, usuarioId: (e.value as number | null) ?? null }))
+                }}
               />
             </div>
           ) : null}
@@ -585,11 +618,16 @@ export function CargaDiariaPage() {
             <SelectBox
               dataSource={clientes}
               value={form.clienteId}
-              valueExpr="id"
+              valueExpr={catalogItemId}
               displayExpr={(item) => (item ? `${item.code} — ${item.nombre}` : '')}
               searchEnabled
               elementAttr={{ 'data-testid': 'partesCargaCliente' }}
-              onValueChanged={(e) => void handleClienteChange((e.value as number | null) ?? null)}
+              onValueChanged={(e) => {
+                if (!isDxUserEvent(e)) {
+                  return
+                }
+                void handleClienteChange((e.value as number | null) ?? null)
+              }}
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
@@ -597,12 +635,16 @@ export function CargaDiariaPage() {
             <SelectBox
               dataSource={tipos}
               value={form.tipoTareaId}
-              valueExpr="id"
+              valueExpr={catalogItemId}
               displayExpr={(item) => (item ? `${item.code} — ${item.descripcion}` : '')}
               searchEnabled
-              onValueChanged={(e) =>
-                patchForm((prev) => ({ ...prev, tipoTareaId: e.value as number | null }))
-              }
+              elementAttr={{ 'data-testid': 'partesCargaTipoTarea' }}
+              onValueChanged={(e) => {
+                if (!isDxUserEvent(e)) {
+                  return
+                }
+                patchForm((prev) => ({ ...prev, tipoTareaId: (e.value as number | null) ?? null }))
+              }}
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
@@ -614,12 +656,15 @@ export function CargaDiariaPage() {
               displayExpr="label"
               searchEnabled
               elementAttr={{ 'data-testid': 'partesCargaDuracion' }}
-              onValueChanged={(e) =>
+              onValueChanged={(e) => {
+                if (!isDxUserEvent(e)) {
+                  return
+                }
                 patchForm((prev) => ({
                   ...prev,
                   duracionMinutos: Number(e.value) || tramo,
                 }))
-              }
+              }}
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
@@ -653,8 +698,9 @@ export function CargaDiariaPage() {
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
             <Button text="Cancelar" onClick={() => closeForm()} />
             <Button
-              text="Guardar"
+              text={isSaving ? 'Guardando…' : 'Guardar'}
               type="default"
+              disabled={isSaving}
               onClick={() => void persist(false)}
               elementAttr={{ 'data-testid': 'partesCargaSave' }}
             />

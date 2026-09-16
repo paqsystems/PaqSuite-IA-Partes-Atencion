@@ -26,8 +26,13 @@ final class ApplyInstalacionDatabaseMiddleware
             return $next($request);
         }
 
+        // Partes MVP: acceso SQL local directo. Sin agente-gateway (AgentesClientes).
         if ($instalacion->isGatewayMode()) {
-            return $next($request);
+            return ApiResponse::error(
+                PaqSuiteEnvelopeCatalog::INFRA_UNEXPECTED,
+                'tenant.gatewayNotSupported',
+                503,
+            );
         }
 
         $default = (string) config('database.default');
