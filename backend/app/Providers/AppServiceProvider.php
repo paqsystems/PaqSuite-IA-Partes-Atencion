@@ -39,6 +39,7 @@ use App\Repositories\Sp\SpUserEmpresasQueryRepository;
 use App\Repositories\Sp\SpUserPreferencesRepository;
 use App\Services\Auth\PartesPostLoginBusinessGate;
 use App\Services\Auth\PostLoginBusinessGate;
+use App\Services\Auth\SanctumAuthTokenIssuer;
 use App\Services\Auth\SpUserEmpresasResolver;
 use App\Services\Auth\UserEmpresasResolver;
 use App\Tenancy\HostMenuProcedimientoChecker;
@@ -76,6 +77,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(PostLoginBusinessGate::class, PartesPostLoginBusinessGate::class);
+        $this->app->singleton(SanctumAuthTokenIssuer::class);
         $this->app->singleton(UserEmpresasResolver::class, SpUserEmpresasResolver::class);
 
         $this->app->singleton(ParametroRepository::class, SpParametroRepository::class);
@@ -248,6 +250,10 @@ class AppServiceProvider extends ServiceProvider
             $router->aliasMiddleware($alias, $class);
         }
 
+        // Hasta publicar paqsuite/laravel-core ≥ 1.3.5 en Satis: el alias SDK
+        // aún no incluye ApplyInstalacionDatabase; el host aporta Opción B.
+        // Tras bump: quitar este override y App\Http\Middleware\ApplyInstalacionDatabaseMiddleware
+        // (el package registra alias + middlewarePriority).
         $router->aliasMiddleware(
             'paqsuite.instalacion.db',
             \App\Http\Middleware\ApplyInstalacionDatabaseMiddleware::class

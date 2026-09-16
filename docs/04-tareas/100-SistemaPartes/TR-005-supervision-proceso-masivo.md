@@ -9,8 +9,8 @@
 | **Roles** | Solo `resultado.partes.esSupervisor = true` |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-004](./TR-004-operacion-carga-diaria.md) (listado/tareas/`rowVersion`/tipos), GEN layouts/export grilla |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Finalizado |
-| **Última actualización** | 2026-08-01 |
+| **Estado** | En Control Calidad |
+| **Última actualización** | 2026-09-15 |
 
 **Origen:** [HU-005](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md)  
 **Referencia SPEC:** [SPEC-005](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md)  

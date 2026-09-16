@@ -1,3 +1,4 @@
+import { normalizeClienteCode } from '@paqsuite/react-core'
 import type { AuthSession, LoginSessionResultado } from './authTypes'
 
 const storageKey = 'paqAuthSession'
@@ -60,7 +61,10 @@ export function getMinutosWeb(): number {
   return defaultMinutosWeb
 }
 
-export function saveLoginSession(resultado: LoginSessionResultado): AuthSession {
+export function saveLoginSession(
+  resultado: LoginSessionResultado,
+  cliente?: string,
+): AuthSession {
   const activeCompanyId =
     resultado.empresas.length === 1 ? resultado.empresas[0]?.id : undefined
 
@@ -71,6 +75,7 @@ export function saveLoginSession(resultado: LoginSessionResultado): AuthSession 
         ? resultado.minutosWeb
         : defaultMinutosWeb,
     activeCompanyId,
+    cliente: normalizeClienteCode(cliente) || undefined,
   }
 
   writeRaw(session)
@@ -94,4 +99,37 @@ export function clearAuthSession(): void {
 
 export function isAuthenticated(): boolean {
   return Boolean(getAuthToken())
+}
+
+/**
+ * El token Sanctum vive en la BD del tenant. Si el X-Paq-Cliente actual
+ * no coincide con el de la sesión, hay que forzar re-login (mismo
+ * vercel.app sirve PAQ/DEMO/ESTUDIOGB).
+ *
+ * @returns true si la sesión se invalidó
+ */
+export function invalidateSessionIfClienteMismatch(currentCliente: string): boolean {
+  const session = readRaw()
+  if (!session?.token) {
+    return false
+  }
+
+  const expected = normalizeClienteCode(session.cliente)
+  const actual = normalizeClienteCode(currentCliente)
+
+  // Sesiones previas sin `cliente`: un solo re-login al entrar con tenant.
+  if (!expected) {
+    if (actual) {
+      clearAuthSession()
+      return true
+    }
+    return false
+  }
+
+  if (actual && expected !== actual) {
+    clearAuthSession()
+    return true
+  }
+
+  return false
 }

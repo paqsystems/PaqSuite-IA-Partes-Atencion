@@ -8,8 +8,8 @@
 | Título | Operación / carga diaria de tareas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Finalizado |
-| Última actualización | 2026-08-01 |
+| Estado | En Control Calidad |
+| Última actualización | 2026-09-15 |
 | SPEC origen | [SPEC-004-operacion-carga-diaria](../../05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md) |
 | TR relacionada(s) | [TR-004-operacion-carga-diaria](../../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md) |
 
@@ -191,7 +191,7 @@ Feature: Carga diaria de tareas Partes
 - Sesión con `resultado.partes` válido (SPEC-002) y catálogos usables vía APIs SPEC-003.
 - Alta ordinaria de tarea crea registro con `cerrado = 0`, `sin_cargo = 0`, `presencial = 0` salvo que el usuario marque los bits.
 - Backend no confía solo en filtros de UI; delimitación API §4.7 es obligatoria.
-- Default sugerido de `tipo_tarea_id` al alta: tipo con `is_default = 1` si pertenece al universo del cliente seleccionado.
+- Default de `tipo_tarea_id` al abrir alta: preseleccionar tipo con `is_default = 1` (catálogo de genéricos); al elegir cliente, mantenerlo si ∈ universo o reasignar el default del universo.
 - Complemento IA: ~~opcional en MVP~~ → **cerrado:** fuera del MVP; solo carga manual (R-OP-12).
 - Layouts persistentes de grilla Framework GEN, si aplican, no bloquean MVP.
 - Seed incluirá parámetro de tramo de duración (clave p. ej. `PartesDuracionTramoMin`, default `15`).

@@ -7,6 +7,7 @@ import {
   isoDateFromDateBox,
   isValidDuracionMinutos,
   minutosToHorasDecimal,
+  parseDuracionToMinutos,
   parseHhMmToMinutos,
 } from './partesTareaDuration'
 
@@ -32,6 +33,17 @@ describe('partesTareaDuration', () => {
     expect(minutosToHorasDecimal(30)).toBe(0.5)
     expect(minutosToHorasDecimal(90)).toBe(1.5)
     expect(minutosToHorasDecimal(15)).toBe(0.25)
+    expect(minutosToHorasDecimal(135)).toBe(2.25)
+    expect(minutosToHorasDecimal(930)).toBe(15.5)
+    expect(minutosToHorasDecimal(885)).toBe(14.75)
+  })
+
+  it('distingue reloj h:mm de horas decimales', () => {
+    expect(parseDuracionToMinutos('1:25')).toBe(85)
+    expect(parseDuracionToMinutos('02:15')).toBe(135)
+    expect(parseDuracionToMinutos(1.25)).toBe(75)
+    expect(parseDuracionToMinutos('1.25 h')).toBe(75)
+    expect(parseDuracionToMinutos(85)).toBe(85)
   })
 
   it('parsea hh:mm a minutos', () => {

@@ -39,12 +39,10 @@ final class GridLayoutsController extends Controller
             );
         }
 
-        $userId = (int) Auth::id();
         $proceso = (string) $request->query('proceso');
         $gridId = (string) $request->query('gridId');
 
         $items = PqGridLayout::query()
-            ->where('user_id', $userId)
             ->where('proceso', $proceso)
             ->where('grid_id', $gridId)
             ->orderBy('layout_name')
@@ -264,9 +262,6 @@ final class GridLayoutsController extends Controller
             ->where('id', $layoutId)
             ->where('proceso', $proceso)
             ->where('grid_id', $gridId)
-            ->where(function ($q) use ($userId): void {
-                $q->where('user_id', $userId)->orWhere('is_system', true);
-            })
             ->first();
 
         if ($layout === null) {

@@ -102,7 +102,7 @@ class ApiV1PartesMaestrosTest extends TestCase
             ->assertJsonPath('respuesta', 'partes.maestros.tipoDefaultNoInhabilitar');
     }
 
-    public function test_asignacion_rechaza_generico_y_universo_requiere_cliente(): void
+    public function test_asignacion_rechaza_generico_y_universo_sin_cliente_solo_genericos(): void
     {
         $token = $this->loginAdmin();
         $tipoId = DB::table('PQ_PARTES_TIPOS_CLIENTE')->insertGetId([
@@ -134,8 +134,12 @@ class ApiV1PartesMaestrosTest extends TestCase
             ->assertJsonPath('respuesta', 'partes.maestros.tipoGenericoNoAsignable');
 
         $universo = $this->getJson('/api/v1/partes/catalogos/tipos-tarea', $this->authHeaders($token));
-        $universo->assertStatus(422)
-            ->assertJsonPath('respuesta', 'partes.maestros.clienteIdRequired');
+        $universo->assertStatus(200);
+        $genericCodes = collect($universo->json('resultado.items'))->pluck('code');
+        $this->assertTrue($genericCodes->contains('GEN'));
+        $this->assertTrue(
+            collect($universo->json('resultado.items'))->contains(fn ($item) => (bool) ($item['isDefault'] ?? false))
+        );
 
         $ok = $this->getJson('/api/v1/partes/catalogos/tipos-tarea?clienteId='.$clienteId, $this->authHeaders($token));
         $ok->assertStatus(200);

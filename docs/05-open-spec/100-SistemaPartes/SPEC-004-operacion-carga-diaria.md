@@ -7,8 +7,8 @@
 | ID | SPEC-004 |
 | Título | Operación / carga diaria de tareas |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Finalizado |
-| Última actualización | 2026-08-01 |
+| Estado | En revisión |
+| Última actualización | 2026-09-15 |
 | HU relacionada(s) | [HU-004-operacion-carga-diaria](../../03-historias-usuario/100-SistemaPartes/HU-004-operacion-carga-diaria.md) |
 | TR relacionada(s) | [TR-004-operacion-carga-diaria](../../04-tareas/100-SistemaPartes/TR-004-operacion-carga-diaria.md) |
 | Depende de | [SPEC-001](./SPEC-001-modelo-datos-modulo.md), [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-003](./SPEC-003-maestros-y-catalogos.md) (§4.7 universo tipos) |
@@ -100,7 +100,7 @@ Sin filtros de fecha aplicados, la grilla **no** carga el universo completo hist
 |-------|--------|
 | `fecha` | Obligatoria; fecha de **negocio** (no solo `created_at`). Presentación amigable (locale). Si `fecha` > fecha del sistema → **advertencia** confirmable; **no** bloqueo duro. |
 | `cliente_id` | Obligatorio; solo cliente usable (SPEC-003). Al cambiar cliente, recalcular tipos disponibles; si el `tipo_tarea_id` actual no pertenece al nuevo universo → **limpiar** `tipo_tarea_id` (queda vacío hasta nueva elección). |
-| `tipo_tarea_id` | Obligatorio (no nulo/vacío al grabar); ∈ universo SPEC-003 §4.7 para ese cliente. Default sugerido al alta: tipo con `is_default = 1` si está en el universo. Tras limpiar por cambio de cliente, no se puede grabar hasta elegir tipo válido. |
+| `tipo_tarea_id` | Obligatorio (no nulo/vacío al grabar); ∈ universo SPEC-003 §4.7 para ese cliente. **Default al abrir alta:** preseleccionar el tipo con `is_default = 1` (genéricos disponibles sin cliente); al elegir cliente, mantenerlo si sigue en el universo o reasignar el default del universo. Tras limpiar por cambio de cliente, no se puede grabar hasta elegir tipo válido. |
 | `duracion_minutos` | Entero; obligatorio; `> 0`; **múltiplo del tramo** parametrizado en `PQ_PARAMETROS_GRAL` (clave p. ej. `PartesDuracionTramoMin`; **default 15**); máximo **1440** (24 h). Persiste minutos. **UI captura:** selector de tramos en formato **`hh:mm`** (value interno = minutos). |
 | `observacion` | Obligatoria; no vacía ni solo whitespace. |
 | `sin_cargo` | Bit; **default `0` (false)** en alta y en UI nueva fila. No es “dato faltante”: siempre tiene valor. Visible como columna en grilla (column chooser). |
@@ -241,6 +241,7 @@ El **proceso masivo** sobre selección múltiple → **SPEC-005** (misma semánt
 | 2026-07-31 | Presentación grilla: Cliente/Tipo = descripción; bits Sin cargo/Presencial; duración UI `hh:mm` + sumatoria horas decimales (persistencia minutos). |
 | 2026-07-31 | CC-PQ #1 (31/07/2026): carga diaria filtra `es_tarea = 1` en listado y fuerza `es_tarea = 1` en alta/edición (R-OP-13/14). |
 | 2026-08-01 | Parte I: fusionado SPEC-004-update (CC-PQ #1, 31/07) en este original; update eliminado. Estado → Finalizado. |
+| 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): abierto [SPEC-004-update](../updates/100-SistemaPartes/SPEC-004-operacion-carga-diaria-update.md). Estado → En revisión. |
 
 ---
 

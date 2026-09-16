@@ -28,11 +28,19 @@ final class ResetPasswordController extends Controller
         $passwordConfirmation = (string) $request->input('passwordConfirmation', '');
 
         if ($token === '' || $password === '' || $passwordConfirmation === '') {
-            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::VALIDATION_FAILED);
+            return ApiResponse::error(
+                PaqSuiteEnvelopeCatalog::VALIDATION_FAILED,
+                'auth.password.fieldsRequired',
+                422
+            );
         }
 
         if ($password !== $passwordConfirmation) {
-            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::VALIDATION_FAILED);
+            return ApiResponse::error(
+                PaqSuiteEnvelopeCatalog::VALIDATION_FAILED,
+                'auth.password.mismatch',
+                422
+            );
         }
 
         $email = $this->resolveEmailForToken($token);
@@ -41,7 +49,7 @@ final class ResetPasswordController extends Controller
         }
 
         $record = DB::table('password_reset_tokens')->where('email', $email)->first();
-        if ($record === null || ! Hash::check($token, $record->token)) {
+        if ($record === null || !Hash::check($token, $record->token)) {
             return $this->resetTokenInvalid();
         }
 

@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\MeController;
+use App\Http\Controllers\Api\V1\Auth\PasswordPolicyController;
 use App\Http\Controllers\Api\V1\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Partes\PartesInformeController;
@@ -34,6 +35,7 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['paqsuite.instalacion', 'paqsuite.instalacion.db'])->prefix('auth')->group(function () {
         Route::post('/login', LoginController::class);
+        Route::get('/password-policy', PasswordPolicyController::class);
         Route::post('/forgot-password', ForgotPasswordController::class)->middleware('throttle:5,1');
         Route::post('/reset-password', ResetPasswordController::class);
 

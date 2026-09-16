@@ -9,9 +9,9 @@
 | **Roles** | Asistente / supervisor (cliente denegado) |
 | **Dependencias** | [TR-004](./TR-004-operacion-carga-diaria.md) (modal + upsert tarea); [TR-002](./TR-002-identidad-funcional-y-acceso.md); [TR-003](./TR-003-maestros-y-catalogos.md); [TR-008](./TR-008-asistente-ia-chat-documental.md) (BYOK + `PAQSUITE_CHAT_LLM_TIMEOUT_SECONDS`); `@paqsuite/react-core` (`SmartCapturePanel`, `postSmartCaptureTurn`, `applySmartCaptureActions`, `buildSmartCaptureTurnRequest`, `useSmartCapturePendingChoice`); GEN-03 / TR-GEN-03-* |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Pendiente |
+| **Estado** | En Control Calidad |
 | **Revisión C1** | Apto con observaciones (ver §11) |
-| **Última actualización** | 2026-08-03 |
+| **Última actualización** | 2026-09-15 |
 
 **Origen:** [HU-010](../../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md)  
 **Referencia SPEC:** [SPEC-010](../../05-open-spec/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md)  

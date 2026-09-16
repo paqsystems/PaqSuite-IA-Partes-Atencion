@@ -9,8 +9,8 @@
 | **Roles** | Asistente / Supervisor (`resultado.partes`); **no** cliente |
 | **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md) (`row_version`), [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-003](./TR-003-maestros-y-catalogos.md) (catálogos / universo tipos) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Finalizado |
-| **Última actualización** | 2026-08-01 |
+| **Estado** | En Control Calidad |
+| **Última actualización** | 2026-09-15 |
 
 **Origen:** [HU-004](../../03-historias-usuario/100-SistemaPartes/HU-004-operacion-carga-diaria.md)  
 **Referencia SPEC:** [SPEC-004](../../05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md)
@@ -129,7 +129,7 @@ Documentar paths + 403/409/422 + `resultado.partes` no aplica aquí.
 | Filtros | Fechas (default hoy), cliente opcional, asistente (solo supervisor), estado cerrado (default todas) |
 | Grid | DX ProcessDataGrid paginado; Cliente/Tipo = descripción; Sin cargo/Presencial visibles; duración celda `hh:mm` + campo `duracionHoras` (decimal) con sumatoria; códigos/minutos ocultos por defecto (chooser); filas `cerrado` read-only |
 | Duración | SelectBox de tramos etiquetados `hh:mm` (`value` = minutos); valida múltiplo del tramo |
-| Alta | Defaults bits false; tipo default del universo si existe |
+| Alta | Defaults bits false; preseleccionar tipo `is_default` (genéricos al abrir; revalidar al elegir cliente) |
 | Cambio cliente | Limpia tipo si no ∈ universo; mensaje i18n |
 | Fecha futura | Confirm dialog → re-POST con flag |
 | Cerrar/reabrir | Botones fila solo si `esSupervisor` |

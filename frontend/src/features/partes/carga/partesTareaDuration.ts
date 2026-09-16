@@ -32,6 +32,44 @@ export function minutosToHorasDecimal(minutos: number): number {
   return Math.round((minutos / 60) * 10000) / 10000
 }
 
+/**
+ * Interpreta duración de SC / LLM.
+ * Reloj `h:mm` (1:25 → 85) ≠ horas decimales `1.25` h (→ 75).
+ */
+export function parseDuracionToMinutos(raw: unknown): number | null {
+  if (raw == null || raw === '') {
+    return null
+  }
+  if (typeof raw === 'number' && Number.isFinite(raw)) {
+    if (!Number.isInteger(raw)) {
+      const minutos = Math.round(raw * 60)
+      return minutos > 0 && minutos <= 1440 ? minutos : null
+    }
+    return raw > 0 && raw <= 1440 ? raw : null
+  }
+  const trimmed = String(raw).trim().replace(',', '.')
+  const clock = parseHhMmToMinutos(trimmed)
+  if (clock != null) {
+    return clock
+  }
+  const hoursMatch = /^(\d+(?:\.\d+)?)\s*(?:h|hs|hrs|hora|horas)?$/i.exec(trimmed)
+  if (!hoursMatch) {
+    return null
+  }
+  const amount = Number(hoursMatch[1])
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return null
+  }
+  if (trimmed.includes('.') || /h/i.test(trimmed)) {
+    const minutos = Math.round(amount * 60)
+    return minutos > 0 && minutos <= 1440 ? minutos : null
+  }
+  if (Number.isInteger(amount)) {
+    return amount > 0 && amount <= 1440 ? amount : null
+  }
+  return null
+}
+
 /** Parsea "hh:mm" o "h:mm" a minutos; null si inválido. */
 export function parseHhMmToMinutos(value: string): number | null {
   const trimmed = String(value ?? '').trim()

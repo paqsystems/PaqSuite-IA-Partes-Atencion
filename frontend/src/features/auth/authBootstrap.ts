@@ -4,9 +4,11 @@ import { meRequest } from './authApi'
 import {
   clearAuthSession,
   getAuthToken,
+  invalidateSessionIfClienteMismatch,
   isAuthenticated,
   patchAuthSession,
 } from './authSessionStore'
+import { resolvePlatformCliente } from './platformContext'
 import { startIdleSession, stopIdleSession } from './idleSessionService'
 import { applyDevExtremeTheme } from '../../theme/devExtremeThemeSwitcher'
 import { EMPRESA_THEME_DEFAULT } from '../admin/security/empresaThemeCatalog'
@@ -24,10 +26,15 @@ export function expireSession(reason: 'idle' | 'unauthorized' = 'idle'): void {
     return
   }
 
+  const cliente = resolvePlatformCliente()
   stopIdleSession()
   clearAuthSession()
   void applyDevExtremeTheme(EMPRESA_THEME_DEFAULT)
-  navigateRef?.(`/login?expired=1&reason=${reason}`)
+  const params = new URLSearchParams({ expired: '1', reason })
+  if (cliente) {
+    params.set('cliente', cliente)
+  }
+  navigateRef?.(`/login?${params.toString()}`)
 }
 
 export function bootstrapAuthenticatedSession(session: AuthSession): void {
@@ -38,6 +45,11 @@ export function bootstrapAuthenticatedSession(session: AuthSession): void {
 }
 
 export function restoreSessionOnBoot(): void {
+  const cliente = resolvePlatformCliente()
+  if (invalidateSessionIfClienteMismatch(cliente)) {
+    return
+  }
+
   if (!getAuthToken()) {
     return
   }
@@ -87,8 +99,14 @@ export function setupUnauthorizedHandler(): () => void {
 }
 
 export async function logoutAndRedirect(): Promise<void> {
+  const cliente = resolvePlatformCliente()
   stopIdleSession()
   clearAuthSession()
   void applyDevExtremeTheme(EMPRESA_THEME_DEFAULT)
-  navigateRef?.('/login')
+  const params = new URLSearchParams()
+  if (cliente) {
+    params.set('cliente', cliente)
+  }
+  const query = params.toString()
+  navigateRef?.(query ? `/login?${query}` : '/login')
 }

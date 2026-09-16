@@ -7,8 +7,8 @@
 | ID | SPEC-010 |
 | Título | Smart Capture (asistente operativo GEN-03) en el modal de alta/edición de tarea — Carga diaria |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Pendiente |
-| Última actualización | 2026-08-03 |
+| Estado | En revisión |
+| Última actualización | 2026-09-15 |
 | HU relacionada(s) | [HU-010-smart-capture-carga-diaria](../../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md) |
 | TR relacionada(s) | [TR-010-smart-capture-carga-diaria](../../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-003](./SPEC-003-maestros-y-catalogos.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md), [SPEC-008](./SPEC-008-asistente-ia-chat-documental.md) (BYOK / timeout LLM host); Framework GEN-03 / SPEC-001-03 (docs en `PaqSuite-IA-FRAMEWORK`); provider GEN-16 |
@@ -261,3 +261,4 @@ Familias de `action` orientativas (nombres finales en TR): `setField`, lookups/`
 | 2026-08-03 | A1: LLM→save (no substring); FE→API Guardar; sin confirm overwrite; edición parcial + validación integral al grabar; lookup 0/1/N. |
 | 2026-08-03 | Parte B/B1: enlace HU-010. |
 | 2026-08-03 | Parte C: enlace TR-010. |
+| 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): abierto [SPEC-010-update](../updates/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria-update.md). Estado → En revisión. |

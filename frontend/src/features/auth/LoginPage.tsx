@@ -1,10 +1,11 @@
 import type { FormEvent } from 'react'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import {
   AuthLoginLayout,
   LanguageSelector,
   authClassNames,
   getGuestLocale,
+  isNativeApp,
   normalizeLocale,
   type LocaleCode,
 } from '@paqsuite/react-core'
@@ -23,13 +24,18 @@ import { resolvePlatformCliente } from './platformContext'
 import { PartesMobileConfigHost } from '../partes/mobile/PartesMobileConfigHost'
 
 export function LoginPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const formRef = useRef<HTMLFormElement>(null)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const native = isNativeApp()
   const sessionExpired = searchParams.get('expired') === '1'
+  const expiredReason = searchParams.get('reason')
   const blocked = searchParams.get('blocked') === '1'
 
-  const [tenant, setTenant] = useState(() => resolvePlatformCliente())
+  const [tenant, setTenant] = useState(() =>
+    native ? resolvePlatformCliente() : '',
+  )
   const [usuario, setUsuario] = useState('')
   const [password, setPassword] = useState('')
   const [locale, setLocale] = useState<LocaleCode>(
@@ -42,13 +48,16 @@ export function LoginPage() {
 
   const bannerMessage = useMemo(() => {
     if (sessionExpired) {
+      if (expiredReason === 'unauthorized') {
+        return resolveAuthMessage('auth.sessionUnauthorized')
+      }
       return resolveAuthMessage('auth.sessionExpired')
     }
     if (blocked) {
       return resolveAuthMessage('shell.blockedNoCompany')
     }
     return null
-  }, [blocked, sessionExpired, t])
+  }, [blocked, expiredReason, sessionExpired, t])
 
   async function handleLocaleChange(next: LocaleCode) {
     setLocale(next)
@@ -61,14 +70,26 @@ export function LoginPage() {
     setIsSubmitting(true)
 
     try {
-      resolvePlatformCliente(tenant)
-      const result = await loginRequest({ usuario, password, locale, tenant })
+      if (native) {
+        resolvePlatformCliente(tenant)
+      }
+      const result = await loginRequest({
+        usuario,
+        password,
+        locale,
+        tenant: native ? tenant : undefined,
+      })
 
       if (result.kind === 'ok') {
-        const session = saveLoginSession(result.envelope.resultado)
+        const clienteCode = resolvePlatformCliente(native ? tenant : undefined)
+        const session = saveLoginSession(result.envelope.resultado, clienteCode)
         bootstrapAuthenticatedSession(session)
         const decision = resolvePostLoginRoute(session)
-        navigate(`${decision.route}${decision.search ?? ''}`)
+        const clienteQuery = searchParams.get('cliente')?.trim()
+        const search =
+          decision.search ??
+          (clienteQuery ? `?cliente=${encodeURIComponent(clienteQuery)}` : '')
+        navigate(`${decision.route}${search}`)
         return
       }
 
@@ -85,6 +106,7 @@ export function LoginPage() {
 
   return (
     <AuthLoginLayout
+      key={i18n.language}
       hero={authHero}
       badge={t('shell.footer.brand')}
       cardTitle={t('login.welcome')}
@@ -114,16 +136,18 @@ export function LoginPage() {
         <p className={authClassNames.messageError}>{errorMessage}</p>
       ) : null}
 
-      <form className={authClassNames.form} onSubmit={handleSubmit}>
-        <label className={authClassNames.field}>
-          <span className={authClassNames.fieldLabel}>{t('login.tenant')}</span>
-          <TextBox
-            stylingMode="outlined"
-            value={tenant}
-            onValueChanged={(event) => setTenant(String(event.value ?? ''))}
-            elementAttr={{ 'data-testid': 'loginTenant' }}
-          />
-        </label>
+      <form ref={formRef} className={authClassNames.form} onSubmit={handleSubmit}>
+        {native ? (
+          <label className={authClassNames.field}>
+            <span className={authClassNames.fieldLabel}>{t('login.tenant')}</span>
+            <TextBox
+              stylingMode="outlined"
+              value={tenant}
+              onValueChanged={(event) => setTenant(String(event.value ?? ''))}
+              elementAttr={{ 'data-testid': 'loginTenant' }}
+            />
+          </label>
+        ) : null}
 
         <label className={authClassNames.field}>
           <span className={authClassNames.fieldLabel}>{t('login.username')}</span>
@@ -150,10 +174,11 @@ export function LoginPage() {
           text={isSubmitting ? t('login.loading') : t('login.submit')}
           type="default"
           stylingMode="contained"
-          useSubmitBehavior
+          useSubmitBehavior={false}
           disabled={isSubmitting}
           className={authClassNames.cta}
           elementAttr={{ 'data-testid': 'loginSubmit' }}
+          onClick={() => formRef.current?.requestSubmit()}
         />
       </form>
     </AuthLoginLayout>

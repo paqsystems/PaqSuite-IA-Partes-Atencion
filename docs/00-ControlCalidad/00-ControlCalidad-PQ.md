@@ -48,6 +48,59 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 |---|-------|--------|---------|
 | 1 | 31/07/2026 | Especificado | `es_tarea` + Paquete de Horas — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md)) |
 | 2 | 01/08/2026 | Especificado | ERP clientes + informes — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md)) |
+| 3 | 09/08/2026 | Especificado | Masivo tilde + carga decimal/Excel/plantillas/tipo default + Smart Capture controles |
+
+---
+
+## Control de Calidad #3
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 09/08/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado |
+
+### Hallazgos
+
+Mejoras y correcciones tras pruebas manuales
+
+*Procesado* → cola en `docs/.../updates/100-SistemaPartes/` (SPEC/HU/TR-004, HU/TR-005, SPEC/HU/TR-010)
+
+### Errores encontrados - Mejoras solicitadas
+
+#### proceso masivo : tildo fila y se borra el tilde
+
+*Procesado* → [HU-005-update](../03-historias-usuario/updates/100-SistemaPartes/HU-005-supervision-proceso-masivo-update.md) · [TR-005-update](../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md) (sin SPEC-update: bug vs SPEC-005 §4.3)
+
+- si en la grilla tildo registros para procesarlos masivamente (incluso el tilde que marca todos los registros), se borran inmediatamente.
+
+#### Carga Diaria : Mostrar (agregado) duración en formato decimal
+
+*Procesado* → [SPEC-004-update](../05-open-spec/updates/100-SistemaPartes/SPEC-004-operacion-carga-diaria-update.md) · [HU-004-update](../03-historias-usuario/updates/100-SistemaPartes/HU-004-operacion-carga-diaria-update.md) · [TR-004-update](../04-tareas/updates/100-SistemaPartes/TR-004-operacion-carga-diaria-update.md)
+
+- en la grilla de carga diaria, (que además sea exportable a Excel), expresar también la duración en formato decimal (mm/60). Ejemplos : 02:15 -> 2.25, 15:30 -> 15.5, 14.45 -> 14.75
+
+#### Plantillas de grillas : diseños de otros usuarios.
+
+*Procesado* → [SPEC-004-update](../05-open-spec/updates/100-SistemaPartes/SPEC-004-operacion-carga-diaria-update.md) · [HU-004-update](../03-historias-usuario/updates/100-SistemaPartes/HU-004-operacion-carga-diaria-update.md) · [TR-004-update](../04-tareas/updates/100-SistemaPartes/TR-004-operacion-carga-diaria-update.md) (GEN-11 compartido; **no** hay parámetro para ocultar ajenas)
+
+- Dos usuarios que guardan plantillas personalizadas de grillas, sólo ven las suyas, no las de otros usuarios. desconozco si hay un atributo en la instalación o en parámetros generales para optar por verlos o no. Ocurre al menos en Cargas de Partes Diarios.
+
+#### Cargas de Partes Diarios - Implementar IA
+
+*Procesado* → [SPEC-010-update](../05-open-spec/updates/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria-update.md) · [HU-010-update](../03-historias-usuario/updates/100-SistemaPartes/HU-010-smart-capture-carga-diaria-update.md) · [TR-010-update](../04-tareas/updates/100-SistemaPartes/TR-010-smart-capture-carga-diaria-update.md)
+
+- implementar bien la asistencia IA. cargo la información, pero no actualiza los datos en los controles. (Ver imagen CC#3-PQ-2026-09-16.png)
+
+#### Cargas de Partes Diarios - inicializar tipo de tarea
+
+*Procesado* → [HU-004-update](../03-historias-usuario/updates/100-SistemaPartes/HU-004-operacion-carga-diaria-update.md) · [TR-004-update](../04-tareas/updates/100-SistemaPartes/TR-004-operacion-carga-diaria-update.md) (sin cambio SPEC: ya está en SPEC-004 §4.4)
+
+- al generar un parte nuevo, no aparece en Tipo de Tarea por defecto el registro marcado como tal.
+
+
 
 ---
 

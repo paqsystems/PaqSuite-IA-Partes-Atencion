@@ -54,7 +54,8 @@ final class UsuariosController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'codigo' => ['required', 'string', 'max:64', Rule::unique('users', 'usuario')],
+            'codigo' => ['required_without:usuario', 'string', 'max:64', Rule::unique('users', 'usuario')],
+            'usuario' => ['required_without:codigo', 'string', 'max:64', Rule::unique('users', 'usuario')],
             'nombre' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
             'password' => ['required', 'string'],
@@ -76,7 +77,12 @@ final class UsuariosController extends Controller
             );
         }
 
-        $user = $this->userAdminRepository->create($validator->validated());
+        $data = $validator->validated();
+        if (!isset($data['codigo']) && isset($data['usuario'])) {
+            $data['codigo'] = $data['usuario'];
+        }
+
+        $user = $this->userAdminRepository->create($data);
 
         return ApiResponse::success(['item' => $user], PaqSuiteEnvelopeCatalog::RESPUESTA_OK, 201);
     }
@@ -85,10 +91,12 @@ final class UsuariosController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'codigo' => ['sometimes', 'string', 'max:64', Rule::unique('users', 'usuario')->ignore($id)],
+            'usuario' => ['sometimes', 'string', 'max:64', Rule::unique('users', 'usuario')->ignore($id)],
             'nombre' => ['sometimes', 'string', 'max:255'],
             'email' => ['sometimes', 'email', 'max:255', Rule::unique('users', 'email')->ignore($id)],
             'password' => ['sometimes', 'nullable', 'string'],
             'activo' => ['sometimes', 'boolean'],
+            'inhabilitado' => ['sometimes', 'boolean'],
         ]);
 
         if ($validator->fails()) {
@@ -99,6 +107,9 @@ final class UsuariosController extends Controller
         }
 
         $data = $validator->validated();
+        if (!isset($data['codigo']) && isset($data['usuario'])) {
+            $data['codigo'] = $data['usuario'];
+        }
         if (array_key_exists('password', $data) && ($data['password'] === null || $data['password'] === '')) {
             unset($data['password']);
         }

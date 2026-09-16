@@ -102,12 +102,17 @@ final class SpUserAdminRepository implements UserAdminRepository
      */
     private function mapRow(object $row): array
     {
+        $usuario = (string) ($row->usuario ?? '');
+
         return [
             'id' => (int) $row->id,
-            'codigo' => (string) $row->usuario,
-            'nombre' => (string) $row->nombre,
-            'email' => (string) $row->email,
-            'activo' => (bool) $row->activo,
+            // Contrato SPEC GEN-06: codigo. UI host (Permisos/Usuarios): usuario.
+            'codigo' => $usuario,
+            'usuario' => $usuario,
+            'nombre' => (string) ($row->nombre ?? ''),
+            'email' => (string) ($row->email ?? ''),
+            'activo' => (bool) ($row->activo ?? false),
+            'inhabilitado' => (bool) ($row->inhabilitado ?? false),
         ];
     }
 
