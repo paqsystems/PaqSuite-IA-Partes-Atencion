@@ -36,7 +36,8 @@ final class ForgotPasswordController extends Controller
             );
         }
 
-        $locale = $this->resolveLocale($request, $user);
+        $locale = $this->resolveLocale($request);
+        $cliente = $this->resolveCliente($request);
         $plainToken = Str::random(64);
 
         DB::table('password_reset_tokens')->updateOrInsert(
@@ -48,7 +49,7 @@ final class ForgotPasswordController extends Controller
         );
 
         try {
-            Notification::send($user, new ResetPasswordNotification($plainToken, $locale));
+            Notification::send($user, new ResetPasswordNotification($plainToken, $locale, $cliente));
         } catch (TransportExceptionInterface) {
             return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::MAIL_SEND_FAILED);
         } catch (Throwable $e) {
@@ -62,27 +63,60 @@ final class ForgotPasswordController extends Controller
         return ApiResponse::success();
     }
 
-    private function resolveLocale(Request $request, User $user): string
+    private function resolveLocale(Request $request): string
     {
+        $candidates = [];
         $bodyLocale = $request->input('locale');
         if (is_string($bodyLocale) && $bodyLocale !== '') {
-            return $bodyLocale;
+            $candidates[] = $bodyLocale;
         }
 
         $acceptLanguage = $request->header('Accept-Language');
         if (is_string($acceptLanguage) && $acceptLanguage !== '') {
-            $primary = trim(explode(',', $acceptLanguage)[0]);
-            $primary = trim(explode(';', $primary)[0]);
-            if ($primary !== '') {
-                return $primary;
+            $candidates[] = $acceptLanguage;
+        }
+
+        foreach ($candidates as $raw) {
+            $normalized = $this->normalizeSupportedLocale($raw);
+            if ($normalized !== null) {
+                return $normalized;
             }
         }
 
-        if (is_string($user->locale) && $user->locale !== '') {
-            return $user->locale;
+        return 'es';
+    }
+
+    private function resolveCliente(Request $request): ?string
+    {
+        $headerName = (string) config('paqsuite.headers.cliente', 'X-Paq-Cliente');
+        $cliente = strtoupper(trim((string) $request->header($headerName, '')));
+
+        return $cliente === '' ? null : $cliente;
+    }
+
+    private function normalizeSupportedLocale(string $raw): ?string
+    {
+        $supported = config('paqsuite.supported_locales', ['es', 'en', 'pt', 'fr', 'it']);
+        if (! is_array($supported)) {
+            $supported = ['es', 'en', 'pt', 'fr', 'it'];
         }
 
-        return 'es';
+        $primary = strtolower(trim(explode(',', $raw)[0]));
+        $primary = trim(explode(';', $primary)[0]);
+        if ($primary === '') {
+            return null;
+        }
+
+        if (in_array($primary, $supported, true)) {
+            return $primary;
+        }
+
+        $short = substr($primary, 0, 2);
+        if (in_array($short, $supported, true)) {
+            return $short;
+        }
+
+        return null;
     }
 
     private function isMailTransportFailure(Throwable $e): bool

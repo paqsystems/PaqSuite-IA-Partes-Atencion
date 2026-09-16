@@ -8,8 +8,8 @@
 | Título | Completar y grabar tareas de Carga diaria con Smart Capture (texto, audio, imagen) |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-09-15 |
+| Estado | Finalizado |
+| Última actualización | 2026-09-16 |
 | SPEC origen | [SPEC-010-smart-capture-carga-diaria](../../05-open-spec/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md) |
 | TR relacionada(s) | [TR-010-smart-capture-carga-diaria](../../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) |
 
@@ -132,6 +132,9 @@ Distinto del Asistente IA documental del avatar (SPEC-008 / HU-008) y de la impo
 | R-SC-23 | Adopta GEN-03; no reimplementa el motor del panel. |
 | R-SC-24 | Cliente funcional no usa SC de carga. |
 | R-SC-26 | Tras grabar OK: misma UX post-Guardar (modal + refresco grilla con filtros vigentes). |
+| R-SC-31 | Cada dato resoluble debe emitirse como `setField` y reflejarse de inmediato en el control visible; `replyText` sin mutación no cumple. |
+| R-SC-32 | Lo resoluble se aplica aunque otro campo del mismo turno sea inválido (apply parcial). |
+| R-SC-33 | Tras `setField` de cliente/asistente/duración, el SelectBox correspondiente muestra la opción (no placeholder). |
 
 ---
 
@@ -153,6 +156,9 @@ Distinto del Asistente IA documental del avatar (SPEC-008 / HU-008) y de la impo
 - [ ] **CA-14** El timeout del turno SC es el mismo configurado para el chat documental del host.
 - [ ] **CA-15** En mobile el panel SC de carga no se monta / no se ofrece.
 - [ ] **CA-16** Usuario cliente no dispone de SC de carga (ni UI ni API de turno de este proceso).
+- [x] **CA-CC3-07** Tras un turno con cliente y asistente únicos, esos SelectBox muestran las opciones (código + descripción); no quedan en placeholder.
+- [x] **CA-CC3-08** Si la duración no es múltiplo del tramo, el hilo lo informa y **no** borra ni impide los campos ya aplicados.
+- [x] **CA-CC3-09** Observación / fecha / tipo resolubles se ven en sus controles DX del mismo modal.
 
 ### Escenarios Gherkin
 
@@ -214,6 +220,13 @@ Feature: Smart Capture en modal de Carga diaria
     Given la app en modo native/mobile
     When abre carga de partes
     Then el panel Smart Capture no está montado
+
+  Scenario: El hilo no basta sin controles
+    Given modal Nueva tarea y LLM configurado
+    When envío "asistente PQ cliente LACAPOL duracion 1:25 hrs"
+    Then el SelectBox de cliente muestra LACAPOL si el lookup es único
+    And el SelectBox de asistente muestra PQ si el lookup es único y soy supervisor
+    And la duración inválida no deja esos campos vacíos
 ```
 
 ---
@@ -258,3 +271,6 @@ Cerradas en Parte C (TR-010).
 | 2026-08-03 | Parte B: HU-010 desde SPEC-010 (post A1). |
 | 2026-08-03 | Parte B1: trazabilidad, Gherkin y CA alineados a cierres A1 (save LLM/FE, edición parcial, sin confirm overwrite). |
 | 2026-08-03 | Parte C: enlace TR-010; preguntas abiertas cerradas. |
+| 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): apply visible en controles DX + apply parcial. |
+| 2026-09-16 | Parte F: CA-CC3-07…09 verificados — [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-010-update-CC-PQ-03-2026-09-16.md). |
+| 2026-09-16 | Parte I: fusionado HU-010-update (CC-PQ #3, 09/08) en esta HU; update eliminado. Estado → Finalizado. |

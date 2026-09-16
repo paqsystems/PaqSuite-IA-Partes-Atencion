@@ -8,8 +8,8 @@
 | Título | Supervisión: terceros y proceso masivo sobre tareas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-09-15 |
+| Estado | Finalizado |
+| Última actualización | 2026-09-16 |
 | SPEC origen | [SPEC-005-supervision-proceso-masivo](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 
@@ -122,6 +122,8 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
 - [ ] **CA-19** (Should) UI/API permiten actualizar `presencial` y/o `asistente` y/o `fecha` en el mismo circuito (puede diferirse a entrega inmediata posterior a Must, documentado en TR).
 - [x] **CA-20** Listado masivo y `list_ids`/select-all no muestran ni devuelven compras (`esTarea = false`).
 - [x] **CA-21** Un lote que incluye un id con `esTarea = false` falla por completo (cero cambios).
+- [x] **CA-CC3-05** En Proceso masivo, al tildar una o más filas los checks **siguen marcados** hasta que el usuario destilde, cambie filtros/búsqueda de listado de forma explícita, o ejecute una acción de lote que refresque el resultado.
+- [x] **CA-CC3-06** El tilde de cabecera / «seleccionar todos» (página o resultado filtrado, según SPEC-005) **no** se borra solo al hacer click; la selección resultante permanece visible.
 
 ---
 
@@ -175,6 +177,18 @@ Feature: Proceso masivo de supervisión Partes
     When intenta ejecutar un lote que incluye un id con "esTarea" = false
     Then la API responde error de validación
     And ninguna fila del lote cambia
+
+  Scenario: Tilde de fila estable
+    Given un supervisor con listado masivo de al menos 2 tareas
+    When tilda la primera fila
+    Then el check permanece marcado
+    And la selección cuenta 1 ítem para las acciones de lote
+
+  Scenario: Tilde de todos estable
+    Given el mismo listado
+    When tilda el check de cabecera / seleccionar todos
+    Then los checks no se limpian inmediatamente
+    And la selección coincide con el contrato de select-all vigente
 ```
 
 ---
@@ -222,3 +236,5 @@ Feature: Proceso masivo de supervisión Partes
 | 2026-07-31 | F1: Finalizado (ver TR-005). |
 | 2026-07-31 | CC-PQ #1 (31/07/2026): masivo (listado, `list_ids`, lotes) opera únicamente sobre `es_tarea = 1`; id con `es_tarea = 0` en un lote falla atómico (CA-20/21, R-SU-11/12). |
 | 2026-08-01 | Parte I: fusionado HU-005-update (CC-PQ #1, 31/07) en esta HU; update eliminado. Estado → Finalizado. |
+| 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): selección estable al tildar filas / select-all (bug técnico vs SPEC-005 §4.3). |
+| 2026-09-16 | Parte I: fusionado HU-005-update (CC-PQ #3, 09/08) en esta HU; update eliminado. Estado → Finalizado. |

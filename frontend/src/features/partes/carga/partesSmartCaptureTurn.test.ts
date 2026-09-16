@@ -203,6 +203,34 @@ describe('applyPartesAction', () => {
     expect(handlers.getForm().observacion).toBe('vía SC')
   })
 
+  it('muestra error de turno en el handler onError', async () => {
+    const post = vi.mocked(postSmartCaptureTurn)
+    post.mockResolvedValue({
+      kind: 'envelopeError',
+      envelope: { error: 4201, respuesta: 'smartCapture.configurationRequired', resultado: {} },
+    } as never)
+    const onError = vi.fn()
+    const form: FormState = {
+      usuarioId: 1,
+      clienteId: null,
+      tipoTareaId: null,
+      fecha: '2026-09-15',
+      duracionMinutos: 15,
+      sinCargo: false,
+      presencial: false,
+      observacion: '',
+    }
+    await handlePartesSmartCaptureSend(
+      { message: 'hola', modality: 'texto', images: [], credentialId: 10 },
+      {
+        ...handlersBase(form),
+        onError,
+        resolveMessage: (key) => (key === 'smartCapture.configurationRequired' ? 'Configurá LLM' : key),
+      }
+    )
+    expect(onError).toHaveBeenCalledWith('Configurá LLM')
+  })
+
   it('duración 85 / 1:25 no pisa lookups ni setea minutos inválidos', async () => {
     const form: FormState = {
       usuarioId: 3,

@@ -16,6 +16,7 @@ import {
 import { GuestOnly, RequireAuth } from '../features/auth/AuthGuards'
 import { ChangePasswordPage } from '../features/auth/ChangePasswordPage'
 import { ForgotPasswordPage } from '../features/auth/ForgotPasswordPage'
+import { guestLandingPathname } from '../features/auth/guestLanding'
 import { LoginPage } from '../features/auth/LoginPage'
 import { ResetPasswordPage } from '../features/auth/ResetPasswordPage'
 import {
@@ -51,7 +52,12 @@ import { ChatAssistantHostPage } from '../features/chatAssistant/ChatAssistantHo
 
 function RedirectToLogin() {
   const location = useLocation()
-  return <Navigate to={{ pathname: '/login', search: location.search }} replace />
+  return (
+    <Navigate
+      to={{ pathname: guestLandingPathname(location.search), search: location.search }}
+      replace
+    />
+  )
 }
 
 function AuthBootstrap() {

@@ -22,10 +22,16 @@ final class HostHttpLlmChatCompletionClient implements LlmChatCompletionClient
         $provider = LlmProviderCatalog::normalize($credential->provider);
 
         return match ($provider) {
-            LlmProviderCatalog::ANTHROPIC => $this->completeAnthropic($credential, $messages, $timeout),
+            LlmProviderCatalog::ANTHROPIC => $this->completeAnthropic(
+                $credential,
+                $messages,
+                $images,
+                $timeout
+            ),
             LlmProviderCatalog::GOOGLE_GEMINI => $this->completeGemini(
                 $credential,
                 $messages,
+                $images,
                 $timeout
             ),
             default => $this->completeOpenAiCompatible($credential, $messages, $images, $timeout),
@@ -79,10 +85,12 @@ final class HostHttpLlmChatCompletionClient implements LlmChatCompletionClient
 
     /**
      * @param  list<array{role: string, content: string}>  $messages
+     * @param  list<array{fileName: string, mimeType: string, contentBase64: string}>  $images
      */
     private function completeAnthropic(
         LlmCredentialContext $credential,
         array $messages,
+        array $images,
         int $timeout
     ): string {
         $system = '';
@@ -90,12 +98,17 @@ final class HostHttpLlmChatCompletionClient implements LlmChatCompletionClient
         foreach ($messages as $message) {
             if (($message['role'] ?? '') === 'system') {
                 $system = (string) ($message['content'] ?? '');
+
                 continue;
             }
+            $role = ($message['role'] ?? 'user') === 'assistant' ? 'assistant' : 'user';
             $anthropicMessages[] = [
-                'role' => ($message['role'] ?? 'user') === 'assistant' ? 'assistant' : 'user',
+                'role' => $role,
                 'content' => (string) ($message['content'] ?? ''),
             ];
+        }
+        if ($images !== [] && $credential->supportsVision) {
+            $anthropicMessages = $this->attachAnthropicImages($anthropicMessages, $images);
         }
 
         $baseUrl = rtrim($credential->baseUrl ?: 'https://api.anthropic.com', '/');
@@ -130,10 +143,12 @@ final class HostHttpLlmChatCompletionClient implements LlmChatCompletionClient
 
     /**
      * @param  list<array{role: string, content: string}>  $messages
+     * @param  list<array{fileName: string, mimeType: string, contentBase64: string}>  $images
      */
     private function completeGemini(
         LlmCredentialContext $credential,
         array $messages,
+        array $images,
         int $timeout
     ): string {
         $parts = [];
@@ -141,6 +156,21 @@ final class HostHttpLlmChatCompletionClient implements LlmChatCompletionClient
             $role = (string) ($message['role'] ?? 'user');
             $prefix = $role === 'system' ? 'System: ' : ($role === 'assistant' ? 'Assistant: ' : 'User: ');
             $parts[] = ['text' => $prefix.(string) ($message['content'] ?? '')];
+        }
+        if ($images !== [] && $credential->supportsVision) {
+            foreach ($images as $image) {
+                $mime = (string) ($image['mimeType'] ?? 'image/png');
+                $b64 = (string) ($image['contentBase64'] ?? '');
+                if ($b64 === '') {
+                    continue;
+                }
+                $parts[] = [
+                    'inline_data' => [
+                        'mime_type' => $mime,
+                        'data' => $b64,
+                    ],
+                ];
+            }
         }
 
         $baseUrl = rtrim(
@@ -185,6 +215,7 @@ final class HostHttpLlmChatCompletionClient implements LlmChatCompletionClient
         foreach ($messages as $message) {
             if (($message['role'] ?? '') !== 'user') {
                 $result[] = $message;
+
                 continue;
             }
 
@@ -205,5 +236,45 @@ final class HostHttpLlmChatCompletionClient implements LlmChatCompletionClient
         }
 
         return $result;
+    }
+
+    /**
+     * @param  list<array{role: string, content: string}>  $messages
+     * @param  list<array{fileName: string, mimeType: string, contentBase64: string}>  $images
+     * @return list<array<string, mixed>>
+     */
+    private function attachAnthropicImages(array $messages, array $images): array
+    {
+        $lastUser = -1;
+        foreach ($messages as $index => $message) {
+            if (($message['role'] ?? '') === 'user') {
+                $lastUser = $index;
+            }
+        }
+        if ($lastUser < 0) {
+            return $messages;
+        }
+
+        $content = [
+            ['type' => 'text', 'text' => (string) ($messages[$lastUser]['content'] ?? '')],
+        ];
+        foreach ($images as $image) {
+            $mime = (string) ($image['mimeType'] ?? 'image/png');
+            $b64 = (string) ($image['contentBase64'] ?? '');
+            if ($b64 === '') {
+                continue;
+            }
+            $content[] = [
+                'type' => 'image',
+                'source' => [
+                    'type' => 'base64',
+                    'media_type' => $mime,
+                    'data' => $b64,
+                ],
+            ];
+        }
+        $messages[$lastUser]['content'] = $content;
+
+        return $messages;
     }
 }

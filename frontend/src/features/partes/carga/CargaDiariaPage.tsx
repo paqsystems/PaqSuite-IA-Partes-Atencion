@@ -47,7 +47,7 @@ import { shouldRefreshCargaAfterImport } from './excelImportCargaHelpers'
 import { handlePartesSmartCaptureSend } from './partesSmartCaptureTurn'
 import { resolveDefaultTipoId } from './cargaDiariaTipoDefault'
 import { cargaDiariaPersistErrorKey } from './cargaDiariaPersistValidation'
-import { catalogItemId, isDxUserEvent, normalizeCatalogItems } from './catalogItems'
+import { isDxUserEvent, normalizeCatalogItems } from './catalogItems'
 
 type CargaDiariaGridRow = PartesTareaItem & {
   /** Horas decimales para sumatoria DevExtreme (persistencia = minutos). */
@@ -171,7 +171,10 @@ export function CargaDiariaPage() {
       onAssistantReply: (text: string) => {
         setScThread((prev) => [...prev, { role: 'assistant', text }])
       },
-      onError: (message: string) => setError(message),
+      onError: (message: string) => {
+        setError(message)
+        setScThread((prev) => [...prev, { role: 'assistant', text: message }])
+      },
       resolveMessage: resolveSmartCaptureMessage,
     }
   }
@@ -584,7 +587,7 @@ export function CargaDiariaPage() {
               <SelectBox
                 dataSource={asistentes}
                 value={form.usuarioId}
-                valueExpr={catalogItemId}
+                valueExpr="id"
                 displayExpr={(item) => (item ? `${item.code} — ${item.nombre}` : '')}
                 searchEnabled
                 elementAttr={{ 'data-testid': 'partesCargaAsistente' }}
@@ -618,7 +621,7 @@ export function CargaDiariaPage() {
             <SelectBox
               dataSource={clientes}
               value={form.clienteId}
-              valueExpr={catalogItemId}
+              valueExpr="id"
               displayExpr={(item) => (item ? `${item.code} — ${item.nombre}` : '')}
               searchEnabled
               elementAttr={{ 'data-testid': 'partesCargaCliente' }}
@@ -635,7 +638,7 @@ export function CargaDiariaPage() {
             <SelectBox
               dataSource={tipos}
               value={form.tipoTareaId}
-              valueExpr={catalogItemId}
+              valueExpr="id"
               displayExpr={(item) => (item ? `${item.code} — ${item.descripcion}` : '')}
               searchEnabled
               elementAttr={{ 'data-testid': 'partesCargaTipoTarea' }}

@@ -40,6 +40,14 @@ export function ResetPasswordPage() {
   const authHero = resolvePartesAuthHero(t)
 
   useEffect(() => {
+    const fromQuery = normalizeLocale(searchParams.get('locale'))
+    if (fromQuery) {
+      setLocale(fromQuery)
+      void applyGuestLocale(fromQuery)
+    }
+  }, [searchParams])
+
+  useEffect(() => {
     void passwordPolicyRequest().then((result) => {
       if (result.kind === 'ok') {
         setPolicyMode(normalizePasswordComplejidad(result.envelope.resultado.passwordComplejidad))

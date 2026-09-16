@@ -6,6 +6,7 @@ import {
   isFechaFutura,
   isoDateFromDateBox,
   isValidDuracionMinutos,
+  isValidIsoDate,
   minutosToHorasDecimal,
   parseDuracionToMinutos,
   parseHhMmToMinutos,
@@ -66,6 +67,13 @@ describe('partesTareaDuration', () => {
   it('detecta fecha futura', () => {
     expect(isFechaFutura('2099-01-01', '2026-07-30')).toBe(true)
     expect(isFechaFutura('2026-07-30', '2026-07-30')).toBe(false)
+  })
+
+  it('valida fechas ISO de calendario real', () => {
+    expect(isValidIsoDate('2026-09-16')).toBe(true)
+    expect(isValidIsoDate('0000-09-16')).toBe(false)
+    expect(isValidIsoDate('2026-02-30')).toBe(false)
+    expect(isValidIsoDate('16-09-2026')).toBe(false)
   })
 
   it('isoDateFromDateBox ignora cambios programáticos', () => {
