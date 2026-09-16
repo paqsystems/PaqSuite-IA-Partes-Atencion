@@ -509,8 +509,13 @@ final class PartesMaestrosOperations
     /** @param array<string, mixed> $params @return list<object> */
     private static function catalogoTiposTareaUniverso(array $params): array
     {
+        // Sin cliente: solo genéricos (permite preseleccionar tipo default al abrir alta).
         if (empty($params['p_cliente_id'])) {
-            self::fail('partes.maestros.clienteIdRequired');
+            return DB::table('PQ_PARTES_TIPOS_TAREA')
+                ->where('activo', 1)->where('inhabilitado', 0)->where('is_generico', 1)
+                ->orderBy('code')
+                ->get(['id', 'code', 'descripcion', 'is_generico', 'is_default'])
+                ->all();
         }
         $clienteId = (int) $params['p_cliente_id'];
         $genericos = DB::table('PQ_PARTES_TIPOS_TAREA')

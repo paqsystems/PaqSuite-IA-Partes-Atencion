@@ -5,7 +5,7 @@ export function RequireAuth() {
   const location = useLocation()
 
   if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />
+    return <Navigate to={{ pathname: '/login', search: location.search }} replace />
   }
 
   const session = getAuthSession()

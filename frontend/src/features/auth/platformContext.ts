@@ -5,8 +5,12 @@ import {
   readPersistedClienteCode,
   resolveClienteCode,
 } from '@paqsuite/react-core'
-import { getAuthSession } from './authSessionStore'
-import { resolveLandingClienteCode } from './partesCanonicalCliente'
+import { getAuthSession, invalidateSessionIfClienteMismatch } from './authSessionStore'
+import {
+  isVercelFrontDoorHostname,
+  resolveLandingClienteCode,
+  shouldHonorLandingCliente,
+} from './partesCanonicalCliente'
 
 const browserPersistence = {
   getCookie: (name: string) => {
@@ -44,15 +48,19 @@ export function readStoredClienteCode(): string {
 /**
  * Persiste `{cliente}` mientras la URL de landing todavía tiene `?cliente=`
  * (antes de que React Router reemplace `/` → `/login` y pierda el query).
+ * Si había sesión de otro tenant en el mismo vercel.app, la invalida.
  */
 export function bootstrapPlatformCliente(): string {
-  return resolvePlatformCliente()
+  const cliente = resolvePlatformCliente()
+  invalidateSessionIfClienteMismatch(cliente)
+  return cliente
 }
 
 export function resolvePlatformCliente(overrideTenant?: string): string {
   const hostname =
     typeof window !== 'undefined' ? window.location.hostname : 'localhost'
   const search = typeof window !== 'undefined' ? window.location.search : ''
+  const referrer = typeof document !== 'undefined' ? document.referrer : ''
   const isDev = import.meta.env.DEV
   const persisted = readPersistedClienteCode(browserPersistence)
   const explicit =
@@ -66,11 +74,18 @@ export function resolvePlatformCliente(overrideTenant?: string): string {
   const landingCliente = resolveLandingClienteCode({
     hostname,
     search,
+    referrer,
     overrideTenant,
   })
 
+  if (landingCliente && shouldHonorLandingCliente({ hostname, isDevBuild: isDev })) {
+    return persistClienteCode(landingCliente, browserPersistence)
+  }
+
+  const vercelFrontDoor = isVercelFrontDoorHostname(hostname)
   const cliente = resolveClienteCode({
-    isDevOrNonCanonicalUrl: isDevOrNonCanonicalHostname(hostname, isDev),
+    isDevOrNonCanonicalUrl:
+      !vercelFrontDoor && isDevOrNonCanonicalHostname(hostname, isDev),
     queryCliente: landingCliente,
     cookieCliente: persisted.cookieCliente,
     sessionCliente: persisted.sessionCliente,

@@ -36,8 +36,8 @@ const emptyFlags: AttrFlags = {
 export function RoleAtributosPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { rolId: rolIdParam } = useParams<{ rolId: string }>()
-  const rolId = Number(rolIdParam)
+  const { id, rolId: rolIdParam } = useParams<{ id?: string; rolId?: string }>()
+  const rolId = Number(id ?? rolIdParam)
 
   const [arbol, setArbol] = useState<MenuArbolNode[]>([])
   const [accesoTotal, setAccesoTotal] = useState(false)

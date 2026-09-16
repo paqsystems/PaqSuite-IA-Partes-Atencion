@@ -198,7 +198,12 @@ export function PermisosAdminPage() {
   }
 
   function formatUsuario(item: AdminUsuario | null): string {
-    return item ? `${item.usuario} — ${item.nombre}` : ''
+    if (!item) {
+      return ''
+    }
+    const code = item.usuario || item.codigo || ''
+    const nombre = item.nombre || ''
+    return nombre ? `${code} — ${nombre}` : code
   }
 
   function formatRol(item: AdminRol | null): string {
@@ -505,9 +510,17 @@ export function PermisosAdminPage() {
           <Column
             dataField="usuario"
             caption={t('admin.permisos.field.usuario')}
-            calculateCellValue={(row: AdminPermiso) =>
-              row.usuario ? `${row.usuario} — ${row.usuarioNombre}` : String(row.userId)
-            }
+            calculateCellValue={(row: AdminPermiso) => {
+              const code = row.usuario || ''
+              const nombre = row.usuarioNombre || ''
+              if (code && nombre) {
+                return `${code} — ${nombre}`
+              }
+              if (code || nombre) {
+                return code || nombre
+              }
+              return String(row.userId ?? row.usuarioId ?? '')
+            }}
           />
           <Column dataField="empresaNombre" caption={t('admin.permisos.field.empresa')} />
           <Column dataField="rolCodigo" caption={t('admin.permisos.field.rolCodigo')} />

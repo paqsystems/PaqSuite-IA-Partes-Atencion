@@ -109,3 +109,16 @@ export async function changePasswordRequest(input: {
     platform: buildAuthPlatformHeaders(),
   })
 }
+
+export async function passwordPolicyRequest(tenant?: string) {
+  return apiRequest<{ passwordComplejidad: string; passwordLongitudMin: number }>(
+    '/api/v1/auth/password-policy',
+    {
+      method: 'GET',
+      platform: {
+        cliente: buildAuthPlatformHeaders(tenant).cliente,
+      },
+      skipUnauthorizedHandler: true,
+    }
+  )
+}

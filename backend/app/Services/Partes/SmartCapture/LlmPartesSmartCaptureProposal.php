@@ -34,9 +34,11 @@ Reglas:
 - Completá solo campos mencionados o inferibles; el resto null.
 - cliente/asistente/tipoTarea: texto libre (código o descripción).
 - fecha: yyyy-MM-dd si se menciona.
-- duracionMinutos: entero positivo múltiplo típico de 15.
+- duracionMinutos: entero en MINUTOS. Reloj h:mm (ej. 1:25) = 85 minutos, NO 1.25 horas. Horas decimales (1.25 h / 1,25 horas) = 75 minutos.
+- Si la duración no es múltiplo del tramo (típicamente 15), dejá duracionMinutos null.
 - save=true SOLO si el usuario expresa intención clara de grabar (guardar/confirmar/procesar/grabar/registrar/aceptar/ok/dale/guardar tarea/confirmar tarea) como intención de persistir la tarea, no por substring accidental en otra frase.
 - No inventes ids numéricos de maestros.
+- Los campos que completes deben ir en "fields" (no alcanza con mencionarlos en replyText).
 PROMPT;
 
         $userContent = json_encode([

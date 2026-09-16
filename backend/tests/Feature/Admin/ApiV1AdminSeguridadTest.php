@@ -46,6 +46,11 @@ class ApiV1AdminSeguridadTest extends TestCase
         $response->assertStatus(200);
         $this->assertNotEmpty($response->json('resultado.items'));
         $this->assertArrayHasKey('codigo', $response->json('resultado.items.0'));
+        $this->assertArrayHasKey('usuario', $response->json('resultado.items.0'));
+        $this->assertSame(
+            $response->json('resultado.items.0.codigo'),
+            $response->json('resultado.items.0.usuario')
+        );
     }
 
     public function test_usuarios_crud_completo(): void
@@ -176,11 +181,17 @@ class ApiV1AdminSeguridadTest extends TestCase
             'rolId' => $rolId,
         ], $headers);
         $create->assertStatus(201)->assertJsonPath('resultado.item.usuarioId', $user->id);
+        $create->assertJsonPath('resultado.item.usuario', 'permisotest');
+        $create->assertJsonPath('resultado.item.userId', $user->id);
+        $this->assertNotSame('', (string) $create->json('resultado.item.rolCodigo'));
         $permisoId = (int) $create->json('resultado.item.id');
 
         $list = $this->getJson('/api/v1/admin/permisos?usuarioId='.$user->id, $headers);
         $list->assertStatus(200);
         $this->assertNotEmpty($list->json('resultado.items'));
+        $list->assertJsonPath('resultado.items.0.usuario', 'permisotest');
+        $this->assertArrayHasKey('usuarioNombre', $list->json('resultado.items.0'));
+        $this->assertArrayHasKey('rolCodigo', $list->json('resultado.items.0'));
 
         $otroRolId = (int) $this->postJson('/api/v1/admin/roles', [
             'nombre' => 'Operador',

@@ -15,6 +15,8 @@ import commonIt from './locales/it/common.json'
 
 const initialLocale: LocaleCode = normalizeLocale(getGuestLocale()) ?? 'es'
 
+// Recarga de catálogos JSON (login.hint y locales) — Vite no siempre HMR-ea .json.
+
 void i18n.use(initReactI18next).init({
   resources: {
     es: { common: commonEs },
