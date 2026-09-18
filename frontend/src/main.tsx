@@ -12,6 +12,7 @@ import '@paqsuite/react-core/shell.css'
 import { AppRouter } from './app/AppRouter.tsx'
 import { ThemeProvider } from './app/providers/ThemeProvider'
 import { installApiAuthFetch } from './features/auth/installApiAuthFetch'
+import { resolveWebApiBaseUrl } from './features/auth/resolveWebApiBaseUrl'
 import { installCapacitorPreferencesAdapter } from './features/auth/installCapacitorPreferencesAdapter'
 import { bootstrapPlatformCliente } from './features/auth/platformContext'
 import i18n from './i18n/i18n'
@@ -23,7 +24,7 @@ async function bootstrap(): Promise<void> {
   installApiAuthFetch()
   await installCapacitorPreferencesAdapter()
   await bootstrapApiBaseUrl({
-    envBaseUrl: import.meta.env.VITE_API_BASE_URL,
+    envBaseUrl: resolveWebApiBaseUrl(import.meta.env.VITE_API_BASE_URL),
     projectSlug: 'partesatencion',
     isNative: isNativeApp(),
   })

@@ -5,6 +5,7 @@ import {
   getEmissionHostContextSnapshot,
   isEmissionHostContextUrl,
 } from '../partes/informes/emissionHostContextBridge'
+import { isBinaryDownloadUrl, isValidBinaryArtifact } from './binaryDownloadUrl'
 
 /**
  * Inyecta Authorization + X-Paq-Cliente en fetch hacia /api/*
@@ -32,9 +33,7 @@ export function installApiAuthFetch(): void {
 
     const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined))
 
-    const isBinaryDownload =
-      /\/excel-import\/processes\/[^/?#]+\/template(?:\?|#|$)/.test(url) ||
-      /\/excel-import\/batches\/[^/?#]+\/errors\/export(?:\?|#|$)/.test(url)
+    const isBinaryDownload = isBinaryDownloadUrl(url)
 
     if (!headers.has('Accept')) {
       headers.set(
@@ -82,11 +81,21 @@ export function installApiAuthFetch(): void {
 
     if (isBinaryDownload && response.ok) {
       const buffer = await response.arrayBuffer()
+      if (!isValidBinaryArtifact(buffer, url)) {
+        return new Response(buffer, {
+          status: 502,
+          statusText: 'Invalid binary artifact',
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+
       const responseHeaders = new Headers(response.headers)
-      responseHeaders.set(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      )
+      if (url.includes('/excel-import/')) {
+        responseHeaders.set(
+          'Content-Type',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        )
+      }
       responseHeaders.delete('Content-Encoding')
 
       return new Response(buffer, {
