@@ -21,7 +21,7 @@ CREATE OR ALTER PROCEDURE dbo.pq_sp_excel_parameter_get
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT TOP (1) tipo_valor, valor_logico, valor_entero, valor_string
+    SELECT TOP (1) tipo_valor, valor_bool, valor_int, valor_string
     FROM PQ_PARAMETROS_GRAL WITH (NOLOCK)
     WHERE programa = 'ExcelImport' AND clave = @key;
 END;

@@ -78,7 +78,25 @@ export function installApiAuthFetch(): void {
       }
     }
 
-    return originalFetch(input, { ...init, headers })
+    const response = await originalFetch(input, { ...init, headers })
+
+    if (isBinaryDownload && response.ok) {
+      const buffer = await response.arrayBuffer()
+      const responseHeaders = new Headers(response.headers)
+      responseHeaders.set(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      )
+      responseHeaders.delete('Content-Encoding')
+
+      return new Response(buffer, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: responseHeaders,
+      })
+    }
+
+    return response
   }
 
   ;(window as Window & { __paqApiAuthFetch?: boolean }).__paqApiAuthFetch = true
