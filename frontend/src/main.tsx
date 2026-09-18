@@ -21,13 +21,13 @@ import './features/partes/mobile/partesMobileProcess.css'
 
 async function bootstrap(): Promise<void> {
   bootstrapPlatformCliente()
-  installApiAuthFetch()
   await installCapacitorPreferencesAdapter()
   await bootstrapApiBaseUrl({
     envBaseUrl: resolveWebApiBaseUrl(import.meta.env.VITE_API_BASE_URL),
     projectSlug: 'partesatencion',
     isNative: isNativeApp(),
   })
+  installApiAuthFetch()
   syncDevExtremeLocale('es')
 
   if (isNativeApp()) {
