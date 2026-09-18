@@ -25,7 +25,7 @@ CREATE OR ALTER PROCEDURE dbo.pq_sp_emission_parameter_get
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT TOP (1) tipo_valor, valor_logico, valor_entero, valor_string
+    SELECT TOP (1) tipo_valor, valor_bool, valor_int, valor_string
     FROM PQ_PARAMETROS_GRAL WITH (NOLOCK)
     WHERE programa = 'Emission' AND clave = @key;
 END;
@@ -77,16 +77,14 @@ CREATE OR ALTER PROCEDURE dbo.pq_sp_emission_job_transition
     @id CHAR(36),
     @expected_status VARCHAR(20),
     @status VARCHAR(20),
-    @artifact_path NVARCHAR(1024) = NULL,
     @artifact_file_name NVARCHAR(255) = NULL,
-    @artifact_mime VARCHAR(160) = NULL,
-    @result_message_key VARCHAR(160) = NULL
+    @artifact_mime VARCHAR(128) = NULL,
+    @result_message_key VARCHAR(128) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
     UPDATE pq_emission_jobs
     SET status = @status,
-        artifact_path = COALESCE(@artifact_path, artifact_path),
         artifact_file_name = COALESCE(@artifact_file_name, artifact_file_name),
         artifact_mime = COALESCE(@artifact_mime, artifact_mime),
         result_message_key = COALESCE(@result_message_key, result_message_key),
@@ -104,11 +102,11 @@ AS
 BEGIN
     SET NOCOUNT ON;
     DECLARE @cutoff DATETIME2 = DATEADD(DAY, -@older_than_days, SYSUTCDATETIME());
-    SELECT id AS job_id, artifact_path
-    FROM pq_emission_jobs WITH (NOLOCK)
-    WHERE status IN ('done', 'failed')
-      AND COALESCE(finished_at, created_at) < @cutoff
-      AND artifact_path IS NOT NULL;
+    SELECT j.id AS job_id, CAST(j.id AS NVARCHAR(36)) AS artifact_path
+    FROM pq_emission_jobs j WITH (NOLOCK)
+    INNER JOIN pq_emission_artifacts a WITH (NOLOCK) ON a.job_id = j.id
+    WHERE j.status IN ('done', 'failed')
+      AND COALESCE(j.finished_at, j.created_at) < @cutoff;
 END;
 GO
 
@@ -118,17 +116,16 @@ CREATE OR ALTER PROCEDURE dbo.pq_sp_emission_artifact_clear
 AS
 BEGIN
     SET NOCOUNT ON;
-    UPDATE pq_emission_jobs
-    SET artifact_path = NULL, updated_at = SYSUTCDATETIME()
-    WHERE id = @job_id AND artifact_path = @expected_path;
+    DELETE FROM pq_emission_artifacts
+    WHERE job_id = @job_id AND CAST(@job_id AS NVARCHAR(36)) = @expected_path;
     SELECT @@ROWCOUNT AS affected_rows;
 END;
 GO
 
 CREATE OR ALTER PROCEDURE dbo.pq_sp_emission_report_layout_update
     @report_id BIGINT,
-    @layout_definition VARBINARY(MAX),
-    @layout_mime VARCHAR(160)
+    @layout_definition NVARCHAR(MAX),
+    @layout_mime VARCHAR(128)
 AS
 BEGIN
     SET NOCOUNT ON;

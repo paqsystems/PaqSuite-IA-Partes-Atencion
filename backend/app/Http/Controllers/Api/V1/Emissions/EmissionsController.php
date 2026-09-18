@@ -8,6 +8,7 @@ use DateTimeInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use PaqSuite\LaravelCore\Emissions\Dto\CommunicationIntent;
 use PaqSuite\LaravelCore\Emissions\Dto\EmissionContext;
 use PaqSuite\LaravelCore\Emissions\Dto\EmissionRequest;
 use PaqSuite\LaravelCore\Emissions\EmissionCapabilityGuard;
@@ -82,25 +83,23 @@ final class EmissionsController extends CapabilityEnvelopeController
         }
 
         $companyId = $this->companyId($request);
-        $mailTo = $request->input('mailTo', []);
-        if (! is_array($mailTo)) {
-            $mailTo = [];
-        }
-
         $previewSessionId = $request->input('previewSessionId');
+        $channel = (string) $request->input('channel', 'pdf');
+        if ($channel === 'mail') {
+            $channel = 'pdf';
+        }
 
         try {
             $job = $this->orchestrator->emit(new EmissionRequest(
                 processCode: $processCode,
-                channel: (string) $request->input('channel', 'pdf'),
+                channel: $channel,
                 mode: (string) $request->input('mode', self::MODE_CONSOLIDATED),
                 companyIds: [$companyId],
                 userId: $this->userId(),
                 companyId: $companyId,
                 groupId: $request->input('groupId'),
                 reportId: $request->input('reportId'),
-                mailTemplateId: $request->input('mailTemplateId'),
-                mailTo: array_values(array_filter(array_map('strval', $mailTo))),
+                communicationIntents: $this->communicationIntentsFromRequest($request),
                 previewSessionId: is_string($previewSessionId) ? $previewSessionId : null,
                 mobile: (bool) $request->boolean('mobile'),
             ));
@@ -356,6 +355,37 @@ final class EmissionsController extends CapabilityEnvelopeController
         return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::EMISSION_FORBIDDEN);
     }
 
+    /**
+     * @return list<CommunicationIntent>
+     */
+    private function communicationIntentsFromRequest(Request $request): array
+    {
+        $raw = $request->input('communicationIntents', []);
+        $intents = CommunicationIntent::listFromRequest(is_array($raw) ? $raw : []);
+        if ($intents !== []) {
+            return $intents;
+        }
+
+        $mailTo = $request->input('mailTo', []);
+        if (! is_array($mailTo)) {
+            return [];
+        }
+
+        $recipients = [];
+        foreach ($mailTo as $address) {
+            if (! is_string($address) || trim($address) === '') {
+                continue;
+            }
+            $recipients[] = ['address' => trim($address), 'role' => 'TO'];
+        }
+
+        if ($recipients === []) {
+            return [];
+        }
+
+        return [new CommunicationIntent('mail', $recipients)];
+    }
+
     private function companyId(Request $request): int
     {
         $raw = $request->header(config('paqsuite.headers.company', 'X-Company-Id'));
@@ -382,8 +412,8 @@ final class EmissionsController extends CapabilityEnvelopeController
                 'segmented' => $process->allowsSegmented,
             ],
             'requiresPreview' => $process->requiresPreview,
+            'outputPolicy' => $process->outputPolicy->toArray(),
             'reports' => $process->reports,
-            'mailTemplates' => $process->mailTemplates,
         ];
     }
 }

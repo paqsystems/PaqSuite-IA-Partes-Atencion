@@ -43,7 +43,7 @@ final class ExcelCompatibleXlsxBinaryExporter implements ExcelImportBinaryExport
         if ($in->open($inPath) !== true) {
             @unlink($inPath);
 
-            return $binary;
+            throw new \RuntimeException('excelImport.xlsxZipOpenFailed');
         }
 
         $parts = [];
@@ -66,15 +66,23 @@ final class ExcelCompatibleXlsxBinaryExporter implements ExcelImportBinaryExport
             $parts['xl/workbook.xml'] = $this->fixWorkbook($parts['xl/workbook.xml']);
         }
 
+        $parts = $this->orderZipParts($parts);
+
         @unlink($outPath);
         $out = new ZipArchive();
         if ($out->open($outPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             @unlink($inPath);
 
-            return $binary;
+            throw new \RuntimeException('excelImport.xlsxZipCreateFailed');
         }
         foreach ($parts as $name => $content) {
-            $out->addFromString($name, $content);
+            if ($out->addFromString($name, $content) !== true) {
+                $out->close();
+                @unlink($inPath);
+                @unlink($outPath);
+
+                throw new \RuntimeException('excelImport.xlsxZipWriteFailed');
+            }
         }
         $out->close();
 
@@ -149,6 +157,31 @@ final class ExcelCompatibleXlsxBinaryExporter implements ExcelImportBinaryExport
         }
 
         return $xml;
+    }
+
+    /**
+     * OOXML: [Content_Types].xml y _rels/.rels primero (Excel desktop es estricto).
+     *
+     * @param  array<string, string>  $parts
+     * @return array<string, string>
+     */
+    private function orderZipParts(array $parts): array
+    {
+        $priority = [
+            '[Content_Types].xml' => 0,
+            '_rels/.rels' => 1,
+        ];
+        uksort($parts, static function (string $a, string $b) use ($priority): int {
+            $pa = $priority[$a] ?? 100;
+            $pb = $priority[$b] ?? 100;
+            if ($pa !== $pb) {
+                return $pa <=> $pb;
+            }
+
+            return strcmp($a, $b);
+        });
+
+        return $parts;
     }
 
     private function tempXlsxPath(string $prefix): string
