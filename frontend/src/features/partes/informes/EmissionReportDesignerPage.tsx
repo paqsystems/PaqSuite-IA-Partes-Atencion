@@ -213,7 +213,11 @@ export function EmissionReportDesignerPage({
         )
         setLoading(false)
         if (createResult.kind !== 'ok') {
-          setErrorKey(createResult.i18nKey || 'emission.design.saveAsFailed')
+          setErrorKey(
+            createResult.kind === 'transportError'
+              ? createResult.i18nKey
+              : createResult.envelope.respuesta || 'emission.design.saveAsFailed',
+          )
           return
         }
         const createdRaw = createResult.envelope.resultado?.item
@@ -239,7 +243,11 @@ export function EmissionReportDesignerPage({
         }),
       })
       if (updateResult.kind !== 'ok') {
-        setErrorKey(updateResult.i18nKey || 'emissions.error.transport')
+        setErrorKey(
+          updateResult.kind === 'transportError'
+            ? updateResult.i18nKey
+            : updateResult.envelope.respuesta || 'emissions.error.transport',
+        )
       }
     },
     [confirmedProcessCode, reports, selectedReportId],
@@ -253,7 +261,11 @@ export function EmissionReportDesignerPage({
       method: 'POST',
     }).then((result) => {
       if (result.kind !== 'ok') {
-        setErrorKey(result.i18nKey || 'emissions.error.transport')
+        setErrorKey(
+          result.kind === 'transportError'
+            ? result.i18nKey
+            : result.envelope.respuesta || 'emissions.error.transport',
+        )
         return
       }
       setReports((prev) =>

@@ -72,17 +72,14 @@ export function buildConsultaDetalladaPivotFields(t: TFunction, locale = 'es') {
       {
         dataField: 'cerrado',
         caption: t('partes.informe.field.cerrado'),
-        dataType: 'boolean' as const,
       },
       {
         dataField: 'sinCargo',
         caption: t('partes.informe.field.sinCargo'),
-        dataType: 'boolean' as const,
       },
       {
         dataField: 'presencial',
         caption: t('partes.informe.field.presencial'),
-        dataType: 'boolean' as const,
       },
     ],
     locale
@@ -99,7 +96,6 @@ export function buildPaqueteHorasPivotFields(t: TFunction, locale = 'es') {
     {
       dataField: 'esTarea',
       caption: 'Es tarea',
-      dataType: 'boolean' as const,
     },
   ]
 }
