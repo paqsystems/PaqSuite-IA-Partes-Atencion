@@ -5,6 +5,7 @@ namespace App\Repositories\Sp\Emissions;
 use Illuminate\Support\Facades\DB;
 use PaqSuite\LaravelCore\Emissions\Contracts\EmissionRepository;
 use PaqSuite\LaravelCore\Emissions\Dto\EmissionJob;
+use PaqSuite\LaravelCore\Emissions\Dto\EmissionOutputPolicy;
 use PaqSuite\LaravelCore\Emissions\Dto\EmissionProcess;
 use PaqSuite\LaravelCore\Parametros\Contracts\ParametroRepository;
 
@@ -37,7 +38,10 @@ final class SpEmissionRepository implements EmissionRepository
             ->where('is_active', 1)
             ->orderBy('process_code')
             ->get()
-            ->map(fn ($row): array => $this->processPayload($this->toProcess($row)))
+            ->map(fn ($row): array => array_merge(
+                $this->processPayload($this->toProcess($row)),
+                ['name' => (string) $row->name],
+            ))
             ->all();
     }
 
@@ -76,7 +80,7 @@ final class SpEmissionRepository implements EmissionRepository
             'mode' => $job->mode,
             'channel' => $job->channel,
             'report_id' => $job->reportId === null ? null : (int) $job->reportId,
-            'mail_template_id' => $job->mailTemplateId === null ? null : (int) $job->mailTemplateId,
+            'mail_template_id' => null,
             'preview_session_id' => $job->previewSessionId,
             'dataset_row_count' => $job->datasetRowCount,
             'estimated_size_bytes' => $job->estimatedSizeBytes,
@@ -101,23 +105,22 @@ final class SpEmissionRepository implements EmissionRepository
         $hasArtifact = DB::table('pq_emission_artifacts')->where('job_id', $jobId)->exists();
 
         return new EmissionJob(
-            (string) $row->id,
-            (string) $row->process_code,
-            $row->company_id === null ? null : (int) $row->company_id,
-            (int) $row->created_by_user_id,
-            (string) $row->status,
-            (string) $row->mode,
-            (string) $row->channel,
-            $row->company_id === null ? [] : [(int) $row->company_id],
-            $row->group_id,
-            $row->report_id,
-            $row->mail_template_id,
-            $row->preview_session_id,
-            (int) $row->dataset_row_count,
-            (int) $row->estimated_size_bytes,
-            $row->artifact_file_name,
-            $row->result_message_key,
-            $hasArtifact ? (string) $row->id : null,
+            jobId: (string) $row->id,
+            processCode: (string) $row->process_code,
+            companyId: $row->company_id === null ? null : (int) $row->company_id,
+            createdByUserId: (int) $row->created_by_user_id,
+            status: (string) $row->status,
+            mode: (string) $row->mode,
+            channel: (string) $row->channel,
+            companyIds: $row->company_id === null ? [] : [(int) $row->company_id],
+            groupId: $row->group_id,
+            reportId: $row->report_id === null ? null : (int) $row->report_id,
+            previewSessionId: $row->preview_session_id,
+            datasetRowCount: (int) $row->dataset_row_count,
+            estimatedSizeBytes: (int) $row->estimated_size_bytes,
+            fileName: $row->artifact_file_name,
+            messageKey: $row->result_message_key,
+            artifactPath: $hasArtifact ? (string) $row->id : null,
         );
     }
 
@@ -225,20 +228,6 @@ final class SpEmissionRepository implements EmissionRepository
             ])
             ->all();
 
-        $templates = DB::table('pq_emission_mail_templates')
-            ->where('process_code', $row->process_code)
-            ->where('is_active', 1)
-            ->orderByDesc('is_principal')
-            ->orderBy('id')
-            ->get()
-            ->map(static fn ($template): array => [
-                'id' => (int) $template->id,
-                'code' => (string) $template->template_code,
-                'name' => (string) $template->name,
-                'isPrincipal' => (bool) $template->is_principal,
-            ])
-            ->all();
-
         return new EmissionProcess(
             (string) $row->process_code,
             (string) $row->menu_process_code,
@@ -246,9 +235,40 @@ final class SpEmissionRepository implements EmissionRepository
             (bool) $row->permite_consolidado,
             (bool) $row->permite_segmentado,
             (bool) $row->requiere_vista_previa,
+            $this->buildOutputPolicy($channels),
             $reports,
-            $templates,
             (bool) $row->is_active,
+        );
+    }
+
+    /**
+     * @param list<string> $channels
+     */
+    private function buildOutputPolicy(array $channels): EmissionOutputPolicy
+    {
+        $documentaryChannels = array_values(array_filter(
+            $channels,
+            static fn (string $channel): bool => $channel !== 'mail',
+        ));
+        $policy = EmissionOutputPolicy::fromDocumentaryChannels($documentaryChannels);
+
+        if (! in_array('mail', $channels, true)) {
+            return $policy;
+        }
+
+        return new EmissionOutputPolicy(
+            $policy->mode,
+            [
+                ...$policy->outputs,
+                [
+                    'channel' => 'mail',
+                    'kind' => 'communication',
+                    'mandatory' => false,
+                    'automatic' => false,
+                    'blocking' => true,
+                ],
+            ],
+            $policy->recipientEditMode,
         );
     }
 
@@ -268,8 +288,8 @@ final class SpEmissionRepository implements EmissionRepository
                 'segmented' => $process->allowsSegmented,
             ],
             'requiresPreview' => $process->requiresPreview,
+            'outputPolicy' => $process->outputPolicy->toArray(),
             'reports' => $process->reports,
-            'mailTemplates' => $process->mailTemplates,
         ];
     }
 
