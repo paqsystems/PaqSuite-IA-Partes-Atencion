@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { getAuthSession } from '../../features/auth/authSessionStore'
 import { EMPRESA_THEME_DEFAULT } from '../../features/admin/security/empresaThemeCatalog'
 import {
@@ -16,10 +16,14 @@ import '../../theme/shellAppearanceBridge.css'
  * Prioridad: preview pendiente (Aplicar con reload) → sesión empresa → generic.light.
  */
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [themeReady, setThemeReady] = useState(false)
+
   useLayoutEffect(() => {
     const pendingTheme = consumePendingEmpresaTheme()
     if (pendingTheme) {
-      void applyDevExtremeTheme(pendingTheme, { reloadOnGroupChange: false })
+      void applyDevExtremeTheme(pendingTheme, { reloadOnGroupChange: false }).then(() => {
+        setThemeReady(true)
+      })
       return
     }
 
@@ -30,8 +34,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           empresas: session.empresas,
         })
       : EMPRESA_THEME_DEFAULT
-    void applyDevExtremeTheme(theme, { reloadOnGroupChange: false })
+    void applyDevExtremeTheme(theme, { reloadOnGroupChange: false }).then(() => {
+      setThemeReady(true)
+    })
   }, [])
+
+  if (!themeReady) {
+    return null
+  }
 
   return <>{children}</>
 }
