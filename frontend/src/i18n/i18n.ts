@@ -39,8 +39,8 @@ syncDevExtremeLocale(initialLocale)
 /** Aplica idioma guest: i18n + DX + persistencia local. */
 export async function applyGuestLocale(next: LocaleCode): Promise<void> {
   setGuestLocale(next)
-  syncDevExtremeLocale(next)
   await i18n.changeLanguage(next)
+  syncDevExtremeLocale(next)
 }
 
 export default i18n

@@ -19,7 +19,6 @@ import {
   listPartesResource,
   savePartesResource,
 } from './partesMaestrosApi'
-import { usePartesGridSummaryTypeLabels } from '../partesGridSummary'
 
 export type MaestroField =
   | { key: string; label: string; type: 'text'; maxLength?: number }
@@ -53,7 +52,6 @@ export function MaestroCrudPage({
 }: MaestroCrudPageProps) {
   const { t } = useTranslation()
   const pageTitle = useProcessMenuTitle(title)
-  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const [rows, setRows] = useState<Record<string, unknown>[]>([])
   const [loading, setLoading] = useState(true)
   const [formOpen, setFormOpen] = useState(false)
@@ -172,7 +170,6 @@ export function MaestroCrudPage({
           onCreate={openCreate}
           createHint={t('partes.common.agregar')}
           createTestId={`${testIdPrefix}Add`}
-          summaryTypeLabels={summaryTypeLabels}
         >
           <Paging defaultPageSize={20} />
           <Pager visible showPageSizeSelector />

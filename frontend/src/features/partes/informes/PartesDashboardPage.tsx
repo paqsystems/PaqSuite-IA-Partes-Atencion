@@ -17,7 +17,6 @@ import { resolveAuthMessage } from '../../auth/authMessages'
 import { formatMinutosAsHhMm, todayIsoDate } from '../carga/partesTareaDuration'
 import { fetchDashboard, fetchDashboardParametros } from './partesInformeApi'
 import { mapDashboardTopToKardexItem } from '../mobile/mapPartesTareaToKardexItem'
-import { usePartesGridSummaryTypeLabels } from '../partesGridSummary'
 
 function currentMonthValue(date = new Date()): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
@@ -32,7 +31,6 @@ function monthRange(mes: string): { fechaDesde: string; fechaHasta: string } {
 
 export function PartesDashboardPage() {
   const { t } = useTranslation()
-  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const native = isNativeApp()
   const [mes, setMes] = useState(currentMonthValue())
   const [refreshSeg, setRefreshSeg] = useState(60)
@@ -238,7 +236,6 @@ export function PartesDashboardPage() {
         gridId="dashboardTop"
         accessToken={getAuthToken()}
         platform={buildAuthPlatformHeaders()}
-        summaryTypeLabels={summaryTypeLabels}
       >
         <Paging defaultPageSize={20} />
         <Pager visible showPageSizeSelector />

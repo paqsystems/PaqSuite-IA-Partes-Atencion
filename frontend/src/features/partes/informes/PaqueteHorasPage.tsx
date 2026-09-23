@@ -31,7 +31,6 @@ import { buildPaqueteHorasPivotFields } from './partesInformePivotFields'
 import { enrichRowsWithDiaSemana } from './partesInformeDiaSemana'
 import { aggregatePaqueteHorasDesglose } from '../mobile/aggregatePaqueteHorasDesglose'
 import { mapDesgloseToKardexItem } from '../mobile/mapPartesTareaToKardexItem'
-import { usePartesGridSummaryTypeLabels } from '../partesGridSummary'
 
 function formatDuracionCell(cell: { value?: unknown }) {
   return formatMinutosAsHhMm(Number(cell.value ?? 0))
@@ -51,7 +50,6 @@ function getPivotInstance(ref: PivotGridRef | null): dxPivotGrid | undefined {
 
 export function PaqueteHorasPage() {
   const { t, i18n } = useTranslation()
-  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const native = isNativeApp()
   const session = getAuthSession()
   const esCliente = session?.partes?.tipoFuncional === 'cliente'
@@ -312,7 +310,6 @@ export function PaqueteHorasPage() {
             gridId="paqueteHorasDetalle"
             accessToken={getAuthToken()}
             platform={buildAuthPlatformHeaders()}
-            summaryTypeLabels={summaryTypeLabels}
             toolbarLeading={
               !native ? (
                 <Button

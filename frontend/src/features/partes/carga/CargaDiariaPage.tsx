@@ -53,7 +53,6 @@ import { usePartesEstadoCerradoOptions } from '../partesFiltroEstado'
 import { usePartesTareaGridCaptions } from '../partesTareaGridI18n'
 import {
   usePartesDuracionHorasSummaryItems,
-  usePartesGridSummaryTypeLabels,
 } from '../partesGridSummary'
 
 type CargaDiariaGridRow = PartesTareaItem & {
@@ -78,7 +77,6 @@ export function CargaDiariaPage() {
   const pageTitle = useProcessMenuTitle(t('partes.carga.title'), '/partes/carga-diaria')
   const estadoOpciones = usePartesEstadoCerradoOptions()
   const gridCaptions = usePartesTareaGridCaptions()
-  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const session = getAuthSession()
   const esSupervisor = Boolean(session?.partes?.esSupervisor)
   const asistenteId = session?.partes?.asistenteId ?? null
@@ -522,7 +520,6 @@ export function CargaDiariaPage() {
           createHint={gridCaptions.nuevaTarea}
           createTestId="partesCargaAdd"
           defaultTotalItems={duracionSummaryItems}
-          summaryTypeLabels={summaryTypeLabels}
         >
           <Paging defaultPageSize={20} />
           <Pager visible showPageSizeSelector />

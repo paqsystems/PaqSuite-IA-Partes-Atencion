@@ -45,7 +45,6 @@ import { usePartesEstadoCerradoOptions } from '../partesFiltroEstado'
 import { usePartesTareaGridCaptions } from '../partesTareaGridI18n'
 import {
   usePartesDuracionHorasSummaryItems,
-  usePartesGridSummaryTypeLabels,
 } from '../partesGridSummary'
 
 const PAGE_SIZE = 20
@@ -65,7 +64,6 @@ function ProcesoMasivoView() {
   const { t } = useTranslation()
   const estadoOpciones = usePartesEstadoCerradoOptions()
   const gridCaptions = usePartesTareaGridCaptions()
-  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const hoy = todayIsoDate()
   const session = getAuthSession()
   const platform = useMemo(
@@ -748,7 +746,6 @@ function ProcesoMasivoView() {
           selectedRowKeys={selectedKeys}
           onSelectionChanged={onSelectionChanged}
           defaultTotalItems={duracionSummaryItems}
-          summaryTypeLabels={summaryTypeLabels}
         >
           <Selection mode="multiple" showCheckBoxesMode="always" />
           <Paging defaultPageSize={PAGE_SIZE} />

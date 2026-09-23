@@ -1,27 +1,12 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { GridSummaryType } from '@paqsuite/react-core'
+import { DEFAULT_GRID_SUMMARY_TYPE_LABELS } from '@paqsuite/react-core'
 import { formatMinutosAsHhMm } from './carga/partesTareaDuration'
-
-/** Etiquetas de menú contextual y prefijo de pie (`grid.summary.*`, GEN-01 §24). */
-export function usePartesGridSummaryTypeLabels(): Record<GridSummaryType, string> {
-  const { t, i18n } = useTranslation()
-  return useMemo(
-    () => ({
-      count: t('grid.summary.count'),
-      sum: t('grid.summary.sum'),
-      min: t('grid.summary.min'),
-      max: t('grid.summary.max'),
-      avg: t('grid.summary.avg'),
-    }),
-    [t, i18n.language],
-  )
-}
 
 /** Pie de grilla: suma de columna `duracionHoras` (horas decimales). */
 export function usePartesDuracionHorasSummaryItems() {
   const { t, i18n } = useTranslation()
-  const sumLabel = t('grid.summary.sum')
+  const sumLabel = DEFAULT_GRID_SUMMARY_TYPE_LABELS.sum
   const hoursSuffix = t('partes.grid.summary.hoursSuffix')
   return useMemo(
     () => [
@@ -44,8 +29,7 @@ export function usePartesMinutosColumnSummaryItems(
   column: MinutosSummaryColumn,
   summaryName: string,
 ) {
-  const { t, i18n } = useTranslation()
-  const sumLabel = t('grid.summary.sum')
+  const sumLabel = DEFAULT_GRID_SUMMARY_TYPE_LABELS.sum
   return useMemo(
     () => [
       {
@@ -57,6 +41,6 @@ export function usePartesMinutosColumnSummaryItems(
           `${sumLabel}: ${formatMinutosAsHhMm(Number(info.value ?? 0))}`,
       },
     ],
-    [column, summaryName, sumLabel, i18n.language],
+    [column, summaryName, sumLabel],
   )
 }

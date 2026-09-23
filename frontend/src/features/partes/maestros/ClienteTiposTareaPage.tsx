@@ -15,11 +15,9 @@ import {
   listPartesResource,
   savePartesResource,
 } from './partesMaestrosApi'
-import { usePartesGridSummaryTypeLabels } from '../partesGridSummary'
 
 export function ClienteTiposTareaPage() {
   const { t } = useTranslation()
-  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const [rows, setRows] = useState<Record<string, unknown>[]>([])
   const [loading, setLoading] = useState(true)
   const [clientes, setClientes] = useState<Record<string, unknown>[]>([])
@@ -108,7 +106,6 @@ export function ClienteTiposTareaPage() {
           onCreate={() => setFormOpen(true)}
           createHint={t('partes.common.agregar')}
           createTestId="partesMaestrosAsignacionesAdd"
-          summaryTypeLabels={summaryTypeLabels}
         >
           <Paging defaultPageSize={20} />
           <Pager visible showPageSizeSelector />

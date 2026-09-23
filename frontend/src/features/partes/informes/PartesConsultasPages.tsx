@@ -25,10 +25,7 @@ import {
   isoDateFromDateBox,
 } from '../carga/partesTareaDuration'
 import { monthRange, currentMonthValue } from './PartesDashboardPage'
-import {
-  usePartesGridSummaryTypeLabels,
-  usePartesMinutosColumnSummaryItems,
-} from '../partesGridSummary'
+import { usePartesMinutosColumnSummaryItems } from '../partesGridSummary'
 import { listCatalogo, listPartesResource } from '../maestros/partesMaestrosApi'
 import { fetchInformeAgrupado, fetchInformeTareas } from './partesInformeApi'
 import {
@@ -77,7 +74,6 @@ export function ConsultaDetalladaPage() {
     t('partes.informe.page.consultaDetallada'),
     '/partes/informes/consulta-detallada',
   )
-  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const native = isNativeApp()
   const session = getAuthSession()
   const esSupervisor = Boolean(session?.partes?.esSupervisor)
@@ -381,7 +377,6 @@ export function ConsultaDetalladaPage() {
             accessToken={getAuthToken()}
             platform={buildAuthPlatformHeaders()}
             defaultTotalItems={duracionSummaryItems}
-            summaryTypeLabels={summaryTypeLabels}
             columnSummaryFormatters={{
               duracionMinutos: durationSummaryFormatter,
             }}
@@ -511,7 +506,6 @@ export function ConsultaDetalladaPage() {
 
 export function ConsultasAgrupadasPage() {
   const { t, i18n } = useTranslation()
-  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const native = isNativeApp()
   const defaultRange = monthRange(currentMonthValue())
   const [fechaDesde, setFechaDesde] = useState(defaultRange.fechaDesde)
@@ -652,7 +646,6 @@ export function ConsultasAgrupadasPage() {
             accessToken={getAuthToken()}
             platform={buildAuthPlatformHeaders()}
             defaultTotalItems={duracionSummaryItems}
-            summaryTypeLabels={summaryTypeLabels}
             columnSummaryFormatters={{
               totalMinutos: durationSummaryFormatter,
             }}
