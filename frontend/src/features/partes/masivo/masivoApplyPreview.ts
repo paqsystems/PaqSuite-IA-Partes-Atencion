@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next'
 import type { TareaIdItem } from './partesMasivoApi'
 
 export type MasivoApplyPreviewRow = {
@@ -12,25 +13,32 @@ export type MasivoApplyPreview = {
 
 type CatalogRow = Record<string, unknown>
 
-export function buildMasivoApplyPreview(input: {
-  itemCount: number
-  applyTipoTareaId: number | null
-  tiposTarea: CatalogRow[]
-  touchSinCargo: boolean
-  applySinCargo: boolean
-  touchPresencial: boolean
-  applyPresencial: boolean
-  applyUsuarioId: number | null
-  asistentes: CatalogRow[]
-  touchFecha: boolean
-  applyFecha: string
-  fechaDesde: string
-  fechaHasta: string
-  items: TareaIdItem[]
-}): MasivoApplyPreview {
+export function buildMasivoApplyPreview(
+  input: {
+    itemCount: number
+    applyTipoTareaId: number | null
+    tiposTarea: CatalogRow[]
+    touchSinCargo: boolean
+    applySinCargo: boolean
+    touchPresencial: boolean
+    applyPresencial: boolean
+    applyUsuarioId: number | null
+    asistentes: CatalogRow[]
+    touchFecha: boolean
+    applyFecha: string
+    fechaDesde: string
+    fechaHasta: string
+    items: TareaIdItem[]
+  },
+  t: TFunction,
+): MasivoApplyPreview {
+  const sinCambio = t('partes.common.sinCambio')
+  const si = t('partes.common.si')
+  const no = t('partes.common.no')
+
   const tipoLabel =
     input.applyTipoTareaId == null
-      ? '(sin cambio)'
+      ? sinCambio
       : (() => {
           const tipo = input.tiposTarea.find((row) => Number(row.id) === input.applyTipoTareaId)
           return tipo
@@ -40,7 +48,7 @@ export function buildMasivoApplyPreview(input: {
 
   const asistenteLabel =
     input.applyUsuarioId == null
-      ? '(sin cambio)'
+      ? sinCambio
       : (() => {
           const asistente = input.asistentes.find((row) => Number(row.id) === input.applyUsuarioId)
           return asistente
@@ -54,22 +62,25 @@ export function buildMasivoApplyPreview(input: {
 
   return {
     rows: [
-      { label: 'Partes', value: String(input.itemCount) },
-      { label: 'Tipo de tarea', value: tipoLabel },
+      { label: t('partes.masivo.preview.partes'), value: String(input.itemCount) },
+      { label: t('partes.informe.filtro.tipoTarea'), value: tipoLabel },
       {
-        label: 'Sin cargo',
-        value: input.touchSinCargo ? (input.applySinCargo ? 'Sí' : 'No') : '(sin cambio)',
+        label: t('partes.informe.field.sinCargo'),
+        value: input.touchSinCargo ? (input.applySinCargo ? si : no) : sinCambio,
       },
       {
-        label: 'Presencial',
-        value: input.touchPresencial ? (input.applyPresencial ? 'Sí' : 'No') : '(sin cambio)',
+        label: t('partes.informe.field.presencial'),
+        value: input.touchPresencial ? (input.applyPresencial ? si : no) : sinCambio,
       },
-      { label: 'Asistente', value: asistenteLabel },
+      { label: t('partes.informe.filtro.asistente'), value: asistenteLabel },
       {
-        label: 'Fecha',
-        value: input.touchFecha && input.applyFecha ? input.applyFecha : '(sin cambio)',
+        label: t('partes.informe.field.fecha'),
+        value: input.touchFecha && input.applyFecha ? input.applyFecha : sinCambio,
       },
-      { label: 'Rango filtro', value: `${input.fechaDesde} → ${input.fechaHasta}` },
+      {
+        label: t('partes.masivo.preview.rangoFiltro'),
+        value: `${input.fechaDesde} → ${input.fechaHasta}`,
+      },
     ],
     muestra,
   }

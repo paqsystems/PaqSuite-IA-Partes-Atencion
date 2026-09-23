@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
+import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 import { LlmPreferencesModalHost } from '../../llmCredentials/LlmPreferencesModalHost'
 import { listCatalogo } from '../maestros/partesMaestrosApi'
 import type { FormState } from './cargaDiariaFormTypes'
@@ -48,6 +49,12 @@ import { handlePartesSmartCaptureSend } from './partesSmartCaptureTurn'
 import { resolveDefaultTipoId } from './cargaDiariaTipoDefault'
 import { cargaDiariaPersistErrorKey } from './cargaDiariaPersistValidation'
 import { isDxUserEvent, normalizeCatalogItems } from './catalogItems'
+import { usePartesEstadoCerradoOptions } from '../partesFiltroEstado'
+import { usePartesTareaGridCaptions } from '../partesTareaGridI18n'
+import {
+  usePartesDuracionHorasSummaryItems,
+  usePartesGridSummaryTypeLabels,
+} from '../partesGridSummary'
 
 type CargaDiariaGridRow = PartesTareaItem & {
   /** Horas decimales para sumatoria DevExtreme (persistencia = minutos). */
@@ -68,6 +75,10 @@ const emptyForm = (asistenteId: number | null): FormState => ({
 
 export function CargaDiariaPage() {
   const { t } = useTranslation()
+  const pageTitle = useProcessMenuTitle(t('partes.carga.title'), '/partes/carga-diaria')
+  const estadoOpciones = usePartesEstadoCerradoOptions()
+  const gridCaptions = usePartesTareaGridCaptions()
+  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const session = getAuthSession()
   const esSupervisor = Boolean(session?.partes?.esSupervisor)
   const asistenteId = session?.partes?.asistenteId ?? null
@@ -181,18 +192,7 @@ export function CargaDiariaPage() {
 
   const tramoOptions = useMemo(() => buildTramoHhMmOptions(tramo), [tramo])
 
-  const duracionSummaryItems = useMemo(
-    () => [
-      {
-        column: 'duracionHoras',
-        summaryType: 'sum' as const,
-        name: 'pq-duracionHoras-sum',
-        displayFormat: 'Suma: {0} h',
-        valueFormat: '#0.##',
-      },
-    ],
-    []
-  )
+  const duracionSummaryItems = usePartesDuracionHorasSummaryItems()
 
   function mapGridRows(items: PartesTareaItem[]): CargaDiariaGridRow[] {
     return items.map((item) => ({
@@ -386,7 +386,7 @@ export function CargaDiariaPage() {
     if (row.cerrado) {
       return
     }
-    const ok = await confirm('¿Eliminar la tarea?', 'Eliminar')
+    const ok = await confirm(t('partes.mobile.eliminarConfirm'), t('partes.mobile.eliminar'))
     if (!ok) {
       return
     }
@@ -410,9 +410,9 @@ export function CargaDiariaPage() {
   return (
     <div data-testid="partesCargaPage" style={{ padding: 16 }}>
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-        <h2 style={{ margin: 0, flex: 1 }}>Carga diaria</h2>
+        <h2 style={{ margin: 0, flex: 1 }}>{pageTitle}</h2>
         <Link to="/partes/proceso-masivo" data-testid="partesCargaLinkMasivo">
-          Ir a proceso masivo
+          {t('partes.carga.linkMasivo')}
         </Link>
       </div>
 
@@ -421,7 +421,7 @@ export function CargaDiariaPage() {
         style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 12, alignItems: 'end' }}
       >
         <div>
-          <label>Desde</label>
+          <label>{t('partes.common.desde')}</label>
           <DateBox
             value={fechaDesde}
             type="date"
@@ -436,7 +436,7 @@ export function CargaDiariaPage() {
           />
         </div>
         <div>
-          <label>Hasta</label>
+          <label>{t('partes.common.hasta')}</label>
           <DateBox
             value={fechaHasta}
             type="date"
@@ -451,7 +451,7 @@ export function CargaDiariaPage() {
           />
         </div>
         <div style={{ minWidth: 200 }}>
-          <label>Cliente</label>
+          <label>{t('partes.informe.filtro.cliente')}</label>
           <SelectBox
             dataSource={clientes}
             value={filtroClienteId}
@@ -464,7 +464,7 @@ export function CargaDiariaPage() {
         </div>
         {esSupervisor ? (
           <div style={{ minWidth: 200 }}>
-            <label>Asistente</label>
+            <label>{t('partes.informe.filtro.asistente')}</label>
             <SelectBox
               dataSource={asistentes}
               value={filtroUsuarioId}
@@ -477,13 +477,9 @@ export function CargaDiariaPage() {
           </div>
         ) : null}
         <div style={{ minWidth: 160 }}>
-          <label>Estado</label>
+          <label>{t('partes.informe.filtro.estadoCerrado')}</label>
           <SelectBox
-            dataSource={[
-              { id: 'todas', text: 'Todas' },
-              { id: 'abiertas', text: 'Abiertas' },
-              { id: 'cerradas', text: 'Cerradas' },
-            ]}
+            dataSource={estadoOpciones}
             value={estadoCerrado}
             valueExpr="id"
             displayExpr="text"
@@ -492,7 +488,11 @@ export function CargaDiariaPage() {
             }
           />
         </div>
-        <Button text="Buscar" onClick={() => void load()} elementAttr={{ 'data-testid': 'partesCargaSearch' }} />
+        <Button
+          text={t('partes.common.buscar')}
+          onClick={() => void load()}
+          elementAttr={{ 'data-testid': 'partesCargaSearch' }}
+        />
       </div>
 
       {!isNativeApp() && session?.partes?.tipoFuncional !== 'cliente' ? (
@@ -519,47 +519,48 @@ export function CargaDiariaPage() {
           platform={buildAuthPlatformHeaders()}
           onCreate={openCreate}
           allowCreate
-          createHint="Nueva tarea"
+          createHint={gridCaptions.nuevaTarea}
           createTestId="partesCargaAdd"
           defaultTotalItems={duracionSummaryItems}
+          summaryTypeLabels={summaryTypeLabels}
         >
           <Paging defaultPageSize={20} />
           <Pager visible showPageSizeSelector />
-          <Column dataField="fecha" caption="Fecha" dataType="date" />
-          {esSupervisor ? <Column dataField="usuarioCode" caption="Asistente" /> : null}
-          <Column dataField="clienteNombre" caption="Cliente" />
-          <Column dataField="tipoTareaDescripcion" caption="Tipo de Tarea" />
-          <Column dataField="duracionHhMm" caption={t('partes.tarea.duracion', 'Duración')} />
+          <Column dataField="fecha" caption={gridCaptions.fecha} dataType="date" />
+          {esSupervisor ? <Column dataField="usuarioCode" caption={gridCaptions.asistente} /> : null}
+          <Column dataField="clienteNombre" caption={gridCaptions.cliente} />
+          <Column dataField="tipoTareaDescripcion" caption={gridCaptions.tipoTarea} />
+          <Column dataField="duracionHhMm" caption={gridCaptions.duracion} />
           <Column
             dataField="duracionHoras"
-            caption={t('partes.tarea.duracionDecimal', 'Duración decimal')}
+            caption={gridCaptions.duracionDecimal}
             dataType="number"
             format="#0.##"
           />
-          <Column dataField="sinCargo" caption="Sin cargo" dataType="boolean" />
-          <Column dataField="presencial" caption="Presencial" dataType="boolean" />
-          <Column dataField="observacion" caption="Observación" />
-          <Column dataField="cerrado" caption="Cerrado" dataType="boolean" />
-          <Column dataField="clienteCode" caption="Cliente (código)" visible={false} />
-          <Column dataField="tipoTareaCode" caption="Tipo (código)" visible={false} />
-          <Column dataField="duracionMinutos" caption="Minutos" dataType="number" visible={false} />
+          <Column dataField="sinCargo" caption={gridCaptions.sinCargo} dataType="boolean" />
+          <Column dataField="presencial" caption={gridCaptions.presencial} dataType="boolean" />
+          <Column dataField="observacion" caption={gridCaptions.observacion} />
+          <Column dataField="cerrado" caption={gridCaptions.cerrado} dataType="boolean" />
+          <Column dataField="clienteCode" caption={gridCaptions.clienteCode} visible={false} />
+          <Column dataField="tipoTareaCode" caption={gridCaptions.tipoTareaCode} visible={false} />
+          <Column dataField="duracionMinutos" caption={gridCaptions.minutos} dataType="number" visible={false} />
           <Column
             type="buttons"
             buttons={[
               {
-                hint: 'Editar',
+                hint: gridCaptions.hintEditar,
                 icon: 'edit',
                 visible: (e) => !(e.row?.data as PartesTareaItem | undefined)?.cerrado,
                 onClick: (e) => void openEdit(e.row?.data as PartesTareaItem),
               },
               {
-                hint: 'Eliminar',
+                hint: gridCaptions.hintEliminar,
                 icon: 'trash',
                 visible: (e) => !(e.row?.data as PartesTareaItem | undefined)?.cerrado,
                 onClick: (e) => void handleDelete(e.row?.data as PartesTareaItem),
               },
               {
-                hint: 'Cerrar/Reabrir',
+                hint: gridCaptions.hintCerrarReabrir,
                 icon: 'isblank',
                 visible: () => esSupervisor,
                 onClick: (e) => void handleCerrarReabrir(e.row?.data as PartesTareaItem),
@@ -567,13 +568,13 @@ export function CargaDiariaPage() {
             ]}
           />
         </ProcessDataGrid>
-        <div style={{ marginTop: 8, opacity: 0.7 }}>Total: {total}</div>
+        <div style={{ marginTop: 8, opacity: 0.7 }}>{t('partes.common.total', { count: total })}</div>
       </div>
 
       <Popup
         visible={formOpen}
         onHiding={() => closeForm()}
-        title={editingId ? 'Editar tarea' : 'Nueva tarea'}
+        title={editingId ? t('partes.mobile.editarTarea') : t('partes.mobile.nuevaTarea')}
         width={640}
         height="auto"
         maxHeight="90vh"
@@ -583,7 +584,7 @@ export function CargaDiariaPage() {
           {formOpen ? renderFormErrorAlert() : null}
           {esSupervisor ? (
             <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
-              <label>Asistente</label>
+              <label>{t('partes.informe.filtro.asistente')}</label>
               <SelectBox
                 dataSource={asistentes}
                 value={form.usuarioId}
@@ -601,7 +602,7 @@ export function CargaDiariaPage() {
             </div>
           ) : null}
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
-            <label>Fecha</label>
+            <label>{t('partes.informe.field.fecha')}</label>
             <DateBox
               value={form.fecha}
               type="date"
@@ -617,7 +618,7 @@ export function CargaDiariaPage() {
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
-            <label>Cliente</label>
+            <label>{t('partes.informe.filtro.cliente')}</label>
             <SelectBox
               dataSource={clientes}
               value={form.clienteId}
@@ -634,7 +635,7 @@ export function CargaDiariaPage() {
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
-            <label>Tipo tarea</label>
+            <label>{t('partes.informe.filtro.tipoTarea')}</label>
             <SelectBox
               dataSource={tipos}
               value={form.tipoTareaId}
@@ -651,7 +652,7 @@ export function CargaDiariaPage() {
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
-            <label>Duración</label>
+            <label>{t('partes.tarea.duracion')}</label>
             <SelectBox
               dataSource={tramoOptions}
               value={form.duracionMinutos}
@@ -671,7 +672,7 @@ export function CargaDiariaPage() {
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
-            <label>Observación</label>
+            <label>{t('partes.informe.field.observacion')}</label>
             <TextBox
               value={form.observacion}
               elementAttr={{ 'data-testid': 'partesCargaObservacion' }}
@@ -681,7 +682,7 @@ export function CargaDiariaPage() {
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
-            <label>Sin cargo</label>
+            <label>{t('partes.informe.field.sinCargo')}</label>
             <CheckBox
               value={form.sinCargo}
               onValueChanged={(e) =>
@@ -690,7 +691,7 @@ export function CargaDiariaPage() {
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
-            <label>Presencial</label>
+            <label>{t('partes.informe.field.presencial')}</label>
             <CheckBox
               value={form.presencial}
               onValueChanged={(e) =>
@@ -699,9 +700,9 @@ export function CargaDiariaPage() {
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <Button text="Cancelar" onClick={() => closeForm()} />
+            <Button text={t('parametros.modal.cancel')} onClick={() => closeForm()} />
             <Button
-              text={isSaving ? 'Guardando…' : 'Guardar'}
+              text={isSaving ? t('partes.carga.guardando') : t('partes.mobile.guardar')}
               type="default"
               disabled={isSaving}
               onClick={() => void persist(false)}

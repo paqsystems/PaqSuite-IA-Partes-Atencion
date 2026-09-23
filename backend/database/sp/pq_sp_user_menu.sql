@@ -14,6 +14,7 @@ BEGIN
         m.id,
         m.parent_id AS parentId,
         m.codigo AS menuKey,
+        COALESCE(NULLIF(LTRIM(RTRIM(m.label_key)), ''), CONCAT('menu.', m.codigo)) AS labelKey,
         m.titulo AS text,
         m.ruta AS routeName,
         m.orden AS [order],

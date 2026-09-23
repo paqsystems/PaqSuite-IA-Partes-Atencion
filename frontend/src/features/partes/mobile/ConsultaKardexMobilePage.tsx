@@ -4,7 +4,6 @@ import { Popup } from 'devextreme-react/popup'
 import DateBox from 'devextreme-react/date-box'
 import SelectBox from 'devextreme-react/select-box'
 import TextBox from 'devextreme-react/text-box'
-import NumberBox from 'devextreme-react/number-box'
 import CheckBox from 'devextreme-react/check-box'
 import { confirm } from 'devextreme/ui/dialog'
 import { ConsultaKardexList } from '@paqsuite/react-core'
@@ -20,6 +19,10 @@ import {
   type PartesTareaItem,
 } from '../carga/partesTareaApi'
 import {
+  buildTramoHhMmOptions,
+  dateDisplayFormat,
+  dateSerializationFormat,
+  formatMinutosAsHhMm,
   isFechaFutura,
   isValidDuracionMinutos,
   todayIsoDate,
@@ -92,10 +95,17 @@ export function ConsultaKardexMobilePage() {
     void load()
   }, [load])
 
+  const tramoOptions = useMemo(() => buildTramoHhMmOptions(tramo), [tramo])
+
   const kardexItems = useMemo(
-    () => rows.map((row) => mapPartesTareaToKardexItem(row, (key) => t(key))),
+    () =>
+      rows.map((row) =>
+        mapPartesTareaToKardexItem(row, (key) => t(key), formatMinutosAsHhMm),
+      ),
     [rows, t],
   )
+
+  const formRowStyle = { display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8, alignItems: 'center' }
 
   async function openCreate() {
     setEditing(null)
@@ -217,13 +227,18 @@ export function ConsultaKardexMobilePage() {
         filtersSlot={
           <div className="partesMobileKardexFilters">
             <h2 className="pqProcessTitle">{t('partes.mobile.kardexTitle')}</h2>
-            <DateBox
-              value={fecha}
-              type="date"
-              onValueChanged={(e) =>
-                setFecha(e.value ? todayIsoDate(new Date(e.value as Date)) : hoy)
-              }
-            />
+            <div style={formRowStyle}>
+              <label>{t('partes.informe.field.fecha')}</label>
+              <DateBox
+                value={fecha}
+                type="date"
+                displayFormat={dateDisplayFormat}
+                dateSerializationFormat={dateSerializationFormat}
+                onValueChanged={(e) =>
+                  setFecha(e.value ? todayIsoDate(new Date(e.value as Date)) : hoy)
+                }
+              />
+            </div>
             {!readOnly ? (
               <Button
                 icon="plus"
@@ -253,57 +268,80 @@ export function ConsultaKardexMobilePage() {
       >
         <div style={{ display: 'grid', gap: 10, padding: 8 }} data-testid="partesKardexForm">
           {esSupervisor ? (
+            <div style={formRowStyle}>
+              <label>{t('partes.informe.filtro.asistente')}</label>
+              <SelectBox
+                dataSource={asistentes}
+                value={form.usuarioId}
+                valueExpr="id"
+                displayExpr={(item) => (item ? `${item.code} — ${item.nombre}` : '')}
+                onValueChanged={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    usuarioId: (e.value as number | null) ?? asistenteId,
+                  }))
+                }
+              />
+            </div>
+          ) : null}
+          <div style={formRowStyle}>
+            <label>{t('partes.informe.filtro.cliente')}</label>
             <SelectBox
-              dataSource={asistentes}
-              value={form.usuarioId}
+              dataSource={clientes}
+              value={form.clienteId}
               valueExpr="id"
               displayExpr={(item) => (item ? `${item.code} — ${item.nombre}` : '')}
+              onValueChanged={(e) => void handleCliente((e.value as number | null) ?? null)}
+            />
+          </div>
+          <div style={formRowStyle}>
+            <label>{t('partes.informe.filtro.tipoTarea')}</label>
+            <SelectBox
+              dataSource={tipos}
+              value={form.tipoTareaId}
+              valueExpr="id"
+              displayExpr={(item) => (item ? `${item.code} — ${item.descripcion}` : '')}
               onValueChanged={(e) =>
-                setForm((prev) => ({ ...prev, usuarioId: (e.value as number | null) ?? asistenteId }))
+                setForm((prev) => ({ ...prev, tipoTareaId: e.value as number | null }))
               }
             />
-          ) : null}
-          <SelectBox
-            dataSource={clientes}
-            value={form.clienteId}
-            valueExpr="id"
-            displayExpr={(item) => (item ? `${item.code} — ${item.nombre}` : '')}
-            onValueChanged={(e) => void handleCliente((e.value as number | null) ?? null)}
-          />
-          <SelectBox
-            dataSource={tipos}
-            value={form.tipoTareaId}
-            valueExpr="id"
-            displayExpr={(item) => (item ? `${item.code} — ${item.descripcion}` : '')}
-            onValueChanged={(e) =>
-              setForm((prev) => ({ ...prev, tipoTareaId: e.value as number | null }))
-            }
-          />
-          <NumberBox
-            value={form.duracionMinutos}
-            step={tramo}
-            min={tramo}
-            max={1440}
-            onValueChanged={(e) =>
-              setForm((prev) => ({ ...prev, duracionMinutos: Number(e.value) || tramo }))
-            }
-          />
-          <TextBox
-            value={form.observacion}
-            onValueChanged={(e) =>
-              setForm((prev) => ({ ...prev, observacion: String(e.value ?? '') }))
-            }
-          />
-          <CheckBox
-            text={t('partes.informe.field.sinCargo')}
-            value={form.sinCargo}
-            onValueChanged={(e) => setForm((prev) => ({ ...prev, sinCargo: Boolean(e.value) }))}
-          />
-          <CheckBox
-            text={t('partes.informe.field.presencial')}
-            value={form.presencial}
-            onValueChanged={(e) => setForm((prev) => ({ ...prev, presencial: Boolean(e.value) }))}
-          />
+          </div>
+          <div style={formRowStyle}>
+            <label>{t('partes.tarea.duracion')}</label>
+            <SelectBox
+              dataSource={tramoOptions}
+              value={form.duracionMinutos}
+              valueExpr="minutos"
+              displayExpr="label"
+              searchEnabled
+              onValueChanged={(e) =>
+                setForm((prev) => ({ ...prev, duracionMinutos: Number(e.value) || tramo }))
+              }
+            />
+          </div>
+          <div style={formRowStyle}>
+            <label>{t('partes.informe.field.observacion')}</label>
+            <TextBox
+              value={form.observacion}
+              onValueChanged={(e) =>
+                setForm((prev) => ({ ...prev, observacion: String(e.value ?? '') }))
+              }
+            />
+          </div>
+          <div style={formRowStyle}>
+            <label>{t('partes.informe.field.sinCargo')}</label>
+            <CheckBox
+              value={form.sinCargo}
+              onValueChanged={(e) => setForm((prev) => ({ ...prev, sinCargo: Boolean(e.value) }))}
+            />
+          </div>
+          <div style={formRowStyle}>
+            <label>{t('partes.informe.field.presencial')}</label>
+            <CheckBox
+              value={form.presencial}
+              onValueChanged={(e) => setForm((prev) => ({ ...prev, presencial: Boolean(e.value) }))}
+            />
+          </div>
           <div style={{ display: 'flex', gap: 8 }}>
             {editing && !editing.cerrado && !readOnly ? (
               <Button

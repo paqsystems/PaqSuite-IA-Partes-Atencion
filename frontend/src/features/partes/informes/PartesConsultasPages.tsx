@@ -25,6 +25,10 @@ import {
   isoDateFromDateBox,
 } from '../carga/partesTareaDuration'
 import { monthRange, currentMonthValue } from './PartesDashboardPage'
+import {
+  usePartesGridSummaryTypeLabels,
+  usePartesMinutosColumnSummaryItems,
+} from '../partesGridSummary'
 import { listCatalogo, listPartesResource } from '../maestros/partesMaestrosApi'
 import { fetchInformeAgrupado, fetchInformeTareas } from './partesInformeApi'
 import {
@@ -39,6 +43,7 @@ import {
   type ConsultaDetalladaEstadoCerrado,
 } from './consultaDetalladaHostContext'
 import { setEmissionHostContextSnapshot } from './emissionHostContextBridge'
+import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 
 function formatDuracionCell(cell: { value?: unknown }) {
   return formatMinutosAsHhMm(Number(cell.value ?? 0))
@@ -68,6 +73,11 @@ function catalogDisplay(item: Record<string, unknown> | null, descriptionKey: 'n
 
 export function ConsultaDetalladaPage() {
   const { t, i18n } = useTranslation()
+  const pageTitle = useProcessMenuTitle(
+    t('partes.informe.page.consultaDetallada'),
+    '/partes/informes/consulta-detallada',
+  )
+  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const native = isNativeApp()
   const session = getAuthSession()
   const esSupervisor = Boolean(session?.partes?.esSupervisor)
@@ -232,23 +242,14 @@ export function ConsultaDetalladaPage() {
     []
   )
 
-  const duracionSummaryItems = useMemo(
-    () => [
-      {
-        column: 'duracionMinutos',
-        summaryType: 'sum' as const,
-        name: 'pq-duracionMinutos-sum',
-        displayFormat: 'Suma: {0}',
-        customizeText: (info: { value?: string | number | Date }) =>
-          `Suma: ${formatMinutosAsHhMm(Number(info.value ?? 0))}`,
-      },
-    ],
-    []
+  const duracionSummaryItems = usePartesMinutosColumnSummaryItems(
+    'duracionMinutos',
+    'pq-duracionMinutos-sum',
   )
 
   return (
     <div data-testid="partesConsultaDetalladaPage" style={{ padding: 16 }}>
-      <h2>Consulta detallada</h2>
+      <h2>{pageTitle}</h2>
       <div
         style={{
           display: 'flex',
@@ -365,7 +366,7 @@ export function ConsultaDetalladaPage() {
             width={160}
           />
         </label>
-        <Button text="Buscar" onClick={() => void load()} disabled={loading} />
+        <Button text={t('partes.common.buscar')} onClick={() => void load()} disabled={loading} />
       </div>
       {error ? <div role="alert">{error}</div> : null}
       {mode === 'grid' || native ? (
@@ -380,6 +381,7 @@ export function ConsultaDetalladaPage() {
             accessToken={getAuthToken()}
             platform={buildAuthPlatformHeaders()}
             defaultTotalItems={duracionSummaryItems}
+            summaryTypeLabels={summaryTypeLabels}
             columnSummaryFormatters={{
               duracionMinutos: durationSummaryFormatter,
             }}
@@ -388,7 +390,7 @@ export function ConsultaDetalladaPage() {
                 <>
                   {emitButton}
                   <Button
-                    text="Pivot"
+                    text={t('partes.common.pivot')}
                     onClick={() => setMode('pivot')}
                     elementAttr={{ 'data-testid': 'partesInformePivotToggle' }}
                   />
@@ -444,7 +446,7 @@ export function ConsultaDetalladaPage() {
               <>
                 {emitButton}
                 <Button
-                  text="Grilla"
+                  text={t('partes.common.grilla')}
                   onClick={() => setMode('grid')}
                   elementAttr={{ 'data-testid': 'partesInformePivotToggle' }}
                 />
@@ -509,6 +511,7 @@ export function ConsultaDetalladaPage() {
 
 export function ConsultasAgrupadasPage() {
   const { t, i18n } = useTranslation()
+  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const native = isNativeApp()
   const defaultRange = monthRange(currentMonthValue())
   const [fechaDesde, setFechaDesde] = useState(defaultRange.fechaDesde)
@@ -576,23 +579,14 @@ export function ConsultasAgrupadasPage() {
     []
   )
 
-  const duracionSummaryItems = useMemo(
-    () => [
-      {
-        column: 'totalMinutos',
-        summaryType: 'sum' as const,
-        name: 'pq-totalMinutos-sum',
-        displayFormat: 'Suma: {0}',
-        customizeText: (info: { value?: string | number | Date }) =>
-          `Suma: ${formatMinutosAsHhMm(Number(info.value ?? 0))}`,
-      },
-    ],
-    []
+  const duracionSummaryItems = usePartesMinutosColumnSummaryItems(
+    'totalMinutos',
+    'pq-totalMinutos-sum',
   )
 
   return (
     <div data-testid="partesConsultaAgrupadaPage" style={{ padding: 16 }}>
-      <h2>Consultas agrupadas</h2>
+      <h2>{t('partes.informe.page.consultasAgrupadas')}</h2>
       <div style={{ display: 'flex', gap: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'end' }}>
         <DateBox
           value={fechaDesde}
@@ -634,8 +628,8 @@ export function ConsultasAgrupadasPage() {
         {eje === 'fecha' ? (
           <SelectBox
             dataSource={[
-              { id: 'dia', text: 'Día' },
-              { id: 'mes', text: 'Mes' },
+              { id: 'dia', text: t('partes.informe.granularidad.dia') },
+              { id: 'mes', text: t('partes.informe.granularidad.mes') },
             ]}
             value={granularidadFecha}
             valueExpr="id"
@@ -643,7 +637,7 @@ export function ConsultasAgrupadasPage() {
             onValueChanged={(e) => setGranularidadFecha(String(e.value))}
           />
         ) : null}
-        <Button text="Buscar" onClick={() => void load()} disabled={loading} />
+        <Button text={t('partes.common.buscar')} onClick={() => void load()} disabled={loading} />
       </div>
       {error ? <div role="alert">{error}</div> : null}
       {mode === 'grid' || native ? (
@@ -658,13 +652,14 @@ export function ConsultasAgrupadasPage() {
             accessToken={getAuthToken()}
             platform={buildAuthPlatformHeaders()}
             defaultTotalItems={duracionSummaryItems}
+            summaryTypeLabels={summaryTypeLabels}
             columnSummaryFormatters={{
               totalMinutos: durationSummaryFormatter,
             }}
             toolbarLeading={
               !native ? (
                 <Button
-                  text="Pivot"
+                  text={t('partes.common.pivot')}
                   onClick={() => setMode('pivot')}
                   elementAttr={{ 'data-testid': 'partesInformePivotToggle' }}
                 />
@@ -709,7 +704,7 @@ export function ConsultasAgrupadasPage() {
             platform={buildAuthPlatformHeaders()}
             leadingSlot={
               <Button
-                text="Grilla"
+                text={t('partes.common.grilla')}
                 onClick={() => setMode('grid')}
                 elementAttr={{ 'data-testid': 'partesInformePivotToggle' }}
               />

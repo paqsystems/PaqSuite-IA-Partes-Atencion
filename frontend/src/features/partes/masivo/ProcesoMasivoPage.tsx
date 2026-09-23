@@ -7,6 +7,7 @@ import Popup from 'devextreme-react/popup'
 import SelectBox from 'devextreme-react/select-box'
 import { confirm } from 'devextreme/ui/dialog'
 import { Navigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { LoadingOverlay, ProcessDataGrid } from '@paqsuite/react-core'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
@@ -40,6 +41,12 @@ import {
   reduceMasivoSelection,
   type MasivoSelectionEvent,
 } from './masivoSelection'
+import { usePartesEstadoCerradoOptions } from '../partesFiltroEstado'
+import { usePartesTareaGridCaptions } from '../partesTareaGridI18n'
+import {
+  usePartesDuracionHorasSummaryItems,
+  usePartesGridSummaryTypeLabels,
+} from '../partesGridSummary'
 
 const PAGE_SIZE = 20
 
@@ -55,6 +62,10 @@ export function ProcesoMasivoPage() {
 }
 
 function ProcesoMasivoView() {
+  const { t } = useTranslation()
+  const estadoOpciones = usePartesEstadoCerradoOptions()
+  const gridCaptions = usePartesTareaGridCaptions()
+  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const hoy = todayIsoDate()
   const session = getAuthSession()
   const platform = useMemo(
@@ -112,18 +123,7 @@ function ProcesoMasivoView() {
     [fechaDesde, fechaHasta, filtroClienteId, filtroUsuarioId, estadoCerrado]
   )
 
-  const duracionSummaryItems = useMemo(
-    () => [
-      {
-        column: 'duracionHoras',
-        summaryType: 'sum' as const,
-        name: 'pq-duracionHoras-sum',
-        displayFormat: 'Suma: {0} h',
-        valueFormat: '#0.##',
-      },
-    ],
-    []
-  )
+  const duracionSummaryItems = usePartesDuracionHorasSummaryItems()
 
   const load = useCallback(async () => {
     if (!fechaDesde || !fechaHasta) {
@@ -224,8 +224,8 @@ function ProcesoMasivoView() {
     const pages = Math.ceil(totalIds / PAGE_SIZE)
     if (pages > 1) {
       const ok = await confirm(
-        `Afectará a ${totalIds} partes. ¿Confirma?`,
-        'Seleccionar todos'
+        t('partes.masivo.selectAllConfirm', { count: totalIds }),
+        t('partes.masivo.selectAllTitle'),
       )
       if (!ok) {
         return
@@ -286,10 +286,15 @@ function ProcesoMasivoView() {
       .map((item) => `#${item.id} ${item.fecha ?? ''} ${item.usuarioCode ?? ''}`.trim())
       .join('\n')
     const ok = await confirm(
-      `${accion === 'cerrar' ? 'Cerrar' : 'Reabrir'} ${items.length} parte(s).\n` +
-        `Rango filtro: ${fechaDesde} → ${fechaHasta}\n` +
-        `Muestra:\n${sample}`,
-      'Confirmar proceso masivo'
+      t('partes.masivo.confirmProcesoBody', {
+        accion:
+          accion === 'cerrar' ? t('partes.masivo.accion.cerrar') : t('partes.masivo.accion.reabrir'),
+        count: items.length,
+        desde: fechaDesde,
+        hasta: fechaHasta,
+        muestra: sample,
+      }),
+      t('partes.masivo.confirmProcesoTitle'),
     )
     if (!ok) {
       return
@@ -372,7 +377,7 @@ function ProcesoMasivoView() {
         fechaDesde,
         fechaHasta,
         items,
-      })
+      }, t)
     )
     setApplyConfirmError(null)
     setApplyConfirmOpen(true)
@@ -418,13 +423,13 @@ function ProcesoMasivoView() {
   return (
     <div data-testid="partesMasivoPage" style={{ padding: 16 }}>
       <LoadingOverlay visible={loading} />
-      <h2 style={{ marginTop: 0 }}>Proceso masivo</h2>
+      <h2 style={{ marginTop: 0 }}>{t('partes.masivo.title')}</h2>
       <div
         data-testid="partesMasivoFiltros"
         style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 12, alignItems: 'end' }}
       >
         <div>
-          <label>Desde</label>
+          <label>{t('partes.common.desde')}</label>
           <DateBox
             value={fechaDesde}
             type="date"
@@ -439,7 +444,7 @@ function ProcesoMasivoView() {
           />
         </div>
         <div>
-          <label>Hasta</label>
+          <label>{t('partes.common.hasta')}</label>
           <DateBox
             value={fechaHasta}
             type="date"
@@ -454,7 +459,7 @@ function ProcesoMasivoView() {
           />
         </div>
         <div style={{ minWidth: 200 }}>
-          <label>Cliente</label>
+          <label>{t('partes.informe.filtro.cliente')}</label>
           <SelectBox
             dataSource={clientes}
             value={filtroClienteId}
@@ -466,7 +471,7 @@ function ProcesoMasivoView() {
           />
         </div>
         <div style={{ minWidth: 200 }}>
-          <label>Asistente</label>
+          <label>{t('partes.informe.filtro.asistente')}</label>
           <SelectBox
             dataSource={asistentes}
             value={filtroUsuarioId}
@@ -478,13 +483,9 @@ function ProcesoMasivoView() {
           />
         </div>
         <div style={{ minWidth: 160 }}>
-          <label>Estado</label>
+          <label>{t('partes.informe.filtro.estadoCerrado')}</label>
           <SelectBox
-            dataSource={[
-              { id: 'todas', text: 'Todas' },
-              { id: 'abiertas', text: 'Abiertas' },
-              { id: 'cerradas', text: 'Cerradas' },
-            ]}
+            dataSource={estadoOpciones}
             value={estadoCerrado}
             valueExpr="id"
             displayExpr="text"
@@ -493,27 +494,33 @@ function ProcesoMasivoView() {
             }
           />
         </div>
-        <Button text="Buscar" onClick={() => void load()} elementAttr={{ 'data-testid': 'partesMasivoSearch' }} />
+        <Button
+          text={t('partes.common.buscar')}
+          onClick={() => void load()}
+          elementAttr={{ 'data-testid': 'partesMasivoSearch' }}
+        />
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12, alignItems: 'center' }}>
         <Button
-          text="Seleccionar todos del filtro"
+          text={t('partes.masivo.selectAllFiltered')}
           onClick={() => void handleSelectAllFiltered()}
           elementAttr={{ 'data-testid': 'partesMasivoSelectAll' }}
         />
         <Button
-          text="Cerrar selección"
+          text={t('partes.masivo.cerrarSeleccion')}
           type="default"
           onClick={() => void runAccion('cerrar')}
           elementAttr={{ 'data-testid': 'partesMasivoConfirmAction' }}
         />
         <Button
-          text="Reabrir selección"
+          text={t('partes.masivo.reabrirSeleccion')}
           onClick={() => void runAccion('reabrir')}
           elementAttr={{ 'data-testid': 'partesMasivoReabrir' }}
         />
-        <span data-testid="partesMasivoSelectionCount">Seleccionados: {selectedKeys.length}</span>
+        <span data-testid="partesMasivoSelectionCount">
+          {t('partes.masivo.seleccionados', { count: selectedKeys.length })}
+        </span>
       </div>
 
       <div
@@ -530,7 +537,7 @@ function ProcesoMasivoView() {
         }}
       >
         <div style={{ minWidth: 260 }}>
-          <label>Tipo de tarea (lote)</label>
+          <label>{t('partes.masivo.loteTipoTarea')}</label>
           <SelectBox
             dataSource={tiposTarea}
             value={applyTipoTareaId}
@@ -546,13 +553,13 @@ function ProcesoMasivoView() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <CheckBox
-            text="Cambiar sin cargo"
+            text={t('partes.masivo.cambiarSinCargo')}
             value={touchSinCargo}
             elementAttr={{ 'data-testid': 'partesMasivoTouchSinCargo' }}
             onValueChanged={(e) => setTouchSinCargo(Boolean(e.value))}
           />
           <CheckBox
-            text="Sin cargo"
+            text={t('partes.informe.field.sinCargo')}
             value={applySinCargo}
             disabled={!touchSinCargo}
             elementAttr={{ 'data-testid': 'partesMasivoSinCargo' }}
@@ -561,13 +568,13 @@ function ProcesoMasivoView() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <CheckBox
-            text="Cambiar presencial"
+            text={t('partes.masivo.cambiarPresencial')}
             value={touchPresencial}
             elementAttr={{ 'data-testid': 'partesMasivoTouchPresencial' }}
             onValueChanged={(e) => setTouchPresencial(Boolean(e.value))}
           />
           <CheckBox
-            text="Presencial"
+            text={t('partes.informe.field.presencial')}
             value={applyPresencial}
             disabled={!touchPresencial}
             elementAttr={{ 'data-testid': 'partesMasivoPresencial' }}
@@ -575,7 +582,7 @@ function ProcesoMasivoView() {
           />
         </div>
         <div style={{ minWidth: 220 }}>
-          <label>Asistente (lote)</label>
+          <label>{t('partes.masivo.loteAsistente')}</label>
           <SelectBox
             dataSource={asistentes}
             value={applyUsuarioId}
@@ -589,7 +596,7 @@ function ProcesoMasivoView() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 180 }}>
           <CheckBox
-            text="Cambiar fecha"
+            text={t('partes.masivo.cambiarFecha')}
             value={touchFecha}
             elementAttr={{ 'data-testid': 'partesMasivoTouchFecha' }}
             onValueChanged={(e) => {
@@ -616,7 +623,7 @@ function ProcesoMasivoView() {
           />
         </div>
         <Button
-          text="Aplicar cambios a selección"
+          text={t('partes.masivo.aplicarCambios')}
           type="success"
           onClick={() => void runActualizarCampos()}
           elementAttr={{ 'data-testid': 'partesMasivoApplyCamposBtn' }}
@@ -636,7 +643,7 @@ function ProcesoMasivoView() {
             closeApplyConfirm()
           }
         }}
-        title="Confirmar actualización masiva"
+        title={t('partes.masivo.confirmApplyTitle')}
         width={480}
         height="auto"
         showCloseButton={!applySubmitting}
@@ -673,7 +680,7 @@ function ProcesoMasivoView() {
               ))}
               {applyConfirmPreview.muestra.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <strong>Muestra</strong>
+                  <strong>{t('partes.common.muestra')}</strong>
                   {applyConfirmPreview.muestra.map((line) => (
                     <span key={line}>{line}</span>
                   ))}
@@ -683,13 +690,13 @@ function ProcesoMasivoView() {
           ) : null}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
             <Button
-              text="Cancelar"
+              text={t('parametros.modal.cancel')}
               disabled={applySubmitting}
               onClick={closeApplyConfirm}
               elementAttr={{ 'data-testid': 'partesMasivoApplyConfirmCancel' }}
             />
             <Button
-              text="Confirmar"
+              text={t('partes.common.confirmar')}
               type="default"
               disabled={applySubmitting}
               onClick={() => void confirmApplyCampos()}
@@ -705,7 +712,7 @@ function ProcesoMasivoView() {
           setApplyErrorOpen(false)
           setApplyErrorMessage('')
         }}
-        title="Error al aplicar cambios"
+        title={t('partes.masivo.applyErrorTitle')}
         width={480}
         height="auto"
         showCloseButton
@@ -717,7 +724,7 @@ function ProcesoMasivoView() {
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button
-              text="Cerrar"
+              text={t('partes.common.cerrar')}
               type="default"
               onClick={() => {
                 setApplyErrorOpen(false)
@@ -741,31 +748,32 @@ function ProcesoMasivoView() {
           selectedRowKeys={selectedKeys}
           onSelectionChanged={onSelectionChanged}
           defaultTotalItems={duracionSummaryItems}
+          summaryTypeLabels={summaryTypeLabels}
         >
           <Selection mode="multiple" showCheckBoxesMode="always" />
           <Paging defaultPageSize={PAGE_SIZE} />
           <Pager visible showPageSizeSelector />
-          <Column dataField="fecha" caption="Fecha" dataType="date" />
-          <Column dataField="usuarioCode" caption="Asistente" />
-          <Column dataField="clienteNombre" caption="Cliente" />
-          <Column dataField="tipoTareaDescripcion" caption="Tipo de Tarea" />
+          <Column dataField="fecha" caption={gridCaptions.fecha} dataType="date" />
+          <Column dataField="usuarioCode" caption={gridCaptions.asistente} />
+          <Column dataField="clienteNombre" caption={gridCaptions.cliente} />
+          <Column dataField="tipoTareaDescripcion" caption={gridCaptions.tipoTarea} />
           <Column
             dataField="duracionHoras"
-            caption="Duración"
+            caption={gridCaptions.duracion}
             dataType="number"
             customizeText={(cell) =>
               formatMinutosAsHhMm(Math.round(Number(cell.value ?? 0) * 60))
             }
           />
-          <Column dataField="sinCargo" caption="Sin cargo" dataType="boolean" />
-          <Column dataField="presencial" caption="Presencial" dataType="boolean" />
-          <Column dataField="observacion" caption="Observación" />
-          <Column dataField="cerrado" caption="Cerrado" dataType="boolean" />
-          <Column dataField="clienteCode" caption="Cliente (código)" visible={false} />
-          <Column dataField="tipoTareaCode" caption="Tipo (código)" visible={false} />
-          <Column dataField="duracionMinutos" caption="Minutos" dataType="number" visible={false} />
+          <Column dataField="sinCargo" caption={gridCaptions.sinCargo} dataType="boolean" />
+          <Column dataField="presencial" caption={gridCaptions.presencial} dataType="boolean" />
+          <Column dataField="observacion" caption={gridCaptions.observacion} />
+          <Column dataField="cerrado" caption={gridCaptions.cerrado} dataType="boolean" />
+          <Column dataField="clienteCode" caption={gridCaptions.clienteCode} visible={false} />
+          <Column dataField="tipoTareaCode" caption={gridCaptions.tipoTareaCode} visible={false} />
+          <Column dataField="duracionMinutos" caption={gridCaptions.minutos} dataType="number" visible={false} />
         </ProcessDataGrid>
-        <div style={{ marginTop: 8, opacity: 0.7 }}>Total filtro: {total}</div>
+        <div style={{ marginTop: 8, opacity: 0.7 }}>{t('partes.common.totalFiltro', { count: total })}</div>
       </div>
     </div>
   )

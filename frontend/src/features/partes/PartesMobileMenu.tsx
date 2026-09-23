@@ -3,6 +3,7 @@ import {
   MobileMenuShell,
   apiRequest,
   isNativeApp,
+  localizeMenuTree,
   type BuildPlatformHeadersInput,
   type MenuNode,
   type MenuResultado,
@@ -14,12 +15,16 @@ import { transformPartesMenuItems } from './PartesMenuSidebar'
 
 type PartesMobileMenuProps = {
   platform: BuildPlatformHeadersInput
+  locale?: string
+  t?: (key: string) => string
   onNavigate: (routeName: string) => void
   onItemsLoaded?: (items: MenuNode[]) => void
 }
 
 export function PartesMobileMenu({
   platform,
+  locale,
+  t: menuTranslate,
   onNavigate,
   onItemsLoaded,
 }: PartesMobileMenuProps) {
@@ -52,21 +57,24 @@ export function PartesMobileMenu({
       if (cancelled || payload.kind !== 'ok') {
         return
       }
-      const next = transform(payload.envelope.resultado.items ?? [])
+      let next = transform(payload.envelope.resultado.items ?? [])
+      if (menuTranslate) {
+        next = localizeMenuTree(next, menuTranslate)
+      }
       setItems(next)
       onItemsLoaded?.(next)
     })
     return () => {
       cancelled = true
     }
-  }, [token, platform, transform, onItemsLoaded])
+  }, [token, platform, transform, onItemsLoaded, menuTranslate, locale])
 
   return (
     <MobileMenuShell
       items={items as MobileMenuShellItem[]}
       onNavigate={onNavigate}
       variant="list"
-      t={(key) => t(key)}
+      t={menuTranslate ?? ((key) => t(key))}
     />
   )
 }

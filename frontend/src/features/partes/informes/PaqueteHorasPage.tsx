@@ -31,6 +31,7 @@ import { buildPaqueteHorasPivotFields } from './partesInformePivotFields'
 import { enrichRowsWithDiaSemana } from './partesInformeDiaSemana'
 import { aggregatePaqueteHorasDesglose } from '../mobile/aggregatePaqueteHorasDesglose'
 import { mapDesgloseToKardexItem } from '../mobile/mapPartesTareaToKardexItem'
+import { usePartesGridSummaryTypeLabels } from '../partesGridSummary'
 
 function formatDuracionCell(cell: { value?: unknown }) {
   return formatMinutosAsHhMm(Number(cell.value ?? 0))
@@ -50,6 +51,7 @@ function getPivotInstance(ref: PivotGridRef | null): dxPivotGrid | undefined {
 
 export function PaqueteHorasPage() {
   const { t, i18n } = useTranslation()
+  const summaryTypeLabels = usePartesGridSummaryTypeLabels()
   const native = isNativeApp()
   const session = getAuthSession()
   const esCliente = session?.partes?.tipoFuncional === 'cliente'
@@ -239,7 +241,7 @@ export function PaqueteHorasPage() {
 
   return (
     <div data-testid="partesPaqueteHorasPage" style={{ padding: 16 }}>
-      <h2>Paquete de horas</h2>
+      <h2>{t('partes.informe.page.paqueteHoras')}</h2>
       <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'end', flexWrap: 'wrap' }}>
         <DateBox
           value={fechaDesde}
@@ -277,7 +279,7 @@ export function PaqueteHorasPage() {
             valueExpr="id"
             searchEnabled
             showClearButton
-            placeholder="Cliente"
+            placeholder={t('partes.informe.filtro.cliente')}
             width={280}
             onValueChanged={(e) => {
               if (!e.event) {
@@ -289,14 +291,14 @@ export function PaqueteHorasPage() {
           />
         ) : null}
         <Button
-          text="Buscar"
+          text={t('partes.common.buscar')}
           onClick={() => void load()}
           disabled={loading}
           elementAttr={{ 'data-testid': 'partesPaqueteBuscar' }}
         />
       </div>
       <div style={{ marginBottom: 12 }}>
-        <strong>Saldo inicial:</strong> {formatMinutosAsHhMm(saldoInicial)}
+        <strong>{t('partes.informe.saldoInicialLabel')}</strong> {formatMinutosAsHhMm(saldoInicial)}
       </div>
       {error ? <div role="alert">{error}</div> : null}
       {mode === 'grid' ? (
@@ -310,10 +312,11 @@ export function PaqueteHorasPage() {
             gridId="paqueteHorasDetalle"
             accessToken={getAuthToken()}
             platform={buildAuthPlatformHeaders()}
+            summaryTypeLabels={summaryTypeLabels}
             toolbarLeading={
               !native ? (
                 <Button
-                  text="Pivot"
+                  text={t('partes.common.pivot')}
                   onClick={() => setMode('pivot')}
                   elementAttr={{ 'data-testid': 'partesPaquetePivotToggle' }}
                 />
@@ -343,12 +346,17 @@ export function PaqueteHorasPage() {
             />
             <Column
               dataField="saldo"
-              caption="Saldo"
+              caption={t('partes.informe.field.saldo')}
               dataType="number"
               customizeText={formatDuracionCell}
             />
-            <Column dataField="esTarea" caption="Es tarea" dataType="boolean" />
-            <Column dataField="esSaldoInicial" caption="Saldo inicial" dataType="boolean" visible={false} />
+            <Column dataField="esTarea" caption={t('partes.informe.field.esTarea')} dataType="boolean" />
+            <Column
+              dataField="esSaldoInicial"
+              caption={t('partes.mobile.saldoInicial')}
+              dataType="boolean"
+              visible={false}
+            />
             <Column dataField="observacion" caption={t('partes.informe.field.observacion')} />
             <Column dataField="sinCargo" caption={t('partes.informe.field.sinCargo')} dataType="boolean" />
             <Column dataField="presencial" caption={t('partes.informe.field.presencial')} dataType="boolean" />
@@ -361,7 +369,9 @@ export function PaqueteHorasPage() {
             consultaId={PAQUETE_HORAS_CONSULTA_ID}
             accessToken={getAuthToken()}
             platform={buildAuthPlatformHeaders()}
-            leadingSlot={<Button text="Grilla" onClick={() => setMode('grid')} />}
+            leadingSlot={
+              <Button text={t('partes.common.grilla')} onClick={() => setMode('grid')} />
+            }
             getPivotState={() => {
               const state = getPivotInstance(pivotRef.current)?.getDataSource()?.state()
               return (state ?? null) as Record<string, unknown> | null
