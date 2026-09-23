@@ -1,8 +1,4 @@
-import {
-  current as themesCurrent,
-  init as themesInit,
-  ready as themesReady,
-} from 'devextreme/ui/themes'
+import themes from 'devextreme/ui/themes'
 import { EMPRESA_THEME_DEFAULT } from '../features/admin/security/empresaThemeCatalog'
 import { EMPRESA_THEME_CSS_URLS } from './empresaThemeCssUrls'
 
@@ -48,7 +44,7 @@ function markDocumentTheme(resolved: string): void {
 
 /**
  * Inyecta `<link rel="dx-theme">` para todos los temas empaquetados (SPEC-001-19 §5.1).
- * Debe ejecutarse **antes** de `themes.init` (DX consume y remueve estos links).
+ * Debe ejecutarse **antes** del primer `themes.current` (DX consume y remueve estos links).
  */
 export function ensureDevExtremeThemeLinks(activeTheme: string = EMPRESA_THEME_DEFAULT): void {
   if (typeof document === 'undefined') {
@@ -80,7 +76,7 @@ export function ensureDevExtremeThemeLinks(activeTheme: string = EMPRESA_THEME_D
 
 /**
  * Cambia el tema DevExtreme en runtime.
- * Primer llamado: `themes.init` (parsea links). Luego: `themes.current`.
+ * Primer llamado: `themes.current` + `themes.initialized`. Luego: `themes.current` + `themes.ready`.
  * Si el grupo cambia (Generic ↔ Material ↔ Fluent ↔ Compact) y `reloadOnGroupChange`, recarga.
  */
 export function applyDevExtremeTheme(
@@ -113,22 +109,22 @@ export function applyDevExtremeTheme(
 
   if (!themesBootstrapped) {
     ensureDevExtremeThemeLinks(resolved)
+    themes.current(resolved)
     return new Promise((resolvePromise) => {
-      themesReady(() => {
+      themes.initialized(() => {
         themesBootstrapped = true
         markDocumentTheme(resolved)
         resolvePromise({ theme: resolved, reloaded: false })
       })
-      themesInit({ theme: resolved })
     })
   }
 
   markDocumentTheme(resolved)
+  themes.current(resolved)
   return new Promise((resolvePromise) => {
-    themesReady(() => {
+    themes.ready(() => {
       resolvePromise({ theme: resolved, reloaded: false })
     })
-    themesCurrent(resolved)
   })
 }
 
@@ -154,4 +150,15 @@ export function getActiveEmpresaThemeFromSession(input: {
     (activeId !== undefined ? input.empresas.find((empresa) => empresa.id === activeId) : undefined) ??
     input.empresas[0]
   return resolveEmpresaThemeKey(match?.theme)
+}
+
+/**
+ * Debe ejecutarse antes de montar widgets DevExtreme (login, etc.).
+ * Evita E0021 cuando ThemeProvider aplica el tema de forma asíncrona.
+ */
+export async function bootstrapDevExtremeThemeBeforeMount(
+  theme: string = EMPRESA_THEME_DEFAULT,
+): Promise<string> {
+  const { theme: resolved } = await applyDevExtremeTheme(theme, { reloadOnGroupChange: false })
+  return resolved
 }

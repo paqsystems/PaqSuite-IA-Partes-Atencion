@@ -5,6 +5,8 @@ import {
   getEmissionHostContextSnapshot,
   isEmissionHostContextUrl,
 } from '../partes/informes/emissionHostContextBridge'
+import { isBinaryDownloadUrl, isValidBinaryArtifact } from './binaryDownloadUrl'
+import { rewriteApiFetchInput } from './rewriteApiFetchInput'
 
 /**
  * Inyecta Authorization + X-Paq-Cliente en fetch hacia /api/*
@@ -30,11 +32,11 @@ export function installApiAuthFetch(): void {
       return originalFetch(input, init)
     }
 
+    const { input: fetchInput, url: requestUrl } = rewriteApiFetchInput(input, url)
+
     const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined))
 
-    const isBinaryDownload =
-      /\/excel-import\/processes\/[^/?#]+\/template(?:\?|#|$)/.test(url) ||
-      /\/excel-import\/batches\/[^/?#]+\/errors\/export(?:\?|#|$)/.test(url)
+    const isBinaryDownload = isBinaryDownloadUrl(requestUrl)
 
     if (!headers.has('Accept')) {
       headers.set(
@@ -55,7 +57,7 @@ export function installApiAuthFetch(): void {
     }
 
     const method = String(init?.method ?? (input instanceof Request ? input.method : 'GET'))
-    if (isEmissionHostContextUrl(url, method)) {
+    if (isEmissionHostContextUrl(requestUrl, method)) {
       const snapshot = getEmissionHostContextSnapshot()
       if (snapshot) {
         let bodyObj: Record<string, unknown> = {}
@@ -74,19 +76,29 @@ export function installApiAuthFetch(): void {
         if (!headers.has('Content-Type')) {
           headers.set('Content-Type', 'application/json')
         }
-        return originalFetch(input, { ...init, headers, body: JSON.stringify(bodyObj) })
+        return originalFetch(fetchInput, { ...init, headers, body: JSON.stringify(bodyObj) })
       }
     }
 
-    const response = await originalFetch(input, { ...init, headers })
+    const response = await originalFetch(fetchInput, { ...init, headers })
 
     if (isBinaryDownload && response.ok) {
       const buffer = await response.arrayBuffer()
+      if (!isValidBinaryArtifact(buffer, requestUrl)) {
+        return new Response(buffer, {
+          status: 502,
+          statusText: 'Invalid binary artifact',
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+
       const responseHeaders = new Headers(response.headers)
-      responseHeaders.set(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      )
+      if (requestUrl.includes('/excel-import/')) {
+        responseHeaders.set(
+          'Content-Type',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        )
+      }
       responseHeaders.delete('Content-Encoding')
 
       return new Response(buffer, {
