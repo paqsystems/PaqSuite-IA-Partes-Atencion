@@ -151,3 +151,14 @@ export function getActiveEmpresaThemeFromSession(input: {
     input.empresas[0]
   return resolveEmpresaThemeKey(match?.theme)
 }
+
+/**
+ * Debe ejecutarse antes de montar widgets DevExtreme (login, etc.).
+ * Evita E0021 cuando ThemeProvider aplica el tema de forma asíncrona.
+ */
+export async function bootstrapDevExtremeThemeBeforeMount(
+  theme: string = EMPRESA_THEME_DEFAULT,
+): Promise<string> {
+  const { theme: resolved } = await applyDevExtremeTheme(theme, { reloadOnGroupChange: false })
+  return resolved
+}
