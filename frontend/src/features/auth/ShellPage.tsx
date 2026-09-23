@@ -293,7 +293,11 @@ export function SelectEmpresaPage() {
   return (
     <main className="authPage" data-testid="shellSelectorPage">
       <EmpresaSelectorPage
-        empresas={session?.empresas ?? []}
+        empresas={(session?.empresas ?? []).map((empresa) => ({
+          id: empresa.id,
+          nombreEmpresa: empresa.nombreEmpresa,
+          theme: empresa.theme ?? undefined,
+        }))}
         onSelect={(id) => {
           changeActiveEmpresa({
             companyId: id,

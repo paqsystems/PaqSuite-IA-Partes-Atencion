@@ -15,20 +15,23 @@ import { installApiAuthFetch } from './features/auth/installApiAuthFetch'
 import { resolveWebApiBaseUrl } from './features/auth/resolveWebApiBaseUrl'
 import { installCapacitorPreferencesAdapter } from './features/auth/installCapacitorPreferencesAdapter'
 import { bootstrapPlatformCliente } from './features/auth/platformContext'
+import { EMPRESA_THEME_DEFAULT } from './features/admin/security/empresaThemeCatalog'
+import { bootstrapDevExtremeThemeBeforeMount } from './theme/devExtremeThemeSwitcher'
 import i18n from './i18n/i18n'
 import './index.css'
 import './features/partes/mobile/partesMobileProcess.css'
 
 async function bootstrap(): Promise<void> {
   bootstrapPlatformCliente()
-  installApiAuthFetch()
   await installCapacitorPreferencesAdapter()
   await bootstrapApiBaseUrl({
     envBaseUrl: resolveWebApiBaseUrl(import.meta.env.VITE_API_BASE_URL),
     projectSlug: 'partesatencion',
     isNative: isNativeApp(),
   })
+  installApiAuthFetch()
   syncDevExtremeLocale('es')
+  await bootstrapDevExtremeThemeBeforeMount(EMPRESA_THEME_DEFAULT)
 
   if (isNativeApp()) {
     document.documentElement.classList.add('pq-native-app')
