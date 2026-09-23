@@ -251,10 +251,9 @@ class AppServiceProvider extends ServiceProvider
             $router->aliasMiddleware($alias, $class);
         }
 
-        // Hasta publicar paqsuite/laravel-core ≥ 1.3.5 en Satis: el alias SDK
-        // aún no incluye ApplyInstalacionDatabase; el host aporta Opción B.
-        // Tras bump: quitar este override y App\Http\Middleware\ApplyInstalacionDatabaseMiddleware
-        // (el package registra alias + middlewarePriority).
+        // Red de seguridad del host: el alias debe seguir usando la implementación
+        // local aunque el SDK publique su propio middleware al hacer un bump.
+        // Así el host conserva auth + validación de la instalación antes de Sanctum.
         $router->aliasMiddleware(
             'paqsuite.instalacion.db',
             \App\Http\Middleware\ApplyInstalacionDatabaseMiddleware::class

@@ -2,14 +2,14 @@ import { useCallback, useMemo, useState } from 'react'
 import Popup from 'devextreme-react/popup'
 import Button from 'devextreme-react/button'
 import SelectBox from 'devextreme-react/select-box'
+import CheckBox from 'devextreme-react/check-box'
 import LoadPanel from 'devextreme-react/load-panel'
 import {
   useEmission,
-  resolveAvailableChannels,
   shouldOfferPreview,
   EmissionGrupoEmpresarioSelect,
-  type EmissionChannel,
   type EmissionCompletePayload,
+  type EmissionDocumentaryChannel,
   type EmissionMode,
 } from '@paqsuite/react-core'
 import { deliverEmissionJob } from './emissionJobDelivery'
@@ -49,7 +49,7 @@ export function PartesEmissionDialog({
       }
       void deliverEmissionJob({
         jobId: payload.jobId,
-        channel: payload.channel,
+        channel: payload.outputCode,
         fileName: payload.fileName,
       }).catch(() => {
         setDeliveryErrorKey('emissions.error.download')
@@ -59,16 +59,6 @@ export function PartesEmissionDialog({
   )
 
   const emission = useEmission({ processCode, isNative, onComplete: handleComplete })
-
-  const channelItems = useMemo(() => {
-    if (!emission.process) {
-      return []
-    }
-    return resolveAvailableChannels(emission.process, isNative).map((channel) => ({
-      id: channel,
-      label: translate(`emissions.channel.${channel}`),
-    }))
-  }, [emission.process, isNative, translate])
 
   const modeItems = useMemo(() => {
     const modes: EmissionMode[] = []
@@ -85,6 +75,13 @@ export function PartesEmissionDialog({
   }, [emission.process, translate])
 
   const offerPreview = emission.process ? shouldOfferPreview(emission.process, isNative) : false
+
+  const toggleDocumentary = (channel: EmissionDocumentaryChannel, checked: boolean) => {
+    const next = checked
+      ? Array.from(new Set([...emission.selection.channels, channel]))
+      : emission.selection.channels.filter((item) => item !== channel)
+    emission.setSelection({ channels: next })
+  }
 
   const handleDownload = () => {
     if (!emission.job || emission.job.status !== 'done') {
@@ -114,17 +111,19 @@ export function PartesEmissionDialog({
     >
       <LoadPanel visible={emission.loading} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <SelectBox
-          dataSource={channelItems}
-          value={emission.selection.channel}
-          valueExpr="id"
-          displayExpr="label"
-          placeholder={translate('emissions.channel')}
-          onValueChanged={(event) =>
-            emission.setSelection({ channel: (event.value as EmissionChannel) ?? null })
-          }
-          elementAttr={{ 'data-testid': 'emissions.channel' }}
-        />
+        <div data-testid="emissions.channel">
+          {emission.documentaryChannelItems.map((channel) => (
+            <CheckBox
+              key={channel}
+              text={translate(`emissions.channel.${channel}`)}
+              value={emission.selection.channels.includes(channel as EmissionDocumentaryChannel)}
+              onValueChanged={(event) =>
+                toggleDocumentary(channel as EmissionDocumentaryChannel, Boolean(event.value))
+              }
+              elementAttr={{ 'data-testid': `emissions.channel.${channel}` }}
+            />
+          ))}
+        </div>
 
         {modeItems.length > 1 ? (
           <SelectBox
@@ -166,7 +165,7 @@ export function PartesEmissionDialog({
             <Button
               text={translate('emissions.preview')}
               icon="find"
-              disabled={!emission.selection.channel}
+              disabled={emission.selection.channels.length === 0}
               onClick={() => void emission.runPreview()}
               elementAttr={{ 'data-testid': 'emissions.preview' }}
             />

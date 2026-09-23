@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Http\Kernel;
 use App\Http\Middleware\ApplyInstalacionDatabaseMiddleware;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
+use Illuminate\Routing\Router;
 use PaqSuite\LaravelCore\Http\Middleware\ResolveInstalacionMiddleware;
 use Tests\TestCase;
 
@@ -25,5 +26,21 @@ class InstalacionMiddlewarePriorityTest extends TestCase
         $this->assertNotFalse($authIndex);
         $this->assertLessThan($applyIndex, $resolveIndex);
         $this->assertLessThan($authIndex, $applyIndex);
+    }
+
+    public function test_host_conserva_el_alias_de_aplicacion_de_instalacion(): void
+    {
+        /** @var Router $router */
+        $router = app('router');
+        $middleware = $router->getMiddleware();
+
+        $this->assertSame(
+            ApplyInstalacionDatabaseMiddleware::class,
+            $middleware['paqsuite.instalacion.db'] ?? null,
+        );
+        $this->assertSame(
+            ApplyInstalacionDatabaseMiddleware::class,
+            config('paqsuite.instalacion.applyDatabaseMiddleware'),
+        );
     }
 }

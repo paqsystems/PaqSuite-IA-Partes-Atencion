@@ -56,8 +56,9 @@ return [
         'centralConnection' => env('PAQSUITE_CENTRAL_CONNECTION', 'paqsuite_central'),
         'procedure' => env('PAQSUITE_EMPRESAS_CONEXION_PROCEDURE', 'pq_sp_empresas_conexion_get'),
         'cacheTtlSeconds' => (int) env('PAQSUITE_INSTALACION_CACHE_TTL', 60),
-        // Opción B. Hasta laravel-core ≥ 1.3.5 en Satis: FQCN del host.
-        // Tras bump: usar PaqSuite\LaravelCore\Http\Middleware\ApplyInstalacionDatabaseMiddleware.
+        // Red de seguridad del host: mantener la aplicación de la conexión
+        // fuera del SDK para conservar el control local aun después de un bump.
+        // null/false permite Opción A (gateway); este host usa Opción B local.
         'applyDatabaseMiddleware' => env(
             'PAQSUITE_APPLY_INSTALACION_DB_MIDDLEWARE',
             \App\Http\Middleware\ApplyInstalacionDatabaseMiddleware::class,

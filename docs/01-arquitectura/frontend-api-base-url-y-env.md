@@ -76,7 +76,19 @@ Tras cambiar la var: **redeploy** (Vite la embebe en build).
 
 1. `bootstrapApiBaseUrl` (web): si env es `https://…` → cachea base; si no → cache null.
 2. `apiRequest('/api/v1/...')` → `resolveRequestUrl` une path con la base si hay cache.
-3. Native: Preferences override → env → fallback `backend.{projectSlug}`.
+3. **GEN-14 / GEN-15** y cualquier `fetch` directo a `/api/v1/*` deben usar la misma base (SDK ≥ 2.4.10 o interceptor host).
+4. Native: Preferences override → env → fallback `backend.{projectSlug}`.
+
+### Descargas binarias en Vercel (Excel, emisiones)
+
+Sin reescritura de URL, `fetch('/api/v1/excel-import/.../template')` pega al SPA y devuelve `index.html` como `.xlsx`.
+
+En Partes:
+
+- `bootstrapApiBaseUrl` en `main.tsx` (con fallback `resolveWebApiBaseUrl` si falta env en build).
+- `installApiAuthFetch` + `rewriteApiFetchInput` reescriben `/api/*` con `resolveRequestUrl` y validan firma ZIP/PDF.
+
+Detalle Framework: `PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-api-base-url.md` (§ «apiRequest no es el único camino HTTP»).
 
 ---
 
@@ -107,6 +119,7 @@ Con base absoluta, el browser hace cross-origin FE→Forge. El `backend/config/c
 | Pieza | Ruta |
 |-------|------|
 | Bootstrap host | `frontend/src/main.tsx` |
-| SDK | `@paqsuite/react-core` → `bootstrapApiBaseUrl` |
+| Interceptor fetch (binarios) | `frontend/src/features/auth/installApiAuthFetch.ts`, `rewriteApiFetchInput.ts` |
+| SDK | `@paqsuite/react-core` → `bootstrapApiBaseUrl`, `resolveRequestUrl` |
 | Adopción Framework | `PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-api-base-url.md` |
 | Proxy local | `frontend/vite.config.ts` |

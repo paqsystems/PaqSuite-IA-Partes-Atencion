@@ -36,6 +36,8 @@ function formatDuracionCell(cell: { value?: unknown }) {
   return formatMinutosAsHhMm(Number(cell.value ?? 0))
 }
 
+const PAQUETE_HORAS_CONSULTA_ID = 'partes.informes.paqueteHoras'
+
 function getPivotInstance(ref: PivotGridRef | null): dxPivotGrid | undefined {
   if (!ref) {
     return undefined
@@ -355,32 +357,53 @@ export function PaqueteHorasPage() {
         </div>
       ) : (
         <div data-testid="partesPaqueteHorasPivot">
-          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-            <Button text="Grilla" onClick={() => setMode('grid')} />
-            <PivotLayoutsBar
-              proceso="partes.informes.paqueteHoras"
-              pivotId="paqueteHoras"
-              accessToken={getAuthToken()}
-              platform={buildAuthPlatformHeaders()}
-              getPivotInstance={() => getPivotInstance(pivotRef.current)}
-              onLayoutApplied={() => setPivotRemountKey((k) => k + 1)}
-            />
-          </div>
-          <PivotGrid
-            key={pivotInstanceKey}
-            ref={pivotRef}
-            dataSource={pivotSource}
-            allowSorting
-            allowSortingBySummary
-            allowFiltering
-            showBorders
-            showColumnGrandTotals
-            showRowGrandTotals
-            texts={pivotUiTexts}
+          <PivotLayoutsBar
+            consultaId={PAQUETE_HORAS_CONSULTA_ID}
+            accessToken={getAuthToken()}
+            platform={buildAuthPlatformHeaders()}
+            leadingSlot={<Button text="Grilla" onClick={() => setMode('grid')} />}
+            getPivotState={() => {
+              const state = getPivotInstance(pivotRef.current)?.getDataSource()?.state()
+              return (state ?? null) as Record<string, unknown> | null
+            }}
+            applyPivotStateJson={(state) => {
+              if (state === null) {
+                setPivotRemountKey((key) => key + 1)
+                return
+              }
+              const dataSource = getPivotInstance(pivotRef.current)?.getDataSource()
+              dataSource?.state(state)
+            }}
+            getPivotComponent={() => getPivotInstance(pivotRef.current)}
+            canExport={pivotRows.length > 0 && !loading}
           >
-            <FieldChooser enabled />
-            <FieldPanel visible showDataFields showRowFields showColumnFields showFilterFields />
-          </PivotGrid>
+            <PivotGrid
+              key={pivotInstanceKey}
+              ref={pivotRef}
+              dataSource={pivotSource}
+              allowSorting
+              allowSortingBySummary
+              allowFiltering
+              showBorders
+              showColumnGrandTotals
+              showRowGrandTotals
+            >
+              <FieldPanel
+                visible
+                showColumnFields
+                showDataFields
+                showFilterFields
+                showRowFields
+                allowFieldDragging
+                texts={pivotUiTexts.fieldPanel}
+              />
+              <FieldChooser
+                enabled
+                title={pivotUiTexts.fieldChooserTitle}
+                texts={pivotUiTexts.fieldChooser}
+              />
+            </PivotGrid>
+          </PivotLayoutsBar>
         </div>
       )}
     </div>
