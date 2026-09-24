@@ -12,6 +12,7 @@ import {
   displayNameFromReportUrl,
   isUnknownEmissionReportCode,
 } from './emissionReportCatalog'
+import { normalizeSaveAsReportCode } from './normalizeSaveAsReportCode'
 
 const LAYOUT_MIME_REPX = 'application/xml'
 
@@ -188,7 +189,10 @@ export function EmissionReportDesignerPage({
       if (!confirmedProcessCode) {
         return
       }
-      const code = catalogCodeFromDxUrl(event.url)
+      const code = normalizeSaveAsReportCode(
+        confirmedProcessCode,
+        catalogCodeFromDxUrl(event.url),
+      )
       if (!code) {
         setErrorKey('emission.design.saveAsFailed')
         return
@@ -408,7 +412,7 @@ export function EmissionReportDesignerPage({
         </p>
       ) : null}
       {designerContext ? (
-        <div data-testid="emission.design.host">
+        <div data-testid="emission.design.mount">
           <ReportDesignerHost
             context={designerContext}
             isNative={false}

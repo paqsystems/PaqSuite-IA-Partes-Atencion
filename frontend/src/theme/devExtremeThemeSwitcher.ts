@@ -109,7 +109,14 @@ export function applyDevExtremeTheme(
 
   if (!themesBootstrapped) {
     ensureDevExtremeThemeLinks(resolved)
-    themes.current(resolved)
+    try {
+      themes.current(resolved)
+    } catch (error) {
+      console.warn(`[A1] no se pudo aplicar el tema DevExtreme ${resolved}`, error)
+      themesBootstrapped = true
+      markDocumentTheme(resolved)
+      return Promise.resolve({ theme: resolved, reloaded: false })
+    }
     return new Promise((resolvePromise) => {
       themes.initialized(() => {
         themesBootstrapped = true
@@ -120,7 +127,12 @@ export function applyDevExtremeTheme(
   }
 
   markDocumentTheme(resolved)
-  themes.current(resolved)
+  try {
+    themes.current(resolved)
+  } catch (error) {
+    console.warn(`[A1] no se pudo cambiar el tema DevExtreme a ${resolved}`, error)
+    return Promise.resolve({ theme: resolved, reloaded: false })
+  }
   return new Promise((resolvePromise) => {
     themes.ready(() => {
       resolvePromise({ theme: resolved, reloaded: false })

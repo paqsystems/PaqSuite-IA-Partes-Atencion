@@ -1,7 +1,7 @@
 # Deploy Partes — SDK vía Satis + Verdaccio (modelo empaquetado)
 
 Fecha: 2026-08-14 · Actualizado: 2026-08-15 · Rama: `1.2.0-FINAL`  
-Target: `paqsuite/laravel-core@^1.3.3` · `@paqsuite/react-core@2.2.1` · scaffold `@paqsuite/create-app@0.1.8`
+Target: `paqsuite/laravel-core@^1.3.7` · `@paqsuite/react-core@^2.4.12` · scaffold `@paqsuite/create-app@0.1.8`
 
 > Guías Framework: `GUIA_PRUEBA_INSTALACION.md`, `GUIA_ACTUALIZACION_PROYECTO.md`  
 > Adopción: `PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-sdk-registry.md` (evoluciona a registries)  
@@ -13,8 +13,8 @@ Target: `paqsuite/laravel-core@^1.3.3` · `@paqsuite/react-core@2.2.1` · scaffo
 
 | Capa | Dependencia | Registry |
 |------|-------------|----------|
-| Backend | `paqsuite/laravel-core: ^1.3.3` | Satis `http://100.110.69.93/satis` |
-| Frontend | `@paqsuite/react-core: 2.2.1` | Verdaccio `http://100.110.69.93:4873` (`frontend/.npmrc`) |
+| Backend | `paqsuite/laravel-core: ^1.3.7` | Satis `http://100.110.69.93/satis` |
+| Frontend | `@paqsuite/react-core: ^2.4.12` | Verdaccio `http://100.110.69.93:4873` (`frontend/.npmrc`) |
 
 **Sin** path/`file:` al monorepo Framework.  
 **Sin** `git+https` / VCS GitHub como contrato de producto.  
@@ -84,7 +84,7 @@ Verificar: `composer show paqsuite/laravel-core` · `npm list @paqsuite/react-co
 
 ## Checklist cutover
 
-- [x] Satis responde `1.3.3`; Verdaccio `2.2.1` (+ `create-app@0.1.8`)
+- [x] Satis responde `1.3.7`; Verdaccio `2.4.12` (+ `create-app@0.1.8`)
 - [ ] Locks committeados
 - [ ] Deploy Script sin ensure-framework
 - [ ] Smoke `GET /api/v1/health` + login

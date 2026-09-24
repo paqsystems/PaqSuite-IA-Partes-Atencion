@@ -224,7 +224,7 @@ describe('ReportDesignerHostPage — selección de proceso GEN', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('emission.design.report').getAttribute('data-report-codes')).toContain(
-        'Diseño agosto',
+        'partes.consultaDetallada.diseno-agosto',
       )
     })
   })
