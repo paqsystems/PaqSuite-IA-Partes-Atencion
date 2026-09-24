@@ -7,8 +7,8 @@
 | ID | SPEC-009 |
 | Título | Importación de partes (tareas) desde Excel bajo Carga de Partes |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Pendiente |
-| Última actualización | 2026-08-02 |
+| Estado | Finalizado (F1 verificado) |
+| Última actualización | 2026-09-23 |
 | HU relacionada(s) | [HU-009-importacion-partes-excel](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) |
 | TR relacionada(s) | [TR-009-importacion-partes-excel](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) |
 | Depende de | [SPEC-001](./SPEC-001-modelo-datos-modulo.md), [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-003](./SPEC-003-maestros-y-catalogos.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md) (grilla/filtros/validaciones de tarea) |
@@ -171,19 +171,19 @@ Si el procesamiento **graba al menos una fila**, el host debe **volver a cargar*
 
 ## 5. Criterios verificables
 
-- [ ] Menú / entrada bajo Carga de Partes; cliente no ve ni puede invocar el proceso.
-- [ ] Toolbar GEN (plantilla + importar) en fila propia **en Carga diaria** (sin ruta/menú aparte).
-- [ ] Plantilla descarga columnas canónicas §4.2.
-- [ ] Fechas en Excel aceptadas según formato de fecha configurado de la app (y/o fecha nativa Excel); UI de carga sigue mostrando según locale.
-- [ ] Asistente no supervisor importa sin columna `asistente` (o vacía) y las tareas quedan a su nombre.
-- [ ] Asistente no supervisor con `asistente` ≠ sesión → filas en error; no se graban esas filas.
-- [ ] Supervisor requiere `asistente` válido por fila.
-- [ ] `cliente` faltante → error de fila.
-- [ ] Filas grabadas tienen `es_tarea = true` y aparecen en carga diaria / consultas de tareas.
-- [ ] Lote mixto: sin Procesar → 0 altas; con Procesar → solo válidas.
-- [ ] Tras Procesar con altas > 0, la grilla se refresca manteniendo filtros previos.
-- [ ] Mobile: proceso no expuesto / policy excluye Excel.
-- [ ] Feature/API o tests de handler cubren al menos: OK mínimo, error de código, parcial, fuerza `es_tarea`, fuerza propietario no-supervisor.
+- [x] Cliente no ve ni puede invocar el proceso; el acceso usa el permiso de Carga diaria.
+- [x] Toolbar GEN (plantilla + importar) en fila propia **en Carga diaria** (sin ruta/menú aparte).
+- [x] Plantilla descarga columnas canónicas §4.2.
+- [x] Fechas en Excel aceptadas según formato de fecha configurado de la app (y/o fecha nativa Excel); UI de carga sigue mostrando según locale.
+- [x] Asistente no supervisor importa sin columna `asistente` (o vacía) y las tareas quedan a su nombre.
+- [x] Asistente no supervisor con `asistente` ≠ sesión → filas en error; no se graban esas filas.
+- [x] Supervisor requiere `asistente` válido por fila.
+- [x] `cliente` faltante → error de fila.
+- [x] Filas grabadas tienen `es_tarea = true` y aparecen en carga diaria / consultas de tareas.
+- [x] Lote mixto: sin Procesar → 0 altas; con Procesar → solo válidas.
+- [x] Tras Procesar con altas > 0, la grilla se refresca manteniendo filtros previos.
+- [x] Mobile: proceso no expuesto / policy excluye Excel.
+- [x] Feature/API o tests de handler cubren al menos: OK mínimo, error de código, parcial, fuerza `es_tarea`, fuerza propietario no-supervisor.
 
 ---
 
@@ -225,3 +225,6 @@ Si el procesamiento **graba al menos una fila**, el host debe **volver a cargar*
 | 2026-08-02 | Parte B: enlazada HU-009. |
 | 2026-08-02 | Parte B1: HU-009 enriquecida. |
 | 2026-08-02 | Parte C: enlace TR-009. |
+| 2026-08-02 | Parte D: implementación host (seed, handler SP, rutas, toolbar y gates). |
+| 2026-08-02 | Parte E: suite backend, Vitest y E2E smoke OK; ver evidencia E-TR-009. |
+| 2026-09-23 | Parte F1: verificación final OK; SPEC finalizado. Ver [F1-TR-009](../../04-tareas/updates/100-SistemaPartes/F1-TR-009-importacion-excel-2026-09-23.md). |

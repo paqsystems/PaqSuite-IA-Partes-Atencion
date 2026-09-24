@@ -7,8 +7,8 @@
 | ID | SPEC-011 |
 | Título | Reportes / emisiones — diseñar informes y emitir desde Consulta detallada (adopción GEN-15) |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Pendiente |
-| Última actualización | 2026-08-25 (CC Q13 selección proceso GEN) |
+| Estado | Finalizado (F1 verificado) |
+| Última actualización | 2026-09-23 (verificación F1) |
 | Revisión A1 | Apto con observaciones — ambigüedades críticas de universo/MONO cerradas (2026-08-25) |
 | HU relacionada(s) | [HU-011-reportes-emisiones](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) |
 | TR relacionada(s) | [TR-011-reportes-emisiones](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
@@ -369,3 +369,21 @@ Ninguna bloqueante tras A1. Refinamientos → B/C / TR:
 ### Veredicto
 
 - Puede pasar a HU: **Sí**.
+
+---
+
+## Resultado F1 — verificación de implementación (2026-09-23)
+
+| Verificación | Resultado |
+|-------------|-----------|
+| Feature backend `ApiV1EmissionsPartesTest` | **OK** — 11 tests, 113 assertions |
+| Vitest frontend (`npm run test`) | **OK** — 40 archivos, 135 tests |
+| E2E específico `tests/e2e/partes-emisiones.spec.ts` | **OK** — 2 tests |
+| Manual de usuario | **OK** — Emitir, exportación de grilla, diseñador y exclusión mobile documentados |
+| SQL Server / DX Reporting real / SMTP | **Pendiente operativo** — requiere entorno de despliegue; el MVP usa `MinimalDxReportingEngine` y mail síncrono |
+
+**Veredicto:** SPEC-011 queda **finalizado** en el alcance implementado y verificable del MVP. La suite E2E completa mantiene fallos ajenos en pruebas de carga diaria/proceso masivo por estado compartido; el E2E específico de emisiones pasa aislado.
+
+### Cierre
+
+La adopción GEN-15 para Consulta detallada está implementada: proceso seed, dataset por SP sin paginación, `hostContext`, autorización de emisión/diseño, `EmissionDialog` en grilla y pivot, diseñador con selección GEN de proceso, canales Must, bitácora y exclusión mobile. No se creó historial paralelo ni se reimplementó el motor GEN.

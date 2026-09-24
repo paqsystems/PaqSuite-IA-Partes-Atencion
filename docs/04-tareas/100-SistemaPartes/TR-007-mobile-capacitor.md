@@ -9,7 +9,7 @@
 | **Roles** | Asistente / supervisor / cliente (mismas reglas; UX native) |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md) … [TR-006](./TR-006-consultas-dashboard-navegacion.md) (dominio/API); [TR-008](./TR-008-asistente-ia-chat-documental.md) (allowlist `/chat-assistant`); `@paqsuite/react-core@2.2.1` GEN-22 / GEN-01 / GEN-04 / GEN-07 / GEN-08 / GEN-09 / GEN-21 |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Pendiente de Revisión (D delta GEN-22 implementado; F1 humo emulador pendiente) |
+| **Estado** | Pendiente de Revisión (smoke automatizado OK; F1 emulador pendiente) |
 | **Última actualización** | 2026-08-17 |
 | **Revisión C1** | Apto con observaciones (ver §11) |
 
@@ -307,7 +307,23 @@ Backend fachada/menú seed: **no rehacer** si ya está de la D previa.
 | 2026-07-30 | Parte D: `partesMobilePolicy` propio, kardex List DX, paquete-horas + Chart bar, fachada API, menú/guard native. **Pendiente:** scaffold Capacitor. |
 | 2026-08-17 | Realineación MUST GEN-22: montar exports `react-core` en lugar de kardex/policy/config/guard/menú propios. Allowlist + mappers de dominio quedan en el host. D delta pendiente. |
 | 2026-08-17 | Parte D delta: `createMobilePolicy`, `MobileRouteGuard`, `MobileMenuShell`, `MobileConfigPanel`, `ConsultaKardexList`, `DashboardContainer`, loginTenant, Capacitor android/ios + Preferences. F1 humo emulador pendiente. |
+| 2026-09-24 | Smoke automatizado: tests mobile/login, `build:mobile` y `npx cap sync` OK. Humo manual Android pendiente por falta de `adb`/emulador. |
 
 ---
 
-**Siguiente:** F1 humo emulador (checklist TR-007 §9 / `docs/06-operacion/runbook-smoke-mobile-partes.md`).
+## 14) Resultado smoke automatizado (2026-09-24)
+
+### Ejecutado
+
+- `npm run test -- --run src/features/partes/mobile src/features/auth/LoginPage.test.tsx`: **3 archivos, 8 tests passed**.
+- `npm run build:mobile`: **OK**.
+- `npx cap sync`: **OK** para Android, iOS y web; copió `dist` y actualizó `@capacitor/preferences`.
+
+### Observaciones
+
+- El build emite warnings de dependencias DevExpress/Knockout, sin impedir la generación del bundle.
+- `npx cap doctor` reportó inicialmente `android/app/src/main/assets` ausente; el `cap sync` lo creó correctamente.
+- El humo funcional del §9 (configuración, login, kardex, informe, menú y chat) no se ejecutó: `adb` no está disponible en el entorno y no hay emulador Android accesible.
+- iOS no se puede validar en Windows; `cap sync` omitió `pod install` por falta de CocoaPods.
+
+**Siguiente:** ejecutar el checklist manual §9 en un emulador Android con Android SDK/`adb` configurado.

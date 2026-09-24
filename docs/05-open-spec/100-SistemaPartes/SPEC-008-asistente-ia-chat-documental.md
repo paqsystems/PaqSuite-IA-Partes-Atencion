@@ -7,8 +7,8 @@
 | ID | SPEC-008 |
 | Título | Asistente IA — chat documental desde menú avatar (adopción GEN-21) |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Especificado |
-| Última actualización | 2026-08-01 |
+| Estado | Finalizado (F1 verificado) |
+| Última actualización | 2026-09-23 |
 | HU relacionada(s) | [HU-008-asistente-ia-chat-documental](../../03-historias-usuario/100-SistemaPartes/HU-008-asistente-ia-chat-documental.md) |
 | TR relacionada(s) | [TR-008-asistente-ia-chat-documental](../../04-tareas/100-SistemaPartes/TR-008-asistente-ia-chat-documental.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md) (sesión Partes usable); canal GEN SPEC-001-21; corpus SPEC-001-99; avatar SPEC-001-08; BYOK SPEC-001-16 (docs en checkout Framework `PaqSuite-IA-FRAMEWORK/docs/05-open-spec/001-Generalidades/`) |
@@ -125,14 +125,14 @@ Adopción de SPEC-001-21 § UI:
 
 ## 5. Criterios verificables
 
-- [ ] Con sesión Partes usable, el menú avatar muestra **Asistente IA** y **no** muestra ayuda externa por URL.
-- [ ] Activar el ítem abre `/chat-assistant` in-app en la misma ventana (mobile: in-app; sin `window.open` para este flujo).
-- [ ] Sin BYOK válido: empty + CTA Preferencias; no se envía turno; BE responde `configurationRequired` si se fuerza el POST.
-- [ ] Con BYOK válido: el usuario envía un mensaje ≤ 2000 chars y recibe `reply` en el locale de la app.
-- [ ] El turno no incluye `actions` ni modifica tareas/maestros.
-- [ ] El corpus efectivo incluye material Partes **y** GEN (verificable por manifest o por respuesta que cite/generalice ambos ámbitos en smoke documental).
-- [ ] Manual `Partes-Atencion.md` (o índice) documenta cómo abrir el Asistente IA.
-- [ ] i18n + `data-testid` estables en avatar/chat (prefijos GEN + Partes donde aplique).
+- [x] Con sesión Partes usable, el menú avatar muestra **Asistente IA** y **no** muestra ayuda externa por URL.
+- [x] Activar el ítem abre `/chat-assistant` in-app en la misma ventana (mobile: in-app; sin `window.open` para este flujo).
+- [x] Sin BYOK válido: empty + CTA Preferencias; no se envía turno; BE responde `configurationRequired` si se fuerza el POST.
+- [x] Con BYOK válido: el usuario envía un mensaje ≤ 2000 chars y recibe `reply` en el locale de la app mediante cliente fake en CI.
+- [x] El turno no incluye `actions` ni modifica tareas/maestros.
+- [x] El corpus efectivo incluye material Partes **y** GEN mediante manifest; el root GEN ausente degrada a Partes con warning.
+- [x] Manual `Partes-Atencion.md` documenta cómo abrir el Asistente IA.
+- [x] i18n + `data-testid` estables en avatar/chat (prefijos GEN + Partes donde aplique).
 
 ---
 
@@ -188,6 +188,7 @@ Adopción de SPEC-001-21 § UI:
 | 2026-08-01 | Parte B: enlazada HU-008. |
 | 2026-08-01 | Parte C: enlazada TR-008; props avatar alineadas a API real (`showChat` / `showHelp`). |
 | 2026-08-01 | D/E/F1: adopción host verificada ([D-VERIFICACION-TR-008](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-008-asistente-ia-2026-08-01.md)); HU/TR → Pendiente de Revisión. |
+| 2026-09-23 | F1: backend, Vitest y E2E específicos verificados; trazabilidad documental cerrada. Ver [F1-TR-008](../../04-tareas/updates/100-SistemaPartes/F1-TR-008-asistente-ia-2026-09-23.md). |
 
 ---
 

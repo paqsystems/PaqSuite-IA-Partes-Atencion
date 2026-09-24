@@ -8,7 +8,7 @@
 | Título | Identidad funcional y acceso al módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente |
+| Estado | F1 aprobado con observaciones |
 | Última actualización | 2026-07-30 |
 | SPEC origen | [SPEC-002-identidad-funcional-y-acceso](../../05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md) |
 | TR relacionada(s) | [TR-002-identidad-funcional-y-acceso](../../04-tareas/100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md) |
@@ -202,3 +202,4 @@ Feature: Gate de identidad funcional Partes
 | 2026-07-30 | Batch: perfil = mínimo + email + `users.usuario`. |
 | 2026-07-30 | Batch: post-login = criterio PedidosWeb (`firstLogin` → change-password antes del shell). |
 | 2026-07-30 | Parte C+C1: enlazada TR-002; restaurado CA-10 en lista. |
+| 2026-09-24 | Parte F1: criterios verificados; aprobado con observaciones. |

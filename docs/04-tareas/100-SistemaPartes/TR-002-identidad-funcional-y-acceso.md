@@ -9,7 +9,7 @@
 | **Roles** | Asistente / Supervisor / Cliente (funcionales); usuario solo GEN denegado |
 | **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md) (tablas `PQ_PARTES_USUARIOS` / `CLIENTES`); auth GEN (`LoginController`, `MeController`, Sanctum, envelope) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Pendiente (D implementado — verificar F1) |
+| **Estado** | F1 aprobado con observaciones |
 | **Última actualización** | 2026-07-30 (D) |
 
 **Origen:** [HU-002](../../03-historias-usuario/100-SistemaPartes/HU-002-identidad-funcional-y-acceso.md)  
@@ -303,7 +303,39 @@ Datos: factory/users de prueba + filas dominio; no depender solo de admin en tod
 |-------|--------|
 | 2026-07-30 | Parte C + C1: TR creada y apta con observaciones absorbidas. |
 | 2026-07-30 | Parte D: SP resolver, gate Partes, middleware `/me`, seed admin/PQ, FE perfil + i18n, Feature tests OK. |
+| 2026-09-24 | Parte F1: verificación completada; aprobado con observaciones. |
 
 ---
 
-**Siguiente:** F1 verificación TR-002; o **D de TR-003** cuando se autorice.
+## 13) Verificación F1 (2026-09-24)
+
+### Resultado
+
+**Aprobado con observaciones.**
+
+### Evidencia revisada
+
+- Backend: gate, repositorio/SP, middleware de revalidación, binding y rutas `/auth/me` / dominio.
+- Frontend: `PartesSessionContext`, consumo de `resultado.partes` y `PartesProfilePanel` desde avatar.
+- Tests: `backend/tests/Feature/Partes/ApiV1PartesIdentidadTest.php`.
+
+### Cobertura verificada
+
+- Gate posterior a credenciales y anterior a la emisión del token.
+- Denegación sin perfil e inconsistencia asistente/cliente con HTTP 403, error 3003 y claves de producto.
+- Perfiles asistente, supervisor y cliente; `esSupervisor` proviene del dominio, no de `users.supervisor`.
+- Revalidación de `/auth/me` tras inhabilitación de un perfil activo.
+- Perfil Partes de solo lectura desde el menú del avatar.
+
+### Tests ejecutados
+
+- `php artisan test --filter=ApiV1PartesIdentidadTest`: **6 passed, 25 assertions**.
+- `npm run test -- --run src/features/auth`: **7 archivos, 25 tests passed**.
+
+### Observaciones
+
+- `npm run typecheck` queda bloqueado por errores preexistentes en `@paqsuite/react-core` y otros módulos frontend no relacionados con TR-002; no se detectaron errores nuevos del flujo de identidad en la ejecución dirigida.
+- No se ejecutó E2E Playwright específico del perfil/avatar; queda como cobertura recomendada.
+- La migración del procedimiento almacenado aplica únicamente a SQL Server y requiere migrar antes de habilitar el gate en un entorno nuevo.
+
+**Siguiente:** revisión humana de F1 y, si se acepta, pasar TR-002/HU-002 a Finalizado.

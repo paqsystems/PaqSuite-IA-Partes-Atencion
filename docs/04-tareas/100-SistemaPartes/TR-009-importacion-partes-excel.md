@@ -9,8 +9,8 @@
 | **Roles** | Asistente / supervisor (cliente denegado) |
 | **Dependencias** | [TR-004](./TR-004-operacion-carga-diaria.md) (carga + `pq_sp_partes_tarea_upsert`); [TR-002](./TR-002-identidad-funcional-y-acceso.md); [TR-003](./TR-003-maestros-y-catalogos.md); paquetes `@paqsuite/react-core` + `paqsuite/laravel-core`; GEN-14 (SPEC-001-14 / TR-GEN-14-*) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Pendiente |
-| **Última actualización** | 2026-08-02 |
+| **Estado** | Finalizado (F1 verificado) |
+| **Última actualización** | 2026-09-23 |
 | **Revisión C1** | Apto con observaciones (ver §11) |
 
 **Origen:** [HU-009](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md)  
@@ -184,16 +184,16 @@ Códigos Must a respetar (GEN): **4603** forbidden; **4604** capability off; **4
 
 ## 10) Checklist DoD
 
-- [ ] CA-01…12 HU
-- [ ] Proceso seed `partes.tareas.import` + columnas
-- [ ] Handler registrado + rutas excel-import
-- [ ] Upsert vía `pq_sp_partes_tarea_upsert` / ops TR-004
-- [ ] Toolbar solo Carga diaria; fila exclusiva
-- [ ] Partial + txn processBatch
-- [ ] Refresh filtros; no refresh en queued
-- [ ] Sin menú nuevo; sin native/cliente
-- [ ] Manual + tests
-- [ ] `ExcelImportEnabled` documentado
+- [x] CA-01…12 HU
+- [x] Proceso seed `partes.tareas.import` + columnas
+- [x] Handler registrado + rutas excel-import
+- [x] Upsert vía `pq_sp_partes_tarea_upsert` / ops TR-004
+- [x] Toolbar solo Carga diaria; fila exclusiva
+- [x] Partial + txn processBatch
+- [x] Refresh filtros; no refresh en queued
+- [x] Sin menú nuevo; sin native/cliente
+- [x] Manual + tests
+- [x] `ExcelImportEnabled` documentado
 
 ---
 
@@ -247,3 +247,4 @@ Ninguna bloqueante.
 | 2026-08-02 | Parte C1: apto con obs.; cierre props FE, códigos 4603/4604/4607, queued sin GEN-17 Must. |
 | 2026-08-02 | Parte D: adopción host (DB Excel, handler, rutas, toolbar Carga diaria, tests). |
 | 2026-08-02 | Parte E: suite OK — [E-TR-009](../updates/100-SistemaPartes/E-TR-009-importacion-excel-2026-08-02.md). |
+| 2026-09-23 | Parte F1: verificación final OK — [F1-TR-009](../updates/100-SistemaPartes/F1-TR-009-importacion-excel-2026-09-23.md). |

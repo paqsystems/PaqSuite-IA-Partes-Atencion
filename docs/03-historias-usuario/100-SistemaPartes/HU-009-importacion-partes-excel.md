@@ -8,8 +8,8 @@
 | Título | Importar altas de partes (tareas) desde Excel embebido en Carga diaria |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente |
-| Última actualización | 2026-08-02 |
+| Estado | Finalizado (F1 verificado) |
+| Última actualización | 2026-09-23 |
 | SPEC origen | [SPEC-009-importacion-partes-excel](../../05-open-spec/100-SistemaPartes/SPEC-009-importacion-partes-excel.md) |
 | TR relacionada(s) | [TR-009-importacion-partes-excel](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) |
 
@@ -229,3 +229,4 @@ Cerradas en Parte C (TR-009). Ninguna bloquea C1/D1.
 | 2026-08-02 | Parte B: HU-009 desde SPEC-009 (post A1). |
 | 2026-08-02 | Parte B1: enriquecimiento desde SPEC (actores, CA-07b/12, supuestos, riesgos, Gherkin). |
 | 2026-08-02 | Parte C: enlace TR-009; preguntas B1 cerradas en TR. |
+| 2026-09-23 | Parte F1: criterios de aceptación verificados; historia finalizada junto con SPEC-009. |

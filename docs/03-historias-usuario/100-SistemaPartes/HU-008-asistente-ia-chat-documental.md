@@ -8,8 +8,8 @@
 | Título | Consultar ayuda del sistema y generalidades Framework vía Asistente IA |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente de Revisión |
-| Última actualización | 2026-08-01 |
+| Estado | Finalizado (F1 verificado) |
+| Última actualización | 2026-09-23 |
 | SPEC origen | [SPEC-008-asistente-ia-chat-documental](../../05-open-spec/100-SistemaPartes/SPEC-008-asistente-ia-chat-documental.md) |
 | TR relacionada(s) | [TR-008-asistente-ia-chat-documental](../../04-tareas/100-SistemaPartes/TR-008-asistente-ia-chat-documental.md) |
 
@@ -104,16 +104,16 @@ Tras el login y el gate de identidad Partes (SPEC-002), el usuario trabaja en el
 
 ## Criterios de aceptación
 
-- [ ] **CA-01** Con sesión Partes usable, el menú avatar muestra **Asistente IA** y **no** muestra un ítem de ayuda por URL externa.
-- [ ] **CA-02** Al elegir Asistente IA, se abre `/chat-assistant` en la misma ventana (en mobile, dentro de la app; sin abrir navegador externo solo por este ítem).
-- [ ] **CA-03** Sin configuración LLM válida: veo empty con CTA a Preferencias y no puedo enviar consulta.
-- [ ] **CA-04** Con LLM válido: veo bienvenida de Partes, puedo escribir y enviar una consulta de hasta 2000 caracteres.
-- [ ] **CA-05** Tras enviar, recibo una respuesta orientativa en el idioma de la aplicación.
-- [ ] **CA-06** La respuesta del turno no ejecuta ni propone mutaciones de tareas/maestros (no “acciones de negocio”).
-- [ ] **CA-07** Si fuerzo un envío sin LLM, el servidor responde error indicando configuración requerida.
-- [ ] **CA-08** El conocimiento disponible incluye ayuda de Partes y generalidades Framework (manifest o smoke documental).
-- [ ] **CA-09** El manual de usuario Partes explica cómo abrir el Asistente IA desde el avatar.
-- [ ] **CA-10** Textos e identificadores de prueba estables para avatar/chat (i18n GEN + bienvenida Partes).
+- [x] **CA-01** Con sesión Partes usable, el menú avatar muestra **Asistente IA** y **no** muestra un ítem de ayuda por URL externa.
+- [x] **CA-02** Al elegir Asistente IA, se abre `/chat-assistant` en la misma ventana (en mobile, dentro de la app; sin abrir navegador externo solo por este ítem).
+- [x] **CA-03** Sin configuración LLM válida: veo empty con CTA a Preferencias y no puedo enviar consulta.
+- [x] **CA-04** Con LLM válido: veo bienvenida de Partes, puedo escribir y enviar una consulta de hasta 2000 caracteres; CI usa cliente fake.
+- [x] **CA-05** Tras enviar, recibo una respuesta orientativa en el idioma de la aplicación; proveedor real queda pendiente de smoke operativo.
+- [x] **CA-06** La respuesta del turno no ejecuta ni propone mutaciones de tareas/maestros (no “acciones de negocio”).
+- [x] **CA-07** Si fuerzo un envío sin LLM, el servidor responde error indicando configuración requerida.
+- [x] **CA-08** El conocimiento disponible incluye ayuda de Partes y generalidades Framework mediante manifest.
+- [x] **CA-09** El manual de usuario Partes explica cómo abrir el Asistente IA desde el avatar.
+- [x] **CA-10** Textos e identificadores de prueba estables para avatar/chat (i18n GEN + bienvenida Partes).
 
 ---
 
@@ -187,3 +187,4 @@ Ninguna bloqueante a nivel funcional. Detalle de empaquetado GEN / versión de p
 | 2026-08-01 | Parte B + B1: HU desde SPEC-008. |
 | 2026-08-01 | Parte C: enlazada TR-008; Estado Especificado. |
 | 2026-08-01 | D/E/F1: implementación verificada; Estado → Pendiente de Revisión. Ver [D-VERIFICACION-TR-008](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-008-asistente-ia-2026-08-01.md). |
+| 2026-09-23 | F1: criterios CA-01…10 verificados; historia finalizada con SPEC-008. Ver [F1-TR-008](../../04-tareas/updates/100-SistemaPartes/F1-TR-008-asistente-ia-2026-09-23.md). |

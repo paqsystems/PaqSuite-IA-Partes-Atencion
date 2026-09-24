@@ -9,8 +9,8 @@
 | **Roles** | Asistente / supervisor / cliente (sesión Partes usable) |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md) (shell post-login); paquetes Framework `@paqsuite/react-core@2.2.1` (Verdaccio) + `paqsuite/laravel-core@^1.3.3` (Satis, corpus GEN); GEN TR-GEN-21-chat-ui, TR-GEN-21-contrato-turno, TR-GEN-16-*, TR-GEN-08; [TR-007](./TR-007-mobile-capacitor.md) (policy mobile) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Pendiente de Revisión |
-| **Última actualización** | 2026-08-01 |
+| **Estado** | Finalizado (F1 verificado) |
+| **Última actualización** | 2026-09-23 |
 | **Revisión C1** | Apto con observaciones (ver §11) |
 
 **Origen:** [HU-008](../../03-historias-usuario/100-SistemaPartes/HU-008-asistente-ia-chat-documental.md)  
@@ -274,7 +274,7 @@ No Must: E2E con proveedor LLM de pago en CI.
 
 ## 10) Checklist DoD
 
-- [x] AC-01…10 *(AC-05 turno proveedor real = observación F1; Feature con fake OK)*
+- [x] AC-01…10 *(AC-05 turno proveedor real = pendiente operativo; Feature con fake OK)*
 - [x] Migración + SP LLM en repo *(cada entorno SQL Server: migrate + deploy 7 `pq_sp_llm_*` — Framework [`adopcion-gen-16-byok.md`](../../../../PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-gen-16-byok.md))*
 - [x] Rutas llm-credentials + chat-assistant/turns
 - [x] Corpus provider + manifest
@@ -331,3 +331,4 @@ Ninguna bloqueante.
 | 2026-08-01 | Parte C + C1: TR-008 desde SPEC-008 / HU-008; adopción host GEN-16/21. |
 | 2026-08-01 | Parte D: adopción host (DB LLM, SP, credentials/turns, FE chat+BYOK, mobile, tests). |
 | 2026-08-01 | Parte E + smoke manual + F1/F: [D-VERIFICACION-TR-008](../updates/100-SistemaPartes/D-VERIFICACION-TR-008-asistente-ia-2026-08-01.md); Estado → Pendiente de Revisión. |
+| 2026-09-23 | F1: 5 tests backend (21 aserciones), 135 tests Vitest y 1 E2E específicos OK; TR finalizado. Ver [F1-TR-008](../updates/100-SistemaPartes/F1-TR-008-asistente-ia-2026-09-23.md). |

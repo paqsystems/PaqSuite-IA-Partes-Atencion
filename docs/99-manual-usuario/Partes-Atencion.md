@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|--------|
-| **Versión documento** | 2026-07-31 |
+| **Versión documento** | 2026-09-23 |
 | **Ámbito** | Módulo Partes de Atención |
 | **Público** | Asistentes, supervisores, clientes y soporte funcional |
 | **Detalle por capacidad** | Ver [índice](./README.md) (SPEC-002 … SPEC-007) |
@@ -50,6 +50,7 @@ Tras el login válido, el sistema abre el **Dashboard** (Inicio). El menú later
 | Entrar y entender mi perfil | Login / avatar | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md) |
 | Mantener catálogos | Archivos | [SPEC-003](./SPEC-003-maestros-y-catalogos.md) |
 | Cargar el trabajo del día | Partes → Carga diaria | [SPEC-004](./SPEC-004-operacion-carga-diaria.md) |
+| Importar tareas desde Excel | Partes → Carga diaria (web) | [SPEC-004](./SPEC-004-operacion-carga-diaria.md) · [SPEC-009](../05-open-spec/100-SistemaPartes/SPEC-009-importacion-partes-excel.md) |
 | Cerrar muchas partes | Partes → Proceso masivo | [SPEC-005](./SPEC-005-supervision-proceso-masivo.md) |
 | Ver totales e informes | Inicio / Informes | [SPEC-006](./SPEC-006-consultas-dashboard-navegacion.md) |
 | Usar el celular | App móvil | [SPEC-007](./SPEC-007-mobile-capacitor.md) |
@@ -62,7 +63,7 @@ Tras el login válido, el sistema abre el **Dashboard** (Inicio). El menú later
 3. Si aún no tenés una configuración de modelo (LLM), el sistema te pedirá ir a **Preferencias** para cargar tu propia clave (BYOK).
 4. Con configuración válida, escribí tu pregunta sobre cómo usar Partes o las generalidades del Framework. El asistente **orienta**; no crea ni modifica tareas.
 
-Para **completar el formulario** de una tarea con ayuda del modelo (texto/audio/imagen), usá la **captura inteligente** dentro del modal de Carga diaria — no el Asistente IA del avatar. Detalle en [SPEC-004](./SPEC-004-operacion-carga-diaria.md).
+Para **completar el formulario** de una tarea con ayuda del modelo (texto/audio/imagen), usá la **captura inteligente** dentro del modal de Carga diaria — no el Asistente IA del avatar. Detalle en [SPEC-004](./SPEC-004-operacion-carga-diaria.md). El alcance del chat documental está en [SPEC-008](../05-open-spec/100-SistemaPartes/SPEC-008-asistente-ia-chat-documental.md).
 
 ## Particularidades transversales
 
