@@ -408,7 +408,7 @@ export function EmissionReportDesignerPage({
         </p>
       ) : null}
       {designerContext ? (
-        <div data-testid="emission.design.host">
+        <div data-testid="emission.design.host.container">
           <ReportDesignerHost
             context={designerContext}
             isNative={false}

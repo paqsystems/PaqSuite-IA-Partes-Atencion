@@ -3,8 +3,8 @@
 | Campo | Valor |
 |-------|--------|
 | **Producto** | PaqSuite-IA-Partes-Atencion (MONO) |
-| **Estado del plan** | Especificado — pendiente de ejecución (orden explícita del equipo) |
-| **SDK objetivo** | `@paqsuite/react-core` **≥ 2.4.13** (grid i18n + menú/shell según release Framework) · `paqsuite/laravel-core` **1.3.8** (sin cambio funcional esperado) |
+| **Estado del plan** | En ejecución — bump local y wiring de grilla verificados; menú/shell pendiente de export SDK |
+| **SDK objetivo** | `@paqsuite/react-core` **2.4.14** (repo-lab local; grid i18n disponible) · `paqsuite/laravel-core` **1.3.8** (sin cambio funcional esperado) |
 | **Scaffold referencia** | `@paqsuite/create-app` **0.1.13** (template shell/menú i18n) |
 | **Norma** | Regla **19** — adoptar GEN, no reimplementar · GEN-11 grillas · GEN-02 i18n · GEN-07 menú |
 
@@ -115,10 +115,10 @@ Refinamiento opcional post-registro: reducir hooks de dominio a `columnSummaryFo
 |------|--------|
 | Eliminación `summaryTypeLabels` + `grid.summary.*` en locales | Preparado en working tree (pendiente commit) |
 | `partesGridSummary.ts` reducido a dominio duración | Preparado en working tree |
-| `registerGridI18nResources` en `i18n.ts` | **Pendiente** (requiere bump ≥ 2.4.13) |
-| Pin `package.json` | Sigue `^2.4.12` hasta bump |
-| `shellI18n.ts` fork menú GEN | **Pendiente** fase menú/shell |
-| Verdaccio | **2026-09-23:** `npm view @paqsuite/react-core version` → **2.4.12**; `@2.4.13` → `ETARGET`. Satis laravel-core máx. **1.3.7**. Fase 0.1/0.4 bloqueadas hasta publicación oleada |
+| `registerGridI18nResources` en `i18n.ts` | **Verificado** con `@paqsuite/react-core` 2.4.14 y namespace `common` |
+| Pin `package.json` | `file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core`; lock resuelve **2.4.14** |
+| `shellI18n.ts` fork menú GEN | **Pendiente/bloqueado**: 2.4.14 no exporta `createAppTranslator` ni `buildMenuSidebarLabels`; no eliminar sin contrato SDK |
+| Registry / release empaquetado | Repo-lab resuelto localmente; queda pendiente publicar artefacto versionado/tarball para Vercel |
 
 ---
 
@@ -312,4 +312,11 @@ Estimación: **1–2 días** FE si exports del template están completos; **+0,5
 
 ---
 
-**Próximo paso:** con orden explícita del equipo, ejecutar **Fase 0 + Fase 1** (bump SDK y wiring §3).
+**Próximo paso:** completar smoke F1 mobile y elevar al Framework el faltante de exports de menú/shell antes de retirar `shellI18n.ts`.
+
+### 2026-09-24 — cierre parcial de alineación
+
+- `@paqsuite/react-core` 2.4.14 verificado desde el checkout local del Framework.
+- `registerGridI18nResources(i18n, 'common')` y `syncDevExtremeLocale` ya están cableados en `frontend/src/i18n/i18n.ts`.
+- `ShellPage` usa `MenuAuthProvider`, `locale`, `t`, `labels` y `onItemsLoaded` conforme a las reglas 42/43.
+- La eliminación de `shellI18n.ts` queda bloqueada hasta que el SDK/template publique los helpers equivalentes; el host no inventa una API ni duplica una migración incompleta.

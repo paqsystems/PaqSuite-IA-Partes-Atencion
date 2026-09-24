@@ -8,8 +8,8 @@
 | Título | Mobile Capacitor del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente |
-| Última actualización | 2026-08-17 |
+| Estado | Pendiente de Revisión |
+| Última actualización | 2026-09-24 |
 | SPEC origen | [SPEC-007-mobile-capacitor](../../05-open-spec/100-SistemaPartes/SPEC-007-mobile-capacitor.md) |
 | TR relacionada(s) | [TR-007-mobile-capacitor](../../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) |
 
@@ -214,3 +214,4 @@ Feature: Mobile Capacitor Sistema Partes
 | 2026-07-30 | Enlace TR-007 (Parte C+C1); policy/Chart bar/fachada cerrados. |
 | 2026-08-17 | Alineación TR-007 GEN-22: montar componentes Framework; allowlist + mapper dominio en el host. |
 | 2026-08-17 | Antes de D: CA-01b (URL engranaje = única base API); R-MO-08b aclara IA operativa ≠ chat HU-008; fachada informe Must. |
+| 2026-09-24 | F1 técnico parcial: `build:mobile`, `cap sync` y tests mobile/i18n OK; humo manual de emulador pendiente por falta de `adb`. |

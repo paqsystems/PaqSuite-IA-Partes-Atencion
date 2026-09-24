@@ -19,17 +19,19 @@ return new class extends Migration
             });
         }
 
-        $driver = Schema::getConnection()->getDriverName();
-        if ($driver === 'sqlsrv') {
-            DB::unprepared(
-                "UPDATE dbo.pq_menus SET label_key = CONCAT('menu.', codigo) "
-                ."WHERE label_key IS NULL OR LTRIM(RTRIM(label_key)) = ''"
-            );
-        } else {
+        $menus = DB::table('pq_menus')
+            ->select(['id', 'codigo'])
+            ->where(function ($query) {
+                $query
+                    ->whereNull('label_key')
+                    ->orWhere('label_key', '');
+            })
+            ->get();
+
+        foreach ($menus as $menu) {
             DB::table('pq_menus')
-                ->whereNull('label_key')
-                ->orWhere('label_key', '')
-                ->update(['label_key' => DB::raw("CONCAT('menu.', codigo)")]);
+                ->where('id', $menu->id)
+                ->update(['label_key' => 'menu.' . $menu->codigo]);
         }
     }
 
