@@ -150,6 +150,8 @@
   "login.hint": "Saisissez vos identifiants pour continuer. S'il s'agit de votre premier accès, vous pourrez ensuite mettre à jour votre mot de passe.",
   "login.username": "Utilisateur",
   "login.password": "Mot de passe",
+  "login.showPassword": "Afficher le mot de passe",
+  "login.hidePassword": "Masquer le mot de passe",
   "login.submit": "Se connecter",
   "login.loading": "Connexion…",
   "login.forgotPasswordLink": "J'ai oublié mon mot de passe",

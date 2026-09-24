@@ -150,6 +150,8 @@
   "login.hint": "Inserisci le tue credenziali per continuare. Se è il tuo primo accesso, potrai aggiornare la password subito dopo.",
   "login.username": "Utente",
   "login.password": "Password",
+  "login.showPassword": "Mostra password",
+  "login.hidePassword": "Nascondi password",
   "login.submit": "Accedi",
   "login.loading": "Accesso in corso…",
   "login.forgotPasswordLink": "Ho dimenticato la password",

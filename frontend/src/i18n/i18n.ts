@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next'
 import {
   getGuestLocale,
   normalizeLocale,
+  registerGridI18nResources,
   setGuestLocale,
   syncDevExtremeLocale,
   type LocaleCode,
@@ -34,6 +35,7 @@ void i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false },
 })
 
+registerGridI18nResources(i18n, 'common')
 syncDevExtremeLocale(initialLocale)
 
 /** Aplica idioma guest: i18n + DX + persistencia local. */

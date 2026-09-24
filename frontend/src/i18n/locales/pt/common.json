@@ -150,6 +150,8 @@
   "login.hint": "Informe suas credenciais para continuar. Se for o primeiro acesso, depois você poderá atualizar sua senha.",
   "login.username": "Usuário",
   "login.password": "Senha",
+  "login.showPassword": "Mostrar senha",
+  "login.hidePassword": "Ocultar senha",
   "login.submit": "Entrar",
   "login.loading": "Entrando…",
   "login.forgotPasswordLink": "Esqueci minha senha",

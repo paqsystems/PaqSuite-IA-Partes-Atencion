@@ -167,6 +167,8 @@
   "login.hint": "Enter your credentials to continue. If this is your first access, you will be able to update your password afterwards.",
   "login.username": "Username",
   "login.password": "Password",
+  "login.showPassword": "Show password",
+  "login.hidePassword": "Hide password",
   "login.submit": "Sign in",
   "login.loading": "Signing in…",
   "login.forgotPasswordLink": "I forgot my password",

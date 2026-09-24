@@ -1,12 +1,11 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DEFAULT_GRID_SUMMARY_TYPE_LABELS } from '@paqsuite/react-core'
 import { formatMinutosAsHhMm } from './carga/partesTareaDuration'
 
 /** Pie de grilla: suma de columna `duracionHoras` (horas decimales). */
 export function usePartesDuracionHorasSummaryItems() {
   const { t, i18n } = useTranslation()
-  const sumLabel = DEFAULT_GRID_SUMMARY_TYPE_LABELS.sum
+  const sumLabel = t('grid.summary.sum')
   const hoursSuffix = t('partes.grid.summary.hoursSuffix')
   return useMemo(
     () => [
@@ -29,7 +28,8 @@ export function usePartesMinutosColumnSummaryItems(
   column: MinutosSummaryColumn,
   summaryName: string,
 ) {
-  const sumLabel = DEFAULT_GRID_SUMMARY_TYPE_LABELS.sum
+  const { t, i18n } = useTranslation()
+  const sumLabel = t('grid.summary.sum')
   return useMemo(
     () => [
       {
@@ -41,6 +41,6 @@ export function usePartesMinutosColumnSummaryItems(
           `${sumLabel}: ${formatMinutosAsHhMm(Number(info.value ?? 0))}`,
       },
     ],
-    [column, summaryName, sumLabel],
+    [column, summaryName, sumLabel, i18n.language],
   )
 }

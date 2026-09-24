@@ -167,6 +167,8 @@
   "login.hint": "Ingrese sus credenciales para continuar. Si es su primer acceso, luego podrá actualizar su contraseña.",
   "login.username": "Usuario",
   "login.password": "Contraseña",
+  "login.showPassword": "Mostrar contraseña",
+  "login.hidePassword": "Ocultar contraseña",
   "login.submit": "Ingresar",
   "login.loading": "Ingresando…",
   "login.forgotPasswordLink": "Olvidé mi contraseña",

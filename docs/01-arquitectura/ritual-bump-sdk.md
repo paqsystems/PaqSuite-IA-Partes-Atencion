@@ -12,15 +12,25 @@ Plan de adopción sin forks GEN: [plan-partes-adopcion-sdk-sin-fork-gen.md](./pl
 | `@paqsuite/react-core` | **≥ 2.4.13** (`registerGridI18nResources`, menú/shell alineado create-app **0.1.13**) | Verdaccio `http://100.110.69.93:4873` |
 | `@paqsuite/create-app` (scaffold, diff obligatorio) | **0.1.13** | Verdaccio (no es dep runtime de Partes) |
 
-## Versiones instaladas en repo (2026-09-23 — Fase 0 en curso)
+## Versiones instaladas en repo (2026-09-23 — repo-lab)
 
 | Paquete | Pin / lock | Nota |
 |---------|------------|------|
-| `paqsuite/laravel-core` | `^1.3.7` → lock **1.3.7** | **1.3.8** aún no listado en Satis |
-| `@paqsuite/react-core` | `^2.4.12` → lock **2.4.12** | **2.4.13** no publicada en Verdaccio (`npm view` → `ETARGET`) |
-| Vercel tarball | `frontend/vendor/paqsuite-react-core-2.4.12.tgz` | Actualizar a 2.4.13+ tras publicación + `vercel-install.sh` |
+| `paqsuite/laravel-core` | `1.3.8` → lock **1.3.8** | Resolución local por Composer `path` |
+| `@paqsuite/react-core` | `file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core` → lock **2.4.14** | Resolución local por dependencia `file:` |
+| Vercel tarball | No actualizado en modo repo-lab | Requiere un release empaquetado separado |
 
-**Bloqueo Fase 0:** publicar en registry la oleada Framework antes de `registerGridI18nResources` (Fase 1.1).
+## Modo repo-lab (Fase 0 local)
+
+Para trabajar sin depender de Tailscale, Verdaccio ni Satis, el host puede resolver
+el checkout sibling `C:\Programacion\PaqSuite-IA-FRAMEWORK` directamente:
+
+- Frontend: `file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core`.
+- Backend: repositorio Composer `path` a `../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core`.
+
+Este modo es para desarrollo/lab local. No es portable a Vercel ni a un builder que
+no tenga ambos checkouts; el release empaquetado debe volver a usar artefactos
+versionados y actualizar el script de instalación correspondiente.
 
 ## Backend
 
@@ -35,7 +45,7 @@ composer show paqsuite/laravel-core
 
 ```bash
 cd frontend
-# .npmrc: @paqsuite → Verdaccio
+# Modo registry (release empaquetado):
 npm install @paqsuite/react-core@2.4.13   # o última ≥ 2.4.13 con grid i18n
 npm list @paqsuite/react-core
 

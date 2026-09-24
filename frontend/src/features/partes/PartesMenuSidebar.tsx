@@ -7,7 +7,6 @@ import {
   type MenuNode,
   type MenuSidebarLabels,
 } from '@paqsuite/react-core'
-import { useTranslation } from 'react-i18next'
 import { getAuthSession, getAuthToken } from '../auth/authSessionStore'
 import { partesMobilePolicy } from './mobile/partesMobilePolicy'
 
@@ -63,7 +62,7 @@ type PartesMenuSidebarProps = {
   presentation: ReturnType<typeof useMenuPresentation>
   locale?: string
   t?: (key: string) => string
-  labels?: Partial<MenuSidebarLabels>
+  labels: Partial<MenuSidebarLabels>
   onNavigate?: (routeName: string) => void
   onItemsLoaded?: (items: MenuNode[]) => void
 }
@@ -95,27 +94,9 @@ export function PartesMenuSidebar({
   onNavigate,
   onItemsLoaded,
 }: PartesMenuSidebarProps) {
-  const { t } = useTranslation()
   const session = getAuthSession()
   const hideMaestros = session?.partes?.tipoFuncional === 'cliente'
   const hideMasivo = !session?.partes?.esSupervisor
-
-  const sidebarLabels =
-    labelsProp ??
-    ({
-      controls: t('menu.controls'),
-      toggleVisible: t('menu.toggleVisible'),
-      toggleExpand: t('menu.toggleExpand'),
-      expandAll: t('menu.expandAll'),
-      collapseAll: t('menu.collapseAll'),
-      toggleDisplayMode: t('menu.toggleDisplayMode'),
-      viewOperational: t('menu.viewOperational'),
-      viewAllBranches: t('menu.viewAllBranches'),
-      searchPlaceholder: t('menu.searchPlaceholder'),
-      empty: t('menu.empty'),
-      loadError: t('menu.loadError'),
-      retry: t('menu.retry'),
-    } satisfies Partial<MenuSidebarLabels>)
 
   const transformItems = useCallback(
     (raw: MenuNode[]) =>
@@ -138,7 +119,7 @@ export function PartesMenuSidebar({
       transformItems={transformItems}
       onItemsLoaded={onItemsLoaded}
       onNavigate={onNavigate}
-      labels={sidebarLabels}
+      labels={labelsProp}
     />
   )
 }
