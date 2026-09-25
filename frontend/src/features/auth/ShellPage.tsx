@@ -11,6 +11,7 @@ import {
   getGuestLocale,
   isNativeApp,
   normalizeLocale,
+  syncDevExtremeLocale,
   useMenuPresentation,
   type LocaleCode,
   type MenuNode,
@@ -33,6 +34,13 @@ import {
   applyDevExtremeTheme,
   getActiveEmpresaThemeFromSession,
 } from '../../theme/devExtremeThemeSwitcher'
+import { productI18nCatalogs } from './productI18n'
+import {
+  buildMenuSidebarLabels,
+  createAppTranslator,
+  type AppTranslateFn,
+  type ShellOutletContext,
+} from './shellI18n'
 
 type HealthResultado = {
   serviceName: string
@@ -66,6 +74,17 @@ export function AuthenticatedShell() {
   const [llmPreferencesVisible, setLlmPreferencesVisible] = useState(false)
   const [menuItems, setMenuItems] = useState<MenuNode[]>([])
   const menuPresentation = useMenuPresentation(session?.user.id ?? null, 'partes')
+  const productCatalog = productI18nCatalogs[locale]
+  const appT: AppTranslateFn = useMemo(
+    () => createAppTranslator(locale, productCatalog),
+    [locale, productCatalog],
+  )
+  const menuSidebarLabels = useMemo(() => buildMenuSidebarLabels(appT), [appT])
+  const menuTranslate = useCallback((key: string) => appT(key), [appT])
+  const shellOutletContext = useMemo(
+    (): ShellOutletContext => ({ locale, t: appT }),
+    [locale, appT],
+  )
   const menuAuthValue = useMemo(
     () => ({ items: menuItems, setItems: setMenuItems }),
     [menuItems]
@@ -83,6 +102,10 @@ export function AuthenticatedShell() {
 
   const showChangeEmpresa =
     session?.tenancy === 'multi' && (session?.empresas?.length ?? 0) > 1
+
+  useEffect(() => {
+    syncDevExtremeLocale(locale)
+  }, [locale])
 
   useEffect(() => {
     if (!session) {
@@ -186,6 +209,8 @@ export function AuthenticatedShell() {
           isNativeApp() ? (
             <PartesMobileMenu
               platform={platform}
+              locale={locale}
+              t={menuTranslate}
               onItemsLoaded={handleMenuItemsLoaded}
               onNavigate={(routeName) => {
                 navigate(routeName)
@@ -195,6 +220,9 @@ export function AuthenticatedShell() {
             <PartesMenuSidebar
               platform={platform}
               presentation={menuPresentation}
+              locale={locale}
+              t={menuTranslate}
+              labels={menuSidebarLabels}
               onItemsLoaded={handleMenuItemsLoaded}
               onNavigate={(routeName) => {
                 navigate(routeName)
@@ -210,7 +238,7 @@ export function AuthenticatedShell() {
           version: t('shell.footer.version', { version: appVersion }),
         }}
       >
-        <Outlet />
+        <Outlet context={shellOutletContext} />
       </ShellLayout>
       <PartesProfilePanel
         visible={profileVisible}

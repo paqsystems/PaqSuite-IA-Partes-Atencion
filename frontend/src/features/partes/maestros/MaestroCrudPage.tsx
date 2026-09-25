@@ -7,6 +7,8 @@ import CheckBox from 'devextreme-react/check-box'
 import SelectBox from 'devextreme-react/select-box'
 import { Popup } from 'devextreme-react/popup'
 import { confirm } from 'devextreme/ui/dialog'
+import { useTranslation } from 'react-i18next'
+import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 import { resolveAuthMessage } from '../../auth/authMessages'
 import { getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
@@ -48,6 +50,8 @@ export function MaestroCrudPage({
   fields,
   initialForm,
 }: MaestroCrudPageProps) {
+  const { t } = useTranslation()
+  const pageTitle = useProcessMenuTitle(title)
   const [rows, setRows] = useState<Record<string, unknown>[]>([])
   const [loading, setLoading] = useState(true)
   const [formOpen, setFormOpen] = useState(false)
@@ -118,8 +122,8 @@ export function MaestroCrudPage({
       const previous = rows.find((row) => Number(row.id) === editingId)
       if (previous && previous.userId && form.userId && previous.userId !== form.userId) {
         const ok = await confirm(
-          'Al cambiar el usuario Framework, el anterior puede quedar sin vínculo Partes. ¿Continúa?',
-          'Confirmar cambio de usuario'
+          t('partes.maestros.cambioUsuarioConfirm'),
+          t('partes.maestros.cambioUsuarioTitle'),
         )
         if (!ok) {
           return
@@ -138,7 +142,7 @@ export function MaestroCrudPage({
   }
 
   async function handleDelete(row: Record<string, unknown>) {
-    const ok = await confirm('¿Eliminar el registro?', 'Eliminar')
+    const ok = await confirm(t('partes.maestros.eliminarRegistroConfirm'), t('admin.common.delete'))
     if (!ok) {
       return
     }
@@ -152,7 +156,7 @@ export function MaestroCrudPage({
 
   return (
     <div data-testid={`${testIdPrefix}Page`} style={{ padding: 16 }}>
-      <h2 style={{ margin: '0 0 12px' }}>{title}</h2>
+      <h2 style={{ margin: '0 0 12px' }}>{pageTitle}</h2>
       {error ? <div role="alert">{error}</div> : null}
       <div data-testid={`${testIdPrefix}Grid`}>
         <ProcessDataGrid
@@ -164,7 +168,7 @@ export function MaestroCrudPage({
           accessToken={getAuthToken()}
           platform={buildAuthPlatformHeaders()}
           onCreate={openCreate}
-          createHint="Agregar"
+          createHint={t('partes.common.agregar')}
           createTestId={`${testIdPrefix}Add`}
         >
           <Paging defaultPageSize={20} />
@@ -176,12 +180,12 @@ export function MaestroCrudPage({
             type="buttons"
             buttons={[
               {
-                hint: 'Editar',
+                hint: t('admin.common.edit'),
                 icon: 'edit',
                 onClick: (e) => openEdit(e.row?.data as Record<string, unknown>),
               },
               {
-                hint: 'Eliminar',
+                hint: t('admin.common.delete'),
                 icon: 'trash',
                 onClick: (e) => void handleDelete(e.row?.data as Record<string, unknown>),
               },
@@ -193,7 +197,11 @@ export function MaestroCrudPage({
       <Popup
         visible={formOpen}
         onHiding={() => setFormOpen(false)}
-        title={editingId ? `Editar ${title}` : `Nuevo ${title}`}
+        title={
+          editingId
+            ? t('partes.maestros.editTitle', { title })
+            : t('partes.maestros.newTitle', { title })
+        }
         width={480}
         height="auto"
         showCloseButton
@@ -243,9 +251,9 @@ export function MaestroCrudPage({
             </div>
           ))}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <Button text="Cancelar" onClick={() => setFormOpen(false)} />
+            <Button text={t('parametros.modal.cancel')} onClick={() => setFormOpen(false)} />
             <Button
-              text="Guardar"
+              text={t('admin.common.save')}
               type="default"
               onClick={() => void handleSave()}
               elementAttr={{ 'data-testid': `${testIdPrefix}FormSave` }}

@@ -23,6 +23,7 @@ class PqMenuSoporteTecnicoMoveSeeder extends Seeder
             } else {
                 DB::table('pq_menus')->where('id', 70000)->update([
                     'codigo' => 'soporte_tecnico',
+                    'label_key' => 'menu.soporte_tecnico',
                     'titulo' => 'Soporte Técnico',
                     'parent_id' => null,
                     'updated_at' => $now,
@@ -46,6 +47,7 @@ class PqMenuSoporteTecnicoMoveSeeder extends Seeder
                 DB::table('pq_menus')->where('id', 70100)->update([
                     'parent_id' => 70000,
                     'codigo' => 'partes_disenador_emisiones',
+                    'label_key' => 'menu.partes_disenador_emisiones',
                     'titulo' => (string) ($designer->titulo ?: 'Diseñador de emisiones'),
                     'ruta' => '/emisiones/disenador',
                     'orden' => 70100,
@@ -87,6 +89,7 @@ class PqMenuSoporteTecnicoMoveSeeder extends Seeder
             'id' => $id,
             'parent_id' => 70000,
             'codigo' => 'partes_disenador_emisiones',
+            'label_key' => 'menu.partes_disenador_emisiones',
             'titulo' => (string) ($source->titulo ?? 'Diseñador de emisiones'),
             'ruta' => (string) ($source->ruta ?? '/emisiones/disenador'),
             'orden' => 70100,
@@ -107,6 +110,7 @@ class PqMenuSoporteTecnicoMoveSeeder extends Seeder
             'id' => $id,
             'parent_id' => null,
             'codigo' => 'soporte_tecnico',
+            'label_key' => 'menu.soporte_tecnico',
             'titulo' => 'Soporte Técnico',
             'ruta' => null,
             'orden' => $id,

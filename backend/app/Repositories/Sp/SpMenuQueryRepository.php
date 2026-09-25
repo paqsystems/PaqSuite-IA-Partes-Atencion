@@ -24,6 +24,9 @@ final class SpMenuQueryRepository implements MenuQueryRepository
                 'parentId' => isset($row->parentId) ? (int) $row->parentId : null,
                 'menuKey' => (string) ($row->menuKey ?? $row->codigo ?? ''),
                 'codigo' => (string) ($row->menuKey ?? $row->codigo ?? ''),
+                'labelKey' => isset($row->labelKey) && trim((string) $row->labelKey) !== ''
+                    ? (string) $row->labelKey
+                    : 'menu.'.($row->menuKey ?? $row->codigo ?? ''),
                 'text' => (string) ($row->text ?? $row->titulo ?? ''),
                 'titulo' => (string) ($row->text ?? $row->titulo ?? ''),
                 'routeName' => isset($row->routeName) ? (string) $row->routeName : null,

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "68049b247fefb21656b31d1f76095ef6",
+    "content-hash": "f53da81804ff4d2de667379e0c903143",
     "packages": [
         {
             "name": "brick/math",
@@ -2562,17 +2562,11 @@
         },
         {
             "name": "paqsuite/laravel-core",
-            "version": "1.3.7",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:paqsystems/laravel-core.git",
-                "reference": "6290c45590f8397f4719d9c42c6c7d94159e443c"
-            },
+            "version": "1.3.8",
             "dist": {
-                "type": "zip",
-                "url": "http://100.110.69.93/satis/dist/paqsuite/laravel-core/paqsuite-laravel-core-6290c45590f8397f4719d9c42c6c7d94159e443c-zip-ffa831.zip",
-                "reference": "6290c45590f8397f4719d9c42c6c7d94159e443c",
-                "shasum": "06bc8aec8c1a545de0494e6c4390076fd86ad06f"
+                "type": "path",
+                "url": "../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core",
+                "reference": "1c1d57566401691904da40476c3d9c36c8f08c18"
             },
             "require": {
                 "illuminate/console": "^10.0",
@@ -2581,6 +2575,7 @@
                 "php": "^8.1"
             },
             "require-dev": {
+                "guzzlehttp/guzzle": "^7.8",
                 "orchestra/testbench": "^8.0",
                 "phpunit/phpunit": "^10.5"
             },
@@ -2618,10 +2613,12 @@
             "description": "Núcleo compartido PaqSuite: envelope API, tenancy, config",
             "homepage": "https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK",
             "support": {
-                "source": "https://github.com/paqsystems/laravel-core",
-                "issues": "https://github.com/paqsystems/laravel-core/issues"
+                "source": "https://github.com/paqsystems/laravel-core"
             },
-            "time": "2026-09-10T03:12:20+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "phpoption/phpoption",

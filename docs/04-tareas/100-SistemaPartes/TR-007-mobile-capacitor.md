@@ -10,7 +10,7 @@
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md) … [TR-006](./TR-006-consultas-dashboard-navegacion.md) (dominio/API); [TR-008](./TR-008-asistente-ia-chat-documental.md) (allowlist `/chat-assistant`); `@paqsuite/react-core@2.2.1` GEN-22 / GEN-01 / GEN-04 / GEN-07 / GEN-08 / GEN-09 / GEN-21 |
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Pendiente de Revisión (D delta GEN-22 implementado; F1 humo emulador pendiente) |
-| **Última actualización** | 2026-08-17 |
+| **Última actualización** | 2026-09-24 |
 | **Revisión C1** | Apto con observaciones (ver §11) |
 
 **Origen:** [HU-007](../../03-historias-usuario/100-SistemaPartes/HU-007-mobile-capacitor.md)  
@@ -307,6 +307,7 @@ Backend fachada/menú seed: **no rehacer** si ya está de la D previa.
 | 2026-07-30 | Parte D: `partesMobilePolicy` propio, kardex List DX, paquete-horas + Chart bar, fachada API, menú/guard native. **Pendiente:** scaffold Capacitor. |
 | 2026-08-17 | Realineación MUST GEN-22: montar exports `react-core` en lugar de kardex/policy/config/guard/menú propios. Allowlist + mappers de dominio quedan en el host. D delta pendiente. |
 | 2026-08-17 | Parte D delta: `createMobilePolicy`, `MobileRouteGuard`, `MobileMenuShell`, `MobileConfigPanel`, `ConsultaKardexList`, `DashboardContainer`, loginTenant, Capacitor android/ios + Preferences. F1 humo emulador pendiente. |
+| 2026-09-24 | F1 técnico parcial: `build:mobile`, `cap sync` y tests mobile/i18n OK; humo manual de emulador pendiente por falta de `adb`. Ver [D-VERIFICACION-TR-007-mobile-2026-09-24](../updates/100-SistemaPartes/D-VERIFICACION-TR-007-mobile-2026-09-24.md). |
 
 ---
 

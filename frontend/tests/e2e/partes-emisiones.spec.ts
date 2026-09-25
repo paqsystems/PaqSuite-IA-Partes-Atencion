@@ -1,14 +1,17 @@
 import { expect, test } from '@playwright/test'
 
+const e2eUser = process.env.PW_LOGIN_USER ?? 'admin'
+const e2ePassword = process.env.PW_LOGIN_PASSWORD ?? 'Paqsystems'
+
 /**
  * TR-011: Consulta detallada muestra Emitir (GEN-15) y abre el diálogo.
- * Requiere backend seed (admin / Paqsystems) y EmissionEnabled=S.
+ * Requiere backend seed y EmissionEnabled=S.
  */
 test('consulta detallada muestra emitir y abre el dialogo', async ({ page }) => {
   test.setTimeout(60_000)
   await page.goto('/login')
-  await page.getByTestId('loginUsuario').locator('input').fill('admin')
-  await page.getByTestId('loginPassword').locator('input').fill('Paqsystems')
+  await page.getByTestId('loginUsuario').locator('input').fill(e2eUser)
+  await page.getByTestId('loginPassword').locator('input').fill(e2ePassword)
   await page.getByTestId('loginSubmit').click()
 
   await expect(page).toHaveURL(/\/partes\/?$/, { timeout: 45_000 })
@@ -26,8 +29,8 @@ test('consulta detallada muestra emitir y abre el dialogo', async ({ page }) => 
 test('disenador lista proceso N=1 y monta DX solo tras confirmar', async ({ page }) => {
   test.setTimeout(90_000)
   await page.goto('/login')
-  await page.getByTestId('loginUsuario').locator('input').fill('admin')
-  await page.getByTestId('loginPassword').locator('input').fill('Paqsystems')
+  await page.getByTestId('loginUsuario').locator('input').fill(e2eUser)
+  await page.getByTestId('loginPassword').locator('input').fill(e2ePassword)
   await page.getByTestId('loginSubmit').click()
   await expect(page).toHaveURL(/\/partes\/?$/, { timeout: 45_000 })
 

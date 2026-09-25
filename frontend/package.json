@@ -28,7 +28,7 @@
     "@capacitor/ios": "^7.4.4",
     "@capacitor/preferences": "^7.0.2",
     "@devexpress/analytics-core": "26.1.4",
-    "@paqsuite/react-core": "^2.4.12",
+    "@paqsuite/react-core": "file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core",
     "ace-builds": "^1.44.0",
     "axios": "^1.16.0",
     "devexpress-reporting": "26.1.4",
@@ -36,12 +36,12 @@
     "devextreme": "26.1.4",
     "devextreme-react": "26.1.4",
     "exceljs": "^4.4.0",
-    "i18next": "^26.0.10",
+    "i18next": "^25.4.2",
     "knockout": "^3.5.3",
     "prop-types": "^15.8.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "react-i18next": "^17.0.7",
+    "react-i18next": "^16.2.0",
     "react-router-dom": "^7.15.0"
   },
   "devDependencies": {

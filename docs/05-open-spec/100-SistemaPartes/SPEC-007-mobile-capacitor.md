@@ -7,8 +7,8 @@
 | ID | SPEC-007 |
 | Título | Mobile Capacitor del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Pendiente |
-| Última actualización | 2026-08-17 |
+| Estado | Pendiente de Revisión |
+| Última actualización | 2026-09-24 |
 | HU relacionada(s) | [HU-007-mobile-capacitor](../../03-historias-usuario/100-SistemaPartes/HU-007-mobile-capacitor.md) |
 | TR relacionada(s) | [TR-007-mobile-capacitor](../../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md) … [SPEC-006](./SPEC-006-consultas-dashboard-navegacion.md) (mismas reglas de dominio; distinta UX) |
@@ -213,6 +213,7 @@ Proceso **propio** mobile (no solo un widget del dashboard).
 | 2026-07-30 | Batch HU: informe = menú Informes + atajo dashboard; gráfico = más simple DX (TR). |
 | 2026-07-30 | Enlace TR-007 (Parte C+C1); gráfico = DX Chart `bar`; policy `partesMobilePolicy`. |
 | 2026-08-17 | TR-007 realineado: adoptar GEN-22 (`ConsultaKardexList`, `MobileConfigPanel`, `createMobilePolicy`, etc.); allowlist y mappers de dominio en el host. |
+| 2026-09-24 | F1 técnico parcial: `build:mobile`, `cap sync` y tests mobile/i18n OK; humo manual de emulador pendiente por falta de `adb`. |
 
 ---
 
