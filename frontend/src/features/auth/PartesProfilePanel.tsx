@@ -1,4 +1,5 @@
 import { Popup } from 'devextreme-react/popup'
+import { useTranslation } from 'react-i18next'
 import type { PartesSessionContext } from './authTypes'
 
 type PartesProfilePanelProps = {
@@ -14,12 +15,13 @@ export function PartesProfilePanel({
   partes,
   loginUsuario,
 }: PartesProfilePanelProps) {
+  const { t } = useTranslation()
   const email = partes?.email?.trim() ? partes.email : '—'
   const tipoLabel =
     partes?.tipoFuncional === 'cliente'
-      ? 'Cliente'
+      ? t('partes.profile.tipo.cliente')
       : partes?.tipoFuncional === 'asistente'
-        ? 'Asistente'
+        ? t('partes.profile.tipo.asistente')
         : '—'
 
   return (
@@ -28,30 +30,31 @@ export function PartesProfilePanel({
       onHiding={onHiding}
       dragEnabled={false}
       showCloseButton
-      title="Perfil Partes"
+      title={t('partes.profile.title')}
       width={420}
       height="auto"
     >
       <div data-testid="partesProfilePanel" style={{ padding: '8px 4px', display: 'grid', gap: 10 }}>
         <div>
-          <strong>Tipo funcional:</strong> {tipoLabel}
+          <strong>{t('partes.profile.tipoFuncional')}</strong> {tipoLabel}
         </div>
         <div>
-          <strong>Código:</strong> {partes?.code ?? '—'}
+          <strong>{t('partes.profile.codigo')}</strong> {partes?.code ?? '—'}
         </div>
         <div>
-          <strong>Nombre:</strong> {partes?.nombre ?? '—'}
+          <strong>{t('partes.profile.nombre')}</strong> {partes?.nombre ?? '—'}
         </div>
         {partes?.tipoFuncional === 'asistente' ? (
           <div>
-            <strong>Supervisor:</strong> {partes.esSupervisor ? 'Sí' : 'No'}
+            <strong>{t('partes.profile.supervisor')}</strong>{' '}
+            {partes.esSupervisor ? t('partes.common.si') : t('partes.common.no')}
           </div>
         ) : null}
         <div>
-          <strong>Email:</strong> {email}
+          <strong>{t('partes.profile.email')}</strong> {email}
         </div>
         <div>
-          <strong>Usuario login:</strong> {loginUsuario || '—'}
+          <strong>{t('partes.profile.loginUsuario')}</strong> {loginUsuario || '—'}
         </div>
       </div>
     </Popup>

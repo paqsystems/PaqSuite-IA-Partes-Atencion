@@ -27,6 +27,7 @@
 | [09-bug-validacion-unique-multiconexion-laravel10.md](./09-bug-validacion-unique-multiconexion-laravel10.md) | Laravel 10: `Rule::unique` multi-DB; `orderBy` + query `dir` (listados Partes Producción) |
 | [ui/01_MainLayout_PostLogin_Specification.md](./ui/01_MainLayout_PostLogin_Specification.md) | Especificación del Shell principal post-login (DevExtreme, theming por empresa, responsive) |
 | [ui/02-frontend-folder-structure.md](./ui/02-frontend-folder-structure.md) | Estructura ideal de carpetas del frontend React + DevExtreme, lista para Cursor |
+| [plan-partes-adopcion-sdk-sin-fork-gen.md](./plan-partes-adopcion-sdk-sin-fork-gen.md) | Plan FE: bump react-core ≥ 2.4.13, `registerGridI18nResources`, menú/shell i18n sin forks GEN |
 
 ---
 

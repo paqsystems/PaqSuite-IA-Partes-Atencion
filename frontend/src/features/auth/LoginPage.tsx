@@ -39,6 +39,7 @@ export function LoginPage() {
   )
   const [usuario, setUsuario] = useState('')
   const [password, setPassword] = useState('')
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [locale, setLocale] = useState<LocaleCode>(
     () => normalizeLocale(getGuestLocale()) ?? 'es',
   )
@@ -172,11 +173,32 @@ export function LoginPage() {
         <label className={authClassNames.field}>
           <span className={authClassNames.fieldLabel}>{t('login.password')}</span>
           <TextBox
+            key={`login-password-${isPasswordVisible ? 'visible' : 'hidden'}`}
             stylingMode="outlined"
-            mode="password"
+            mode={isPasswordVisible ? 'text' : 'password'}
             value={password}
             onValueChanged={(event) => setPassword(String(event.value ?? ''))}
-            elementAttr={{ 'data-testid': 'loginPassword' }}
+            buttons={[
+              {
+                name: 'togglePasswordVisibility',
+                location: 'after',
+                options: {
+                  icon: isPasswordVisible ? 'eyeclose' : 'eyeopen',
+                  stylingMode: 'text',
+                  hint: t(
+                    isPasswordVisible
+                      ? 'login.hidePassword'
+                      : 'login.showPassword',
+                  ),
+                  elementAttr: { 'data-testid': 'loginPasswordToggle' },
+                  onClick: () => setIsPasswordVisible((visible) => !visible),
+                },
+              },
+            ]}
+            elementAttr={{
+              'data-testid': 'loginPassword',
+              'aria-label': t('login.password'),
+            }}
           />
         </label>
 

@@ -22,6 +22,20 @@ Target: `paqsuite/laravel-core@^1.3.3` · `@paqsuite/react-core@2.2.1` · scaffo
 
 El install/build produce el artefacto; el deploy sirve **vendor** + **dist** ya resueltos (como Laravel/DevExtreme).
 
+## Modo repo-lab local
+
+Durante la adopción y validación local, Partes puede resolver el Framework
+directamente desde `C:\Programacion\PaqSuite-IA-FRAMEWORK`:
+
+- `frontend/package.json` usa `file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core`.
+- `backend/composer.json` usa un repositorio `path` para
+  `../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core`.
+
+Este modo no requiere acceso a Verdaccio/Satis, pero exige ambos repositorios
+en la misma carpeta `C:\Programacion`. No debe usarse en Vercel ni en un builder
+que no tenga el checkout sibling; para esos entornos se mantiene el flujo de
+artefactos empaquetados descrito abajo.
+
 ---
 
 ## Prerrequisito de red

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { I18nextProvider } from 'react-i18next'
 import { MemoryRouter } from 'react-router-dom'
 import { isNativeApp } from '@paqsuite/react-core'
@@ -48,5 +48,28 @@ describe('LoginPage tenant field', () => {
     vi.mocked(isNativeApp).mockReturnValue(true)
     renderLogin()
     expect(screen.getByTestId('loginTenant')).toBeInTheDocument()
+  })
+
+  it('permite visualizar y ocultar la contraseña', () => {
+    renderLogin()
+
+    const passwordField = screen.getByTestId('loginPassword')
+    const passwordInput = passwordField.querySelector('input')
+    const toggle = screen.getByTestId('loginPasswordToggle')
+
+    expect(passwordInput).not.toBeNull()
+    expect(passwordInput).toHaveAttribute('type', 'password')
+    expect(toggle).toHaveAttribute('title', 'Mostrar contraseña')
+
+    fireEvent.click(toggle)
+
+    expect(screen.getByTestId('loginPassword').querySelector('input')).toHaveAttribute(
+      'type',
+      'text',
+    )
+    expect(screen.getByTestId('loginPasswordToggle')).toHaveAttribute(
+      'title',
+      'Ocultar contraseña',
+    )
   })
 })
