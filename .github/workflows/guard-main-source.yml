@@ -2,16 +2,16 @@ name: Guard main PR source
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, develop]
     types: [opened, synchronize, reopened]
 
 jobs:
   only-develop:
     runs-on: ubuntu-latest
     steps:
-      - name: Require develop as source branch
-        if: github.head_ref != 'develop'
+      - name: Require develop as source branch for main
+        if: github.base_ref == 'main' && github.head_ref != 'develop'
         run: |
           echo "Pull requests into main must come from develop."
           exit 1
-      - run: echo "Source branch is develop"
+      - run: echo "Branch policy passed"
