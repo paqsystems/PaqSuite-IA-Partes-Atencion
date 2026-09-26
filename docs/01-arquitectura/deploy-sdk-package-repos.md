@@ -54,9 +54,11 @@ Si Vercel no ve Tailscale: el fallo es de **infra del builder**, no se vuelve a 
 
 ## Forge (backend)
 
+Si el Deploy Script de Forge se ejecuta desde la raíz del release:
+
 ```bash
+bash "$FORGE_RELEASE_DIRECTORY/scripts/forge-composer-install.sh"
 cd $FORGE_RELEASE_DIRECTORY/backend
-composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 php artisan migrate --force
 php artisan config:cache
 php artisan route:cache
@@ -64,7 +66,17 @@ php artisan view:cache
 php artisan queue:restart || true
 ```
 
+El entrypoint de la raíz delega en `backend/scripts/forge-composer-install.sh`.
+También es válido ejecutar directamente el script del backend después de hacer
+`cd $FORGE_RELEASE_DIRECTORY/backend`.
+
 `composer.json` ya trae `"secure-http": false` y el repo Satis.
+
+El script valida antes de instalar que el lock no contenga el repositorio
+`path` legado a `PaqSuite-IA-FRAMEWORK` y que Forge pueda leer
+`http://100.110.69.93/satis/packages.json`. Si falla esa comprobación, no reutilizar
+`vendor/`: publicar una release nueva con el `composer.lock` versionado y
+corregir la ruta Tailscale/VPN del servidor Forge.
 
 ---
 
