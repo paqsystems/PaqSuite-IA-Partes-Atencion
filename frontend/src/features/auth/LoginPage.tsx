@@ -183,7 +183,7 @@ export function LoginPage() {
                 name: 'togglePasswordVisibility',
                 location: 'after',
                 options: {
-                  icon: isPasswordVisible ? 'eyeclose' : 'eyeopen',
+                  text: isPasswordVisible ? '◉' : '👁',
                   stylingMode: 'text',
                   hint: t(
                     isPasswordVisible
