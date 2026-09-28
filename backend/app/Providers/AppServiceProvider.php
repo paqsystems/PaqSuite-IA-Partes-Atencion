@@ -64,7 +64,18 @@ use PaqSuite\LaravelCore\Security\RolAtributosRepository;
 use PaqSuite\LaravelCore\Security\UserAdminRepository;
 use PaqSuite\LaravelCore\Security\UserEmpresasQueryRepository;
 use PaqSuite\LaravelCore\Security\UserPreferencesRepository;
+use PaqSuite\LaravelCore\Tasks\Backup\MonoRdsBackupGateway;
+use PaqSuite\LaravelCore\Tasks\Backup\MonoRdsBackupService;
+use PaqSuite\LaravelCore\Tasks\Processes\BackupDatabaseProcess;
+use PaqSuite\LaravelCore\Tasks\Repositories\TaskDefinitionRepository;
+use PaqSuite\LaravelCore\Tasks\Repositories\TaskExecutionRepository;
+use PaqSuite\LaravelCore\Tasks\Repositories\TaskProcessRepository;
+use PaqSuite\LaravelCore\Tasks\StoredProcedureTaskDefinitionRepository;
+use PaqSuite\LaravelCore\Tasks\StoredProcedureTaskExecutionRepository;
+use PaqSuite\LaravelCore\Tasks\StoredProcedureTaskProcessRepository;
+use PaqSuite\LaravelCore\Tasks\TaskProcessRegistry;
 use PaqSuite\LaravelCore\Tenancy\MenuProcedimientoChecker;
+use App\Tasks\Backup\RdsSqlServerBackupGateway;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -101,6 +112,15 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(UserPreferencesRepository::class, SpUserPreferencesRepository::class);
         $this->app->singleton(UserEmpresasQueryRepository::class, SpUserEmpresasQueryRepository::class);
         $this->app->singleton(CompanyAllowedChecker::class, SpCompanyAllowedChecker::class);
+        $this->app->singleton(TaskProcessRepository::class, static fn () => new StoredProcedureTaskProcessRepository());
+        $this->app->singleton(TaskDefinitionRepository::class, static fn () => new StoredProcedureTaskDefinitionRepository());
+        $this->app->singleton(TaskExecutionRepository::class, static fn () => new StoredProcedureTaskExecutionRepository());
+        $this->app->singleton(TaskProcessRegistry::class, TaskProcessRegistry::class);
+        $this->app->singleton(MonoRdsBackupGateway::class, RdsSqlServerBackupGateway::class);
+        $this->app->singleton(MonoRdsBackupService::class, static fn ($app) => new MonoRdsBackupService(
+            $app->make(MonoRdsBackupGateway::class),
+            max(1, (int) env('TASKS_BACKUP_POLL_SECONDS', 5)),
+        ));
 
         $this->app->singleton(SpLlmCredentialRepository::class);
         $this->app->singleton(LlmCredentialRepository::class, SpLlmCredentialRepository::class);
@@ -245,6 +265,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(Router $router): void
     {
+        $this->app->make(TaskProcessRegistry::class)->register(
+            BackupDatabaseProcess::PROCESS_CODE,
+            BackupDatabaseProcess::class,
+        );
+
         Sanctum::usePersonalAccessTokenModel(\App\Models\PersonalAccessToken::class);
 
         foreach (PaqSuiteCoreServiceProvider::tenancyMiddlewareAliases() as $alias => $class) {
