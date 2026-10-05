@@ -7,7 +7,7 @@
 | ID | SPEC-006 |
 | Título | Consultas, dashboard y navegación del módulo |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Finalizado |
+| Estado | En revisión |
 | Última actualización | 2026-08-01 |
 | HU relacionada(s) | [HU-006-consultas-dashboard-navegacion](../../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) |
 | TR relacionada(s) | [TR-006-consultas-dashboard-navegacion](../../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) |

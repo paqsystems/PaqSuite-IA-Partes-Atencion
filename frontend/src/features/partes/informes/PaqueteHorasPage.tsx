@@ -57,7 +57,10 @@ export function PaqueteHorasPage() {
   const [fechaDesde, setFechaDesde] = useState(defaultRange.fechaDesde)
   const [fechaHasta, setFechaHasta] = useState(defaultRange.fechaHasta)
   const [clienteId, setClienteId] = useState<number | null>(null)
+  const [tipoClienteId, setTipoClienteId] = useState<number | null>(null)
   const [clientes, setClientes] = useState<Record<string, unknown>[]>([])
+  const [tiposCliente, setTiposCliente] = useState<Record<string, unknown>[]>([])
+  const [tiposClienteLoading, setTiposClienteLoading] = useState(true)
   const [rawRows, setRawRows] = useState<Record<string, unknown>[]>([])
   const [saldoInicial, setSaldoInicial] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -99,6 +102,17 @@ export function PaqueteHorasPage() {
     })
   }, [esCliente])
 
+  useEffect(() => {
+    setTiposClienteLoading(true)
+    void listCatalogo('tipos-cliente')
+      .then((result) => {
+        if (result.kind === 'ok') {
+          setTiposCliente(result.envelope.resultado.items ?? [])
+        }
+      })
+      .finally(() => setTiposClienteLoading(false))
+  }, [])
+
   const load = useCallback(async () => {
     setLoading(true)
     setError(null)
@@ -107,6 +121,7 @@ export function PaqueteHorasPage() {
         fechaDesde,
         fechaHasta,
         clienteId: esCliente ? undefined : clienteId,
+        tipoClienteId,
       })
       if (result.kind === 'ok') {
         setRawRows(result.envelope.resultado.items ?? [])
@@ -120,7 +135,7 @@ export function PaqueteHorasPage() {
     } finally {
       setLoading(false)
     }
-  }, [fechaDesde, fechaHasta, clienteId, esCliente])
+  }, [fechaDesde, fechaHasta, clienteId, tipoClienteId, esCliente])
 
   // Carga inicial únicamente; cambios de filtro se aplican con «Buscar»
   // (evitar overlay a mitad de edición del DateBox).
@@ -177,6 +192,29 @@ export function PaqueteHorasPage() {
                   setFechaHasta(next)
                 }
               }}
+            />
+            <SelectBox
+              dataSource={tiposCliente}
+              value={tipoClienteId}
+              displayExpr={(item: Record<string, unknown> | null) =>
+                item ? `${String(item.code ?? '')} — ${String(item.descripcion ?? '')}` : ''
+              }
+              valueExpr="id"
+              searchEnabled
+              showClearButton
+              placeholder={
+                tiposClienteLoading ? t('catalog.loading') : t('partes.informe.filtro.tipoCliente')
+              }
+              noDataText={tiposClienteLoading ? t('catalog.loading') : undefined}
+              disabled={tiposClienteLoading}
+              width={240}
+              onValueChanged={(e) => {
+                if (!e.event) {
+                  return
+                }
+                setTipoClienteId((e.value as number | null) ?? null)
+              }}
+              elementAttr={{ 'data-testid': 'partesPaqueteTipoCliente' }}
             />
             <Button
               text={t('dashboard.refresh')}
@@ -288,6 +326,29 @@ export function PaqueteHorasPage() {
             elementAttr={{ 'data-testid': 'partesPaqueteCliente' }}
           />
         ) : null}
+        <SelectBox
+          dataSource={tiposCliente}
+          value={tipoClienteId}
+          displayExpr={(item: Record<string, unknown> | null) =>
+            item ? `${String(item.code ?? '')} — ${String(item.descripcion ?? '')}` : ''
+          }
+          valueExpr="id"
+          searchEnabled
+          showClearButton
+          placeholder={
+            tiposClienteLoading ? t('catalog.loading') : t('partes.informe.filtro.tipoCliente')
+          }
+          noDataText={tiposClienteLoading ? t('catalog.loading') : undefined}
+          disabled={tiposClienteLoading}
+          width={240}
+          onValueChanged={(e) => {
+            if (!e.event) {
+              return
+            }
+            setTipoClienteId((e.value as number | null) ?? null)
+          }}
+          elementAttr={{ 'data-testid': 'partesPaqueteTipoCliente' }}
+        />
         <Button
           text={t('partes.common.buscar')}
           onClick={() => void load()}
@@ -328,6 +389,11 @@ export function PaqueteHorasPage() {
             <Column dataField="usuarioNombre" caption={t('partes.informe.field.usuarioNombre')} />
             <Column dataField="clienteCode" caption={t('partes.informe.field.clienteCode')} />
             <Column dataField="clienteNombre" caption={t('partes.informe.field.clienteNombre')} />
+            <Column dataField="tipoClienteCode" caption={t('partes.informe.field.tipoClienteCode')} />
+            <Column
+              dataField="tipoClienteDescripcion"
+              caption={t('partes.informe.field.tipoClienteDescripcion')}
+            />
             <Column dataField="erpCliente" caption={t('partes.informe.field.erpCliente')} />
             <Column dataField="erpArticulo" caption={t('partes.informe.field.erpArticulo')} />
             <Column dataField="tipoTareaCode" caption={t('partes.informe.field.tipoTareaCode')} />

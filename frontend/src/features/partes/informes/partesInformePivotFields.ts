@@ -91,11 +91,32 @@ export function buildConsultaDetalladaPivotFields(t: TFunction, locale = 'es') {
  * **Sin** campo Saldo (R-CO-PH-03 / AC-U05).
  */
 export function buildPaqueteHorasPivotFields(t: TFunction, locale = 'es') {
+  const base = buildConsultaDetalladaPivotFields(t, locale)
+  const clienteNombreIndex = base.findIndex((field) => field.dataField === 'clienteNombre')
+  const tipoClienteFields = [
+    {
+      dataField: 'tipoClienteCode',
+      caption: t('partes.informe.field.tipoClienteCode'),
+    },
+    {
+      dataField: 'tipoClienteDescripcion',
+      caption: t('partes.informe.field.tipoClienteDescripcion'),
+    },
+  ]
+  const withTipo =
+    clienteNombreIndex >= 0
+      ? [
+          ...base.slice(0, clienteNombreIndex + 1),
+          ...tipoClienteFields,
+          ...base.slice(clienteNombreIndex + 1),
+        ]
+      : [...base, ...tipoClienteFields]
+
   return [
-    ...buildConsultaDetalladaPivotFields(t, locale),
+    ...withTipo,
     {
       dataField: 'esTarea',
-      caption: 'Es tarea',
+      caption: t('partes.informe.field.esTarea'),
     },
   ]
 }

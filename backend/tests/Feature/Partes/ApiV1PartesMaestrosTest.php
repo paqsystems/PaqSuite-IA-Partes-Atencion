@@ -227,4 +227,138 @@ class ApiV1PartesMaestrosTest extends TestCase
             ->assertStatus(403)
             ->assertJsonPath('respuesta', 'partes.maestros.forbidden');
     }
+
+    public function test_asistente_muestra_codigo_usuario_y_rechaza_duplicado(): void
+    {
+        $token = $this->loginAdmin();
+        $user = User::factory()->create([
+            'usuario' => 'asstDup',
+            'name' => 'Asistente Duplicado',
+            'password' => bcrypt('Secret123!'),
+            'activo' => true,
+            'inhabilitado' => false,
+        ]);
+
+        $create = $this->postJson('/api/v1/partes/asistentes', [
+            'userId' => $user->id,
+            'code' => 'ADUP',
+            'nombre' => 'Asistente Dup',
+        ], $this->authHeaders($token));
+        $create->assertStatus(201);
+        $asistenteId = (int) $create->json('resultado.item.id');
+
+        $list = $this->getJson('/api/v1/partes/asistentes?code=ADUP', $this->authHeaders($token));
+        $list->assertStatus(200)->assertJsonPath('resultado.items.0.usuarioCodigo', 'asstDup');
+
+        $mismo = $this->putJson('/api/v1/partes/asistentes/'.$asistenteId, [
+            'userId' => $user->id,
+            'code' => 'ADUP',
+            'nombre' => 'Asistente Dup',
+        ], $this->authHeaders($token));
+        $mismo->assertStatus(200);
+
+        $otro = User::factory()->create([
+            'usuario' => 'asstLibre',
+            'password' => bcrypt('Secret123!'),
+            'activo' => true,
+            'inhabilitado' => false,
+        ]);
+        $segundo = $this->postJson('/api/v1/partes/asistentes', [
+            'userId' => $user->id,
+            'code' => 'ADUP2',
+            'nombre' => 'Otro',
+        ], $this->authHeaders($token));
+        $segundo->assertStatus(422)->assertJsonPath('respuesta', 'partes.maestros.exclusividadUserId');
+
+        $tipoId = DB::table('PQ_PARTES_TIPOS_CLIENTE')->insertGetId([
+            'code' => 'TCD',
+            'descripcion' => 'D',
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $clienteMismo = $this->postJson('/api/v1/partes/clientes', [
+            'userId' => $user->id,
+            'code' => 'CDUP',
+            'nombre' => 'Cliente Dup',
+            'tipoClienteId' => $tipoId,
+        ], $this->authHeaders($token));
+        $clienteMismo->assertStatus(422)->assertJsonPath('respuesta', 'partes.maestros.exclusividadUserId');
+
+        $cliente = $this->postJson('/api/v1/partes/clientes', [
+            'userId' => $otro->id,
+            'code' => 'CLIB',
+            'nombre' => 'Cliente Libre',
+            'tipoClienteId' => $tipoId,
+        ], $this->authHeaders($token));
+        $cliente->assertStatus(201);
+        $clienteOtraVez = $this->postJson('/api/v1/partes/clientes', [
+            'userId' => $otro->id,
+            'code' => 'CLIB2',
+            'nombre' => 'Cliente Otra',
+            'tipoClienteId' => $tipoId,
+        ], $this->authHeaders($token));
+        $clienteOtraVez->assertStatus(422)->assertJsonPath('respuesta', 'partes.maestros.exclusividadUserId');
+
+        $inactivo = User::factory()->create([
+            'usuario' => 'off1',
+            'password' => bcrypt('Secret123!'),
+            'activo' => false,
+            'inhabilitado' => false,
+        ]);
+        $this->postJson('/api/v1/partes/asistentes', [
+            'userId' => $inactivo->id,
+            'code' => 'AOFF',
+            'nombre' => 'Off',
+        ], $this->authHeaders($token))
+            ->assertStatus(422)
+            ->assertJsonPath('respuesta', 'partes.maestros.usuarioNoVinculable');
+    }
+
+    public function test_catalogo_usuarios_vinculables_filtra_asignados_e_inactivos(): void
+    {
+        $token = $this->loginAdmin();
+        $libre = User::factory()->create([
+            'usuario' => 'libreCC',
+            'name' => 'Libre',
+            'password' => bcrypt('Secret123!'),
+            'activo' => true,
+            'inhabilitado' => false,
+        ]);
+        $asignado = User::factory()->create([
+            'usuario' => 'yaAsig',
+            'name' => 'Ya',
+            'password' => bcrypt('Secret123!'),
+            'activo' => true,
+            'inhabilitado' => false,
+        ]);
+        User::factory()->create([
+            'usuario' => 'inhabCC',
+            'password' => bcrypt('Secret123!'),
+            'activo' => true,
+            'inhabilitado' => true,
+        ]);
+        $this->postJson('/api/v1/partes/asistentes', [
+            'userId' => $asignado->id,
+            'code' => 'AYAS',
+            'nombre' => 'Ya asignado',
+        ], $this->authHeaders($token))->assertStatus(201);
+
+        $catalogo = $this->getJson('/api/v1/partes/catalogos/usuarios-vinculables', $this->authHeaders($token));
+        $catalogo->assertStatus(200);
+        $codigos = collect($catalogo->json('resultado.items'))->pluck('codigo')->all();
+        $this->assertContains('libreCC', $codigos);
+        $this->assertNotContains('yaAsig', $codigos);
+        $this->assertNotContains('inhabCC', $codigos);
+
+        $conExcepcion = $this->getJson(
+            '/api/v1/partes/catalogos/usuarios-vinculables?exceptoUserId='.$asignado->id,
+            $this->authHeaders($token)
+        );
+        $codigosEx = collect($conExcepcion->json('resultado.items'))->pluck('codigo')->all();
+        $this->assertContains('yaAsig', $codigosEx);
+        $this->assertContains('libreCC', $codigosEx);
+        $this->assertSame('Libre', collect($conExcepcion->json('resultado.items'))->firstWhere('codigo', 'libreCC')['nombre']);
+    }
 }

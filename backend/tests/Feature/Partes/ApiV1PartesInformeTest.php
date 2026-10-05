@@ -364,5 +364,81 @@ class ApiV1PartesInformeTest extends TestCase
         $this->assertSame([-140, -110], $saldos);
         $this->assertFalse((bool) $movs[0]['esTarea']);
         $this->assertTrue((bool) $movs[1]['esTarea']);
+        $this->assertSame('', (string) $paq->json('resultado.items.0.tipoClienteCode'));
+        $this->assertSame('TCP', (string) $movs[0]['tipoClienteCode']);
+        $this->assertSame('Tipo P', (string) $movs[0]['tipoClienteDescripcion']);
+    }
+
+    public function test_paquete_horas_filtra_por_tipo_cliente(): void
+    {
+        $token = $this->loginAdmin();
+        $tipoA = DB::table('PQ_PARTES_TIPOS_CLIENTE')->insertGetId([
+            'code' => 'TA',
+            'descripcion' => 'Tipo A',
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $tipoB = DB::table('PQ_PARTES_TIPOS_CLIENTE')->insertGetId([
+            'code' => 'TB',
+            'descripcion' => 'Tipo B',
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $clienteA = DB::table('PQ_PARTES_CLIENTES')->insertGetId([
+            'code' => 'CA',
+            'nombre' => 'Cliente A',
+            'tipo_cliente_id' => $tipoA,
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $clienteB = DB::table('PQ_PARTES_CLIENTES')->insertGetId([
+            'code' => 'CB',
+            'nombre' => 'Cliente B',
+            'tipo_cliente_id' => $tipoB,
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $tipoTareaId = (int) DB::table('PQ_PARTES_TIPOS_TAREA')->where('code', 'GEN')->value('id');
+        $asistenteId = (int) DB::table('PQ_PARTES_USUARIOS')->where('code', 'admin')->value('id');
+        $hoy = now()->toDateString();
+        $ayer = now()->subDay()->toDateString();
+
+        foreach ([[$clienteA, $ayer, 60], [$clienteB, $ayer, 20], [$clienteA, $hoy, 15], [$clienteB, $hoy, 30]] as [$clienteId, $fecha, $minutos]) {
+            DB::table('PQ_PARTES_REGISTRO_TAREA')->insert([
+                'usuario_id' => $asistenteId,
+                'cliente_id' => $clienteId,
+                'tipo_tarea_id' => $tipoTareaId,
+                'fecha' => $fecha,
+                'duracion_minutos' => $minutos,
+                'sin_cargo' => false,
+                'presencial' => false,
+                'observacion' => 'mov',
+                'cerrado' => false,
+                'es_tarea' => true,
+                'row_version' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        $filtrado = $this->getJson(
+            '/api/v1/partes/informes/paquete-horas?fechaDesde='.$hoy.'&fechaHasta='.$hoy.'&tipoClienteId='.$tipoA,
+            $this->authHeaders($token)
+        );
+        $filtrado->assertStatus(200);
+        $this->assertSame(60, (int) $filtrado->json('resultado.saldoInicial'));
+        $movs = collect($filtrado->json('resultado.items'))->where('esSaldoInicial', false)->values();
+        $this->assertCount(1, $movs);
+        $this->assertSame('TA', (string) $movs[0]['tipoClienteCode']);
+        $this->assertSame('Tipo A', (string) $movs[0]['tipoClienteDescripcion']);
+        $this->assertSame('CA', (string) $movs[0]['clienteCode']);
     }
 }

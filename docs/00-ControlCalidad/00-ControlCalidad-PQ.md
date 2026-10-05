@@ -49,6 +49,76 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 1 | 31/07/2026 | Especificado | `es_tarea` + Paquete de Horas — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md)) |
 | 2 | 01/08/2026 | Especificado | ERP clientes + informes — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md)) |
 | 3 | 09/08/2026 | Especificado | Masivo tilde + carga decimal/Excel/plantillas/tipo default + Smart Capture controles — **F1/F Aprobado 16/09/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-03-2026-09-16.md)) |
+| 4 | 04/10/2026 | Especificado | ABM asistentes/clientes: código de usuario, vínculo único y selector vinculable; Paquete de Horas: filtro y columnas de tipo de cliente |
+| 5 | 05/10/2026 | Especificado | Errores de validación en modal de carga (usuarios y regla transversal UI) |
+
+---
+
+## Control de Calidad #5
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 05/10/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado |
+
+### Hallazgos
+
+Alta de usuario (ABM Usuarios): si la contraseña no cumple la política, el mensaje aparece como texto en la **pantalla principal** (bajo el título), no dentro del modal «Nuevo usuario».
+
+*Procesado* → [SPEC-001-update](../05-open-spec/updates/001-Generalidades/SPEC-001-ui-errores-validacion-contexto-carga-update.md) · [HU-001-update](../03-historias-usuario/updates/001-Generalidades/HU-001-ui-errores-validacion-contexto-carga-update.md) · [TR-001-update](../04-tareas/updates/001-Generalidades/TR-001-ui-errores-validacion-contexto-carga-update.md) · Regla BASE [36-ui-errores-validacion-contexto-carga](../../.cursor/rules/base/20-frontend/36-ui-errores-validacion-contexto-carga.mdc)
+
+### Errores encontrados - Mejoras solicitadas
+
+#### ABM Usuarios (GEN seguridad)
+
+- Los errores de validación al guardar deben mostrarse **en el modal de carga** o en un **popup modal**, no en el layout de la página de fondo.
+- Aplicar el mismo criterio a **todos los procesos de carga en modal** del producto (regla transversal).
+
+---
+
+## Control de Calidad #4
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 04/10/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado |
+| **F1/F** | Verificación agente 05/10/2026 → [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-04-2026-10-04.md) |
+
+### Hallazgos
+
+Mejoras y correcciones tras control de calidad manual y completo
+
+*Procesado* → [SPEC-003-update](../05-open-spec/updates/100-SistemaPartes/SPEC-003-maestros-y-catalogos-update.md) · [HU-003-update](../03-historias-usuario/updates/100-SistemaPartes/HU-003-maestros-y-catalogos-update.md) · [TR-003-update](../04-tareas/updates/100-SistemaPartes/TR-003-maestros-y-catalogos-update.md) · [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion-update.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-consultas-dashboard-navegacion-update.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-consultas-dashboard-navegacion-update.md)
+
+### Errores encontrados - Mejoras solicitadas
+
+#### ABM Asistentes
+
+*Procesado* → [SPEC-003-update](../05-open-spec/updates/100-SistemaPartes/SPEC-003-maestros-y-catalogos-update.md) · [HU-003-update](../03-historias-usuario/updates/100-SistemaPartes/HU-003-maestros-y-catalogos-update.md) · [TR-003-update](../04-tareas/updates/100-SistemaPartes/TR-003-maestros-y-catalogos-update.md)
+
+- No aparece el codigo de usuario asociado.
+- Verificar que no se duplique el usuario asignado. (ni en asistente ni en clientes)
+- limitar la lista de usuario a elegir, a los activos, habilitados y no asignados previamente.
+
+#### ABM Clientes
+
+*Procesado* → [SPEC-003-update](../05-open-spec/updates/100-SistemaPartes/SPEC-003-maestros-y-catalogos-update.md) · [HU-003-update](../03-historias-usuario/updates/100-SistemaPartes/HU-003-maestros-y-catalogos-update.md) · [TR-003-update](../04-tareas/updates/100-SistemaPartes/TR-003-maestros-y-catalogos-update.md)
+
+- Verificar que no se duplique el usuario asignado. (ni en asistente ni en clientes)
+- limitar la lista de usuario a elegir, a los activos, habilitados y no asignados previamente.
+
+#### Paquete de Horas
+
+*Procesado* → [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion-update.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-consultas-dashboard-navegacion-update.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-consultas-dashboard-navegacion-update.md)
+
+-  Agregar filtro "Tipo de Cliente".
+- Agregar columna "Tipo de Cliente" (codigo y descripcion)
 
 ---
 

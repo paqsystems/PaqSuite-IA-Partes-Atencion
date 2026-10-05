@@ -23,6 +23,7 @@ import {
   listAdminUsuariosFull,
 } from './adminSecurityApi'
 import { buildPermisoBatchItems, type PermisoBulkMode } from './buildPermisoBatchItems'
+import { FormContextErrorAlert } from '../../../shared/ui/FormContextErrorAlert'
 
 type CreateForm = {
   userId: number | null
@@ -47,26 +48,28 @@ export function PermisosAdminPage() {
   const [roles, setRoles] = useState<AdminRol[]>([])
   const [rows, setRows] = useState<AdminPermiso[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [listError, setListError] = useState<string | null>(null)
+  const [createFormError, setCreateFormError] = useState<string | null>(null)
+  const [bulkFormError, setBulkFormError] = useState<string | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
   const [createForm, setCreateForm] = useState<CreateForm>(emptyCreate)
   const [bulkOpen, setBulkOpen] = useState(false)
   const [bulk, setBulk] = useState<BulkState | null>(null)
   const [bulkResult, setBulkResult] = useState<{ creados: number; omitidos: number } | null>(null)
 
-  const empresasActivas = useMemo(() => empresas.filter((e) => e.activo), [empresas])
+  const empresasActivas = useMemo(() => empresas.filter((e) => e.habilitada), [empresas])
   const multiEmpresa = empresasActivas.length > 1
   const empresaMonoId = empresasActivas.length === 1 ? empresasActivas[0].id : null
 
   const load = useCallback(async () => {
     setLoading(true)
-    setError(null)
+    setListError(null)
     try {
       const result = await listAdminPermisos()
       if (result.kind === 'ok') {
         setRows(result.envelope.resultado.items ?? [])
       } else if (result.kind === 'envelopeError') {
-        setError(resolveAuthMessage(result.envelope.respuesta))
+        setListError(resolveAuthMessage(result.envelope.respuesta))
       }
     } finally {
       setLoading(false)
@@ -98,7 +101,13 @@ export function PermisosAdminPage() {
       empresaId: empresaMonoId,
       rolId: null,
     })
+    setCreateFormError(null)
     setCreateOpen(true)
+  }
+
+  function closeCreate() {
+    setCreateOpen(false)
+    setCreateFormError(null)
   }
 
   async function handleCreateSave() {
@@ -106,7 +115,7 @@ export function PermisosAdminPage() {
     if (createForm.userId === null || createForm.rolId === null || empresaId === null) {
       return
     }
-    setError(null)
+    setCreateFormError(null)
     const result = await createAdminPermiso({
       userId: createForm.userId,
       empresaId,
@@ -118,7 +127,7 @@ export function PermisosAdminPage() {
       return
     }
     if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setCreateFormError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
@@ -131,12 +140,13 @@ export function PermisosAdminPage() {
     if (result.kind === 'ok') {
       void load()
     } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setListError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
   function openBulk(mode: PermisoBulkMode) {
     setBulkResult(null)
+    setBulkFormError(null)
     setBulk({
       mode,
       anchorId: null,
@@ -174,7 +184,7 @@ export function PermisosAdminPage() {
     if (!ok) {
       return
     }
-    setError(null)
+    setBulkFormError(null)
     setBulkResult(null)
     const result = await batchCreateAdminPermisos(bulkItems)
     if (result.kind === 'ok') {
@@ -183,7 +193,7 @@ export function PermisosAdminPage() {
       return
     }
     if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setBulkFormError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
@@ -214,12 +224,14 @@ export function PermisosAdminPage() {
     setBulkOpen(false)
     setBulk(null)
     setBulkResult(null)
+    setBulkFormError(null)
   }
 
   // MUST contentRender (sin children): en DX React 26 los children del Popup quedan en la página.
   const renderCreateContent = useCallback(
     () => (
       <div style={{ display: 'grid', gap: 12, padding: 8 }} data-testid="adminPermisosForm">
+        <FormContextErrorAlert message={createFormError} testId="adminPermisosFormError" />
         <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: 8 }}>
           <label>{t('admin.permisos.field.usuario')}</label>
           <SelectBox
@@ -240,7 +252,7 @@ export function PermisosAdminPage() {
               dataSource={empresasActivas}
               value={createForm.empresaId}
               valueExpr="id"
-              displayExpr="nombre"
+              displayExpr="nombreEmpresa"
               searchEnabled
               dropDownOptions={{ container: 'body' }}
               elementAttr={{ 'data-testid': 'admin.permisos.create.empresa' }}
@@ -265,7 +277,7 @@ export function PermisosAdminPage() {
           <Button
             text={t('admin.common.cancel')}
             stylingMode="outlined"
-            onClick={() => setCreateOpen(false)}
+            onClick={closeCreate}
             elementAttr={{ 'data-testid': 'admin.permisos.create.cancel' }}
           />
           <Button
@@ -278,7 +290,7 @@ export function PermisosAdminPage() {
         </div>
       </div>
     ),
-    [t, usuarios, roles, empresasActivas, createForm, multiEmpresa]
+    [t, usuarios, roles, empresasActivas, createForm, multiEmpresa, createFormError]
   )
 
   const renderBulkContent = useCallback(() => {
@@ -290,6 +302,7 @@ export function PermisosAdminPage() {
         style={{ display: 'grid', gap: 12, padding: 8, maxHeight: '70vh', overflowY: 'auto' }}
         data-testid="permisos.bulk.modal"
       >
+        <FormContextErrorAlert message={bulkFormError} testId="adminPermisosBulkFormError" />
         {bulk.mode === 'byUser' ? (
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: 8 }}>
             <label>{t('admin.permisos.field.usuario')}</label>
@@ -331,7 +344,7 @@ export function PermisosAdminPage() {
               dataSource={empresasActivas}
               value={bulk.anchorId}
               valueExpr="id"
-              displayExpr="nombre"
+              displayExpr="nombreEmpresa"
               searchEnabled
               dropDownOptions={{ container: 'body' }}
               elementAttr={{ 'data-testid': 'permisos.bulk.anchor.empresa' }}
@@ -344,7 +357,7 @@ export function PermisosAdminPage() {
 
         {!multiEmpresa && empresaMonoId !== null ? (
           <div data-testid="permisos.bulk.empresaMono">
-            {t('admin.permisos.field.empresa')}: {empresasActivas[0]?.nombre}
+            {t('admin.permisos.field.empresa')}: {empresasActivas[0]?.nombreEmpresa}
           </div>
         ) : null}
 
@@ -407,7 +420,7 @@ export function PermisosAdminPage() {
               }
             >
               <Selection mode="multiple" showCheckBoxesMode="always" />
-              <Column dataField="nombre" caption={t('admin.empresas.field.nombre')} />
+              <Column dataField="nombreEmpresa" caption={t('admin.empresas.field.nombre')} />
             </DataGrid>
           </div>
         ) : null}
@@ -456,6 +469,7 @@ export function PermisosAdminPage() {
     bulk,
     bulkItems.length,
     bulkResult,
+    bulkFormError,
     t,
     usuarios,
     roles,
@@ -490,7 +504,9 @@ export function PermisosAdminPage() {
         ) : null}
       </div>
 
-      {error ? <div role="alert">{error}</div> : null}
+      {!createOpen && !bulkOpen && listError ? (
+        <FormContextErrorAlert message={listError} testId="adminPermisosListError" />
+      ) : null}
 
       <div data-testid="admin.permisos.grid">
         <ProcessDataGrid
@@ -541,7 +557,7 @@ export function PermisosAdminPage() {
       {createOpen ? (
         <Popup
           visible
-          onHiding={() => setCreateOpen(false)}
+          onHiding={closeCreate}
           title={t('admin.permisos.newTitle')}
           width={480}
           height="auto"

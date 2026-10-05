@@ -46,6 +46,7 @@ final class PartesMaestrosOperations
             'pq_sp_partes_catalogo_clientes' => self::catalogoClientes(),
             'pq_sp_partes_catalogo_tipos_cliente' => self::catalogoTiposCliente(),
             'pq_sp_partes_catalogo_tipos_tarea_universo' => self::catalogoTiposTareaUniverso($params),
+            'pq_sp_partes_catalogo_usuarios_vinculables' => self::catalogoUsuariosVinculables($params),
             default => throw new RuntimeException("Partes SP {$procedure} sin Operations"),
         };
     }
@@ -53,7 +54,8 @@ final class PartesMaestrosOperations
     /** @param array<string, mixed> $params @return list<object> */
     private static function usuariosList(array $params): array
     {
-        $q = DB::table('PQ_PARTES_USUARIOS as u');
+        $q = DB::table('PQ_PARTES_USUARIOS as u')
+            ->leftJoin('users as fu', 'fu.id', '=', 'u.user_id');
         if (! empty($params['p_code'])) {
             $q->where('u.code', 'like', '%'.$params['p_code'].'%');
         }
@@ -62,6 +64,7 @@ final class PartesMaestrosOperations
         $total = (clone $q)->count();
         $rows = $q->orderBy('u.code')->forPage($page, $pageSize)->get([
             'u.id', 'u.user_id', 'u.code', 'u.nombre', 'u.email', 'u.supervisor', 'u.activo', 'u.inhabilitado',
+            'fu.usuario as usuario_codigo',
         ]);
 
         return self::withTotal($rows, $total);
@@ -90,7 +93,7 @@ final class PartesMaestrosOperations
         if ($code === '') {
             self::fail('partes.maestros.codeRequired');
         }
-        self::assertExclusividad($userId, 'usuario');
+        self::assertUserIdDisponible($userId, 'usuario', $id);
         self::assertUniqueCode('PQ_PARTES_USUARIOS', $code, $id);
 
         $now = now();
@@ -195,7 +198,7 @@ final class PartesMaestrosOperations
             self::fail('partes.maestros.validationFailed');
         }
         if ($userId !== null && $userId !== '') {
-            self::assertExclusividad((int) $userId, 'cliente');
+            self::assertUserIdDisponible((int) $userId, 'cliente', $id);
         }
         self::assertUniqueCode('PQ_PARTES_CLIENTES', $code, $id);
 
@@ -272,7 +275,7 @@ final class PartesMaestrosOperations
             self::fail('partes.maestros.notFound');
         }
         if ($userId !== null && $userId !== '') {
-            self::assertExclusividad((int) $userId, 'cliente');
+            self::assertUserIdDisponible((int) $userId, 'cliente', $id);
             DB::table('PQ_PARTES_CLIENTES')->where('id', $id)->update([
                 'user_id' => (int) $userId,
                 'updated_at' => now(),
@@ -535,26 +538,67 @@ final class PartesMaestrosOperations
         return array_values($map);
     }
 
-    private static function assertExclusividad(int $userId, string $lado): void
+    /**
+     * Usuario activo, habilitado y libre en asistentes y clientes.
+     * El registro en edición ($ignoreId del lado que se graba) no cuenta como duplicado.
+     */
+    private static function assertUserIdDisponible(int $userId, string $lado, ?int $ignoreId): void
     {
-        try {
-            DB::statement('EXEC dbo.pq_sp_partes_assert_user_id_exclusividad @p_user_id = ?, @p_lado = ?', [$userId, $lado]);
-        } catch (\Throwable $e) {
-            if (DB::connection()->getDriverName() === 'sqlite') {
-                if ($lado === 'usuario' && DB::table('PQ_PARTES_CLIENTES')->where('user_id', $userId)->exists()) {
-                    self::fail('partes.maestros.exclusividadUserId');
-                }
-                if ($lado === 'cliente' && DB::table('PQ_PARTES_USUARIOS')->where('user_id', $userId)->exists()) {
-                    self::fail('partes.maestros.exclusividadUserId');
-                }
-
-                return;
-            }
-            if (str_contains($e->getMessage(), 'PARTES_EXCLUSIVIDAD_USER_ID')) {
-                self::fail('partes.maestros.exclusividadUserId');
-            }
-            throw $e;
+        $user = DB::table('users')->where('id', $userId)->first();
+        $activo = $user !== null && (bool) ($user->activo ?? false);
+        $habilitado = $user !== null && ! (bool) ($user->inhabilitado ?? false);
+        if (! $activo || ! $habilitado) {
+            self::fail('partes.maestros.usuarioNoVinculable');
         }
+
+        $asistentes = DB::table('PQ_PARTES_USUARIOS')->where('user_id', $userId);
+        if ($lado === 'usuario' && $ignoreId !== null) {
+            $asistentes->where('id', '<>', $ignoreId);
+        }
+        if ($asistentes->exists()) {
+            self::fail('partes.maestros.exclusividadUserId');
+        }
+
+        $clientes = DB::table('PQ_PARTES_CLIENTES')->where('user_id', $userId);
+        if ($lado === 'cliente' && $ignoreId !== null) {
+            $clientes->where('id', '<>', $ignoreId);
+        }
+        if ($clientes->exists()) {
+            self::fail('partes.maestros.exclusividadUserId');
+        }
+    }
+
+    /** @param array<string, mixed> $params @return list<object> */
+    private static function catalogoUsuariosVinculables(array $params): array
+    {
+        $excepto = (int) ($params['p_excepto_user_id'] ?? 0);
+
+        return DB::table('users as u')
+            ->where('u.activo', 1)
+            ->where('u.inhabilitado', 0)
+            ->where(function ($scope) use ($excepto) {
+                $scope->where(function ($libre) {
+                    $libre->whereNotExists(function ($sub) {
+                        $sub->select(DB::raw('1'))
+                            ->from('PQ_PARTES_USUARIOS as a')
+                            ->whereColumn('a.user_id', 'u.id');
+                    })->whereNotExists(function ($sub) {
+                        $sub->select(DB::raw('1'))
+                            ->from('PQ_PARTES_CLIENTES as c')
+                            ->whereColumn('c.user_id', 'u.id');
+                    });
+                });
+                if ($excepto > 0) {
+                    $scope->orWhere('u.id', $excepto);
+                }
+            })
+            ->orderBy('u.usuario')
+            ->get([
+                'u.id',
+                'u.usuario as codigo',
+                'u.name as nombre',
+            ])
+            ->all();
     }
 
     private static function assertUniqueCode(string $table, string $code, ?int $ignoreId): void

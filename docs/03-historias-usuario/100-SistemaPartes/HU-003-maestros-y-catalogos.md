@@ -8,7 +8,7 @@
 | Título | Maestros y catálogos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Finalizado |
+| Estado | En Control Calidad |
 | Última actualización | 2026-08-01 |
 | SPEC origen | [SPEC-003-maestros-y-catalogos](../../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) |
 | TR relacionada(s) | [TR-003-maestros-y-catalogos](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |

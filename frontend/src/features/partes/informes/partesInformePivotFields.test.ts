@@ -35,10 +35,13 @@ describe('partesInformePivotFields', () => {
     expect(fields.every((field) => String(field.caption).startsWith('i18n:'))).toBe(true)
   })
 
-  it('paquete horas: incluye esTarea y no expone saldo', () => {
+  it('paquete horas: incluye esTarea y tipo de cliente, y no expone saldo', () => {
     const fields = buildPaqueteHorasPivotFields(t)
     expect(fields.some((field) => field.dataField === 'esTarea')).toBe(true)
+    expect(fields.some((field) => field.dataField === 'tipoClienteCode')).toBe(true)
+    expect(fields.some((field) => field.dataField === 'tipoClienteDescripcion')).toBe(true)
     expect(fields.some((field) => field.dataField === 'saldo')).toBe(false)
     expect(fields.some((field) => field.dataField === 'duracionMinutos')).toBe(true)
+    expect(fields.every((field) => String(field.caption).startsWith('i18n:'))).toBe(true)
   })
 })

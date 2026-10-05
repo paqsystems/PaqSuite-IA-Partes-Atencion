@@ -43,6 +43,22 @@ export async function deletePartesResource(path: string, id: number) {
   })
 }
 
+export async function listUsuariosVinculables(exceptoUserId?: number | null) {
+  const params = new URLSearchParams()
+  if (exceptoUserId != null && exceptoUserId > 0) {
+    params.set('exceptoUserId', String(exceptoUserId))
+  }
+  const query = params.toString()
+  return apiRequest<{ items: Array<{ id: number; codigo: string; nombre: string }> }>(
+    `/api/v1/partes/catalogos/usuarios-vinculables${query ? `?${query}` : ''}`,
+    {
+      method: 'GET',
+      headers: authHeaders(),
+      platform: platform(),
+    }
+  )
+}
+
 export async function listAdminUsuarios(soloActivos = '1') {
   return apiRequest<{ items: Array<{ id: number; codigo: string; usuario?: string; nombre: string }> }>(
     `/api/v1/admin/usuarios?soloActivos=${soloActivos}`,

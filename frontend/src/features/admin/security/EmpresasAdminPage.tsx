@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
-import Form, { SimpleItem, RequiredRule } from 'devextreme-react/form'
+import TextBox from 'devextreme-react/text-box'
+import SelectBox from 'devextreme-react/select-box'
+import CheckBox from 'devextreme-react/check-box'
 import { Popup } from 'devextreme-react/popup'
 import { useTranslation } from 'react-i18next'
 import { resolveAuthMessage } from '../../auth/authMessages'
@@ -10,14 +12,15 @@ import {
   applyDevExtremeTheme,
   getActiveEmpresaThemeFromSession,
 } from '../../../theme/devExtremeThemeSwitcher'
+import {
+  FormContextErrorAlert,
+  shouldShowPageListError,
+} from '../../../shared/ui/FormContextErrorAlert'
 import { type AdminEmpresa, listAdminEmpresas, updateAdminEmpresa } from './adminSecurityApi'
+import { type AdminEmpresaFormState, adminEmpresaToFormState } from './adminEmpresaForm'
 import { EMPRESA_THEME_DEFAULT, formatThemeLabel, getEmpresaThemeOptions } from './empresaThemeCatalog'
 
-type FormState = {
-  nombre: string
-  activo: boolean
-  theme: string
-}
+type FormState = AdminEmpresaFormState
 
 const themeOptions = getEmpresaThemeOptions()
 const previewDraftKey = 'adminEmpresasThemePreview'
@@ -37,18 +40,23 @@ export function EmpresasAdminPage() {
   const [rows, setRows] = useState<AdminEmpresa[]>([])
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
-  const [form, setForm] = useState<FormState>({ nombre: '', activo: true, theme: EMPRESA_THEME_DEFAULT })
+  const [form, setForm] = useState<FormState>({
+    nombreEmpresa: '',
+    habilitada: true,
+    theme: EMPRESA_THEME_DEFAULT,
+  })
   const [themeBeforeEdit, setThemeBeforeEdit] = useState(EMPRESA_THEME_DEFAULT)
-  const [error, setError] = useState<string | null>(null)
+  const [listError, setListError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
   const [previewing, setPreviewing] = useState(false)
 
   const load = useCallback(async () => {
-    setError(null)
+    setListError(null)
     const result = await listAdminEmpresas()
     if (result.kind === 'ok') {
       setRows(result.envelope.resultado.items ?? [])
     } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setListError(resolveAuthMessage(result.envelope.respuesta))
     }
   }, [])
 
@@ -76,11 +84,12 @@ export function EmpresasAdminPage() {
   }, [])
 
   function openEdit(row: AdminEmpresa) {
-    const theme = row.theme || EMPRESA_THEME_DEFAULT
+    const formState = adminEmpresaToFormState(row)
     setEditingId(row.id)
-    setForm({ nombre: row.nombre, activo: row.activo, theme })
-    setThemeBeforeEdit(theme)
+    setForm(formState)
+    setThemeBeforeEdit(formState.theme)
     setPreviewing(false)
+    setFormError(null)
     setFormOpen(true)
   }
 
@@ -88,16 +97,22 @@ export function EmpresasAdminPage() {
     await applyDevExtremeTheme(themeBeforeEdit, { reloadOnGroupChange: true })
   }
 
-  async function handleClose() {
-    if (previewing) {
-      await restoreThemeBeforeEdit()
-    }
+  function closeFormShell() {
     setFormOpen(false)
     setPreviewing(false)
+    setFormError(null)
+  }
+
+  function handleClose() {
+    const shouldRestoreTheme = previewing
+    closeFormShell()
+    if (shouldRestoreTheme) {
+      void restoreThemeBeforeEdit()
+    }
   }
 
   async function handleApply() {
-    setError(null)
+    setFormError(null)
     if (editingId !== null) {
       sessionStorage.setItem(
         previewDraftKey,
@@ -115,7 +130,7 @@ export function EmpresasAdminPage() {
     if (editingId === null) {
       return
     }
-    setError(null)
+    setFormError(null)
     const result = await updateAdminEmpresa(editingId, form)
     if (result.kind === 'ok') {
       const saved = result.envelope.resultado.item
@@ -123,7 +138,7 @@ export function EmpresasAdminPage() {
       if (session) {
         const empresas = session.empresas.map((empresa) =>
           empresa.id === saved.id
-            ? { ...empresa, nombreEmpresa: saved.nombre, theme: saved.theme }
+            ? { ...empresa, nombreEmpresa: saved.nombreEmpresa, theme: saved.theme }
             : empresa
         )
         patchAuthSession({ empresas })
@@ -147,7 +162,7 @@ export function EmpresasAdminPage() {
       return
     }
     if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setFormError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
@@ -157,18 +172,20 @@ export function EmpresasAdminPage() {
         <h2 style={{ margin: 0, flex: 1 }}>{t('admin.empresas.title')}</h2>
       </div>
       <p style={{ marginTop: 0 }}>{t('admin.empresas.monoNote')}</p>
-      {error ? <div role="alert">{error}</div> : null}
+      {shouldShowPageListError(formOpen, listError) ? (
+        <FormContextErrorAlert message={listError} testId="adminEmpresasListError" />
+      ) : null}
       <div data-testid="adminEmpresasGrid">
         <DataGrid dataSource={rows} keyExpr="id" showBorders hoverStateEnabled>
           <Paging defaultPageSize={20} />
           <Pager visible showPageSizeSelector />
-          <Column dataField="nombre" caption={t('admin.empresas.field.nombre')} />
+          <Column dataField="nombreEmpresa" caption={t('admin.empresas.field.nombre')} />
           <Column
             dataField="theme"
             caption={t('admin.empresas.field.theme')}
             calculateCellValue={(row: AdminEmpresa) => formatThemeLabel(row.theme || EMPRESA_THEME_DEFAULT)}
           />
-          <Column dataField="activo" caption={t('admin.common.activo')} dataType="boolean" />
+          <Column dataField="habilitada" caption={t('admin.common.activo')} dataType="boolean" />
           <Column
             type="buttons"
             buttons={[
@@ -184,56 +201,57 @@ export function EmpresasAdminPage() {
 
       <Popup
         visible={formOpen}
-        onHiding={() => void handleClose()}
+        onHiding={handleClose}
         title={t('admin.empresas.editTitle')}
         width={520}
         height="auto"
         showCloseButton
         dragEnabled
+        hideOnOutsideClick={!previewing}
       >
-        <div data-testid="adminEmpresasForm" style={{ padding: '8px 12px 4px' }}>
-          <Form
-            formData={form}
-            labelLocation="left"
-            colCount={1}
-            labelMode="outside"
-            showValidationSummary={false}
-            onFieldDataChanged={(e) => {
-              const dataField = e.dataField as keyof FormState | undefined
-              if (!dataField) {
-                return
-              }
-              setForm((prev) => ({ ...prev, [dataField]: e.value as FormState[typeof dataField] }))
-            }}
+        <div
+          data-testid="adminEmpresasForm"
+          style={{ display: 'grid', gap: 12, padding: '8px 12px 4px' }}
+        >
+          <FormContextErrorAlert message={formError} testId="adminEmpresasFormError" />
+          <div
+            style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: 8 }}
           >
-            <SimpleItem
-              dataField="nombre"
-              editorType="dxTextBox"
-              isRequired
-              label={{ text: t('admin.empresas.field.nombre') }}
-              editorOptions={{ stylingMode: 'outlined' }}
-            >
-              <RequiredRule />
-            </SimpleItem>
-            <SimpleItem
-              dataField="theme"
-              editorType="dxSelectBox"
-              label={{ text: t('admin.empresas.field.theme') }}
-              editorOptions={{
-                dataSource: themeOptions,
-                valueExpr: 'value',
-                displayExpr: 'label',
-                searchEnabled: true,
-                stylingMode: 'outlined',
-                elementAttr: { 'data-testid': 'adminEmpresasFormTheme' },
-              }}
+            <label>{t('admin.empresas.field.nombre')}</label>
+            <TextBox
+              value={form.nombreEmpresa}
+              stylingMode="outlined"
+              onValueChanged={(e) =>
+                setForm((prev) => ({ ...prev, nombreEmpresa: e.value ?? '' }))
+              }
             />
-            <SimpleItem
-              dataField="activo"
-              editorType="dxCheckBox"
-              label={{ text: t('admin.common.activo') }}
+          </div>
+          <div
+            style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: 8 }}
+          >
+            <label>{t('admin.empresas.field.theme')}</label>
+            <SelectBox
+              value={form.theme}
+              dataSource={themeOptions}
+              valueExpr="value"
+              displayExpr="label"
+              searchEnabled
+              stylingMode="outlined"
+              onValueChanged={(e) =>
+                setForm((prev) => ({ ...prev, theme: (e.value as string) ?? EMPRESA_THEME_DEFAULT }))
+              }
+              elementAttr={{ 'data-testid': 'adminEmpresasFormTheme' }}
             />
-          </Form>
+          </div>
+          <div
+            style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: 8 }}
+          >
+            <label>{t('admin.common.activo')}</label>
+            <CheckBox
+              value={form.habilitada}
+              onValueChanged={(e) => setForm((prev) => ({ ...prev, habilitada: Boolean(e.value) }))}
+            />
+          </div>
 
           {previewing ? (
             <div role="status" style={{ margin: '8px 0' }} data-testid="adminEmpresasThemePreviewHint">
@@ -247,7 +265,7 @@ export function EmpresasAdminPage() {
             <Button
               text={t('admin.common.cancel')}
               stylingMode="outlined"
-              onClick={() => void handleClose()}
+              onClick={handleClose}
               elementAttr={{ 'data-testid': 'adminEmpresasFormCancel' }}
             />
             <Button
