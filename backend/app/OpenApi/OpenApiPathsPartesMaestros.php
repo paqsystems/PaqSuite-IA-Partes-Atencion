@@ -43,6 +43,7 @@ namespace App\OpenApi;
  * @OA\Get(path="/api/v1/partes/catalogos/asistentes", operationId="partesCatalogoAsistentes", tags={"Partes Maestros"}, summary="Catálogo asistentes (lookup)", security={{"sanctum":{}},{"tenant":{}}}, @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope")))
  * @OA\Get(path="/api/v1/partes/catalogos/tipos-cliente", operationId="partesCatalogoTiposCliente", tags={"Partes Maestros"}, summary="Catálogo tipos cliente (lookup)", security={{"sanctum":{}},{"tenant":{}}}, @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope")))
  * @OA\Get(path="/api/v1/partes/catalogos/tipos-tarea", operationId="partesCatalogoTiposTarea", tags={"Partes Maestros"}, summary="Catálogo tipos tarea (lookup)", security={{"sanctum":{}},{"tenant":{}}}, @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope")))
+ * @OA\Get(path="/api/v1/partes/catalogos/usuarios-vinculables", operationId="partesCatalogoUsuariosVinculables", tags={"Partes Maestros"}, summary="Usuarios Framework activos, habilitados y no asignados", security={{"sanctum":{}},{"tenant":{}}}, @OA\Parameter(name="exceptoUserId", in="query", @OA\Schema(type="integer")), @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope")))
  */
 abstract class OpenApiPathsPartesMaestros
 {

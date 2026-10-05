@@ -11,6 +11,10 @@ import { resolveAuthMessage } from '../../auth/authMessages'
 import { getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import {
+  FormContextErrorAlert,
+  shouldShowPageListError,
+} from '../../../shared/ui/FormContextErrorAlert'
+import {
   type AdminUsuario,
   createAdminUsuario,
   deleteAdminUsuario,
@@ -43,17 +47,18 @@ export function UsuariosAdminPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [form, setForm] = useState<FormState>(emptyForm)
-  const [error, setError] = useState<string | null>(null)
+  const [listError, setListError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
-    setError(null)
+    setListError(null)
     try {
       const result = await listAdminUsuariosFull('0')
       if (result.kind === 'ok') {
         setRows(result.envelope.resultado.items ?? [])
       } else if (result.kind === 'envelopeError') {
-        setError(resolveAuthMessage(result.envelope.respuesta))
+        setListError(resolveAuthMessage(result.envelope.respuesta))
       }
     } finally {
       setLoading(false)
@@ -64,9 +69,15 @@ export function UsuariosAdminPage() {
     void load()
   }, [load])
 
+  function closeForm() {
+    setFormOpen(false)
+    setFormError(null)
+  }
+
   function openCreate() {
     setEditingId(null)
     setForm(emptyForm)
+    setFormError(null)
     setFormOpen(true)
   }
 
@@ -80,11 +91,12 @@ export function UsuariosAdminPage() {
       activo: row.activo,
       inhabilitado: row.inhabilitado,
     })
+    setFormError(null)
     setFormOpen(true)
   }
 
   async function handleSave() {
-    setError(null)
+    setFormError(null)
     if (editingId === null) {
       const result = await createAdminUsuario({
         usuario: form.usuario,
@@ -99,7 +111,7 @@ export function UsuariosAdminPage() {
         return
       }
       if (result.kind === 'envelopeError') {
-        setError(resolveAuthMessage(result.envelope.respuesta))
+        setFormError(resolveAuthMessage(result.envelope.respuesta))
       }
       return
     }
@@ -117,7 +129,7 @@ export function UsuariosAdminPage() {
       return
     }
     if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setFormError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
@@ -130,14 +142,16 @@ export function UsuariosAdminPage() {
     if (result.kind === 'ok') {
       void load()
     } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setListError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
   return (
     <div data-testid="adminUsuariosPage" style={{ padding: 16 }}>
       <h2 style={{ margin: '0 0 12px' }}>{t('admin.usuarios.title')}</h2>
-      {error ? <div role="alert">{error}</div> : null}
+      {shouldShowPageListError(formOpen, listError) ? (
+        <FormContextErrorAlert message={listError} testId="adminUsuariosListError" />
+      ) : null}
       <div data-testid="adminUsuariosGrid">
         <ProcessDataGrid
           dataSource={rows}
@@ -182,13 +196,14 @@ export function UsuariosAdminPage() {
 
       <Popup
         visible={formOpen}
-        onHiding={() => setFormOpen(false)}
+        onHiding={closeForm}
         title={editingId ? t('admin.usuarios.editTitle') : t('admin.usuarios.newTitle')}
         width={420}
         height="auto"
         showCloseButton
       >
         <div style={{ display: 'grid', gap: 12, padding: 8 }} data-testid="adminUsuariosForm">
+          <FormContextErrorAlert message={formError} testId="adminUsuariosFormError" />
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: 8 }}>
             <label>{t('admin.usuarios.field.usuario')}</label>
             <TextBox
@@ -238,7 +253,7 @@ export function UsuariosAdminPage() {
             </div>
           ) : null}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <Button text={t('admin.common.cancel')} onClick={() => setFormOpen(false)} />
+            <Button text={t('admin.common.cancel')} onClick={closeForm} />
             <Button
               text={t('admin.common.save')}
               type="default"

@@ -35,6 +35,10 @@ const authMessageMap: Record<string, string> = {
   'partes.maestros.userIdRequired': 'Debe seleccionar un usuario Framework.',
   'partes.maestros.userIdExclusive':
     'El usuario ya está vinculado a otro perfil Partes (asistente o cliente).',
+  'partes.maestros.exclusividadUserId':
+    'El usuario ya está vinculado a otro perfil Partes (asistente o cliente).',
+  'partes.maestros.usuarioNoVinculable':
+    'El usuario debe estar activo, habilitado y sin un vínculo previo.',
   'partes.maestros.hasReferences':
     'No se puede eliminar: el registro tiene referencias. Inhabilítelo.',
   'partes.maestros.deleteConReferencias':

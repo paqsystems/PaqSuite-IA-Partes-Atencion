@@ -7,7 +7,7 @@
 | ID | SPEC-003 |
 | Título | Maestros y catálogos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Finalizado |
+| Estado | En revisión |
 | Última actualización | 2026-08-01 |
 | HU relacionada(s) | [HU-003-maestros-y-catalogos](../../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) |
 | TR relacionada(s) | [TR-003-maestros-y-catalogos](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |

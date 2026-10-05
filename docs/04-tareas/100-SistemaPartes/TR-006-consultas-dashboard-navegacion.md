@@ -9,7 +9,7 @@
 | **Roles** | Cliente / asistente / supervisor (delimitación SPEC-002) |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-003](./TR-003-maestros-y-catalogos.md) (menú Archivos), [TR-004](./TR-004-operacion-carga-diaria.md) (tareas), [TR-005](./TR-005-supervision-proceso-masivo.md) (ítem masivo menú) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Finalizado |
+| **Estado** | En Control Calidad |
 | **Última actualización** | 2026-08-01 |
 
 **Origen:** [HU-006](../../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md)  

@@ -10,6 +10,7 @@ export function AsistentesPage() {
       testIdPrefix="partesMaestrosAsistentes"
       columns={[
         { dataField: 'code', caption: t('partes.informe.field.ejeCodigo') },
+        { dataField: 'usuarioCodigo', caption: t('partes.maestros.field.usuarioCodigo') },
         { dataField: 'nombre', caption: t('partes.maestros.field.nombre') },
         { dataField: 'supervisor', caption: t('partes.maestros.field.supervisor') },
         { dataField: 'activo', caption: t('admin.common.activo') },

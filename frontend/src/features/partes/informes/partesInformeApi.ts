@@ -69,6 +69,7 @@ export async function fetchPaqueteHoras(query: {
   fechaDesde: string
   fechaHasta: string
   clienteId?: number | null
+  tipoClienteId?: number | null
 }) {
   const params = new URLSearchParams({
     fechaDesde: query.fechaDesde,
@@ -76,6 +77,9 @@ export async function fetchPaqueteHoras(query: {
   })
   if (query.clienteId != null) {
     params.set('clienteId', String(query.clienteId))
+  }
+  if (query.tipoClienteId != null) {
+    params.set('tipoClienteId', String(query.tipoClienteId))
   }
   return apiRequest<{
     items: Record<string, unknown>[]

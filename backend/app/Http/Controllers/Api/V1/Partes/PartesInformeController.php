@@ -116,6 +116,7 @@ final class PartesInformeController extends Controller
                 'p_fecha_hasta' => $fechaHasta,
                 'p_cliente_id' => $request->query('clienteId'),
                 'p_usuario_id' => $request->query('usuarioId'),
+                'p_tipo_cliente_id' => $request->query('tipoClienteId'),
             ]))[0] ?? null;
 
             $itemsRaw = json_decode((string) ($row->items_json ?? '[]'), true);

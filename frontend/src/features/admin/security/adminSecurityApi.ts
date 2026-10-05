@@ -13,10 +13,11 @@ export type AdminUsuario = {
   inhabilitado: boolean
 }
 
+/** Contrato API GEN-06 (`EmpresasController` / `SpEmpresaAdminRepository`). */
 export type AdminEmpresa = {
   id: number
-  nombre: string
-  activo: boolean
+  nombreEmpresa: string
+  habilitada: boolean
   theme: string
 }
 
@@ -147,7 +148,7 @@ export async function listAdminEmpresas() {
 
 export async function updateAdminEmpresa(
   id: number,
-  body: { nombre?: string; activo?: boolean; theme?: string }
+  body: { nombreEmpresa?: string; habilitada?: boolean; theme?: string }
 ) {
   return request<{ item: AdminEmpresa }>(`/api/v1/admin/empresas/${id}`, {
     method: 'PUT',

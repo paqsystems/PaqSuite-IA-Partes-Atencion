@@ -10,6 +10,10 @@ import { resolveAuthMessage } from '../../auth/authMessages'
 import { getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import {
+  FormContextErrorAlert,
+  shouldShowPageListError,
+} from '../../../shared/ui/FormContextErrorAlert'
+import {
   deletePartesResource,
   listCatalogo,
   listPartesResource,
@@ -25,17 +29,18 @@ export function ClienteTiposTareaPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [clienteId, setClienteId] = useState<number | null>(null)
   const [tipoTareaId, setTipoTareaId] = useState<number | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [listError, setListError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
-    setError(null)
+    setListError(null)
     try {
       const result = await listPartesResource('cliente-tipos-tarea')
       if (result.kind === 'ok') {
         setRows(result.envelope.resultado.items ?? [])
       } else if (result.kind === 'envelopeError') {
-        setError(resolveAuthMessage(result.envelope.respuesta))
+        setListError(resolveAuthMessage(result.envelope.respuesta))
       }
     } finally {
       setLoading(false)
@@ -57,20 +62,33 @@ export function ClienteTiposTareaPage() {
     })
   }, [load])
 
+  function closeForm() {
+    setFormOpen(false)
+    setFormError(null)
+  }
+
+  function openCreate() {
+    setClienteId(null)
+    setTipoTareaId(null)
+    setFormError(null)
+    setFormOpen(true)
+  }
+
   async function handleSave() {
+    setFormError(null)
     const result = await savePartesResource('cliente-tipos-tarea', {
       clienteId,
       tipoTareaId,
     })
     if (result.kind === 'ok') {
-      setFormOpen(false)
+      closeForm()
       setClienteId(null)
       setTipoTareaId(null)
       void load()
       return
     }
     if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setFormError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
@@ -86,14 +104,19 @@ export function ClienteTiposTareaPage() {
     if (result.kind === 'ok') {
       void load()
     } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setListError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
   return (
     <div data-testid="partesMaestrosAsignacionesPage" style={{ padding: 16 }}>
       <h2 style={{ margin: '0 0 12px' }}>{t('partes.maestros.asignaciones.title')}</h2>
-      {error ? <div role="alert">{error}</div> : null}
+      {shouldShowPageListError(formOpen, listError) ? (
+        <FormContextErrorAlert
+          message={listError}
+          testId="partesMaestrosAsignacionesListError"
+        />
+      ) : null}
       <div data-testid="partesMaestrosAsignacionesGrid">
         <ProcessDataGrid
           dataSource={rows}
@@ -103,7 +126,7 @@ export function ClienteTiposTareaPage() {
           gridId="asignaciones"
           accessToken={getAuthToken()}
           platform={buildAuthPlatformHeaders()}
-          onCreate={() => setFormOpen(true)}
+          onCreate={openCreate}
           createHint={t('partes.common.agregar')}
           createTestId="partesMaestrosAsignacionesAdd"
         >
@@ -130,7 +153,7 @@ export function ClienteTiposTareaPage() {
       </div>
       <Popup
         visible={formOpen}
-        onHiding={() => setFormOpen(false)}
+        onHiding={closeForm}
         title={t('partes.maestros.asignaciones.nueva')}
         width={480}
         height="auto"
@@ -140,6 +163,10 @@ export function ClienteTiposTareaPage() {
           style={{ display: 'grid', gap: 12, padding: 8 }}
           data-testid="partesMaestrosAsignacionesForm"
         >
+          <FormContextErrorAlert
+            message={formError}
+            testId="partesMaestrosAsignacionesFormError"
+          />
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8, alignItems: 'center' }}>
             <label>{t('partes.informe.filtro.cliente')}</label>
             <SelectBox
@@ -163,7 +190,7 @@ export function ClienteTiposTareaPage() {
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <Button text={t('parametros.modal.cancel')} onClick={() => setFormOpen(false)} />
+            <Button text={t('parametros.modal.cancel')} onClick={closeForm} />
             <Button
               text={t('admin.common.save')}
               type="default"

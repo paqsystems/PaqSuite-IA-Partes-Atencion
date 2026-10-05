@@ -271,6 +271,19 @@ final class PartesMaestrosController extends Controller
         return $this->catalogo('pq_sp_partes_catalogo_tipos_cliente');
     }
 
+    public function catalogoUsuariosVinculables(Request $request): JsonResponse
+    {
+        try {
+            $items = $this->repository->call('pq_sp_partes_catalogo_usuarios_vinculables', [
+                'p_excepto_user_id' => $request->query('exceptoUserId'),
+            ]);
+
+            return ApiResponse::success(['items' => $items]);
+        } catch (PartesMaestrosException $e) {
+            return $this->fromException($e);
+        }
+    }
+
     public function catalogoTiposTarea(Request $request): JsonResponse
     {
         try {
