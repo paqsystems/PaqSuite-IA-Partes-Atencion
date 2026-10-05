@@ -9,7 +9,7 @@
 | **Roles** | Operador con permiso menú Archivos (seed: admin/PQ + rol SUPERVISOR); **no** cliente funcional |
 | **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md), [TR-002](./TR-002-identidad-funcional-y-acceso.md); lookup GEN `GET /api/v1/admin/usuarios` (o implementar lookup si aún no existe en host) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Finalizado |
+| **Estado** | En Control Calidad |
 | **Última actualización** | 2026-08-01 |
 
 **Origen:** [HU-003](../../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md)  

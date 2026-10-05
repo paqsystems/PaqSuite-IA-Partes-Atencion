@@ -184,6 +184,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/catalogos/asistentes', [$c, 'catalogoAsistentes']);
             Route::get('/catalogos/tipos-cliente', [$c, 'catalogoTiposCliente']);
             Route::get('/catalogos/tipos-tarea', [$c, 'catalogoTiposTarea']);
+            Route::get('/catalogos/usuarios-vinculables', [$c, 'catalogoUsuariosVinculables']);
 
             $t = PartesTareaController::class;
             Route::get('/parametros/duracion-tramo', [$t, 'duracionTramo']);

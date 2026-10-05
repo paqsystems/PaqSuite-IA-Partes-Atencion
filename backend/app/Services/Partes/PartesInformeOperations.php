@@ -181,7 +181,7 @@ final class PartesInformeOperations
             self::fail('partes.tarea.fechasRequeridas');
         }
 
-        $prevRows = self::baseScoped($params, soloTareas: false)
+        $prevRows = self::paqueteScoped($params, self::baseScoped($params, soloTareas: false))
             ->whereDate('r.fecha', '<', $fechaDesde)
             ->get(['r.es_tarea', 'r.duracion_minutos']);
 
@@ -190,10 +190,13 @@ final class PartesInformeOperations
             $saldoInicial += self::signedMinutos((bool) $prev->es_tarea, (int) $prev->duracion_minutos);
         }
 
-        $movRows = self::baseFiltered($params, $fechaDesde, $fechaHasta, false)
+        $movRows = self::paqueteScoped($params, self::baseFiltered($params, $fechaDesde, $fechaHasta, false))
             ->orderBy('r.fecha')
             ->orderBy('r.id')
-            ->get(self::detalleSelectColumns());
+            ->get(array_merge(self::detalleSelectColumns(), [
+                'tc.code as tipo_cliente_code',
+                'tc.descripcion as tipo_cliente_descripcion',
+            ]));
 
         $items = [];
         $running = $saldoInicial;
@@ -218,6 +221,8 @@ final class PartesInformeOperations
             'erp_articulo' => '',
             'tipo_tarea_code' => '',
             'tipo_tarea_descripcion' => '',
+            'tipo_cliente_code' => '',
+            'tipo_cliente_descripcion' => '',
             'saldo' => $saldoInicial,
         ];
 
@@ -246,6 +251,8 @@ final class PartesInformeOperations
                 'erp_articulo' => (string) ($row->erp_articulo ?? ''),
                 'tipo_tarea_code' => (string) $row->tipo_tarea_code,
                 'tipo_tarea_descripcion' => (string) $row->tipo_tarea_descripcion,
+                'tipo_cliente_code' => (string) ($row->tipo_cliente_code ?? ''),
+                'tipo_cliente_descripcion' => (string) ($row->tipo_cliente_descripcion ?? ''),
                 'saldo' => $running,
             ];
         }
@@ -255,6 +262,23 @@ final class PartesInformeOperations
             'items_json' => json_encode($items, JSON_UNESCAPED_UNICODE),
             'total' => count($items),
         ]];
+    }
+
+    /**
+     * Join y filtro de tipo de cliente solo para Paquete de Horas.
+     *
+     * @param  array<string, mixed>  $params
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private static function paqueteScoped(array $params, $query)
+    {
+        $query->leftJoin('PQ_PARTES_TIPOS_CLIENTE as tc', 'tc.id', '=', 'c.tipo_cliente_id');
+        if (! empty($params['p_tipo_cliente_id'])) {
+            $query->where('c.tipo_cliente_id', (int) $params['p_tipo_cliente_id']);
+        }
+
+        return $query;
     }
 
     /** @return list<string|\Illuminate\Database\Query\Expression> */

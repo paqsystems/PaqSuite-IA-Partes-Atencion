@@ -13,8 +13,12 @@ import { resolveAuthMessage } from '../../auth/authMessages'
 import { getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import {
+  FormContextErrorAlert,
+  shouldShowPageListError,
+} from '../../../shared/ui/FormContextErrorAlert'
+import {
   deletePartesResource,
-  listAdminUsuarios,
+  listUsuariosVinculables,
   listCatalogo,
   listPartesResource,
   savePartesResource,
@@ -57,19 +61,21 @@ export function MaestroCrudPage({
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [form, setForm] = useState<Record<string, unknown>>(initialForm)
-  const [error, setError] = useState<string | null>(null)
-  const [users, setUsers] = useState<Array<{ id: number; usuario: string; nombre: string }>>([])
+  const [listError, setListError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
+  const [users, setUsers] = useState<Array<{ id: number; codigo: string; nombre: string }>>([])
+  const [usersLoading, setUsersLoading] = useState(false)
   const [catalogs, setCatalogs] = useState<Record<string, Record<string, unknown>[]>>({})
 
   const load = useCallback(async () => {
     setLoading(true)
-    setError(null)
+    setListError(null)
     try {
       const result = await listPartesResource(resourcePath)
       if (result.kind === 'ok') {
         setRows(result.envelope.resultado.items ?? [])
       } else if (result.kind === 'envelopeError') {
-        setError(resolveAuthMessage(result.envelope.respuesta))
+        setListError(resolveAuthMessage(result.envelope.respuesta))
       }
     } finally {
       setLoading(false)
@@ -80,16 +86,18 @@ export function MaestroCrudPage({
     void load()
   }, [load])
 
-  useEffect(() => {
-    const needsUsers = fields.some((field) => field.type === 'user')
-    if (!needsUsers) {
+  const loadVinculables = useCallback((exceptoUserId?: number | null) => {
+    if (!fields.some((field) => field.type === 'user')) {
       return
     }
-    void listAdminUsuarios('1').then((result) => {
-      if (result.kind === 'ok') {
-        setUsers(result.envelope.resultado.items ?? [])
-      }
-    })
+    setUsersLoading(true)
+    void listUsuariosVinculables(exceptoUserId)
+      .then((result) => {
+        if (result.kind === 'ok') {
+          setUsers(result.envelope.resultado.items ?? [])
+        }
+      })
+      .finally(() => setUsersLoading(false))
   }, [fields])
 
   useEffect(() => {
@@ -105,19 +113,30 @@ export function MaestroCrudPage({
     })
   }, [fields])
 
+  function closeForm() {
+    setFormOpen(false)
+    setFormError(null)
+  }
+
   function openCreate() {
     setEditingId(null)
     setForm({ ...initialForm })
+    loadVinculables(null)
+    setFormError(null)
     setFormOpen(true)
   }
 
   function openEdit(row: Record<string, unknown>) {
     setEditingId(Number(row.id))
     setForm({ ...initialForm, ...row })
+    const currentUserId = Number(row.userId ?? 0)
+    loadVinculables(currentUserId > 0 ? currentUserId : null)
+    setFormError(null)
     setFormOpen(true)
   }
 
   async function handleSave() {
+    setFormError(null)
     if (editingId !== null && fields.some((f) => f.type === 'user')) {
       const previous = rows.find((row) => Number(row.id) === editingId)
       if (previous && previous.userId && form.userId && previous.userId !== form.userId) {
@@ -137,7 +156,7 @@ export function MaestroCrudPage({
       return
     }
     if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setFormError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
@@ -150,14 +169,16 @@ export function MaestroCrudPage({
     if (result.kind === 'ok') {
       void load()
     } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setListError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
   return (
     <div data-testid={`${testIdPrefix}Page`} style={{ padding: 16 }}>
       <h2 style={{ margin: '0 0 12px' }}>{pageTitle}</h2>
-      {error ? <div role="alert">{error}</div> : null}
+      {shouldShowPageListError(formOpen, listError) ? (
+        <FormContextErrorAlert message={listError} testId={`${testIdPrefix}ListError`} />
+      ) : null}
       <div data-testid={`${testIdPrefix}Grid`}>
         <ProcessDataGrid
           dataSource={rows}
@@ -196,7 +217,7 @@ export function MaestroCrudPage({
 
       <Popup
         visible={formOpen}
-        onHiding={() => setFormOpen(false)}
+        onHiding={closeForm}
         title={
           editingId
             ? t('partes.maestros.editTitle', { title })
@@ -207,6 +228,7 @@ export function MaestroCrudPage({
         showCloseButton
       >
         <div style={{ display: 'grid', gap: 12, padding: 8 }} data-testid={`${testIdPrefix}Form`}>
+          <FormContextErrorAlert message={formError} testId={`${testIdPrefix}FormError`} />
           {fields.map((field) => (
             <div
               key={field.key}
@@ -232,10 +254,14 @@ export function MaestroCrudPage({
                   value={form[field.key] ?? null}
                   valueExpr="id"
                   displayExpr={(item) =>
-                    item ? `${item.codigo ?? item.usuario} — ${item.nombre}` : ''
+                    item ? `${item.codigo} — ${item.nombre}` : ''
                   }
                   searchEnabled
+                  placeholder={usersLoading ? t('catalog.loading') : ''}
+                  noDataText={usersLoading ? t('catalog.loading') : undefined}
+                  disabled={usersLoading}
                   onValueChanged={(e) => setForm((prev) => ({ ...prev, [field.key]: e.value }))}
+                  elementAttr={{ 'data-testid': `${testIdPrefix}Usuario` }}
                 />
               ) : null}
               {field.type === 'catalog' ? (
@@ -251,7 +277,7 @@ export function MaestroCrudPage({
             </div>
           ))}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <Button text={t('parametros.modal.cancel')} onClick={() => setFormOpen(false)} />
+            <Button text={t('parametros.modal.cancel')} onClick={closeForm} />
             <Button
               text={t('admin.common.save')}
               type="default"
