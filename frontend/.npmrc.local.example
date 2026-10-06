@@ -1,0 +1,4 @@
+# Copiar a .npmrc.local (gitignored) o fusionar en el .npmrc de usuario para lab con Tailscale sin Funnel.
+# No commitear tokens.
+@paqsuite:registry=http://100.110.69.93:4873
+//100.110.69.93:4873/:_authToken=${VERDACCIO_AUTH_TOKEN}
