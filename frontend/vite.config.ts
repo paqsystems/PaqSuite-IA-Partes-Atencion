@@ -51,6 +51,18 @@ export default defineConfig(({ mode }) => {
     resolve: {
       dedupe: ['react', 'react-dom', 'devextreme', 'devextreme-react'],
       alias: {
+        '@paqsuite/react-core/auth.css': path.resolve(
+          __dirname,
+          '../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/ui/auth/authLayout.css',
+        ),
+        '@paqsuite/react-core/shell.css': path.resolve(
+          __dirname,
+          '../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/ui/shell/shellLayout.css',
+        ),
+        '@paqsuite/react-core': path.resolve(
+          __dirname,
+          '../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/index.ts',
+        ),
         react: path.resolve(__dirname, 'node_modules/react'),
         'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
         'react/jsx-runtime': path.resolve(__dirname, 'node_modules/react/jsx-runtime.js'),

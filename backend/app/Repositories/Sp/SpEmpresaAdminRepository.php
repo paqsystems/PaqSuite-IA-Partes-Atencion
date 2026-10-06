@@ -52,6 +52,16 @@ final class SpEmpresaAdminRepository implements EmpresaAdminRepository
     /**
      * @return array<string, mixed>
      */
+    public function listCandidatosErp(): array
+    {
+        return [];
+    }
+
+    public function createFromAlta(array $data): array
+    {
+        throw new \DomainException('empresas.alta.monoForbidden');
+    }
+
     private function mapRow(object $row): array
     {
         return [
