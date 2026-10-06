@@ -3,7 +3,8 @@ specId: SPEC-002
 titulo: Identidad funcional y acceso a Partes
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-07-31
+ultimaActualizacion: 2026-10-05
+procesoErrores: P01
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md
 ---
 
@@ -71,6 +72,9 @@ Para usar Partes de Atención necesitás credenciales válidas **y** un perfil f
 | Contraseña demasiado corta / insegura | `auth.password.tooShort` / `auth.password.policyUnsafe` | No cumple política | Cumplir longitud y reglas indicadas |
 | Enlace de restablecimiento inválido | `auth.resetTokenInvalid` | Token vencido o usado | Solicitar un nuevo enlace |
 | Instalación o tenant no válido | `tenant.invalid` | Código de empresa incorrecto | Verificar con el administrador |
+| Complete contraseña actual, nueva y confirmación | `auth.password.fieldsRequired` | Formulario incompleto | Completar los tres campos |
+| La nueva contraseña debe ser distinta a la actual | `auth.password.sameAsCurrent` | Misma clave | Elegir otra contraseña |
+| La contraseña actual no es válida | `auth.password.currentInvalid` / `auth.password.invalidCurrent` | Clave actual incorrecta | Verificar contraseña actual |
 
 ## Errores de lógica
 
@@ -80,6 +84,8 @@ Para usar Partes de Atención necesitás credenciales válidas **y** un perfil f
 | Perfil Partes inconsistente | `partes.auth.inconsistentProfile` | Doble vínculo o datos contradictorios | Contactar al administrador |
 | Sesión vencida por inactividad | `auth.sessionExpired` | Tiempo de idle superado | Volver a iniciar sesión |
 | No tiene empresas habilitadas | `shell.blockedNoCompany` | Sin empresa en la sesión | Pedir alta de empresa / permisos |
+| Instalación no habilitada para Partes | `tenant.gatewayNotSupported` | Configuración de la instalación | Contactar al administrador |
+| La sesión no es válida para esta empresa | `auth.sessionUnauthorized` | Empresa o sesión inconsistente | Cerrar sesión e ingresar de nuevo |
 
 ## Errores técnicos posibles
 
@@ -88,6 +94,9 @@ Para usar Partes de Atención necesitás credenciales válidas **y** un perfil f
 | Error de conexión | `infra.transport` | Red, proxy o servidor | Reintentar; si persiste, soporte |
 | Error inesperado | `infra.unexpected` | Fallo interno | Reintentar; reportar hora y pantalla |
 | No se pudo enviar el correo de recuperación | `mailEngine.sendFailed` | Mail del servidor | Avisar a administración / soporte |
+| Falta configuración de correo en el servidor | `mailEngine.configMissing` | Servidor sin mail | Avisar a administración |
+
+**Catálogo completo:** proceso **P01** y transversal **P00** en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md). Tras ingresar a Partes, también pueden aparecer mensajes de otros procesos si navegás a esas pantallas.
 
 ## Preguntas frecuentes
 

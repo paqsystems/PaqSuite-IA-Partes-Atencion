@@ -3,7 +3,8 @@ specId: SPEC-003
 titulo: Maestros y catálogos de Partes
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-08-01
+ultimaActualizacion: 2026-10-05
+procesoErrores: P02
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md
 ---
 
@@ -80,7 +81,8 @@ En el alta/edición de un cliente podés completar, de forma opcional, **Erp Cli
 | Qué ve el usuario | Código / clave | Regla de negocio | Qué hacer |
 |-------------------|----------------|------------------|-----------|
 | No tiene permiso para administrar maestros | `partes.maestros.forbidden` | Sin permiso ABM | Pedir permiso o usar otro usuario |
-| Usuario ya vinculado a otro perfil Partes | `partes.maestros.userIdExclusive` | Exclusividad asistente/cliente | Elegir otro usuario o liberar el vínculo |
+| Usuario ya vinculado a otro perfil Partes | `partes.maestros.userIdExclusive` / `partes.maestros.exclusividadUserId` | Exclusividad asistente/cliente | Elegir otro usuario o liberar el vínculo |
+| El usuario no se puede vincular | `partes.maestros.usuarioNoVinculable` | Inactivo o ya vinculado | Usuario activo sin otro vínculo Partes |
 | No se puede asignar un tipo genérico a un cliente | `partes.maestros.tipoGenericoNoAsignable` | Genéricos no se asignan | Elegir un tipo no genérico |
 | No se puede inhabilitar el tipo default | `partes.maestros.tipoDefaultNoInhabilitar` | Debe haber default usable | Marcar otro default primero |
 | No se puede eliminar: tiene referencias | `partes.maestros.hasReferences` / `partes.maestros.deleteConReferencias` | Historial de tareas | Inhabilitar en lugar de borrar |
@@ -92,6 +94,8 @@ En el alta/edición de un cliente podés completar, de forma opcional, **Erp Cli
 |-------------------|---------------------------|---------------|------------------------------|
 | Error de conexión | `infra.transport` | Red o servidor | Reintentar; soporte si persiste |
 | Error inesperado | `infra.unexpected` | Fallo interno | Reportar a soporte |
+
+**Catálogo completo:** proceso **P02** y transversal **P00** en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md).
 
 ## Preguntas frecuentes
 
