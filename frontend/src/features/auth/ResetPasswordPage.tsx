@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   AuthCardLayout,
   LanguageSelector,
@@ -19,7 +19,7 @@ import {
   passwordPolicyHint,
   resolveAuthMessage,
 } from './authMessages'
-import { resolvePartesAuthHero } from './partesAuthHero'
+import { resolveAppAuthHero } from './appProductBranding'
 
 export function ResetPasswordPage() {
   const { t } = useTranslation()
@@ -37,7 +37,7 @@ export function ResetPasswordPage() {
   const [policyMode, setPolicyMode] = useState<'simple' | 'segura'>('simple')
   const [policyMin, setPolicyMin] = useState(8)
 
-  const authHero = resolvePartesAuthHero(t)
+  const authHero = useMemo(() => resolveAppAuthHero(locale), [locale])
 
   useEffect(() => {
     const fromQuery = normalizeLocale(searchParams.get('locale'))

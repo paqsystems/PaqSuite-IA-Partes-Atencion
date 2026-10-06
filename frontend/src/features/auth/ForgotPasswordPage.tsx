@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   AuthCardLayout,
   LanguageSelector,
@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom'
 import { applyGuestLocale } from '../../i18n/i18n'
 import { forgotPasswordRequest } from './authApi'
 import { resolveAuthMessage } from './authMessages'
-import { resolvePartesAuthHero } from './partesAuthHero'
+import { resolveAppAuthHero } from './appProductBranding'
 
 export function ForgotPasswordPage() {
   const { t } = useTranslation()
@@ -27,7 +27,7 @@ export function ForgotPasswordPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const authHero = resolvePartesAuthHero(t)
+  const authHero = useMemo(() => resolveAppAuthHero(locale), [locale])
 
   async function handleLocaleChange(next: LocaleCode) {
     setLocale(next)
