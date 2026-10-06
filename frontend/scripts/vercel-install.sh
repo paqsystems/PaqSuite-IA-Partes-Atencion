@@ -9,5 +9,11 @@ if [[ -z "${VERDACCIO_AUTH_TOKEN:-}" ]]; then
 fi
 
 registry="${PAQSUITE_NPM_REGISTRY:-https://srv-pq.tail6726a3.ts.net}"
+registryHost="${registry#https://}"
+registryHost="${registryHost#http://}"
+registryHost="${registryHost%/}"
+
 echo "vercel-install: npm install (@paqsuite → ${registry})…"
+npm config set "@paqsuite:registry" "${registry}"
+npm config set "//${registryHost}/:_authToken" "${VERDACCIO_AUTH_TOKEN}"
 npm install
