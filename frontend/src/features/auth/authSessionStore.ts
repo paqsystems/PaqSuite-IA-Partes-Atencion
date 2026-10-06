@@ -4,6 +4,16 @@ import type { AuthSession, LoginSessionResultado } from './authTypes'
 const storageKey = 'paqAuthSession'
 const defaultMinutosWeb = 60
 
+function normalizeMinutosWebFromApi(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return defaultMinutosWeb
+  }
+  if (value < 0) {
+    return defaultMinutosWeb
+  }
+  return value
+}
+
 type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 
 function getStorage(): StorageLike | null {
@@ -55,7 +65,7 @@ export function getAuthToken(): string | null {
 
 export function getMinutosWeb(): number {
   const value = readRaw()?.minutosWeb
-  if (typeof value === 'number' && value > 0) {
+  if (typeof value === 'number' && value >= 0) {
     return value
   }
   return defaultMinutosWeb
@@ -70,10 +80,7 @@ export function saveLoginSession(
 
   const session: AuthSession = {
     ...resultado,
-    minutosWeb:
-      typeof resultado.minutosWeb === 'number' && resultado.minutosWeb > 0
-        ? resultado.minutosWeb
-        : defaultMinutosWeb,
+    minutosWeb: normalizeMinutosWebFromApi(resultado.minutosWeb),
     activeCompanyId,
     cliente: normalizeClienteCode(cliente) || undefined,
   }
@@ -103,10 +110,7 @@ export function isAuthenticated(): boolean {
 
 /**
  * El token Sanctum vive en la BD del tenant. Si el X-Paq-Cliente actual
- * no coincide con el de la sesión, hay que forzar re-login (mismo
- * vercel.app sirve PAQ/DEMO/ESTUDIOGB).
- *
- * @returns true si la sesión se invalidó
+ * no coincide con el de la sesión, hay que forzar re-login.
  */
 export function invalidateSessionIfClienteMismatch(currentCliente: string): boolean {
   const session = readRaw()
@@ -117,7 +121,6 @@ export function invalidateSessionIfClienteMismatch(currentCliente: string): bool
   const expected = normalizeClienteCode(session.cliente)
   const actual = normalizeClienteCode(currentCliente)
 
-  // Sesiones previas sin `cliente`: un solo re-login al entrar con tenant.
   if (!expected) {
     if (actual) {
       clearAuthSession()

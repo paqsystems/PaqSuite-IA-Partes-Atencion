@@ -5,9 +5,10 @@ export const defaultIdleMinutes = 60
 type IdleOptions = {
   minutosWeb?: number
   onExpire: () => void
+  now?: () => number
 }
 
-const activityEvents = ['mousedown', 'keydown', 'touchstart', 'scroll'] as const
+const activityEvents = ['pointerdown', 'keydown', 'touchstart'] as const
 
 let timerId: ReturnType<typeof setTimeout> | undefined
 let boundOptions: IdleOptions | undefined
@@ -15,7 +16,10 @@ let listenersAttached = false
 
 function resolveMinutes(minutosWeb?: number): number {
   const value = minutosWeb ?? getMinutosWeb()
-  return value > 0 ? value : defaultIdleMinutes
+  if (typeof value !== 'number' || value < 0) {
+    return defaultIdleMinutes
+  }
+  return value
 }
 
 function scheduleTimer(): void {
@@ -23,11 +27,19 @@ function scheduleTimer(): void {
     return
   }
 
+  const minutes = resolveMinutes(boundOptions.minutosWeb)
+  if (minutes === 0) {
+    if (timerId !== undefined) {
+      clearTimeout(timerId)
+      timerId = undefined
+    }
+    return
+  }
+
   if (timerId !== undefined) {
     clearTimeout(timerId)
   }
 
-  const minutes = resolveMinutes(boundOptions.minutosWeb)
   timerId = setTimeout(() => {
     boundOptions?.onExpire()
   }, minutes * 60_000)
@@ -61,8 +73,40 @@ function detachListeners(): void {
 
 export function startIdleSession(options: IdleOptions): void {
   stopIdleSession()
+
+  const minutes = resolveMinutes(options.minutosWeb)
+  if (minutes === 0) {
+    return
+  }
+
   boundOptions = options
   attachListeners()
+  scheduleTimer()
+}
+
+export function resetIdleSession(minutosWeb?: number): void {
+  if (!boundOptions) {
+    return
+  }
+
+  if (minutosWeb !== undefined) {
+    boundOptions = { ...boundOptions, minutosWeb }
+  }
+
+  const minutes = resolveMinutes(boundOptions.minutosWeb)
+  if (minutes === 0) {
+    if (timerId !== undefined) {
+      clearTimeout(timerId)
+      timerId = undefined
+    }
+    detachListeners()
+    boundOptions = undefined
+    return
+  }
+
+  if (!listenersAttached) {
+    attachListeners()
+  }
   scheduleTimer()
 }
 
@@ -73,4 +117,8 @@ export function stopIdleSession(): void {
   }
   boundOptions = undefined
   detachListeners()
+}
+
+export function resolveIdleMinutes(minutosWeb?: number): number {
+  return resolveMinutes(minutosWeb)
 }

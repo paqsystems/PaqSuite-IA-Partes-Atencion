@@ -49,9 +49,10 @@ cd frontend
 npm install @paqsuite/react-core@2.4.13   # o última ≥ 2.4.13 con grid i18n
 npm list @paqsuite/react-core
 
-# Vercel (sin Verdaccio):
-npm pack @paqsuite/react-core --pack-destination vendor
-# Renombrar tarball y actualizar frontend/scripts/vercel-install.sh
+# Vercel (sin acceso directo a 100.110.69.93):
+# Verdaccio vía Funnel HTTPS + VERDACCIO_AUTH_TOKEN (ver docs/06-operacion/verdaccio-vercel-conectividad.md).
+# Tras publicar en Verdaccio:
+#   cd frontend && .\scripts\refresh-react-core-lock.ps1
 ```
 
 Tras instalar react-core ≥ 2.4.13: diff `node_modules/@paqsuite/react-core/src/index.ts` vs template `@paqsuite/create-app@0.1.13` (`ShellPage`, `i18n.ts`).
