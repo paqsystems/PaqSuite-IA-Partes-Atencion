@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Vercel no resuelve Tailscale MagicDNS ni 100.110.69.93.
-# Paquetes públicos → npmjs. @paqsuite/react-core → tarball vendored 2.4.14.
+# Paquetes públicos → npmjs. @paqsuite/react-core → tarball vendored (productBrandingI18n).
 set -euo pipefail
 
 unset NPM_CONFIG_REGISTRY || true
