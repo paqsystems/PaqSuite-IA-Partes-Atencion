@@ -64,6 +64,8 @@ type PartesMenuSidebarProps = {
   t?: (key: string) => string
   labels: Partial<MenuSidebarLabels>
   onNavigate?: (routeName: string) => void
+  /** GEN-08: misma preferencia que `UserAvatarMenu` (web). */
+  openInNewTab?: boolean
   onItemsLoaded?: (items: MenuNode[]) => void
 }
 
@@ -92,6 +94,7 @@ export function PartesMenuSidebar({
   t: menuTranslate,
   labels: labelsProp,
   onNavigate,
+  openInNewTab = false,
   onItemsLoaded,
 }: PartesMenuSidebarProps) {
   const session = getAuthSession()
@@ -119,6 +122,7 @@ export function PartesMenuSidebar({
       transformItems={transformItems}
       onItemsLoaded={onItemsLoaded}
       onNavigate={onNavigate}
+      openInNewTab={openInNewTab}
       labels={labelsProp}
     />
   )

@@ -20,7 +20,7 @@ import { saveLoginSession } from './authSessionStore'
 import { bootstrapAuthenticatedSession } from './authBootstrap'
 import { searchHasResetToken } from './guestLanding'
 import { resolvePostLoginRoute } from './postLoginRouter'
-import { resolvePartesAuthHero } from './partesAuthHero'
+import { resolveAppAuthHero } from './appProductBranding'
 import { resolvePlatformCliente } from './platformContext'
 import { PartesMobileConfigHost } from '../partes/mobile/PartesMobileConfigHost'
 
@@ -46,7 +46,7 @@ export function LoginPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const authHero = useMemo(() => resolvePartesAuthHero(t), [t])
+  const authHero = useMemo(() => resolveAppAuthHero(locale), [locale])
 
   const bannerMessage = useMemo(() => {
     if (sessionExpired) {

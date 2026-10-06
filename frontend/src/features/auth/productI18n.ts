@@ -1,7 +1,9 @@
 import type { LocaleCode } from '@paqsuite/react-core'
 
-/** Claves `labelKey` de pq_menus (`menu.{codigo}`) — 5 locales. */
+/** Menú (`menu.*`) + branding producto (`product.*`) — 5 locales. */
 const es: Record<string, string> = {
+  'product.title': 'Partes de Atención',
+  'product.tagline': 'Gestión de partes y seguimiento operativo.',
   'menu.inicio': 'Inicio',
   'menu.partes_dashboard': 'Dashboard',
   'menu.archivos': 'Archivos',
@@ -30,6 +32,8 @@ const es: Record<string, string> = {
 }
 
 const en: Record<string, string> = {
+  'product.title': 'Service Parts',
+  'product.tagline': 'Work order tracking and operational follow-up.',
   'menu.inicio': 'Home',
   'menu.partes_dashboard': 'Dashboard',
   'menu.archivos': 'Files',
@@ -58,6 +62,8 @@ const en: Record<string, string> = {
 }
 
 const pt: Record<string, string> = {
+  'product.title': 'Partes de Atendimento',
+  'product.tagline': 'Gestão de partes e acompanhamento operacional.',
   'menu.inicio': 'Início',
   'menu.partes_dashboard': 'Dashboard',
   'menu.archivos': 'Arquivos',
@@ -86,6 +92,8 @@ const pt: Record<string, string> = {
 }
 
 const fr: Record<string, string> = {
+  'product.title': 'Fiches d’intervention',
+  'product.tagline': 'Suivi des interventions et de l’activité opérationnelle.',
   'menu.inicio': 'Accueil',
   'menu.partes_dashboard': 'Tableau de bord',
   'menu.archivos': 'Fichiers',
@@ -114,6 +122,8 @@ const fr: Record<string, string> = {
 }
 
 const it: Record<string, string> = {
+  'product.title': 'Rapporti di intervento',
+  'product.tagline': 'Gestione interventi e monitoraggio operativo.',
   'menu.inicio': 'Home',
   'menu.partes_dashboard': 'Dashboard',
   'menu.archivos': 'Archivi',

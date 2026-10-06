@@ -3,7 +3,8 @@ specId: SPEC-007
 titulo: App móvil de Partes de Atención
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-07-31
+ultimaActualizacion: 2026-10-05
+procesoErrores: P09
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-007-mobile-capacitor.md
 ---
 
@@ -13,7 +14,7 @@ openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-007-mobile-capacitor.md
 
 ## Resumen
 
-La app móvil (Capacitor) ofrece login con empresa, dashboard, consultas en formato **kardex** (tarjetas), carga individual de tareas (asistente/supervisor) e informe de paquete de horas. No incluye maestros, proceso masivo, pivot ni administración de seguridad: esas funciones quedan en la **web**.
+La **app móvil** ofrece login con empresa, dashboard, consultas en formato **kardex** (tarjetas), carga individual de tareas (asistente/supervisor) e informe de paquete de horas. No incluye maestros, proceso masivo, pivot, importación Excel, emisión de reportes ni administración de seguridad: esas funciones quedan en la **web**.
 
 ## Funcionamiento
 
@@ -97,6 +98,8 @@ La app móvil (Capacitor) ofrece login con empresa, dashboard, consultas en form
 |-------------------|---------------------------|---------------|------------------------------|
 | Error de conexión / falla la prueba de health | `infra.transport` | URL incorrecta, red, backend caído | Revisar URL (emulador Android suele usar `10.0.2.2`); soporte |
 | Error inesperado | `infra.unexpected` | Fallo interno | Reportar a soporte |
+
+**Catálogo completo:** proceso **P09**; en carga kardex aplican también **P03** y **P00**; en login **P01** en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md).
 
 ## Preguntas frecuentes
 

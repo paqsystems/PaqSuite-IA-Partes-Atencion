@@ -3,7 +3,8 @@ specId: SPEC-004
 titulo: Carga diaria de tareas
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-09-16
+ultimaActualizacion: 2026-10-05
+procesoErrores: P03
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md
 ---
 
@@ -99,6 +100,7 @@ No confundir con el **Asistente IA** del menú del avatar (ese responde pregunta
 | Duración inválida (tramo / 0 / >1440) | `partes.tarea.duracionInvalida` | Valor no múltiplo del tramo | Elegir un tramo válido en hh:mm (p. ej. 00:15, 00:30…) |
 | Observación obligatoria | `partes.tarea.observacionRequerida` | Texto vacío | Completar observación |
 | Complete los campos obligatorios | `partes.tarea.camposObligatorios` | Faltan datos | Completar el formulario |
+| La fecha no es válida | `partes.tarea.fechaInvalida` | Fecha incorrecta | Corregir la fecha |
 
 ## Errores de lógica
 
@@ -120,6 +122,16 @@ No confundir con el **Asistente IA** del menú del avatar (ese responde pregunta
 |-------------------|---------------------------|---------------|------------------------------|
 | Error de conexión | `infra.transport` | Red o servidor | Reintentar; soporte |
 | Error inesperado | `infra.unexpected` | Fallo interno | Reportar a soporte |
+
+### Captura inteligente (mismo formulario)
+
+Mensajes `partes.smartCapture.*` (cliente/tipo ambiguo, duración, fecha futura, sin credencial, etc.): proceso **P04** en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md).
+
+### Importación Excel (misma pantalla)
+
+Mensajes `excelImport.*` y `partes.import.*`: proceso **P05** en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md). Detalle operativo: [SPEC-009](./SPEC-009-importacion-excel.md).
+
+**Catálogo completo:** procesos **P03**, **P04**, **P05** y transversal **P00** en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md).
 
 ## Preguntas frecuentes
 

@@ -34,6 +34,7 @@ import {
   applyDevExtremeTheme,
   getActiveEmpresaThemeFromSession,
 } from '../../theme/devExtremeThemeSwitcher'
+import { resolveAppProductTitle } from './appProductBranding'
 import { productI18nCatalogs } from './productI18n'
 import {
   buildMenuSidebarLabels,
@@ -79,6 +80,7 @@ export function AuthenticatedShell() {
     () => createAppTranslator(locale, productCatalog),
     [locale, productCatalog],
   )
+  const productTitle = useMemo(() => resolveAppProductTitle(locale), [locale])
   const menuSidebarLabels = useMemo(() => buildMenuSidebarLabels(appT), [appT])
   const menuTranslate = useCallback((key: string) => appT(key), [appT])
   const shellOutletContext = useMemo(
@@ -106,6 +108,25 @@ export function AuthenticatedShell() {
   useEffect(() => {
     syncDevExtremeLocale(locale)
   }, [locale])
+
+  useEffect(() => {
+    const token = session?.token
+    if (!token || isNativeApp()) {
+      return
+    }
+    void (async () => {
+      const payload = await apiRequest<{ openInNewTab?: boolean }>('/api/v1/user/preferences', {
+        platform,
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (
+        payload.kind === 'ok' &&
+        typeof payload.envelope.resultado?.openInNewTab === 'boolean'
+      ) {
+        setOpenInNewTab(payload.envelope.resultado.openInNewTab)
+      }
+    })()
+  }, [platform, session?.token])
 
   useEffect(() => {
     if (!session) {
@@ -155,7 +176,7 @@ export function AuthenticatedShell() {
   return (
     <MenuAuthProvider value={menuAuthValue}>
       <ShellLayout
-        brand={<strong>{t('shell.productName')}</strong>}
+        brand={<strong>{productTitle}</strong>}
         sidebarVisible={menuPresentation.sidebarVisible}
         onToggleSidebarVisible={menuPresentation.toggleSidebarVisible}
         languageSlot={
@@ -224,6 +245,7 @@ export function AuthenticatedShell() {
               t={menuTranslate}
               labels={menuSidebarLabels}
               onItemsLoaded={handleMenuItemsLoaded}
+              openInNewTab={openInNewTab}
               onNavigate={(routeName) => {
                 navigate(routeName)
               }}

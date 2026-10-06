@@ -82,15 +82,23 @@ corregir la ruta Tailscale/VPN del servidor Forge.
 
 ## Vercel (frontend)
 
-El builder público **no** resuelve Tailscale (`srv-pq.tail*.ts.net` ni `100.110.69.93`). No usar Funnel/Verdaccio como `registry` por defecto: npm reescribe tarballs públicos (`yauzl`, etc.) y el build termina en `ENOTFOUND`.
+El builder público **no** resuelve la IP Tailscale `100.110.69.93` ni MagicDNS privado. **No** usar tarball `vendor/` como contrato de release (solo emergencia documentada).
 
-- Root Directory: `frontend`
-- Install: `bash scripts/vercel-install.sh` (npmjs + tarball `vendor/paqsuite-react-core-*.tgz`)
-- Build: `npm run build` → `dist/` (SDK bundlado)
-- En el dashboard Vercel: **no** definir `NPM_CONFIG_REGISTRY` / registry Tailscale
+| Item | Valor |
+|------|--------|
+| Root Directory | `frontend` |
+| Install | `bash scripts/vercel-install.sh` → `npm install` con `.npmrc` (Verdaccio HTTPS Funnel) |
+| Secret | `VERDACCIO_AUTH_TOKEN` en Vercel |
+| Registry `@paqsuite` | `https://srv-pq.tail6726a3.ts.net` (override: `PAQSUITE_NPM_REGISTRY`) |
+| Lock | `@paqsuite/react-core@2.4.15` — regenerar con `frontend/scripts/refresh-react-core-lock.ps1` tras publicar en Verdaccio |
+
+Runbook detallado: [`docs/06-operacion/verdaccio-vercel-conectividad.md`](../06-operacion/verdaccio-vercel-conectividad.md).
+
+- Build: `npm run build` → `dist/`
+- En el dashboard Vercel: **no** definir `NPM_CONFIG_REGISTRY` / registry Tailscale plano
 - `VITE_API_BASE_URL` según [`frontend-api-base-url-y-env.md`](./frontend-api-base-url-y-env.md)
 
-Bump de `react-core`: en `frontend/` con Tailscale, `npm pack @paqsuite/react-core --pack-destination vendor` y actualizar el nombre del tarball en `vercel-install.sh`.
+Bump de `react-core`: publicar en Verdaccio → `refresh-react-core-lock` → commit lock → redeploy sin caché.
 
 ---
 
