@@ -3,7 +3,8 @@ specId: SPEC-005
 titulo: Supervisión y proceso masivo
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-08-01
+ultimaActualizacion: 2026-10-05
+procesoErrores: P06
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md
 ---
 
@@ -102,6 +103,8 @@ No se puede cambiar en lote: **cliente**, **duración** ni **descripción**.
 |-------------------|---------------------------|---------------|------------------------------|
 | Error de conexión | `infra.transport` | Red o servidor | Reintentar; soporte |
 | Error inesperado | `infra.unexpected` | Fallo interno | Reportar a soporte |
+
+**Catálogo completo:** proceso **P06** y transversal **P00** en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md). Errores de carga (`partes.tarea.*`) no suelen aplicarse aquí salvo fechas de filtro.
 
 ## Preguntas frecuentes
 

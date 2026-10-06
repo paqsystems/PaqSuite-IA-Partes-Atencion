@@ -108,6 +108,25 @@ export function AuthenticatedShell() {
   }, [locale])
 
   useEffect(() => {
+    const token = session?.token
+    if (!token || isNativeApp()) {
+      return
+    }
+    void (async () => {
+      const payload = await apiRequest<{ openInNewTab?: boolean }>('/api/v1/user/preferences', {
+        platform,
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (
+        payload.kind === 'ok' &&
+        typeof payload.envelope.resultado?.openInNewTab === 'boolean'
+      ) {
+        setOpenInNewTab(payload.envelope.resultado.openInNewTab)
+      }
+    })()
+  }, [platform, session?.token])
+
+  useEffect(() => {
     if (!session) {
       return
     }
@@ -224,6 +243,7 @@ export function AuthenticatedShell() {
               t={menuTranslate}
               labels={menuSidebarLabels}
               onItemsLoaded={handleMenuItemsLoaded}
+              openInNewTab={openInNewTab}
               onNavigate={(routeName) => {
                 navigate(routeName)
               }}

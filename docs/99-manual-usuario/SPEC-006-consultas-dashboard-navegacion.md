@@ -3,7 +3,8 @@ specId: SPEC-006
 titulo: Consultas, dashboard y navegación
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-08-01
+ultimaActualizacion: 2026-10-05
+procesoErrores: P07
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md
 ---
 
@@ -48,6 +49,10 @@ Desde **Inicio** ves el **Dashboard** de dedicación. En **Informes** consultás
 3. Revisá la **cuenta corriente**: fila **Saldo inicial** (movimientos anteriores a la fecha desde) y columna **Saldo** acumulada.
 4. Incluye tareas de carga y compras de horas (si existen). En **Pivot** (web) no se muestra el campo Saldo.
 5. Duraciones en **hh:mm**.
+
+### Emitir reporte (consulta detallada)
+
+Desde la misma consulta detallada podés **Emitir** un reporte formal (PDF, correo, etc.). No es exportar la grilla. Ver [SPEC-010](./SPEC-010-emisiones-informes.md).
 
 ## Particularidades
 
@@ -100,6 +105,8 @@ Desde **Inicio** ves el **Dashboard** de dedicación. En **Informes** consultás
 |-------------------|---------------------------|---------------|------------------------------|
 | Error de conexión | `infra.transport` | Red o servidor | Reintentar; soporte |
 | Error inesperado | `infra.unexpected` | Fallo interno | Reportar a soporte |
+
+**Catálogo completo:** proceso **P07**; al **Emitir**, también **P08**; transversal **P00** en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md).
 
 ## Preguntas frecuentes
 
