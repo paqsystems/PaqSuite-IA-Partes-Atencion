@@ -391,6 +391,8 @@
   "admin.empresas.applyTheme": "Aplicar",
   "admin.empresas.applyThemeHint": "Vista previa activa (sin grabar). Cancelar restaura la apariencia anterior.",
   "admin.empresas.monoNote": "Instalación de una sola empresa: no se permite alta ni baja, solo edición de nombre y estado.",
+  "admin.empresas.validation.invalid": "Revise los datos del formulario (nombre, estado y apariencia).",
+  "admin.empresas.validation.themeInvalid": "La apariencia seleccionada no es válida para esta instalación.",
   "admin.permisos.title": "Permisos",
   "admin.permisos.field.usuario": "Usuario",
   "admin.permisos.field.empresa": "Empresa",

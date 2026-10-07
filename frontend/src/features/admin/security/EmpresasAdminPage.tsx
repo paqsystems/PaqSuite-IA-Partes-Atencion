@@ -1,4 +1,8 @@
-import { EmpresasAdminPage as EmpresasAdminPageSdk, type EmpresaListItem } from '@paqsuite/react-core'
+import {
+  EmpresasAdminPage as EmpresasAdminPageSdk,
+  paqsuiteDxStockBridge,
+  type EmpresaListItem,
+} from '@paqsuite/react-core'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getAuthSession, getAuthToken, patchAuthSession } from '../../auth/authSessionStore'
@@ -22,16 +26,33 @@ export function EmpresasAdminPage() {
       }
       return t(key, fallback ?? key)
     }
+    if (key === 'validation.failed') {
+      return t(
+        'admin.empresas.validation.invalid',
+        'Revise los datos del formulario (nombre, estado y apariencia).',
+      )
+    }
     return resolveAuthMessage(key) ?? key
   }
 
-  const handlePreviewTheme = useCallback((theme: string) => {
-    void applyDevExtremeTheme(theme, { reloadOnGroupChange: true })
-  }, [])
+  const resolveDxTheme = useCallback(
+    (theme: string) => paqsuiteDxStockBridge[theme] ?? theme,
+    [],
+  )
 
-  const handleRestoreCommittedTheme = useCallback((theme: string) => {
-    void applyDevExtremeTheme(theme, { reloadOnGroupChange: true })
-  }, [])
+  const handlePreviewTheme = useCallback(
+    (theme: string) => {
+      void applyDevExtremeTheme(resolveDxTheme(theme), { reloadOnGroupChange: true })
+    },
+    [resolveDxTheme],
+  )
+
+  const handleRestoreCommittedTheme = useCallback(
+    (theme: string) => {
+      void applyDevExtremeTheme(resolveDxTheme(theme), { reloadOnGroupChange: true })
+    },
+    [resolveDxTheme],
+  )
 
   const handleEmpresaSaved = useCallback((item: EmpresaListItem) => {
     const session = getAuthSession()
@@ -49,8 +70,8 @@ export function EmpresasAdminPage() {
           : empresa,
       ),
     })
-    void applyDevExtremeTheme(item.theme, { reloadOnGroupChange: true })
-  }, [])
+    void applyDevExtremeTheme(resolveDxTheme(item.theme), { reloadOnGroupChange: true })
+  }, [resolveDxTheme])
 
   return (
     <div data-testid="adminEmpresasPage" style={{ padding: 16 }}>

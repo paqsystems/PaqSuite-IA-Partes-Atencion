@@ -19,7 +19,7 @@ const authMessageMap: Record<string, string> = {
   'auth.password.invalidCurrent': 'La contraseña actual no es válida.',
   'auth.password.resetInvalid': 'El enlace de restablecimiento no es válido o expiró.',
   'auth.resetTokenInvalid': 'El enlace de restablecimiento no es válido o expiró.',
-  'validation.failed': 'La contraseña no cumple con todas las condiciones.',
+  'validation.failed': 'Los datos ingresados no son válidos. Revise el formulario.',
   'tenant.invalid': 'Instalación o tenant no válido.',
   'tenant.gatewayNotSupported':
     'Esta instalación está configurada con agente-gateway y no está habilitada en Partes. Contacte al administrador.',

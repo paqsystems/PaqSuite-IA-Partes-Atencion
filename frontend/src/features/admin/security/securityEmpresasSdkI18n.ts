@@ -39,4 +39,8 @@ export const empresasAdminSdkFallbackEs: Record<string, string> = {
   'admin.empresas.form.saveError': 'No se pudo guardar la empresa',
   'admin.empresas.validation.nombreRequired': 'El nombre es obligatorio',
   'admin.empresas.validation.candidatoRequired': 'Seleccioná un candidato ERP',
+  'admin.empresas.validation.invalid':
+    'Revise los datos del formulario (nombre, estado y apariencia).',
+  'admin.empresas.validation.themeInvalid':
+    'La apariencia seleccionada no es válida para esta instalación.',
 }
