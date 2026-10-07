@@ -8,10 +8,10 @@ Framework: `PaqSuite-IA-FRAMEWORK` vía `paqsuite/laravel-core` + `@paqsuite/rea
 
 ## Dependencias
 
-| Capa | Paquete | Resolución (`1.2.0-FINAL`+) |
-|------|---------|------------------------------|
-| Backend | `paqsuite/laravel-core: 1.3.8` | Repo-lab local vía Composer `path` |
-| Frontend | `@paqsuite/react-core: 2.4.14` | Repo-lab local vía dependencia `file:` |
+| Capa | Paquete | Resolución (deploy) |
+|------|---------|---------------------|
+| Backend | `paqsuite/laravel-core: 1.3.9` | Satis (`composer.json` → `http://100.110.69.93/satis`) |
+| Frontend | `@paqsuite/react-core: 2.4.17` | Verdaccio (`frontend/.npmrc` + lock; Vercel: `VERDACCIO_AUTH_TOKEN`) |
 
 Deploy / bump: [`deploy-sdk-package-repos.md`](./deploy-sdk-package-repos.md).  
 Guías Framework: `GUIA_PRUEBA_INSTALACION.md`, `GUIA_ACTUALIZACION_PROYECTO.md`.
@@ -34,6 +34,10 @@ En este host:
 | Helper auth hero | `frontend/src/features/auth/partesAuthHero.ts` |
 
 Config producto: `PAQSUITE_PROYECTO=partesatencion`, `PAQSUITE_TENANCY=single`, `PAQSUITE_DB=unified`.
+
+### ABM Empresas MONO (GEN-06 + A1)
+
+En instalación **single**, el admin de empresas muestra **código** (`pq_empresa.id`), oculta campos ERP/BD, permite **vista previa de tema** («Aplicar») y documenta restricciones de alta/baja. Detalle operativo y checklist para otros hosts MONO: [`mono-abm-empresas-gen06.md`](./mono-abm-empresas-gen06.md).
 
 ### Lookup instalación (GEN-18)
 

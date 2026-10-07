@@ -232,6 +232,8 @@ export function PartesDashboardPage() {
         dataSource={top}
         keyExpr="codigo"
         showBorders
+        loading={loading}
+        onRefresh={() => void load()}
         proceso="partes.dashboard"
         gridId="dashboardTop"
         accessToken={getAuthToken()}

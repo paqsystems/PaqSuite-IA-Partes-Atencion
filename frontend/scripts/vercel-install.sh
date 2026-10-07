@@ -13,7 +13,11 @@ registryHost="${registry#https://}"
 registryHost="${registryHost#http://}"
 registryHost="${registryHost%/}"
 
+reactCoreVersion="${PAQSUITE_REACT_CORE_VERSION:-2.4.17}"
+
 echo "vercel-install: npm install (@paqsuite → ${registry})…"
 npm config set "@paqsuite:registry" "${registry}"
 npm config set "//${registryHost}/:_authToken" "${VERDACCIO_AUTH_TOKEN}"
+# Resolver @paqsuite desde registry (evita EINTEGRITY por lock generado con tarball local).
+npm install "@paqsuite/react-core@${reactCoreVersion}" --save-exact
 npm install

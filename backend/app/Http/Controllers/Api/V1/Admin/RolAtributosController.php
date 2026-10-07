@@ -28,32 +28,14 @@ final class RolAtributosController extends Controller
             return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::RESOURCE_NOT_FOUND);
         }
 
-        $items = $this->rolAtributosRepository->listItems($id);
-        $flagsByMenu = [];
-        foreach ($items as $item) {
-            $flagsByMenu[(int) $item['menuId']] = $item;
-        }
-
-        $arbol = array_map(static function (array $node) use ($flagsByMenu): array {
-            $flags = $flagsByMenu[(int) $node['menuId']] ?? null;
-
-            return [
-                'menuId' => (int) $node['menuId'],
-                'padreId' => $node['padreId'],
-                'menuTitulo' => (string) $node['titulo'],
-                'esProceso' => (bool) $node['esProceso'],
-                'create' => (bool) ($flags['create'] ?? false),
-                'delete' => (bool) ($flags['delete'] ?? false),
-                'update' => (bool) ($flags['update'] ?? false),
-                'report' => (bool) ($flags['report'] ?? false),
-            ];
-        }, $this->rolAtributosRepository->arbolEnabled());
+        $items = $this->mapItemsForApi($this->rolAtributosRepository->listItems($id));
+        $arbol = $this->mapArbolForApi($this->rolAtributosRepository->arbolEnabled());
 
         return ApiResponse::success([
             'accesoTotal' => (bool) $rol['accesoTotal'],
             'rol' => $rol,
             'items' => $items,
-            'arbol' => $this->buildTree($arbol),
+            'arbol' => $arbol,
         ]);
     }
 
@@ -79,6 +61,10 @@ final class RolAtributosController extends Controller
             'items.*.delete' => ['sometimes', 'boolean'],
             'items.*.update' => ['sometimes', 'boolean'],
             'items.*.report' => ['sometimes', 'boolean'],
+            'items.*.permisoAlta' => ['sometimes', 'boolean'],
+            'items.*.permisoBaja' => ['sometimes', 'boolean'],
+            'items.*.permisoModi' => ['sometimes', 'boolean'],
+            'items.*.permisoRepo' => ['sometimes', 'boolean'],
         ]);
 
         if ($validator->fails()) {
@@ -98,7 +84,7 @@ final class RolAtributosController extends Controller
                     ['respuesta' => 'roles.atributos.menuIdInvalid']
                 );
             }
-            $items[] = $item;
+            $items[] = $this->normalizeItemForRepository($item);
         }
 
         $this->rolAtributosRepository->replaceItems($id, $items);
@@ -107,48 +93,52 @@ final class RolAtributosController extends Controller
     }
 
     /**
-     * @param  list<array<string, mixed>>  $flat
+     * @param  list<array<string, mixed>>  $rows
      * @return list<array<string, mixed>>
      */
-    private function buildTree(array $flat): array
+    private function mapArbolForApi(array $rows): array
     {
-        $nodes = [];
-        foreach ($flat as $node) {
-            $menuId = (int) $node['menuId'];
-            $nodes[$menuId] = [
-                'menuId' => $menuId,
-                'padreId' => $node['padreId'],
-                'menuTitulo' => (string) $node['menuTitulo'],
+        return array_map(static function (array $node): array {
+            $padreId = $node['padreId'] ?? null;
+
+            return [
+                'menuId' => (int) $node['menuId'],
+                'padreId' => $padreId !== null && (int) $padreId > 0 ? (int) $padreId : null,
+                'titulo' => (string) $node['titulo'],
                 'esProceso' => (bool) $node['esProceso'],
-                'create' => (bool) $node['create'],
-                'delete' => (bool) $node['delete'],
-                'update' => (bool) $node['update'],
-                'report' => (bool) $node['report'],
-                'children' => [],
             ];
-        }
+        }, $rows);
+    }
 
-        $roots = [];
-        foreach ($nodes as $menuId => $node) {
-            $padreId = $node['padreId'] !== null ? (int) $node['padreId'] : null;
-            if ($padreId !== null && isset($nodes[$padreId])) {
-                $nodes[$padreId]['children'][] = $menuId;
-            } else {
-                $roots[] = $menuId;
-            }
-        }
+    /**
+     * @param  list<array<string, mixed>>  $rows
+     * @return list<array<string, mixed>>
+     */
+    private function mapItemsForApi(array $rows): array
+    {
+        return array_map(static function (array $item): array {
+            return [
+                'menuId' => (int) $item['menuId'],
+                'permisoAlta' => (bool) ($item['permisoAlta'] ?? $item['create'] ?? false),
+                'permisoBaja' => (bool) ($item['permisoBaja'] ?? $item['delete'] ?? false),
+                'permisoModi' => (bool) ($item['permisoModi'] ?? $item['update'] ?? false),
+                'permisoRepo' => (bool) ($item['permisoRepo'] ?? $item['report'] ?? false),
+            ];
+        }, $rows);
+    }
 
-        $hydrate = function (int $menuId) use (&$hydrate, &$nodes): array {
-            $node = $nodes[$menuId];
-            $childIds = $node['children'];
-            $node['children'] = [];
-            foreach ($childIds as $childId) {
-                $node['children'][] = $hydrate((int) $childId);
-            }
-
-            return $node;
-        };
-
-        return array_map(static fn (int $id): array => $hydrate($id), $roots);
+    /**
+     * @param  array<string, mixed>  $item
+     * @return array<string, mixed>
+     */
+    private function normalizeItemForRepository(array $item): array
+    {
+        return [
+            'menuId' => (int) $item['menuId'],
+            'create' => (bool) ($item['create'] ?? $item['permisoAlta'] ?? false),
+            'delete' => (bool) ($item['delete'] ?? $item['permisoBaja'] ?? false),
+            'update' => (bool) ($item['update'] ?? $item['permisoModi'] ?? false),
+            'report' => (bool) ($item['report'] ?? $item['permisoRepo'] ?? false),
+        ];
     }
 }

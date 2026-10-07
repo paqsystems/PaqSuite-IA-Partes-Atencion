@@ -71,7 +71,11 @@ BEGIN
         m.id AS menuId,
         m.parent_id AS padreId,
         m.titulo,
-        CASE WHEN m.process_type = 'A' THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS esProceso
+        CASE
+            WHEN m.process_type = 'A' THEN CAST(1 AS BIT)
+            WHEN m.ruta IS NOT NULL AND LTRIM(RTRIM(m.ruta)) <> '' THEN CAST(1 AS BIT)
+            ELSE CAST(0 AS BIT)
+        END AS esProceso
     FROM dbo.pq_menus m WITH (NOLOCK)
     WHERE m.enabled = 1 AND m.activo = 1
     ORDER BY m.orden, m.id;

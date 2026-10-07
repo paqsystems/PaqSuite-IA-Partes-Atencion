@@ -184,6 +184,7 @@ export function MaestroCrudPage({
           dataSource={rows}
           keyExpr="id"
           loading={loading}
+          onRefresh={() => void load()}
           proceso={`partes.maestros.${resourcePath}`}
           gridId={testIdPrefix}
           accessToken={getAuthToken()}

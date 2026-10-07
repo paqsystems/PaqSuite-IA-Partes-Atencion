@@ -511,6 +511,7 @@ export function CargaDiariaPage() {
           dataSource={rows}
           keyExpr="id"
           loading={loading}
+          onRefresh={() => void load()}
           proceso="partes.carga.diaria"
           gridId="cargaDiaria"
           accessToken={getAuthToken()}
