@@ -368,6 +368,7 @@
   "admin.roles.atributos.column.repo": "Report",
   "admin.empresas.title": "Aziende",
   "admin.empresas.field.nombre": "Nome",
+  "admin.empresas.field.codigo": "Codice",
   "admin.empresas.editTitle": "Modifica azienda",
   "admin.empresas.field.theme": "Aspetto",
   "admin.empresas.applyTheme": "Applica",

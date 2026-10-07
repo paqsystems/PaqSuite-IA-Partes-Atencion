@@ -513,6 +513,7 @@ export function PermisosAdminPage() {
           dataSource={rows}
           keyExpr="id"
           loading={loading}
+          onRefresh={() => void load()}
           proceso="partes.admin.permisos"
           gridId="permisos"
           accessToken={getAuthToken()}

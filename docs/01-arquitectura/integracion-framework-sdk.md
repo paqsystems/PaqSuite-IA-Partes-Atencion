@@ -35,6 +35,10 @@ En este host:
 
 Config producto: `PAQSUITE_PROYECTO=partesatencion`, `PAQSUITE_TENANCY=single`, `PAQSUITE_DB=unified`.
 
+### ABM Empresas MONO (GEN-06 + A1)
+
+En instalación **single**, el admin de empresas muestra **código** (`pq_empresa.id`), oculta campos ERP/BD, permite **vista previa de tema** («Aplicar») y documenta restricciones de alta/baja. Detalle operativo y checklist para otros hosts MONO: [`mono-abm-empresas-gen06.md`](./mono-abm-empresas-gen06.md).
+
 ### Lookup instalación (GEN-18)
 
 | Modo | Variable | Uso |

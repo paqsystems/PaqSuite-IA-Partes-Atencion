@@ -385,6 +385,7 @@
   "admin.roles.atributos.column.repo": "Repo",
   "admin.empresas.title": "Empresas",
   "admin.empresas.field.nombre": "Nombre",
+  "admin.empresas.field.codigo": "Código",
   "admin.empresas.field.theme": "Apariencias",
   "admin.empresas.editTitle": "Editar empresa",
   "admin.empresas.applyTheme": "Aplicar",

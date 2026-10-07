@@ -15,6 +15,7 @@
 | Documento | Descripción |
 |-----------|-------------|
 | [00-modo-instalacion.md](./00-modo-instalacion.md) | **MONO** vs MULTI: modo adoptado en este repo y checklist |
+| [mono-abm-empresas-gen06.md](./mono-abm-empresas-gen06.md) | MONO: ABM empresas (código, sin BD ERP, vista previa tema A1) |
 | [01-arquitectura-proyecto.md](./01-arquitectura-proyecto.md) | Arquitectura técnica del backend: capas, responsabilidades, multiempresa, bases de datos |
 | [10-arquitectura-programacion.md](./10-arquitectura-programacion.md) | Arquitectura de **programación**: mapeo a carpetas Laravel/React, flujo MONO, tests y anti‑patrones |
 | [02-modelo-datos-overview.md](./02-modelo-datos-overview.md) | Vista general del modelo de datos (en definición) |

@@ -368,6 +368,7 @@
   "admin.roles.atributos.column.repo": "Rapport",
   "admin.empresas.title": "Sociétés",
   "admin.empresas.field.nombre": "Nom",
+  "admin.empresas.field.codigo": "Code",
   "admin.empresas.editTitle": "Modifier la société",
   "admin.empresas.field.theme": "Apparence",
   "admin.empresas.applyTheme": "Appliquer",

@@ -5,6 +5,11 @@ export const empresasAdminSdkToHost: Record<string, string> = {
   'admin.empresas.form.nombre': 'admin.empresas.field.nombre',
   'admin.empresas.list.theme': 'admin.empresas.field.theme',
   'admin.empresas.form.theme': 'admin.empresas.field.theme',
+  'admin.empresas.list.codigo': 'admin.empresas.field.codigo',
+  'admin.empresas.form.codigo': 'admin.empresas.field.codigo',
+  'admin.empresas.applyTheme': 'admin.empresas.applyTheme',
+  'admin.empresas.applyThemeHint': 'admin.empresas.applyThemeHint',
+  'admin.empresas.monoNote': 'admin.empresas.monoNote',
 }
 
 export const empresasAdminSdkFallbackEs: Record<string, string> = {
@@ -18,6 +23,13 @@ export const empresasAdminSdkFallbackEs: Record<string, string> = {
   'admin.empresas.action.edit': 'Editar',
   'admin.empresas.form.createTitle': 'Alta de empresa',
   'admin.empresas.form.candidato': 'Empresa ERP',
+  'admin.empresas.list.codigo': 'Código',
+  'admin.empresas.form.codigo': 'Código',
+  'admin.empresas.applyTheme': 'Aplicar',
+  'admin.empresas.applyThemeHint':
+    'Vista previa activa (sin grabar). Cancelar restaura la apariencia anterior.',
+  'admin.empresas.monoNote':
+    'Instalación de una sola empresa: no se permite alta ni baja, solo edición de nombre y estado.',
   'admin.empresas.form.erpId': 'ID ERP',
   'admin.empresas.form.nombreBd': 'Base de datos',
   'admin.empresas.form.habilitada': 'Habilitada',
