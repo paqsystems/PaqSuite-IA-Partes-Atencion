@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regenera package-lock con @paqsuite/react-core@2.4.16 desde Verdaccio (Tailscale o Funnel).
+# Regenera package-lock con @paqsuite/react-core@2.4.17 desde Verdaccio (Tailscale o Funnel).
 # Uso (PC con acceso a srv-pq):
 #   export VERDACCIO_AUTH_TOKEN='…'
 #   bash scripts/refresh-react-core-lock.sh
@@ -12,6 +12,6 @@ if [[ -z "${VERDACCIO_AUTH_TOKEN:-}" ]]; then
   exit 1
 fi
 
-echo "refresh-react-core-lock: npm install @paqsuite/react-core@2.4.16 …"
-npm install @paqsuite/react-core@2.4.16 --save-exact
+echo "refresh-react-core-lock: npm install @paqsuite/react-core@2.4.17 …"
+npm install @paqsuite/react-core@2.4.17 --save-exact
 npm list @paqsuite/react-core

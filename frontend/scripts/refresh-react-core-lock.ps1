@@ -1,4 +1,4 @@
-# Regenera package-lock con @paqsuite/react-core@2.4.16 desde Verdaccio.
+# Regenera package-lock con @paqsuite/react-core@2.4.17 desde Verdaccio.
 #   $env:VERDACCIO_AUTH_TOKEN = '…'
 #   .\scripts\refresh-react-core-lock.ps1
 $ErrorActionPreference = 'Stop'
@@ -8,6 +8,6 @@ if (-not $env:VERDACCIO_AUTH_TOKEN) {
   throw 'Define VERDACCIO_AUTH_TOKEN'
 }
 
-Write-Host 'refresh-react-core-lock: npm install @paqsuite/react-core@2.4.16 …'
-npm install '@paqsuite/react-core@2.4.16' --save-exact
+Write-Host 'refresh-react-core-lock: npm install @paqsuite/react-core@2.4.17 …'
+npm install '@paqsuite/react-core@2.4.17' --save-exact
 npm list @paqsuite/react-core
