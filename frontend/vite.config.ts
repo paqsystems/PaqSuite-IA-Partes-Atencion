@@ -44,25 +44,15 @@ export default defineConfig(({ mode }) => {
     'http://127.0.0.1:5055'
   ).replace(/\/+$/, '')
 
-  return {
-    plugins: [react(), reportingCjsDefaultExportPlugin()],
-    // Vite 8: CJS de Reporting/ace/prop-types rompe `import X from` sin este flag.
-    legacy: { inconsistentCjsInterop: true },
-    resolve: {
-      dedupe: ['react', 'react-dom', 'devextreme', 'devextreme-react'],
-      alias: {
-        '@paqsuite/react-core/auth.css': path.resolve(
-          __dirname,
-          '../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/ui/auth/authLayout.css',
-        ),
-        '@paqsuite/react-core/shell.css': path.resolve(
-          __dirname,
-          '../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/ui/shell/shellLayout.css',
-        ),
-        '@paqsuite/react-core': path.resolve(
-          __dirname,
-          '../../PaqSuite-IA-FRAMEWORK/packages/js/react-core/src/index.ts',
-        ),
+  const frameworkReactCoreRoot = path.resolve(
+    __dirname,
+    '../../PaqSuite-IA-FRAMEWORK/packages/js/react-core',
+  )
+  // Deploy / CI: consumir @paqsuite/react-core desde node_modules (Verdaccio). Lab local: PAQ_REPO_LAB=1.
+  const repoLabEnv = (env.PAQ_REPO_LAB ?? process.env.PAQ_REPO_LAB ?? '').toLowerCase()
+  const useRepoLabSdk = repoLabEnv === '1' || repoLabEnv === 'true'
+
+  const resolveAlias: Record<string, string> = {
         react: path.resolve(__dirname, 'node_modules/react'),
         'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
         'react/jsx-runtime': path.resolve(__dirname, 'node_modules/react/jsx-runtime.js'),
@@ -72,7 +62,27 @@ export default defineConfig(({ mode }) => {
         ),
         devextreme: path.resolve(__dirname, 'node_modules/devextreme'),
         'devextreme-react': path.resolve(__dirname, 'node_modules/devextreme-react'),
-      },
+  }
+
+  if (useRepoLabSdk) {
+    resolveAlias['@paqsuite/react-core/auth.css'] = path.join(
+      frameworkReactCoreRoot,
+      'src/ui/auth/authLayout.css',
+    )
+    resolveAlias['@paqsuite/react-core/shell.css'] = path.join(
+      frameworkReactCoreRoot,
+      'src/ui/shell/shellLayout.css',
+    )
+    resolveAlias['@paqsuite/react-core'] = path.join(frameworkReactCoreRoot, 'src/index.ts')
+  }
+
+  return {
+    plugins: [react(), reportingCjsDefaultExportPlugin()],
+    // Vite 8: CJS de Reporting/ace/prop-types rompe `import X from` sin este flag.
+    legacy: { inconsistentCjsInterop: true },
+    resolve: {
+      dedupe: ['react', 'react-dom', 'devextreme', 'devextreme-react'],
+      alias: resolveAlias,
     },
     server: {
       port: 3000,
