@@ -59,6 +59,8 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 php artisan queue:restart || true
+# Warmup: evita timeout del health check post-deploy (primera request fría).
+curl -fsS --max-time 20 "http://127.0.0.1/up" >/dev/null || true
 ```
 
 El entrypoint de la raíz delega en `backend/scripts/forge-composer-install.sh`.
@@ -72,6 +74,15 @@ El script valida antes de instalar que el lock no contenga el repositorio
 `http://100.110.69.93/satis/packages.json`. Si falla esa comprobación, no reutilizar
 `vendor/`: publicar una release nueva con el `composer.lock` versionado y
 corregir la ruta Tailscale/VPN del servidor Forge.
+
+### Health check post-deploy (Forge)
+
+Forge hace ping externo tras cada deploy. Si falla con *«The health check endpoint timed out»*:
+
+1. En el sitio → **Settings → Deployments → Health check**, URL: **`/up`** (o `/api/v1/health`).
+2. El host expone `GET /up` → `200` texto `OK` (sin DB). Tras cambiar la ruta, redeploy para refrescar `route:cache`.
+3. En Cloudflare (dominio `on-forge.com` / custom): permitir User-Agent `Laravel-Healthcheck/1.0` o las IPs Forge `209.38.170.132`, `206.189.255.228`, `139.59.222.70` (si Bot Fight / WAF bloquea, el check hace timeout).
+4. Incluir el `curl` de warmup del Deploy Script (arriba) para que la primera request no sea la del health check remoto.
 
 ---
 

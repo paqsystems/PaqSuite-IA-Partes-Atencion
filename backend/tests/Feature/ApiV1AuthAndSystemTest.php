@@ -42,6 +42,14 @@ class ApiV1AuthAndSystemTest extends TestCase
             ->assertJsonPath('resultado.serviceName', 'paqsuite-partes-backend');
     }
 
+    public function test_up_responde_ok_para_forge_health_check(): void
+    {
+        $response = $this->get('/up');
+
+        $response->assertOk()
+            ->assertSee('OK');
+    }
+
     public function test_system_status_requiere_autenticacion(): void
     {
         $this->seed();
