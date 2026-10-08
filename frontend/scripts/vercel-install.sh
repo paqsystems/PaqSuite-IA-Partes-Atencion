@@ -13,7 +13,7 @@ registryHost="${registry#https://}"
 registryHost="${registryHost#http://}"
 registryHost="${registryHost%/}"
 
-reactCoreVersion="${PAQSUITE_REACT_CORE_VERSION:-2.4.17}"
+reactCoreVersion="${PAQSUITE_REACT_CORE_VERSION:-2.4.22}"
 
 echo "vercel-install: npm install (@paqsuite → ${registry})…"
 npm config set "@paqsuite:registry" "${registry}"

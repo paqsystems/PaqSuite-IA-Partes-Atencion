@@ -38,9 +38,20 @@ void i18n.use(initReactI18next).init({
 })
 
 registerGridI18nResources(i18n, 'common')
-// Fallback host primero (sin overwrite): cubre SDK sin export o pin desfasado (CC Preview).
+// Fallback host con overwrite: el SDK EmpresasAdmin exige estas claves vía prop `t`
+// (sin `t` el SDK hace `(key) => key` y se ven claves crudas en UI).
 for (const [locale, bundle] of Object.entries(empresasAdminHostFallback)) {
-  i18n.addResourceBundle(locale, 'common', bundle, true, false)
+  i18n.addResourceBundle(locale, 'common', bundle, true, true)
+}
+const appearancePaqsuiteI18nCatalogs = (
+  paqsuiteReactCore as {
+    appearancePaqsuiteI18nCatalogs?: Record<string, Record<string, string>>
+  }
+).appearancePaqsuiteI18nCatalogs
+if (appearancePaqsuiteI18nCatalogs) {
+  for (const [locale, bundle] of Object.entries(appearancePaqsuiteI18nCatalogs)) {
+    i18n.addResourceBundle(locale, 'common', bundle, true, true)
+  }
 }
 const registerEmpresasAdminI18nResources = (
   paqsuiteReactCore as {

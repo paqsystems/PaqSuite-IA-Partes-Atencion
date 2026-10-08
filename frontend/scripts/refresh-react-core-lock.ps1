@@ -1,4 +1,4 @@
-# Regenera package-lock con @paqsuite/react-core@2.4.17 desde Verdaccio.
+# Regenera package-lock con @paqsuite/react-core@2.4.22 desde Verdaccio.
 #   $env:VERDACCIO_AUTH_TOKEN = '<secret de Vercel Settings → Environment Variables>'
 #   .\scripts\refresh-react-core-lock.ps1
 $ErrorActionPreference = 'Stop'
@@ -24,7 +24,7 @@ Write-Host "refresh-react-core-lock: registry $registry"
 npm config set '@paqsuite:registry' $registry
 npm config set "//${registryHost}/:_authToken" $token
 
-$reactCoreVersion = if ($env:PAQSUITE_REACT_CORE_VERSION) { $env:PAQSUITE_REACT_CORE_VERSION } else { '2.4.17' }
+$reactCoreVersion = if ($env:PAQSUITE_REACT_CORE_VERSION) { $env:PAQSUITE_REACT_CORE_VERSION } else { '2.4.22' }
 Write-Host "refresh-react-core-lock: npm install @paqsuite/react-core@${reactCoreVersion} …"
 npm install "@paqsuite/react-core@${reactCoreVersion}" --save-exact
 npm list @paqsuite/react-core
