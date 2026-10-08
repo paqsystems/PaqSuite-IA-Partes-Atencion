@@ -6,7 +6,7 @@ import { resolveEmpresaThemeKey, themeGroupOf } from './devExtremeThemeSwitcher'
 describe('resolveEmpresaThemeKey (SDK A1)', () => {
   it('normaliza stock DX a clave paqsuite', () => {
     expect(resolveEmpresaThemeKey('generic.darkviolet')).toBe('paqsuite.violet.generic')
-    expect(resolveEmpresaThemeKey('material.purple.light')).toBe('paqsuite.rose.material')
+    expect(resolveEmpresaThemeKey('material.purple.light')).toBe('paqsuite.violet.material')
   })
 
   it('acepta clave paqsuite del catálogo', () => {

@@ -2,10 +2,9 @@ import {
   applyShellTokens,
   clearShellTokens,
   defaultEmpresaTheme,
-  normalizeThemeFromApi,
-  paqsuiteDxStockBridge,
   resolveEmpresaAppearance,
 } from '@paqsuite/react-core'
+import { normalizeThemeFromApi, paqsuiteDxStockBridge } from './sdkEmpresaThemeCompat'
 import {
   current as themesCurrent,
   init as themesInit,
