@@ -127,7 +127,7 @@
   "parametros.empty": "Sem parâmetros",
   "parametros.loadError": "Não foi possível carregar os parâmetros",
   "parametros.Auth.MinutosWeb.caption": "Inatividade web (minutos)",
-  "parametros.Auth.MinutosWeb.tooltip": "Timeout da sessão do cliente",
+  "parametros.Auth.MinutosWeb.tooltip": "Timeout da sessão do cliente. O valor 0 implica que a sessão não é encerrada por inatividade.",
   "parametros.Auth.PasswordComplejidad.caption": "Complexidade da senha",
   "parametros.Auth.PasswordComplejidad.tooltip": "simple | segura",
   "parametros.Auth.PasswordComplejidad.value.simple": "simples",

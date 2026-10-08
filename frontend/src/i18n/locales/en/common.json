@@ -144,7 +144,7 @@
   "parametros.empty": "No parameters",
   "parametros.loadError": "Could not load parameters",
   "parametros.Auth.MinutosWeb.caption": "Web idle timeout (minutes)",
-  "parametros.Auth.MinutosWeb.tooltip": "Client session timeout",
+  "parametros.Auth.MinutosWeb.tooltip": "Client session timeout. A value of 0 means the session is not cut off due to inactivity.",
   "parametros.Auth.PasswordComplejidad.caption": "Password complexity",
   "parametros.Auth.PasswordComplejidad.tooltip": "simple | secure",
   "parametros.Auth.PasswordComplejidad.value.simple": "simple",

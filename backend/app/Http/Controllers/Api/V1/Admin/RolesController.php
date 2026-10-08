@@ -11,7 +11,7 @@ use PaqSuite\LaravelCore\Http\Responses\PaqSuiteEnvelopeCatalog;
 use PaqSuite\LaravelCore\Security\RolAdminRepository;
 
 /**
- * ABM roles (GEN-06). Contrato SPEC: nombre, descripcion, accesoTotal.
+ * ABM roles (GEN-06). Contrato SPEC: codigo, nombre, descripcion, accesoTotal, activo.
  */
 final class RolesController extends Controller
 {
@@ -30,9 +30,11 @@ final class RolesController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
+            'codigo' => ['sometimes', 'nullable', 'string', 'max:64'],
             'nombre' => ['required', 'string', 'max:255'],
             'descripcion' => ['sometimes', 'nullable', 'string', 'max:500'],
             'accesoTotal' => ['sometimes', 'boolean'],
+            'activo' => ['sometimes', 'boolean'],
         ]);
 
         if ($validator->fails()) {
@@ -50,9 +52,11 @@ final class RolesController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
+            'codigo' => ['sometimes', 'nullable', 'string', 'max:64'],
             'nombre' => ['sometimes', 'string', 'max:255'],
             'descripcion' => ['sometimes', 'nullable', 'string', 'max:500'],
             'accesoTotal' => ['sometimes', 'boolean'],
+            'activo' => ['sometimes', 'boolean'],
         ]);
 
         if ($validator->fails()) {

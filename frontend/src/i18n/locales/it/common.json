@@ -127,7 +127,7 @@
   "parametros.empty": "Nessun parametro",
   "parametros.loadError": "Impossibile caricare i parametri",
   "parametros.Auth.MinutosWeb.caption": "Inattività web (minuti)",
-  "parametros.Auth.MinutosWeb.tooltip": "Timeout sessione client",
+  "parametros.Auth.MinutosWeb.tooltip": "Timeout sessione client. Il valore 0 implica che la sessione non viene interrotta per inattività.",
   "parametros.Auth.PasswordComplejidad.caption": "Complessità password",
   "parametros.Auth.PasswordComplejidad.tooltip": "simple | sicura",
   "parametros.Auth.PasswordComplejidad.value.simple": "semplice",
