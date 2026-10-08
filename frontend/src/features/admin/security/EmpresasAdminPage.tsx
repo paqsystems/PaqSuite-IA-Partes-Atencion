@@ -1,36 +1,19 @@
-import { EmpresasAdminPage as EmpresasAdminPageSdk, type EmpresaListItem } from '@paqsuite/react-core'
+import {
+  EmpresasAdminPage as EmpresasAdminPageSdk,
+  type EmpresaListItem,
+} from '@paqsuite/react-core'
 import { useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
 import { getAuthSession, getAuthToken, patchAuthSession } from '../../auth/authSessionStore'
-import { resolveAuthMessage } from '../../auth/authMessages'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { applyDevExtremeTheme } from '../../../theme/devExtremeThemeSwitcher'
-import {
-  empresasAdminSdkFallbackEs,
-  empresasAdminSdkToHost,
-} from './securityEmpresasSdkI18n'
 
 export function EmpresasAdminPage() {
-  const { t } = useTranslation()
-
-  const translateSdk = (key: string) => {
-    if (key.startsWith('admin.empresas.')) {
-      const hostKey = empresasAdminSdkToHost[key]
-      const fallback = empresasAdminSdkFallbackEs[key]
-      if (hostKey) {
-        return t(hostKey, fallback ?? key)
-      }
-      return t(key, fallback ?? key)
-    }
-    return resolveAuthMessage(key) ?? key
-  }
-
-  const handlePreviewTheme = useCallback((theme: string) => {
-    void applyDevExtremeTheme(theme, { reloadOnGroupChange: true })
+  const handlePreviewTheme = useCallback((dxTheme: string) => {
+    void applyDevExtremeTheme(dxTheme, { reloadOnGroupChange: false })
   }, [])
 
-  const handleRestoreCommittedTheme = useCallback((theme: string) => {
-    void applyDevExtremeTheme(theme, { reloadOnGroupChange: true })
+  const handleRestoreCommittedTheme = useCallback((dxTheme: string) => {
+    void applyDevExtremeTheme(dxTheme, { reloadOnGroupChange: false })
   }, [])
 
   const handleEmpresaSaved = useCallback((item: EmpresaListItem) => {
@@ -57,7 +40,7 @@ export function EmpresasAdminPage() {
       <EmpresasAdminPageSdk
         accessToken={getAuthToken()}
         platform={buildAuthPlatformHeaders()}
-        t={translateSdk}
+        i18nNamespace="common"
         tenancyMode="single"
         onPreviewTheme={handlePreviewTheme}
         onRestoreCommittedTheme={handleRestoreCommittedTheme}

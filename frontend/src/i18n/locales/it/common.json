@@ -374,6 +374,8 @@
   "admin.empresas.applyTheme": "Applica",
   "admin.empresas.applyThemeHint": "Anteprima attiva (non salvata). Annulla ripristina l'aspetto precedente.",
   "admin.empresas.monoNote": "Installazione a singola azienda: non è consentita la creazione né l'eliminazione, solo la modifica di nome e stato.",
+  "admin.empresas.validation.invalid": "Controllare i dati del modulo (nome, stato e aspetto).",
+  "admin.empresas.validation.themeInvalid": "L'aspetto selezionato non è valido per questa installazione.",
   "admin.permisos.title": "Permessi",
   "admin.permisos.field.usuario": "Utente",
   "admin.permisos.field.empresa": "Azienda",

@@ -7,6 +7,7 @@
     "predev": "node scripts/gen-dx-theme-urls.mjs",
     "prebuild": "node scripts/gen-dx-theme-urls.mjs",
     "dev": "vite",
+    "dev:lab": "vite",
     "dev:e2e": "vite --port 3101 --strictPort",
     "build": "vite build",
     "build:mobile": "vite build",

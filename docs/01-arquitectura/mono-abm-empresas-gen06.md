@@ -28,7 +28,7 @@ El **`id`** de `pq_empresa` es el **código de empresa** visible en UI (no confu
 1. **`tenancyMode="single"`** en el wrapper del host (`frontend/src/features/admin/security/EmpresasAdminPage.tsx`).
 2. **Grilla:** columna **Código** (`id`); **ocultar** columna «Base de datos».
 3. **Modal edición:** campo solo lectura **Código** = `id`; **no** mostrar «ID ERP» ni «Base de datos» (evita `undefined` cuando la API no devuelve `erpEmpresaId`).
-4. **Vista previa de apariencia:** botón **Aplicar** que invoque `applyDevExtremeTheme(theme, { reloadOnGroupChange: true })` del host para actualizar shell + pantalla de empresas; **Cancelar** restaura el tema grabado al abrir el modal (`onRestoreCommittedTheme`).
+4. **Vista previa de apariencia:** botón **Aplicar** que invoque el **puente A1 del host** (`applyDevExtremeTheme` en `frontend/src/theme/devExtremeThemeSwitcher.ts`), que delega en el SDK (`applyDxTheme` + `applyShellTokens` + catálogo `paqsuite.*`); **no** duplicar `empresaThemeCatalog` ni CSS de shell. **Cancelar** restaura el tema grabado (`onRestoreCommittedTheme`). Si cambia el grupo DX (Generic ↔ Material ↔ Fluent), `reloadOnGroupChange: true` recarga la SPA.
 5. **Guardar:** tras `PUT`, actualizar `empresas[]` en sesión auth y reaplicar tema (sesión coherente sin re-login).
 6. **i18n:** claves producto `admin.empresas.field.codigo`, `admin.empresas.applyTheme`, `admin.empresas.applyThemeHint`, `admin.empresas.monoNote` (5 locales); mapeo SDK → host en `securityEmpresasSdkI18n.ts`.
 
@@ -36,9 +36,9 @@ El **`id`** de `pq_empresa` es el **código de empresa** visible en UI (no confu
 
 | Prop | Uso host MONO |
 |------|----------------|
-| `onPreviewTheme` | `applyDevExtremeTheme` |
+| `onPreviewTheme` | `applyDevExtremeTheme` (SDK tokens + tema DX) |
 | `onRestoreCommittedTheme` | Restaurar tema al cancelar tras vista previa |
-| `onEmpresaSaved` | `patchAuthSession` + tema |
+| `onEmpresaSaved` | `patchAuthSession` + `applyDevExtremeTheme` |
 
 ### MULTI (referencia)
 
@@ -50,8 +50,9 @@ El **`id`** de `pq_empresa` es el **código de empresa** visible en UI (no confu
 
 - [ ] `EmpresasAdminPage` con `tenancyMode="single"` y callbacks de tema
 - [ ] SP admin empresas sin campos ERP/BD en respuesta
-- [ ] Temas empaquetados en `public/dx-themes` + `empresaThemeCssUrls.ts`
-- [ ] `ThemeProvider` + `shellAppearanceBridge.css` montados en `main.tsx`
+- [ ] Puente A1: `devExtremeThemeSwitcher.ts` (SDK; sin fork de catálogo ni `shellAppearanceBridge.css`)
+- [ ] `registerEmpresasAdminI18nResources` en bootstrap i18n (labels `appearance.paqsuite.*`)
+- [ ] `ThemeProvider` en `main.tsx` (tema empresa tras login; login público sin A1)
 - [ ] i18n empresas (código, aplicar, nota MONO)
 - [ ] Smoke: editar empresa → Aplicar tema → shell y grilla cambian; Cancelar revierte; Guardar persiste
 

@@ -22,19 +22,14 @@ Target: `paqsuite/laravel-core@^1.3.3` · `@paqsuite/react-core@2.2.1` · scaffo
 
 El install/build produce el artefacto; el deploy sirve **vendor** + **dist** ya resueltos (como Laravel/DevExtreme).
 
-## Modo repo-lab local
+## Modo repo-lab local (opcional)
 
-Durante la adopción y validación local, Partes puede resolver el Framework
-directamente desde `C:\Programacion\PaqSuite-IA-FRAMEWORK`:
+El **contrato de repo** es registry (tabla anterior). Para desarrollo contra el monorepo hermano `C:\Programacion\PaqSuite-IA-FRAMEWORK`, ver `frontend/MODO-REPO-LAB.md`:
 
-- `frontend/package.json` usa `file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core`.
-- `backend/composer.json` usa un repositorio `path` para
-  `../../PaqSuite-IA-FRAMEWORK/packages/php/laravel-core`.
+- **FE:** pin temporal `file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core` + `PAQ_REPO_LAB=1` en Vite — **no** commitear en ramas de release.
+- **BE:** Satis en `composer.json`; lab PHP con `PaqSuite-IA-FRAMEWORK\tools\sdk\sdk-link.ps1` (no commitear `path` en `composer.json`).
 
-Este modo no requiere acceso a Verdaccio/Satis, pero exige ambos repositorios
-en la misma carpeta `C:\Programacion`. No debe usarse en Vercel ni en un builder
-que no tenga el checkout sibling; para esos entornos se mantiene el flujo de
-artefactos empaquetados descrito abajo.
+Vercel y Forge usan siempre el flujo empaquetado descrito abajo.
 
 ---
 

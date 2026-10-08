@@ -4,7 +4,7 @@ Desarrollo con el monorepo hermano `PaqSuite-IA-FRAMEWORK` (misma carpeta `C:\Pr
 
 | Capa | Configuración actual |
 |------|----------------------|
-| **FE** | Pin registry en `package.json` (ej. `"@paqsuite/react-core": "2.4.17"`). Para lab: `file:../../PaqSuite-IA-FRAMEWORK/...` + `PAQ_REPO_LAB=1` al correr Vite. **Default (deploy):** sin alias; `node_modules` desde Verdaccio (`.npmrc` + `scripts/vercel-install.sh`). |
+| **FE** | **Deploy (default en repo):** pin Verdaccio en `package.json` (ej. `"@paqsuite/react-core": "2.4.17"`), `.npmrc` + `VERDACCIO_AUTH_TOKEN` para install; Vite sin alias al monorepo. **Lab opcional:** `file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core` + `PAQ_REPO_LAB=1` en `frontend/.env` (no commitear `file:` en ramas de release). |
 | **BE** | Satis en `composer.json`; para lab PHP usar `PaqSuite-IA-FRAMEWORK\tools\sdk\sdk-link.ps1` (no commitear path en `composer.json`) |
 
 Tras cambiar código en `packages/js/react-core`: `npm install` en `frontend/` y `npm run dev`.

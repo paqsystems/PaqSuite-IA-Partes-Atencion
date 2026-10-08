@@ -72,7 +72,7 @@ Forge/local backend sigue con Satis `http://100.110.69.93/satis` y `composer.loc
 ## Pasos en tu PC de desarrollo (Windows)
 
 1. Tailscale **Connected**.
-2. `$env:VERDACCIO_AUTH_TOKEN = '…'` (mismo valor que Vercel o token de dev).
+2. `$env:VERDACCIO_AUTH_TOKEN = '<secret>'` — el **valor real** del secret en Vercel (no el carácter `…` de los ejemplos). Solo el token; si copiaste `Bearer …` desde curl, quitá el prefijo `Bearer `.
 3. Opcional lab sin Funnel: copiar `frontend/.npmrc.local.example` → `frontend/.npmrc.local` y usar IP `:4873`.
 4. Regenerar lock con integridad correcta:
 

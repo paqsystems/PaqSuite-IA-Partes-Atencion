@@ -391,6 +391,8 @@
   "admin.empresas.applyTheme": "Apply",
   "admin.empresas.applyThemeHint": "Preview active (not saved). Cancel restores the previous appearance.",
   "admin.empresas.monoNote": "Single-company installation: no create or delete allowed, only editing name and status.",
+  "admin.empresas.validation.invalid": "Check the form data (name, status, and appearance).",
+  "admin.empresas.validation.themeInvalid": "The selected appearance is not valid for this installation.",
   "admin.permisos.title": "Permissions",
   "admin.permisos.field.usuario": "User",
   "admin.permisos.field.empresa": "Company",

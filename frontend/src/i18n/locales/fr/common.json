@@ -374,6 +374,8 @@
   "admin.empresas.applyTheme": "Appliquer",
   "admin.empresas.applyThemeHint": "Aperçu actif (non enregistré). Annuler restaure l'apparence précédente.",
   "admin.empresas.monoNote": "Installation mono-société : création et suppression non autorisées, seule l'édition du nom et du statut est possible.",
+  "admin.empresas.validation.invalid": "Vérifiez les données du formulaire (nom, statut et apparence).",
+  "admin.empresas.validation.themeInvalid": "L'apparence sélectionnée n'est pas valide pour cette installation.",
   "admin.permisos.title": "Permissions",
   "admin.permisos.field.usuario": "Utilisateur",
   "admin.permisos.field.empresa": "Société",

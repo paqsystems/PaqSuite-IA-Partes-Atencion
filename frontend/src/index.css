@@ -1,8 +1,8 @@
 :root {
   font-family: 'Segoe UI', system-ui, sans-serif;
   line-height: 1.5;
-  color: #1a2332;
-  background: #f8fafc;
+  color: var(--pq-shell-text, #1a2332);
+  background: var(--pq-shell-bg, #f8fafc);
   min-height: 100vh;
 }
 
