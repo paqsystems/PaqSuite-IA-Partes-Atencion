@@ -14,6 +14,7 @@ import commonEn from './locales/en/common.json'
 import commonPt from './locales/pt/common.json'
 import commonFr from './locales/fr/common.json'
 import commonIt from './locales/it/common.json'
+import { empresasAdminHostFallback } from './empresasAdminHostFallback'
 
 const initialLocale: LocaleCode = normalizeLocale(getGuestLocale()) ?? 'es'
 
@@ -37,6 +38,10 @@ void i18n.use(initReactI18next).init({
 })
 
 registerGridI18nResources(i18n, 'common')
+// Fallback host primero (sin overwrite): cubre SDK sin export o pin desfasado (CC Preview).
+for (const [locale, bundle] of Object.entries(empresasAdminHostFallback)) {
+  i18n.addResourceBundle(locale, 'common', bundle, true, false)
+}
 const registerEmpresasAdminI18nResources = (
   paqsuiteReactCore as {
     registerEmpresasAdminI18nResources?: (
@@ -45,6 +50,7 @@ const registerEmpresasAdminI18nResources = (
     ) => void
   }
 ).registerEmpresasAdminI18nResources
+// SDK completo (incl. appearance.paqsuite.*) sobrescribe cuando el export existe.
 registerEmpresasAdminI18nResources?.(i18n, 'common')
 syncDevExtremeLocale(initialLocale)
 

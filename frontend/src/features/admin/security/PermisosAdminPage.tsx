@@ -89,7 +89,21 @@ export function PermisosAdminPage() {
     })
     void listAdminRoles().then((result) => {
       if (result.kind === 'ok') {
-        setRoles(result.envelope.resultado.items ?? [])
+        const items = result.envelope.resultado.items ?? []
+        setRoles(
+          items.map((row) => ({
+            ...row,
+            codigo:
+              typeof row.codigo === 'string' && row.codigo.trim() !== ''
+                ? row.codigo
+                : String(
+                    (row as { Codigo?: string }).Codigo ??
+                      (row as { code?: string }).code ??
+                      '',
+                  ),
+            nombre: row.nombre ?? (row as { name?: string }).name ?? '',
+          })),
+        )
       }
     })
     void load()
@@ -217,7 +231,15 @@ export function PermisosAdminPage() {
   }
 
   function formatRol(item: AdminRol | null): string {
-    return item ? `${item.codigo} — ${item.nombre}` : ''
+    if (!item) {
+      return ''
+    }
+    const codigo = typeof item.codigo === 'string' ? item.codigo.trim() : ''
+    const nombre = typeof item.nombre === 'string' ? item.nombre.trim() : ''
+    if (codigo && nombre) {
+      return `${codigo} — ${nombre}`
+    }
+    return codigo || nombre
   }
 
   function closeBulk() {

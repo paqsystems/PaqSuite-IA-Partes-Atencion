@@ -127,7 +127,7 @@
   "parametros.empty": "Aucun paramètre",
   "parametros.loadError": "Impossible de charger les paramètres",
   "parametros.Auth.MinutosWeb.caption": "Inactivité web (minutes)",
-  "parametros.Auth.MinutosWeb.tooltip": "Délai d'expiration de session client",
+  "parametros.Auth.MinutosWeb.tooltip": "Délai d'expiration de session client. La valeur 0 implique que la session n'est pas coupée pour inactivité.",
   "parametros.Auth.PasswordComplejidad.caption": "Complexité du mot de passe",
   "parametros.Auth.PasswordComplejidad.tooltip": "simple | sécurisé",
   "parametros.Auth.PasswordComplejidad.value.simple": "simple",
