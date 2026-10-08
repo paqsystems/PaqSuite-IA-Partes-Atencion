@@ -16,7 +16,7 @@ Plan de adopción sin forks GEN: [plan-partes-adopcion-sdk-sin-fork-gen.md](./pl
 
 | Paquete | Pin / lock | Nota |
 |---------|------------|------|
-| `paqsuite/laravel-core` | **1.3.9** | Satis en `backend/composer.json` |
+| `paqsuite/laravel-core` | **1.3.8** | Satis en `backend/composer.json` (lock). Bump a 1.3.9+ solo con `composer update` y Satis alcanzable. |
 | `@paqsuite/react-core` | **2.4.17** | Verdaccio; `frontend/package-lock.json` resuelve el tarball HTTPS (GEN-06: `SecurityRolesPage`, `EmpresasAdminPage`, `RolAtributosPage`) |
 
 Vercel: `scripts/vercel-install.sh` + `VERDACCIO_AUTH_TOKEN`. Vite **no** alias al monorepo salvo `PAQ_REPO_LAB=1`.
