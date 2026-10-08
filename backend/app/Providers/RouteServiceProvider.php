@@ -29,6 +29,12 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         $this->routes(function () {
+            // Forge post-deploy health check (default path). Sin sesión/DB/throttle.
+            Route::get('/up', static function () {
+                return response('OK', 200)
+                    ->header('Content-Type', 'text/plain; charset=UTF-8');
+            });
+
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
