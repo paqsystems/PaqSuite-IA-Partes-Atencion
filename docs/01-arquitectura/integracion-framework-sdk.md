@@ -10,7 +10,7 @@ Framework: `PaqSuite-IA-FRAMEWORK` vía `paqsuite/laravel-core` + `@paqsuite/rea
 
 | Capa | Paquete | Resolución (deploy) |
 |------|---------|---------------------|
-| Backend | `paqsuite/laravel-core: 1.3.9` | Satis (`composer.json` → `http://100.110.69.93/satis`) |
+| Backend | `paqsuite/laravel-core: 1.3.8` | Satis (`composer.json` → `http://100.110.69.93/satis`) |
 | Frontend | `@paqsuite/react-core: 2.4.17` | Verdaccio (`frontend/.npmrc` + lock; Vercel: `VERDACCIO_AUTH_TOKEN`) |
 
 Deploy / bump: [`deploy-sdk-package-repos.md`](./deploy-sdk-package-repos.md).  
