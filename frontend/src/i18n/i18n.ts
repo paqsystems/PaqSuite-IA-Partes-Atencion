@@ -1,9 +1,9 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import * as paqsuiteReactCore from '@paqsuite/react-core'
 import {
   getGuestLocale,
   normalizeLocale,
-  registerEmpresasAdminI18nResources,
   registerGridI18nResources,
   setGuestLocale,
   syncDevExtremeLocale,
@@ -37,7 +37,15 @@ void i18n.use(initReactI18next).init({
 })
 
 registerGridI18nResources(i18n, 'common')
-registerEmpresasAdminI18nResources(i18n, 'common')
+const registerEmpresasAdminI18nResources = (
+  paqsuiteReactCore as {
+    registerEmpresasAdminI18nResources?: (
+      instance: typeof i18n,
+      namespace: string,
+    ) => void
+  }
+).registerEmpresasAdminI18nResources
+registerEmpresasAdminI18nResources?.(i18n, 'common')
 syncDevExtremeLocale(initialLocale)
 
 /** Aplica idioma guest: i18n + DX + persistencia local. */
