@@ -8,12 +8,11 @@ import {
   getActiveEmpresaThemeFromSession,
 } from '../../theme/devExtremeThemeSwitcher'
 import '../../theme/dxIconsFix.css'
-import '../../theme/shellAppearanceBridge.css'
 
 /**
  * Tema inicial DevExtreme (layout effect: antes del paint de hijos).
  * Licencia: `src/init-devextreme-license.ts` (importado primero en `main.tsx`).
- * Prioridad: preview pendiente (Aplicar con reload) → sesión empresa → generic.light.
+ * Prioridad: preview pendiente (reload de grupo) → sesión empresa → default SDK (`paqsuite.light.generic`).
  */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [themeReady, setThemeReady] = useState(false)

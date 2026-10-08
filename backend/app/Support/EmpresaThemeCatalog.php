@@ -3,9 +3,9 @@
 namespace App\Support;
 
 /**
- * Whitelist efectiva de temas DevExtreme (GEN-06-empresas, D1-06-26 / SPEC-001-19 §5.1).
- * Catálogo = temas predefinidos empaquetados en `devextreme/dist/css` (v26.1 del host).
- * Debe reflejar `frontend/.../empresaThemeCatalog.ts`.
+ * Whitelist de valores persistidos en `pq_empresa.theme` (stock DevExtreme).
+ * UI A1 del SDK usa claves `paqsuite.*` y las mapea con `mapThemeForApiPersistence`.
+ * Catálogo FE: reexport `@paqsuite/react-core` — ver docs/01-arquitectura/integracion-framework-sdk.md § A1.
  */
 final class EmpresaThemeCatalog
 {
