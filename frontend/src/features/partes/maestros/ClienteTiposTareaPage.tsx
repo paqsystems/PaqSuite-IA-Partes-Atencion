@@ -122,6 +122,7 @@ export function ClienteTiposTareaPage() {
           dataSource={rows}
           keyExpr="id"
           loading={loading}
+          onRefresh={() => void load()}
           proceso="partes.maestros.clienteTiposTarea"
           gridId="asignaciones"
           accessToken={getAuthToken()}

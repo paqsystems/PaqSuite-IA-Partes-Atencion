@@ -41,7 +41,7 @@ final class SpRolAtributosRepository implements RolAtributosRepository
 
         return array_map(static fn (object $row): array => [
             'menuId' => (int) $row->menuId,
-            'padreId' => $row->padreId !== null ? (int) $row->padreId : null,
+            'padreId' => $row->padreId !== null && (int) $row->padreId > 0 ? (int) $row->padreId : null,
             'titulo' => (string) $row->titulo,
             'esProceso' => (bool) $row->esProceso,
         ], $rows);
@@ -61,6 +61,10 @@ final class SpRolAtributosRepository implements RolAtributosRepository
 
         return array_map(static fn (object $row): array => [
             'menuId' => (int) $row->menuId,
+            'permisoAlta' => (bool) ($row->permisoAlta ?? $row->create ?? false),
+            'permisoBaja' => (bool) ($row->permisoBaja ?? $row->delete ?? false),
+            'permisoModi' => (bool) ($row->permisoModi ?? $row->update ?? false),
+            'permisoRepo' => (bool) ($row->permisoRepo ?? $row->report ?? false),
             'create' => (bool) ($row->permisoAlta ?? $row->create ?? false),
             'delete' => (bool) ($row->permisoBaja ?? $row->delete ?? false),
             'update' => (bool) ($row->permisoModi ?? $row->update ?? false),

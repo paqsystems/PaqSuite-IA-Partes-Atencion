@@ -157,6 +157,7 @@ export function UsuariosAdminPage() {
           dataSource={rows}
           keyExpr="id"
           loading={loading}
+          onRefresh={() => void load()}
           proceso="partes.admin.usuarios"
           gridId="usuarios"
           accessToken={getAuthToken()}

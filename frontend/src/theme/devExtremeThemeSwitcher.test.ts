@@ -1,19 +1,30 @@
 import { describe, expect, it } from 'vitest'
+import { defaultEmpresaTheme, empresaThemeKeys } from '@paqsuite/react-core'
 import { EMPRESA_THEME_DEFAULT } from '../features/admin/security/empresaThemeCatalog'
-import { EMPRESA_THEME_CSS_URLS } from './empresaThemeCssUrls'
-import { resolveEmpresaThemeKey } from './devExtremeThemeSwitcher'
+import { resolveEmpresaThemeKey, themeGroupOf } from './devExtremeThemeSwitcher'
 
-describe('resolveEmpresaThemeKey', () => {
-  it('acepta clave empaquetada', () => {
-    expect(resolveEmpresaThemeKey('material.teal.dark')).toBe('material.teal.dark')
-    expect(Object.prototype.hasOwnProperty.call(EMPRESA_THEME_CSS_URLS, 'material.teal.dark')).toBe(true)
+describe('resolveEmpresaThemeKey (SDK A1)', () => {
+  it('normaliza stock DX a clave paqsuite', () => {
+    expect(resolveEmpresaThemeKey('generic.darkviolet')).toBe('paqsuite.violet.generic')
+    expect(resolveEmpresaThemeKey('material.purple.light')).toBe('paqsuite.violet.material')
   })
 
-  it('cae a default si es desconocida', () => {
-    expect(resolveEmpresaThemeKey('no-existe')).toBe(EMPRESA_THEME_DEFAULT)
+  it('acepta clave paqsuite del catálogo', () => {
+    expect(resolveEmpresaThemeKey('paqsuite.burgundy.generic')).toBe('paqsuite.burgundy.generic')
   })
 
-  it('cubre el catálogo FE de apariencias', () => {
-    expect(Object.keys(EMPRESA_THEME_CSS_URLS).length).toBe(44)
+  it('cae al default del SDK si es desconocida', () => {
+    expect(resolveEmpresaThemeKey('no-existe')).toBe(defaultEmpresaTheme)
+    expect(EMPRESA_THEME_DEFAULT).toBe(defaultEmpresaTheme)
+  })
+
+  it('catálogo host alineado al SDK (24 apariencias)', () => {
+    expect(empresaThemeKeys.length).toBe(24)
+  })
+
+  it('detecta cambio de grupo DX entre familias material y generic', () => {
+    expect(themeGroupOf('paqsuite.light.generic')).toBe('generic')
+    expect(themeGroupOf('paqsuite.light.material')).toBe('material')
+    expect(themeGroupOf('paqsuite.light.generic')).not.toBe(themeGroupOf('paqsuite.light.material'))
   })
 })

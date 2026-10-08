@@ -8,10 +8,10 @@ Framework: `PaqSuite-IA-FRAMEWORK` vía `paqsuite/laravel-core` + `@paqsuite/rea
 
 ## Dependencias
 
-| Capa | Paquete | Resolución (`1.2.0-FINAL`+) |
-|------|---------|------------------------------|
-| Backend | `paqsuite/laravel-core: 1.3.8` | Repo-lab local vía Composer `path` |
-| Frontend | `@paqsuite/react-core: 2.4.14` | Repo-lab local vía dependencia `file:` |
+| Capa | Paquete | Resolución (deploy) |
+|------|---------|---------------------|
+| Backend | `paqsuite/laravel-core: 1.3.8` | Satis (`composer.json` → `http://100.110.69.93/satis`) |
+| Frontend | `@paqsuite/react-core: 2.4.17` | Verdaccio (`frontend/.npmrc` + lock; Vercel: `VERDACCIO_AUTH_TOKEN`) |
 
 Deploy / bump: [`deploy-sdk-package-repos.md`](./deploy-sdk-package-repos.md).  
 Guías Framework: `GUIA_PRUEBA_INSTALACION.md`, `GUIA_ACTUALIZACION_PROYECTO.md`.
@@ -34,6 +34,31 @@ En este host:
 | Helper auth hero | `frontend/src/features/auth/partesAuthHero.ts` |
 
 Config producto: `PAQSUITE_PROYECTO=partesatencion`, `PAQSUITE_TENANCY=single`, `PAQSUITE_DB=unified`.
+
+### ABM Empresas MONO (GEN-06 + A1)
+
+En instalación **single**, el admin de empresas muestra **código** (`pq_empresa.id`), oculta campos ERP/BD, permite **vista previa de tema** («Aplicar») y documenta restricciones de alta/baja. Detalle operativo y checklist para otros hosts MONO: [`mono-abm-empresas-gen06.md`](./mono-abm-empresas-gen06.md).
+
+### Apariencia / tema empresa (GEN-01 + GEN-19 A1) — Must
+
+Norma Framework: catálogo **`paqsuite.*`** (24 apariencias), puente a temas stock DevExtreme, tokens CSS del shell (`--pq-shell-*`, `--pq-menu-item-active-*`). SoT: `@paqsuite/react-core` (`empresaThemeCatalog`, `paqsuiteThemeTokens`, `applyDxTheme`, `applyShellTokens`).
+
+| Pieza | Host Partes | Prohibido en hosts |
+|-------|-------------|-------------------|
+| Catálogo / labels i18n | Reexport SDK; `registerEmpresasAdminI18nResources(i18n)` | Copiar `empresaThemeCatalog.ts` con claves `generic.*` / `material.*` como UI |
+| Aplicar tema tras login / cambio empresa | `frontend/src/theme/devExtremeThemeSwitcher.ts` → `resolveEmpresaAppearance` + `applyDxTheme` + `applyShellTokens` | Solo `themes.current(dx)` sin tokens (shell negro uniforme en dark, menú sin contraste en claros) |
+| CSS shell override local | `shell.css` del SDK + variables en `index.css` (`var(--pq-shell-bg)`) | `shellAppearanceBridge.css` con grises fijos para `.dark` |
+| Persistencia API | Valor stock DX (`mapThemeForApiPersistence` en formulario SDK) | Validar solo `paqsuite.*` en BE sin normalizar |
+| Login público | `generic.light` / default hasta sesión con empresa | Tema A1 antes de autenticar |
+
+Cableado mínimo:
+
+1. `main.tsx`: `auth.css` + `shell.css`; `bootstrapDevExtremeThemeBeforeMount(defaultEmpresaTheme)` antes del primer widget DX.
+2. `ThemeProvider`: tema de sesión / `paqPendingEmpresaTheme` tras reload de grupo.
+3. `ShellPage` / `EmpresasAdminPage`: `applyDevExtremeTheme` en cambio de empresa y callbacks `onPreviewTheme` / `onRestoreCommittedTheme`.
+4. Tests: `devExtremeThemeSwitcher.test.ts` (normalización `generic.darkviolet` → `paqsuite.violet.generic`).
+
+Referencia smoke Framework: `apps/smoke-frontend` + `useEmpresaAppearanceBridge` (equivalente funcional al puente del host).
 
 ### Lookup instalación (GEN-18)
 

@@ -739,6 +739,7 @@ function ProcesoMasivoView() {
           dataSource={rows}
           keyExpr="id"
           loading={loading}
+          onRefresh={() => void load()}
           proceso="partes.masivo"
           gridId="procesoMasivo"
           accessToken={getAuthToken()}

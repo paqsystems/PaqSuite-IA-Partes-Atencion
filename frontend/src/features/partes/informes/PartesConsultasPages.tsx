@@ -1,19 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Column, Paging, Pager } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
 import SelectBox from 'devextreme-react/select-box'
-import PivotGrid, { FieldChooser, FieldPanel, type PivotGridRef } from 'devextreme-react/pivot-grid'
-import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source'
-import type dxPivotGrid from 'devextreme/ui/pivot_grid'
 import { useTranslation } from 'react-i18next'
-import {
-  getPivotLocalizedUiTexts,
-  isNativeApp,
-  PivotLayoutsBar,
-  ProcessDataGrid,
-  getEmissionProcess,
-} from '@paqsuite/react-core'
+import { isNativeApp, ProcessDataGrid, getEmissionProcess } from '@paqsuite/react-core'
 import { PartesEmissionDialog as EmissionDialog } from './PartesEmissionDialog'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
@@ -28,11 +19,12 @@ import { monthRange, currentMonthValue } from './PartesDashboardPage'
 import { usePartesMinutosColumnSummaryItems } from '../partesGridSummary'
 import { listCatalogo, listPartesResource } from '../maestros/partesMaestrosApi'
 import { fetchInformeAgrupado, fetchInformeTareas } from './partesInformeApi'
-import {
-  buildConsultaAgrupadaPivotFields,
-  buildConsultaDetalladaPivotFields,
-} from './partesInformePivotFields'
 import { enrichRowsWithDiaSemana } from './partesInformeDiaSemana'
+import { PartesInformeGrillaPivotSection } from './PartesInformeGrillaPivotSection'
+import {
+  buildPartesConsultaDetalladaPivotCatalog,
+  buildPartesConsultasAgrupadasPivotCatalog,
+} from './partesInformePivotCatalog'
 import {
   buildConsultaDetalladaHostContext,
   shouldDisableConsultaDetalladaEmit,
@@ -46,19 +38,8 @@ function formatDuracionCell(cell: { value?: unknown }) {
   return formatMinutosAsHhMm(Number(cell.value ?? 0))
 }
 
-function getPivotInstance(ref: PivotGridRef | null): dxPivotGrid | undefined {
-  if (!ref) {
-    return undefined
-  }
-  if (typeof ref.instance === 'function') {
-    return ref.instance()
-  }
-  return undefined
-}
-
 const CONSULTA_DETALLADA_ID = 'partes.consultaDetallada'
 const CONSULTA_AGRUPADA_ID = 'partes.consultasAgrupadas'
-
 const CONSULTA_DETALLADA_PROCESS = 'partes.informes.consultaDetallada'
 
 function catalogDisplay(item: Record<string, unknown> | null, descriptionKey: 'nombre' | 'descripcion'): string {
@@ -89,9 +70,6 @@ export function ConsultaDetalladaPage() {
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [mode, setMode] = useState<'grid' | 'pivot'>('grid')
-  const [pivotRemountKey, setPivotRemountKey] = useState(0)
-  const pivotRef = useRef<PivotGridRef>(null)
   const [emissionEnabled, setEmissionEnabled] = useState(false)
   const [emitDialogVisible, setEmitDialogVisible] = useState(false)
   const [clientes, setClientes] = useState<Record<string, unknown>[]>([])
@@ -103,6 +81,52 @@ export function ConsultaDetalladaPage() {
     () => enrichRowsWithDiaSemana(rawRows, t, 'fecha'),
     [rawRows, t, i18n.language]
   )
+
+  const pivotCatalog = useMemo(
+    () => buildPartesConsultaDetalladaPivotCatalog(t, i18n.language),
+    [t, i18n.language],
+  )
+
+  const fetchDetalladaRows = useCallback(async () => {
+    const query: Record<string, string> = { fechaDesde, fechaHasta, estadoCerrado }
+    if (filtroClienteId != null) {
+      query.clienteId = String(filtroClienteId)
+    }
+    if (esSupervisor && filtroUsuarioId != null) {
+      query.usuarioId = String(filtroUsuarioId)
+    }
+    if (filtroTipoTareaId != null) {
+      query.tipoTareaId = String(filtroTipoTareaId)
+    }
+    const result = await fetchInformeTareas(query)
+    if (result.kind === 'ok') {
+      const items = result.envelope.resultado.items ?? []
+      setRawRows(items)
+      setTotal(result.envelope.resultado.total ?? 0)
+      if ((result.envelope.resultado.total ?? 0) === 0) {
+        setError(resolveAuthMessage('partes.consulta.empty'))
+      }
+      return enrichRowsWithDiaSemana(items, t, 'fecha')
+    }
+    if (result.kind === 'envelopeError') {
+      const message = resolveAuthMessage(result.envelope.respuesta)
+      setError(message)
+      setTotal(0)
+      throw new Error(message)
+    }
+    return []
+  }, [
+    fechaDesde,
+    fechaHasta,
+    filtroClienteId,
+    filtroUsuarioId,
+    filtroTipoTareaId,
+    estadoCerrado,
+    esSupervisor,
+    t,
+  ])
+
+  const loadPivotDataset = useCallback(async () => fetchDetalladaRows(), [fetchDetalladaRows])
 
   const syncHostContext = useCallback(() => {
     setEmissionHostContextSnapshot(
@@ -134,31 +158,13 @@ export function ConsultaDetalladaPage() {
     setLoading(true)
     setError(null)
     try {
-      const query: Record<string, string> = { fechaDesde, fechaHasta, estadoCerrado }
-      if (filtroClienteId != null) {
-        query.clienteId = String(filtroClienteId)
-      }
-      if (esSupervisor && filtroUsuarioId != null) {
-        query.usuarioId = String(filtroUsuarioId)
-      }
-      if (filtroTipoTareaId != null) {
-        query.tipoTareaId = String(filtroTipoTareaId)
-      }
-      const result = await fetchInformeTareas(query)
-      if (result.kind === 'ok') {
-        setRawRows(result.envelope.resultado.items ?? [])
-        setTotal(result.envelope.resultado.total ?? 0)
-        if ((result.envelope.resultado.total ?? 0) === 0) {
-          setError(resolveAuthMessage('partes.consulta.empty'))
-        }
-      } else if (result.kind === 'envelopeError') {
-        setError(resolveAuthMessage(result.envelope.respuesta))
-        setTotal(0)
-      }
+      await fetchDetalladaRows()
+    } catch {
+      // envelopeError ya setea error en fetchDetalladaRows
     } finally {
       setLoading(false)
     }
-  }, [fechaDesde, fechaHasta, filtroClienteId, filtroUsuarioId, filtroTipoTareaId, estadoCerrado, esSupervisor])
+  }, [fetchDetalladaRows])
 
   useEffect(() => {
     void load()
@@ -216,23 +222,6 @@ export function ConsultaDetalladaPage() {
 
   const catalogLoadingText = catalogosLoading ? t('catalog.loading') : undefined
 
-  const pivotSource = useMemo(
-    () =>
-      new PivotGridDataSource({
-        retrieveFields: false,
-        fields: buildConsultaDetalladaPivotFields(t, i18n.language),
-        store: rows,
-      }),
-    [rows, t, i18n.language, pivotRemountKey]
-  )
-
-  const pivotUiTexts = useMemo(
-    () => getPivotLocalizedUiTexts(i18n.language),
-    [i18n.language]
-  )
-
-  const pivotInstanceKey = `${pivotRemountKey}-${i18n.language}`
-
   const durationSummaryFormatter = useCallback(
     (value: unknown) => formatMinutosAsHhMm(Number(value ?? 0)),
     []
@@ -241,6 +230,67 @@ export function ConsultaDetalladaPage() {
   const duracionSummaryItems = usePartesMinutosColumnSummaryItems(
     'duracionMinutos',
     'pq-duracionMinutos-sum',
+  )
+
+  const renderDetalladaGridView = useCallback(
+    (toolbarLeading: ReactNode) => (
+      <div data-testid="partesConsultaDetalladaGrid">
+        <ProcessDataGrid
+          dataSource={rows}
+          keyExpr="id"
+          showBorders
+          loading={loading}
+          onRefresh={() => void load()}
+          proceso="partes.informes.consultaDetallada"
+          gridId="consultaDetallada"
+          accessToken={getAuthToken()}
+          platform={buildAuthPlatformHeaders()}
+          defaultTotalItems={duracionSummaryItems}
+          columnSummaryFormatters={{
+            duracionMinutos: durationSummaryFormatter,
+          }}
+          toolbarLeading={toolbarLeading}
+        >
+          <Paging defaultPageSize={20} />
+          <Pager visible showPageSizeSelector />
+          <Column dataField="fecha" caption={t('partes.informe.field.fecha')} dataType="date" />
+          <Column dataField="diaSemana" caption={t('partes.informe.field.diaSemana')} />
+          <Column dataField="usuarioCode" caption={t('partes.informe.field.usuarioCode')} />
+          <Column dataField="usuarioNombre" caption={t('partes.informe.field.usuarioNombre')} />
+          <Column dataField="clienteCode" caption={t('partes.informe.field.clienteCode')} />
+          <Column dataField="erpCliente" caption={t('partes.informe.field.erpCliente')} />
+          <Column dataField="erpArticulo" caption={t('partes.informe.field.erpArticulo')} />
+          <Column dataField="tipoTareaCode" caption={t('partes.informe.field.tipoTareaCode')} />
+          <Column
+            dataField="tipoTareaDescripcion"
+            caption={t('partes.informe.field.tipoTareaDescripcion')}
+          />
+          <Column
+            dataField="duracionMinutos"
+            caption={t('partes.informe.field.duracion')}
+            dataType="number"
+            customizeText={formatDuracionCell}
+          />
+          <Column dataField="observacion" caption={t('partes.informe.field.observacion')} />
+          <Column
+            dataField="sinCargo"
+            caption={t('partes.informe.field.sinCargo')}
+            dataType="boolean"
+          />
+          <Column
+            dataField="presencial"
+            caption={t('partes.informe.field.presencial')}
+            dataType="boolean"
+          />
+          <Column
+            dataField="cerrado"
+            caption={t('partes.informe.field.cerrado')}
+            dataType="boolean"
+          />
+        </ProcessDataGrid>
+      </div>
+    ),
+    [duracionSummaryItems, durationSummaryFormatter, load, loading, rows, t],
   )
 
   return (
@@ -365,131 +415,15 @@ export function ConsultaDetalladaPage() {
         <Button text={t('partes.common.buscar')} onClick={() => void load()} disabled={loading} />
       </div>
       {error ? <div role="alert">{error}</div> : null}
-      {mode === 'grid' || native ? (
-        <div data-testid="partesConsultaDetalladaGrid">
-          <ProcessDataGrid
-            dataSource={rows}
-            keyExpr="id"
-            showBorders
-            loading={loading}
-            proceso="partes.informes.consultaDetallada"
-            gridId="consultaDetallada"
-            accessToken={getAuthToken()}
-            platform={buildAuthPlatformHeaders()}
-            defaultTotalItems={duracionSummaryItems}
-            columnSummaryFormatters={{
-              duracionMinutos: durationSummaryFormatter,
-            }}
-            toolbarLeading={
-              !native ? (
-                <>
-                  {emitButton}
-                  <Button
-                    text={t('partes.common.pivot')}
-                    onClick={() => setMode('pivot')}
-                    elementAttr={{ 'data-testid': 'partesInformePivotToggle' }}
-                  />
-                </>
-              ) : undefined
-            }
-          >
-            <Paging defaultPageSize={20} />
-            <Pager visible showPageSizeSelector />
-            <Column dataField="fecha" caption={t('partes.informe.field.fecha')} dataType="date" />
-            <Column dataField="diaSemana" caption={t('partes.informe.field.diaSemana')} />
-            <Column dataField="usuarioCode" caption={t('partes.informe.field.usuarioCode')} />
-            <Column dataField="usuarioNombre" caption={t('partes.informe.field.usuarioNombre')} />
-            <Column dataField="clienteCode" caption={t('partes.informe.field.clienteCode')} />
-            <Column dataField="erpCliente" caption={t('partes.informe.field.erpCliente')} />
-            <Column dataField="erpArticulo" caption={t('partes.informe.field.erpArticulo')} />
-            <Column dataField="tipoTareaCode" caption={t('partes.informe.field.tipoTareaCode')} />
-            <Column
-              dataField="tipoTareaDescripcion"
-              caption={t('partes.informe.field.tipoTareaDescripcion')}
-            />
-            <Column
-              dataField="duracionMinutos"
-              caption={t('partes.informe.field.duracion')}
-              dataType="number"
-              customizeText={formatDuracionCell}
-            />
-            <Column dataField="observacion" caption={t('partes.informe.field.observacion')} />
-            <Column
-              dataField="sinCargo"
-              caption={t('partes.informe.field.sinCargo')}
-              dataType="boolean"
-            />
-            <Column
-              dataField="presencial"
-              caption={t('partes.informe.field.presencial')}
-              dataType="boolean"
-            />
-            <Column
-              dataField="cerrado"
-              caption={t('partes.informe.field.cerrado')}
-              dataType="boolean"
-            />
-          </ProcessDataGrid>
-        </div>
-      ) : (
-        <div data-testid="partesConsultaDetalladaPivot">
-          <PivotLayoutsBar
-            consultaId={CONSULTA_DETALLADA_ID}
-            accessToken={getAuthToken()}
-            platform={buildAuthPlatformHeaders()}
-            leadingSlot={
-              <>
-                {emitButton}
-                <Button
-                  text={t('partes.common.grilla')}
-                  onClick={() => setMode('grid')}
-                  elementAttr={{ 'data-testid': 'partesInformePivotToggle' }}
-                />
-              </>
-            }
-            getPivotState={() => {
-              const state = getPivotInstance(pivotRef.current)?.getDataSource()?.state()
-              return (state ?? null) as Record<string, unknown> | null
-            }}
-            applyPivotStateJson={(state) => {
-              if (state === null) {
-                setPivotRemountKey((key) => key + 1)
-                return
-              }
-              const dataSource = getPivotInstance(pivotRef.current)?.getDataSource()
-              dataSource?.state(state)
-            }}
-            getPivotComponent={() => getPivotInstance(pivotRef.current)}
-            canExport={rows.length > 0 && !loading}
-          >
-            <PivotGrid
-              key={pivotInstanceKey}
-              ref={pivotRef}
-              dataSource={pivotSource}
-              allowSortingBySummary
-              allowSorting
-              allowFiltering
-              showBorders
-              elementAttr={{ 'data-testid': 'partesConsultaDetalladaPivotGrid' }}
-            >
-              <FieldPanel
-                visible
-                showColumnFields
-                showDataFields
-                showFilterFields
-                showRowFields
-                allowFieldDragging
-                texts={pivotUiTexts.fieldPanel}
-              />
-              <FieldChooser
-                enabled
-                title={pivotUiTexts.fieldChooserTitle}
-                texts={pivotUiTexts.fieldChooser}
-              />
-            </PivotGrid>
-          </PivotLayoutsBar>
-        </div>
-      )}
+      <PartesInformeGrillaPivotSection
+        consultaId={CONSULTA_DETALLADA_ID}
+        catalog={pivotCatalog}
+        locale={i18n.language}
+        native={native}
+        loadPivotDataset={loadPivotDataset}
+        toolbarLeadingExtras={emitButton}
+        renderGridView={renderDetalladaGridView}
+      />
       {showEmit && emitDialogVisible ? (
         <EmissionDialog
           processCode={CONSULTA_DETALLADA_PROCESS}
@@ -515,58 +449,54 @@ export function ConsultasAgrupadasPage() {
   const [rawRows, setRawRows] = useState<Record<string, unknown>[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [mode, setMode] = useState<'grid' | 'pivot'>('grid')
-  const [pivotRemountKey, setPivotRemountKey] = useState(0)
-  const pivotRef = useRef<PivotGridRef>(null)
 
   const rows = useMemo(
     () => enrichRowsWithDiaSemana(rawRows, t, 'ejeCodigo'),
     [rawRows, t, i18n.language]
   )
 
+  const pivotCatalog = useMemo(() => buildPartesConsultasAgrupadasPivotCatalog(t), [t])
+
+  const fetchAgrupadaRows = useCallback(async () => {
+    const query: Record<string, string> = { fechaDesde, fechaHasta, eje }
+    if (eje === 'fecha') {
+      query.granularidadFecha = granularidadFecha
+    }
+    const result = await fetchInformeAgrupado(query)
+    if (result.kind === 'ok') {
+      const items = result.envelope.resultado.items ?? []
+      setRawRows(items)
+      if ((result.envelope.resultado.total ?? 0) === 0) {
+        setError(resolveAuthMessage('partes.consulta.empty'))
+      }
+      return enrichRowsWithDiaSemana(items, t, 'ejeCodigo')
+    }
+    if (result.kind === 'envelopeError') {
+      const message = resolveAuthMessage(result.envelope.respuesta)
+      setError(message)
+      throw new Error(message)
+    }
+    return []
+  }, [fechaDesde, fechaHasta, eje, granularidadFecha, t])
+
+  const loadPivotDataset = useCallback(async () => fetchAgrupadaRows(), [fetchAgrupadaRows])
+
   const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      const query: Record<string, string> = { fechaDesde, fechaHasta, eje }
-      if (eje === 'fecha') {
-        query.granularidadFecha = granularidadFecha
-      }
-      const result = await fetchInformeAgrupado(query)
-      if (result.kind === 'ok') {
-        setRawRows(result.envelope.resultado.items ?? [])
-        if ((result.envelope.resultado.total ?? 0) === 0) {
-          setError(resolveAuthMessage('partes.consulta.empty'))
-        }
-      } else if (result.kind === 'envelopeError') {
-        setError(resolveAuthMessage(result.envelope.respuesta))
-      }
+      await fetchAgrupadaRows()
+    } catch {
+      // envelopeError ya setea error
     } finally {
       setLoading(false)
     }
-  }, [fechaDesde, fechaHasta, eje, granularidadFecha])
+  }, [fetchAgrupadaRows])
 
   useEffect(() => {
     void load()
     // eslint-disable-next-line react-hooks/exhaustive-deps -- solo mount
   }, [])
-
-  const pivotSource = useMemo(
-    () =>
-      new PivotGridDataSource({
-        retrieveFields: false,
-        fields: buildConsultaAgrupadaPivotFields(t),
-        store: rows,
-      }),
-    [rows, t, i18n.language, pivotRemountKey]
-  )
-
-  const pivotUiTexts = useMemo(
-    () => getPivotLocalizedUiTexts(i18n.language),
-    [i18n.language]
-  )
-
-  const pivotInstanceKey = `${pivotRemountKey}-${i18n.language}`
 
   const durationSummaryFormatter = useCallback(
     (value: unknown) => formatMinutosAsHhMm(Number(value ?? 0)),
@@ -576,6 +506,59 @@ export function ConsultasAgrupadasPage() {
   const duracionSummaryItems = usePartesMinutosColumnSummaryItems(
     'totalMinutos',
     'pq-totalMinutos-sum',
+  )
+
+  const renderAgrupadaGridView = useCallback(
+    (toolbarLeading: ReactNode) => (
+      <div data-testid="partesConsultaAgrupadaGrid">
+        <ProcessDataGrid
+          dataSource={rows}
+          keyExpr="ejeKey"
+          showBorders
+          loading={loading}
+          onRefresh={() => void load()}
+          proceso="partes.informes.consultasAgrupadas"
+          gridId="consultasAgrupadas"
+          accessToken={getAuthToken()}
+          platform={buildAuthPlatformHeaders()}
+          defaultTotalItems={duracionSummaryItems}
+          columnSummaryFormatters={{
+            totalMinutos: durationSummaryFormatter,
+          }}
+          toolbarLeading={toolbarLeading}
+        >
+          <Paging defaultPageSize={20} />
+          <Pager visible showPageSizeSelector />
+          <Column dataField="ejeCodigo" caption={t('partes.informe.field.ejeCodigo')} />
+          <Column dataField="ejeDescripcion" caption={t('partes.informe.field.ejeDescripcion')} />
+          <Column dataField="erpCliente" caption={t('partes.informe.field.erpCliente')} />
+          <Column dataField="erpArticulo" caption={t('partes.informe.field.erpArticulo')} />
+          <Column dataField="diaSemana" caption={t('partes.informe.field.diaSemana')} />
+          <Column
+            dataField="totalMinutos"
+            caption={t('partes.informe.field.duracion')}
+            dataType="number"
+            customizeText={formatDuracionCell}
+          />
+          <Column
+            dataField="cantidadTareas"
+            caption={t('partes.informe.field.cantidadTareas')}
+            dataType="number"
+          />
+          <Column
+            dataField="cantidadSinCargo"
+            caption={t('partes.informe.field.sinCargo')}
+            dataType="number"
+          />
+          <Column
+            dataField="cantidadPresencial"
+            caption={t('partes.informe.field.presencial')}
+            dataType="number"
+          />
+        </ProcessDataGrid>
+      </div>
+    ),
+    [duracionSummaryItems, durationSummaryFormatter, load, loading, rows, t],
   )
 
   return (
@@ -634,116 +617,14 @@ export function ConsultasAgrupadasPage() {
         <Button text={t('partes.common.buscar')} onClick={() => void load()} disabled={loading} />
       </div>
       {error ? <div role="alert">{error}</div> : null}
-      {mode === 'grid' || native ? (
-        <div data-testid="partesConsultaAgrupadaGrid">
-          <ProcessDataGrid
-            dataSource={rows}
-            keyExpr="ejeKey"
-            showBorders
-            loading={loading}
-            proceso="partes.informes.consultasAgrupadas"
-            gridId="consultasAgrupadas"
-            accessToken={getAuthToken()}
-            platform={buildAuthPlatformHeaders()}
-            defaultTotalItems={duracionSummaryItems}
-            columnSummaryFormatters={{
-              totalMinutos: durationSummaryFormatter,
-            }}
-            toolbarLeading={
-              !native ? (
-                <Button
-                  text={t('partes.common.pivot')}
-                  onClick={() => setMode('pivot')}
-                  elementAttr={{ 'data-testid': 'partesInformePivotToggle' }}
-                />
-              ) : undefined
-            }
-          >
-            <Paging defaultPageSize={20} />
-            <Pager visible showPageSizeSelector />
-            <Column dataField="ejeCodigo" caption={t('partes.informe.field.ejeCodigo')} />
-            <Column dataField="ejeDescripcion" caption={t('partes.informe.field.ejeDescripcion')} />
-            <Column dataField="erpCliente" caption={t('partes.informe.field.erpCliente')} />
-            <Column dataField="erpArticulo" caption={t('partes.informe.field.erpArticulo')} />
-            <Column dataField="diaSemana" caption={t('partes.informe.field.diaSemana')} />
-            <Column
-              dataField="totalMinutos"
-              caption={t('partes.informe.field.duracion')}
-              dataType="number"
-              customizeText={formatDuracionCell}
-            />
-            <Column
-              dataField="cantidadTareas"
-              caption={t('partes.informe.field.cantidadTareas')}
-              dataType="number"
-            />
-            <Column
-              dataField="cantidadSinCargo"
-              caption={t('partes.informe.field.sinCargo')}
-              dataType="number"
-            />
-            <Column
-              dataField="cantidadPresencial"
-              caption={t('partes.informe.field.presencial')}
-              dataType="number"
-            />
-          </ProcessDataGrid>
-        </div>
-      ) : (
-        <div data-testid="partesConsultaAgrupadaPivot">
-          <PivotLayoutsBar
-            consultaId={CONSULTA_AGRUPADA_ID}
-            accessToken={getAuthToken()}
-            platform={buildAuthPlatformHeaders()}
-            leadingSlot={
-              <Button
-                text={t('partes.common.grilla')}
-                onClick={() => setMode('grid')}
-                elementAttr={{ 'data-testid': 'partesInformePivotToggle' }}
-              />
-            }
-            getPivotState={() => {
-              const state = getPivotInstance(pivotRef.current)?.getDataSource()?.state()
-              return (state ?? null) as Record<string, unknown> | null
-            }}
-            applyPivotStateJson={(state) => {
-              if (state === null) {
-                setPivotRemountKey((key) => key + 1)
-                return
-              }
-              const dataSource = getPivotInstance(pivotRef.current)?.getDataSource()
-              dataSource?.state(state)
-            }}
-            getPivotComponent={() => getPivotInstance(pivotRef.current)}
-            canExport={rows.length > 0 && !loading}
-          >
-            <PivotGrid
-              key={pivotInstanceKey}
-              ref={pivotRef}
-              dataSource={pivotSource}
-              showBorders
-              allowSorting
-              allowFiltering
-              elementAttr={{ 'data-testid': 'partesConsultaAgrupadaPivotGrid' }}
-            >
-              <FieldPanel
-                visible
-                showColumnFields
-                showDataFields
-                showFilterFields
-                showRowFields
-                allowFieldDragging
-                texts={pivotUiTexts.fieldPanel}
-              />
-              <FieldChooser
-                enabled
-                title={pivotUiTexts.fieldChooserTitle}
-                texts={pivotUiTexts.fieldChooser}
-              />
-            </PivotGrid>
-          </PivotLayoutsBar>
-        </div>
-      )}
+      <PartesInformeGrillaPivotSection
+        consultaId={CONSULTA_AGRUPADA_ID}
+        catalog={pivotCatalog}
+        locale={i18n.language}
+        native={native}
+        loadPivotDataset={loadPivotDataset}
+        renderGridView={renderAgrupadaGridView}
+      />
     </div>
   )
 }
