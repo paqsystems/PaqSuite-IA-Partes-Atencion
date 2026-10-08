@@ -3,11 +3,20 @@ import {
   type EmpresaListItem,
 } from '@paqsuite/react-core'
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getAuthSession, getAuthToken, patchAuthSession } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { applyDevExtremeTheme } from '../../../theme/devExtremeThemeSwitcher'
+import { translateEmpresasAdminSdk } from './securityEmpresasSdkI18n'
 
 export function EmpresasAdminPage() {
+  const { t } = useTranslation()
+
+  const translateSdk = useCallback(
+    (key: string) => translateEmpresasAdminSdk(key, t),
+    [t],
+  )
+
   const handlePreviewTheme = useCallback((dxTheme: string) => {
     void applyDevExtremeTheme(dxTheme, { reloadOnGroupChange: false })
   }, [])
@@ -40,7 +49,7 @@ export function EmpresasAdminPage() {
       <EmpresasAdminPageSdk
         accessToken={getAuthToken()}
         platform={buildAuthPlatformHeaders()}
-        i18nNamespace="common"
+        t={translateSdk}
         tenancyMode="single"
         onPreviewTheme={handlePreviewTheme}
         onRestoreCommittedTheme={handleRestoreCommittedTheme}

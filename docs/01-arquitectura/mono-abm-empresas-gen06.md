@@ -30,7 +30,8 @@ El **`id`** de `pq_empresa` es el **código de empresa** visible en UI (no confu
 3. **Modal edición:** campo solo lectura **Código** = `id`; **no** mostrar «ID ERP» ni «Base de datos» (evita `undefined` cuando la API no devuelve `erpEmpresaId`).
 4. **Vista previa de apariencia:** botón **Aplicar** que invoque el **puente A1 del host** (`applyDevExtremeTheme` en `frontend/src/theme/devExtremeThemeSwitcher.ts`), que delega en el SDK (`applyDxTheme` + `applyShellTokens` + catálogo `paqsuite.*`); **no** duplicar `empresaThemeCatalog` ni CSS de shell. **Cancelar** restaura el tema grabado (`onRestoreCommittedTheme`). Si cambia el grupo DX (Generic ↔ Material ↔ Fluent), `reloadOnGroupChange: true` recarga la SPA.
 5. **Guardar:** tras `PUT`, actualizar `empresas[]` en sesión auth y reaplicar tema (sesión coherente sin re-login).
-6. **i18n:** claves producto `admin.empresas.field.codigo`, `admin.empresas.applyTheme`, `admin.empresas.applyThemeHint`, `admin.empresas.monoNote` (5 locales); mapeo SDK → host en `securityEmpresasSdkI18n.ts`.
+6. **i18n:** pasar prop `t` al SDK (`translateEmpresasAdminSdk`); claves `admin.empresas.form.*` / `list.*` en locales + fallback. El SDK 2.4.17 hace `t ?? ((key) => key)` — sin `t` se ven claves crudas.
+7. **Theme A1 ↔ persistencia:** el SDK envía/espera `paqsuite.*`; BD guarda stock DX. El ABM admin (`EmpresasController` + `EmpresaThemeCatalog`) acepta ambas en PUT, normaliza a stock al grabar y expone `paqsuite.*` en GET/PUT response para el SelectBox.
 
 ### Props SDK (react-core ≥ oleada con este fix)
 

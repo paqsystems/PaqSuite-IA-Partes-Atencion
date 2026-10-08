@@ -15,6 +15,9 @@ use PaqSuite\LaravelCore\Security\EmpresaAdminRepository;
 /**
  * Consulta/edición empresas (GEN-06). MONO: sin alta/baja — solo `update`.
  * Contrato SPEC: nombreEmpresa / habilitada / theme.
+ *
+ * Theme: persistencia stock DX; entrada acepta también `paqsuite.*` del SDK;
+ * respuestas del ABM exponen `paqsuite.*` para el SelectBox A1.
  */
 final class EmpresasController extends Controller
 {
@@ -26,7 +29,9 @@ final class EmpresasController extends Controller
     public function index(): JsonResponse
     {
         return ApiResponse::success([
-            'items' => $this->empresaAdminRepository->listAll(),
+            'items' => EmpresaThemeCatalog::mapItemsThemeForUi(
+                $this->empresaAdminRepository->listAll()
+            ),
         ]);
     }
 
@@ -37,7 +42,9 @@ final class EmpresasController extends Controller
             return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::RESOURCE_NOT_FOUND);
         }
 
-        return ApiResponse::success(['item' => $item]);
+        return ApiResponse::success([
+            'item' => EmpresaThemeCatalog::mapItemThemeForUi($item),
+        ]);
     }
 
     public function update(Request $request, int $id): JsonResponse
@@ -45,7 +52,7 @@ final class EmpresasController extends Controller
         $validator = Validator::make($request->all(), [
             'nombreEmpresa' => ['sometimes', 'string', 'max:255'],
             'habilitada' => ['sometimes', 'boolean'],
-            'theme' => ['sometimes', 'nullable', 'string', Rule::in(EmpresaThemeCatalog::values())],
+            'theme' => ['sometimes', 'nullable', 'string', Rule::in(EmpresaThemeCatalog::acceptedInputValues())],
         ]);
 
         if ($validator->fails()) {
@@ -55,11 +62,20 @@ final class EmpresasController extends Controller
             );
         }
 
-        $item = $this->empresaAdminRepository->update($id, $validator->validated());
+        $data = $validator->validated();
+        if (array_key_exists('theme', $data)) {
+            $data['theme'] = EmpresaThemeCatalog::normalizeForPersistence(
+                $data['theme'] !== null ? (string) $data['theme'] : null
+            );
+        }
+
+        $item = $this->empresaAdminRepository->update($id, $data);
         if ($item === null) {
             return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::RESOURCE_NOT_FOUND);
         }
 
-        return ApiResponse::success(['item' => $item]);
+        return ApiResponse::success([
+            'item' => EmpresaThemeCatalog::mapItemThemeForUi($item),
+        ]);
     }
 }

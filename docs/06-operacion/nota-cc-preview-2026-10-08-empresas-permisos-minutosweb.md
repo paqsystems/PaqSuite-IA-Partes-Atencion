@@ -10,12 +10,13 @@ Hallazgos en deploy **develop Preview** y correcciones en este host (+ docs Fram
 
 ## 2) ABM empresas — claves i18n crudas
 
-- **Síntoma:** modal con `admin.empresas.form.*` sin traducir.
-- **Causa:** pin/SDK sin `registerEmpresasAdminI18nResources` efectivo.
-- **Fix host:**
-  - Fallback `frontend/src/i18n/empresasAdminHostFallback.ts` registrado en `i18n.ts` (sin overwrite).
-  - Luego `registerEmpresasAdminI18nResources?.(i18n, 'common')` si el SDK lo exporta.
-- Framework: catálogo embebido en `useEmpresasAdminTranslate` + guía [`adopcion-gen-06-seguridad-empresas.md`](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK).
+- **Síntoma:** modal/listado con `admin.empresas.*` / `admin.empresas.form.*` sin traducir.
+- **Causa real (react-core 2.4.17):** `EmpresasAdminPage` del SDK hace `const translate = t ?? ((key) => key)`. Sin prop `t`, **nunca** consulta i18next; el fallback en `i18n.ts` solo no alcanza.
+- **Fix host (definitivo):**
+  - Pasar `t={translateEmpresasAdminSdk}` en `EmpresasAdminPage.tsx` (mismo patrón que `RolesAdminPage` / `SecurityRolesPage`).
+  - Claves SDK en `locales/*/common.json` + `empresasAdminHostFallback` + fallback ES en `securityEmpresasSdkI18n.ts`.
+  - Registrar `appearancePaqsuiteI18nCatalogs` del SDK cuando exista.
+- **No confundir** con `i18nNamespace="common"`: esa prop **no existe** en el SDK 2.4.17 y se ignoraba.
 
 ## 3) Permisos bulk — código de rol vacío
 

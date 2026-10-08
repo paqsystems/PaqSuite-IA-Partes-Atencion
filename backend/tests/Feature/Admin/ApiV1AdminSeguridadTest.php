@@ -92,9 +92,12 @@ class ApiV1AdminSeguridadTest extends TestCase
         $list = $this->getJson('/api/v1/admin/empresas', $headers);
         $list->assertStatus(200);
         $empresaId = (int) $list->json('resultado.items.0.id');
-        $this->assertSame('generic.light', $list->json('resultado.items.0.theme'));
+        // ABM admin expone clave UI A1 (paqsuite.*) para el SelectBox del SDK.
+        $this->assertSame('paqsuite.light.generic', $list->json('resultado.items.0.theme'));
         $this->assertArrayHasKey('nombreEmpresa', $list->json('resultado.items.0'));
         $this->assertArrayHasKey('habilitada', $list->json('resultado.items.0'));
+        // Persistencia en BD sigue siendo stock DX.
+        $this->assertSame('generic.light', DB::table('pq_empresa')->where('id', $empresaId)->value('theme'));
 
         $show = $this->getJson('/api/v1/admin/empresas/'.$empresaId, $headers);
         $show->assertStatus(200);
@@ -104,8 +107,17 @@ class ApiV1AdminSeguridadTest extends TestCase
             'theme' => 'material.blue.dark',
         ], $headers);
         $update->assertStatus(200)
-            ->assertJsonPath('resultado.item.nombreEmpresa', 'Partes Demo Editada')
-            ->assertJsonPath('resultado.item.theme', 'material.blue.dark');
+            ->assertJsonPath('resultado.item.nombreEmpresa', 'Partes Demo Editada');
+        $this->assertStringStartsWith('paqsuite.', (string) $update->json('resultado.item.theme'));
+        $this->assertSame('material.blue.dark', DB::table('pq_empresa')->where('id', $empresaId)->value('theme'));
+
+        // SDK A1 envía paqsuite.*; el host normaliza a stock al persistir.
+        $updatePaqsuite = $this->putJson('/api/v1/admin/empresas/'.$empresaId, [
+            'theme' => 'paqsuite.dark.compact',
+        ], $headers);
+        $updatePaqsuite->assertStatus(200)
+            ->assertJsonPath('resultado.item.theme', 'paqsuite.dark.compact');
+        $this->assertSame('generic.dark.compact', DB::table('pq_empresa')->where('id', $empresaId)->value('theme'));
     }
 
     public function test_empresas_theme_invalido_422(): void
