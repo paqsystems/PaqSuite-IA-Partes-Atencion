@@ -1,5 +1,9 @@
 # Verdaccio + Vercel — conectividad `@paqsuite/react-core`
 
+> **Legado (GEN-35).** El deploy vigente resuelve el SDK desde **Cloudsmith**, no desde Verdaccio/Funnel.  
+> Instructivo: [`adopcion-gen-35-cloudsmith.md`](./adopcion-gen-35-cloudsmith.md) · SPEC-012.  
+> Este archivo se conserva como diagnóstico histórico de Funnel/Verdaccio.
+
 Fecha: 2026-10-06 · Producto: Partes-Atención
 
 ## Diagnóstico (oleada 2.4.15)

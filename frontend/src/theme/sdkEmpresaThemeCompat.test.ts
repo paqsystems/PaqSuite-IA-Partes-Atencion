@@ -11,7 +11,7 @@ describe('sdkEmpresaThemeCompat', () => {
     expect(paqsuiteDxStockBridge['paqsuite.violet.generic']).toBe('generic.darkviolet')
   })
 
-  it('persiste clave paqsuite como stock DX', () => {
-    expect(mapThemeForApiPersistence('paqsuite.orange.material')).toBe('material.orange.light')
+  it('persiste clave paqsuite canónica (no stock DX)', () => {
+    expect(mapThemeForApiPersistence('paqsuite.orange.material')).toBe('paqsuite.orange.material')
   })
 })
