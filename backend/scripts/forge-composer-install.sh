@@ -9,8 +9,32 @@ lockFile="$backendDirectory/composer.lock"
 
 cd "$backendDirectory"
 
+# Forge Environment vive en .env (enlace del release). No se exporta al bash del deploy.
 if [[ -z "${CLOUDSMITH_READ_TOKEN:-}" ]]; then
-    echo "ERROR: falta CLOUDSMITH_READ_TOKEN (Forge Environment)." >&2
+    for dotenvCandidate in \
+        "$backendDirectory/.env" \
+        "$backendDirectory/../.env"; do
+        if [[ -f "$dotenvCandidate" ]]; then
+            CLOUDSMITH_READ_TOKEN="$(
+                php -r '
+                    if (!is_file($argv[1])) {
+                        exit(0);
+                    }
+                    if (preg_match("/^CLOUDSMITH_READ_TOKEN=(.*)$/m", file_get_contents($argv[1]), $matches)) {
+                        echo trim($matches[1], "\"'\'' \r\n");
+                    }
+                ' "$dotenvCandidate"
+            )"
+            if [[ -n "${CLOUDSMITH_READ_TOKEN:-}" ]]; then
+                export CLOUDSMITH_READ_TOKEN
+                break
+            fi
+        fi
+    done
+fi
+
+if [[ -z "${CLOUDSMITH_READ_TOKEN:-}" ]]; then
+    echo "ERROR: falta CLOUDSMITH_READ_TOKEN (Forge Environment / .env)." >&2
     exit 1
 fi
 
