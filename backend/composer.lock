@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bbd2ef0465bb29537f9d6bd0d449111a",
+    "content-hash": "d35fbbe98fa654d6c71c557cab715815",
     "packages": [
         {
             "name": "brick/math",
@@ -2562,17 +2562,11 @@
         },
         {
             "name": "paqsuite/laravel-core",
-            "version": "1.3.12",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:paqsystems/laravel-core.git",
-                "reference": "66b27f3ef43e67d8f786e4e43b6494d9b7e91106"
-            },
+            "version": "1.3.13-beta.1",
             "dist": {
                 "type": "zip",
-                "url": "http://100.110.69.93/satis/dist/paqsuite/laravel-core/paqsuite-laravel-core-66b27f3ef43e67d8f786e4e43b6494d9b7e91106-zip-89b87f.zip",
-                "reference": "66b27f3ef43e67d8f786e4e43b6494d9b7e91106",
-                "shasum": "e4a7b37e91fba3bb0abdfe3fd99469551ad1f284"
+                "url": "https://dl.cloudsmith.io/basic/paqsystems/paqsuite-sdk/composer/files/paqsuite-laravel-core/1.3.13-beta.1/paqsuite-laravel-core-1.3.13-beta.1.zip",
+                "shasum": "bd0e758cdb66cfebad55aa60f3825c8c01fde510"
             },
             "require": {
                 "illuminate/console": "^10.0",
@@ -2619,10 +2613,9 @@
             "description": "Núcleo compartido PaqSuite: envelope API, tenancy, config",
             "homepage": "https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK",
             "support": {
-                "source": "https://github.com/paqsystems/laravel-core",
-                "issues": "https://github.com/paqsystems/laravel-core/issues"
+                "source": "https://github.com/paqsystems/laravel-core"
             },
-            "time": "2026-10-08T23:06:18+00:00"
+            "time": "2026-10-09T01:49:16+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -8633,5 +8626,5 @@
         "php": "^8.1"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

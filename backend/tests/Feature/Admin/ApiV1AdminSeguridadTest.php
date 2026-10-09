@@ -240,8 +240,8 @@ class ApiV1AdminSeguridadTest extends TestCase
             ->assertJsonPath('resultado.rol.nombre', 'Consulta')
             ->assertJsonPath('resultado.items', []);
         $this->assertNotEmpty($get->json('resultado.arbol'));
-        $this->assertArrayHasKey('menuTitulo', $get->json('resultado.arbol.0'));
-        $this->assertArrayHasKey('children', $get->json('resultado.arbol.0'));
+        $this->assertArrayHasKey('titulo', $get->json('resultado.arbol.0'));
+        $this->assertArrayHasKey('menuId', $get->json('resultado.arbol.0'));
 
         $menuId = (int) DB::table('pq_menus')->where('codigo', 'admin_roles')->value('id');
 
@@ -253,10 +253,10 @@ class ApiV1AdminSeguridadTest extends TestCase
         $put->assertStatus(200);
         $put->assertJsonFragment([
             'menuId' => $menuId,
-            'create' => true,
-            'delete' => false,
-            'update' => true,
-            'report' => false,
+            'permisoAlta' => true,
+            'permisoBaja' => false,
+            'permisoModi' => true,
+            'permisoRepo' => false,
         ]);
 
         $putEmpty = $this->putJson('/api/v1/admin/roles/'.$rolId.'/atributos', ['items' => []], $headers);

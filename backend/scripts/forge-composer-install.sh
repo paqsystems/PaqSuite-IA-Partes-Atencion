@@ -2,13 +2,17 @@
 set -Eeuo pipefail
 
 # Instalación reproducible del backend en Laravel Forge.
-# El paquete laravel-core debe provenir de Satis; nunca de un checkout sibling.
+# laravel-core desde Cloudsmith (GEN-35); nunca path sibling ni Satis.
 
 backendDirectory="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-satisUrl="http://100.110.69.93/satis"
 lockFile="$backendDirectory/composer.lock"
 
 cd "$backendDirectory"
+
+if [[ -z "${CLOUDSMITH_READ_TOKEN:-}" ]]; then
+    echo "ERROR: falta CLOUDSMITH_READ_TOKEN (Forge Environment)." >&2
+    exit 1
+fi
 
 if [[ ! -f "$lockFile" ]]; then
     echo "ERROR: no existe backend/composer.lock; no se ejecuta Composer en Forge." >&2
@@ -24,8 +28,14 @@ foreach (array_merge($lock["packages"] ?? [], $lock["packages-dev"] ?? []) as $p
     }
 
     if (($package["dist"]["type"] ?? null) === "path") {
-        fwrite(STDERR, "ERROR: composer.lock contiene laravel-core como path; publicar una release nueva con el lock de Satis.\n");
+        fwrite(STDERR, "ERROR: composer.lock contiene laravel-core como path; publicar lock Cloudsmith.\n");
         exit(2);
+    }
+
+    $url = (string) ($package["dist"]["url"] ?? $package["source"]["url"] ?? "");
+    if (stripos($url, "cloudsmith.io") === false) {
+        fwrite(STDERR, "ERROR: composer.lock no resuelve laravel-core desde Cloudsmith.\n");
+        exit(5);
     }
 
     exit(0);
@@ -38,13 +48,26 @@ if (( lockValidationStatus != 0 )); then
     exit "$lockValidationStatus"
 fi
 
-if ! curl --fail --silent --show-error --max-time 15 "$satisUrl/packages.json" >/dev/null; then
-    cat >&2 <<EOF
-ERROR: Forge no puede alcanzar Satis en $satisUrl.
-Verificar la ruta Tailscale/VPN del servidor Forge y volver a ejecutar el deploy.
-EOF
-    exit 4
-fi
+php -r '
+$k = getenv("CLOUDSMITH_READ_TOKEN");
+file_put_contents("auth.json", json_encode([
+    "bearer" => ["composer.cloudsmith.io" => $k],
+    "http-basic" => [
+        "dl.cloudsmith.io" => ["username" => "token", "password" => $k],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+$j = json_decode(file_get_contents("composer.json"), true, 512, JSON_THROW_ON_ERROR);
+$repos = $j["repositories"] ?? [];
+if (isset($repos[0]) && is_array($repos[0])) {
+    $j["repositories"][0]["options"] = ["http" => ["header" => ["X-API-KEY: ".$k]]];
+} elseif (is_array($repos)) {
+    foreach ($repos as $key => $repo) {
+        $j["repositories"][$key]["options"] = ["http" => ["header" => ["X-API-KEY: ".$k]]];
+        break;
+    }
+}
+file_put_contents("composer.json", json_encode($j, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)."\n");
+'
 
 composer install \
     --no-interaction \

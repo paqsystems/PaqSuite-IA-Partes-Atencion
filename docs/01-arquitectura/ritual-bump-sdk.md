@@ -8,18 +8,18 @@ Plan de adopción sin forks GEN: [plan-partes-adopcion-sdk-sin-fork-gen.md](./pl
 
 | Paquete | Objetivo | Registry |
 |---------|----------|----------|
-| `paqsuite/laravel-core` | **1.3.8** (refresh catálogo; sin cambio contrato Partes esperado) | Satis `http://100.110.69.93/satis` |
-| `@paqsuite/react-core` | **≥ 2.4.13** (`registerGridI18nResources`, menú/shell alineado create-app **0.1.13**) | Verdaccio `http://100.110.69.93:4873` |
-| `@paqsuite/create-app` (scaffold, diff obligatorio) | **0.1.13** | Verdaccio (no es dep runtime de Partes) |
+| `paqsuite/laravel-core` | **1.3.13-beta.1** (oleada GEN-35) | Cloudsmith `paqsystems/paqsuite-sdk` |
+| `@paqsuite/react-core` | **2.4.24-beta.1** (`registerGridI18nResources`, menú/shell alineado create-app) | Cloudsmith `npm.cloudsmith.io/paqsystems/paqsuite-sdk` |
+| `@paqsuite/create-app` (scaffold, diff obligatorio) | según oleada Framework | Cloudsmith (no es dep runtime de Partes) |
 
 ## Versiones instaladas en repo (deploy — default)
 
 | Paquete | Pin / lock | Nota |
 |---------|------------|------|
-| `paqsuite/laravel-core` | **1.3.8** | Satis en `backend/composer.json` (lock). Bump a 1.3.9+ solo con `composer update` y Satis alcanzable. |
-| `@paqsuite/react-core` | **2.4.22** | Verdaccio; `frontend/package-lock.json` resuelve el tarball HTTPS (GEN-06: `SecurityRolesPage`, `EmpresasAdminPage`, `RolAtributosPage`) |
+| `paqsuite/laravel-core` | **1.3.13-beta.1** | Cloudsmith en `backend/composer.json` (lock). Bump con `composer update` y `CLOUDSMITH_READ_TOKEN`. |
+| `@paqsuite/react-core` | **2.4.24-beta.1** | Cloudsmith; `frontend/package-lock.json` resuelve tarball `npm.cloudsmith.io` |
 
-Vercel: `scripts/vercel-install.sh` + `VERDACCIO_AUTH_TOKEN`. Vite **no** alias al monorepo salvo `PAQ_REPO_LAB=1`.
+Vercel: `scripts/vercel-install.sh` + `CLOUDSMITH_READ_TOKEN`. Vite **no** alias al monorepo salvo `PAQ_REPO_LAB=1`.
 
 ## Modo repo-lab (opcional, local)
 
@@ -29,7 +29,7 @@ Ver `frontend/MODO-REPO-LAB.md`. No commitear `file:` ni Composer `path` en rama
 
 ```bash
 cd backend
-# Tailscale activo (acceso a srv-pq)
+# CLOUDSMITH_READ_TOKEN + auth.json efímero / X-API-KEY (ver adopcion-gen-35-cloudsmith.md)
 composer update paqsuite/laravel-core
 composer show paqsuite/laravel-core
 ```
@@ -38,13 +38,11 @@ composer show paqsuite/laravel-core
 
 ```bash
 cd frontend
-# Modo registry (release empaquetado):
-npm install @paqsuite/react-core@2.4.22   # o última ≥ 2.4.13 con grid i18n
+# Modo registry (release empaquetado / Cloudsmith):
+npm install @paqsuite/react-core@2.4.24-beta.1
 npm list @paqsuite/react-core
 
-# Vercel (sin acceso directo a 100.110.69.93):
-# Verdaccio vía Funnel HTTPS + VERDACCIO_AUTH_TOKEN (ver docs/06-operacion/verdaccio-vercel-conectividad.md).
-# Tras publicar en Verdaccio:
+# Vercel: CLOUDSMITH_READ_TOKEN (docs/06-operacion/adopcion-gen-35-cloudsmith.md).
 #   cd frontend && .\scripts\refresh-react-core-lock.ps1
 ```
 

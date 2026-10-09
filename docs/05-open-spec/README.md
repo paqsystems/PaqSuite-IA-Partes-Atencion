@@ -32,6 +32,7 @@ Documentos **SPEC-CTX-***: alcance de épica redactado como **insumo previo** al
 | [SPEC-009](100-SistemaPartes/SPEC-009-importacion-partes-excel.md) | Importación de partes desde Excel | [HU-009](../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) · [TR-009](../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) |
 | [SPEC-010](100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md) | Smart Capture en carga diaria | [HU-010](../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md) · [TR-010](../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) |
 | [SPEC-011](100-SistemaPartes/SPEC-011-reportes-emisiones.md) | Reportes / emisiones (adopción GEN-15) | [HU-011](../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) · [TR-011](../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
+| [SPEC-012](100-SistemaPartes/SPEC-012-adopcion-gen-35-cloudsmith.md) | Adopción GEN-35 Cloudsmith (ops) | Instructivo [`adopcion-gen-35-cloudsmith.md`](../06-operacion/adopcion-gen-35-cloudsmith.md) |
 
 ### 001 – Generalidades (`001-Generalidades/`) — bloque vigente
 
