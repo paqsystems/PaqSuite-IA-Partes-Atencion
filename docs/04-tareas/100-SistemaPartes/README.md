@@ -15,6 +15,7 @@
 | [TR-009](./TR-009-importacion-partes-excel.md) | Importación Excel (GEN-14) en Carga diaria | [HU-009](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) | [SPEC-009](../../05-open-spec/100-SistemaPartes/SPEC-009-importacion-partes-excel.md) | E hecho (F1 pendiente) |
 | [TR-010](./TR-010-smart-capture-carga-diaria.md) | Smart Capture en Carga diaria (GEN-03) | [HU-010](../../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md) | [SPEC-010](../../05-open-spec/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md) | Pendiente (C+C1) |
 | [TR-011](./TR-011-reportes-emisiones.md) | Reportes / emisiones (GEN-15) en Consulta detallada | [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) | [SPEC-011](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) | Pendiente (C+C1 2026-08-25; D1 listo) |
+| [TR-012](./TR-012-adopcion-gen-35-cloudsmith.md) | Consumo SDK Cloudsmith (GEN-35) | [HU-012](../../03-historias-usuario/100-SistemaPartes/HU-012-adopcion-gen-35-cloudsmith.md) | [SPEC-012](../../05-open-spec/100-SistemaPartes/SPEC-012-adopcion-gen-35-cloudsmith.md) | **Finalizado** (F+I 2026-10-09) |
 
 ## Estrategia
 

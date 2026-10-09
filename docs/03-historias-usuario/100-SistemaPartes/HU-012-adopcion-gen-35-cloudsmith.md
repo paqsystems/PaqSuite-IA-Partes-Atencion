@@ -8,8 +8,8 @@
 | Título | Readaptar el uso del SDK (`paqsuite/laravel-core`, `@paqsuite/react-core`) de Satis + Verdaccio a Cloudsmith |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE (ops; no UI de producto) |
-| Estado | Pendiente de Revisión |
-| Última actualización | 2026-10-08 |
+| Estado | Finalizado |
+| Última actualización | 2026-10-09 |
 | SPEC origen | [SPEC-012-adopcion-gen-35-cloudsmith](../../05-open-spec/100-SistemaPartes/SPEC-012-adopcion-gen-35-cloudsmith.md) |
 | Anexo normativo | [adopcion-gen-35-cloudsmith.md](../../06-operacion/adopcion-gen-35-cloudsmith.md) |
 | TR relacionada(s) | [TR-012-adopcion-gen-35-cloudsmith](../../04-tareas/100-SistemaPartes/TR-012-adopcion-gen-35-cloudsmith.md) |
@@ -110,16 +110,16 @@ GEN-35 (publicar paquetes) vive en Framework. Esta HU **adopta el consumo** en e
 
 ## Criterios de aceptación
 
-- [ ] **CA-01** `backend/composer.json` usa `https://composer.cloudsmith.io/paqsystems/paqsuite-sdk/` (sin `/basic/`), `secure-http` acorde a HTTPS, pin `paqsuite/laravel-core` `1.3.13-beta.1` (o bump acordado); `composer.lock` regenerado contra ese origen.
-- [ ] **CA-02** `frontend/package.json` pin `@paqsuite/react-core` `2.4.24-beta.1` (o bump acordado); `package-lock.json` resuelve tarball en `npm.cloudsmith.io` (no Funnel).
-- [ ] **CA-03** `frontend/.npmrc`: npmjs para el resto; scope `@paqsuite` → Cloudsmith; `_authToken=${CLOUDSMITH_READ_TOKEN}` sin valor literal.
-- [ ] **CA-04** `vercel-install.sh` exige `CLOUDSMITH_READ_TOKEN`, no Verdaccio/Tailscale para el SDK; sin token el script sale con error explícito.
-- [ ] **CA-05** En Forge, `composer show paqsuite/laravel-core` muestra el pin de oleada y origen Cloudsmith.
-- [ ] **CA-06** El build Vercel resuelve `@paqsuite/react-core` desde `npm.cloudsmith.io`.
-- [ ] **CA-07** Login + health del producto siguen operativos **sin** Tailscale para paquetes.
-- [ ] **CA-08** No hay `CLOUDSMITH_API_KEY` en el repo ni como env de install del host.
-- [ ] **CA-09** No se añaden workflows GHA de install si hoy no existen; si existieran, usarían el mismo secreto y registry.
-- [ ] **CA-10** Docs de deploy del host marcan Satis/Verdaccio como legado y apuntan a Cloudsmith / este instructivo.
+- [x] **CA-01** `backend/composer.json` usa `https://composer.cloudsmith.io/paqsystems/paqsuite-sdk/` (sin `/basic/`), `secure-http` acorde a HTTPS, pin `paqsuite/laravel-core` `1.3.13-beta.1` (o bump acordado); `composer.lock` regenerado contra ese origen.
+- [x] **CA-02** `frontend/package.json` pin `@paqsuite/react-core` `2.4.24-beta.1` (o bump acordado); `package-lock.json` resuelve tarball en `npm.cloudsmith.io` (no Funnel).
+- [x] **CA-03** `frontend/.npmrc`: npmjs para el resto; scope `@paqsuite` → Cloudsmith; `_authToken=${CLOUDSMITH_READ_TOKEN}` sin valor literal.
+- [x] **CA-04** `vercel-install.sh` exige `CLOUDSMITH_READ_TOKEN`, no Verdaccio/Tailscale para el SDK; sin token el script sale con error explícito.
+- [x] **CA-05** En Forge, `composer show paqsuite/laravel-core` muestra el pin de oleada y origen Cloudsmith.
+- [x] **CA-06** El build Vercel resuelve `@paqsuite/react-core` desde `npm.cloudsmith.io`.
+- [x] **CA-07** Login + health del producto siguen operativos **sin** Tailscale para paquetes.
+- [x] **CA-08** No hay `CLOUDSMITH_API_KEY` en el repo ni como env de install del host.
+- [x] **CA-09** No se añaden workflows GHA de install si hoy no existen; si existieran, usarían el mismo secreto y registry.
+- [x] **CA-10** Docs de deploy del host marcan Satis/Verdaccio como legado y apuntan a Cloudsmith / este instructivo.
 
 ### Escenarios Gherkin
 
@@ -167,3 +167,12 @@ Feature: Consumo SDK desde Cloudsmith
 ## Veredicto B1
 
 Lista para TR: **Sí**
+
+---
+
+## Historial
+
+| Fecha | Cambio |
+|-------|--------|
+| 2026-10-08 | B+B1 desde SPEC-012. |
+| 2026-10-09 | F + I: CA marcados; Estado **Finalizado**. Sin HU-update. |

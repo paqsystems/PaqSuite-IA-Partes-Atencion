@@ -85,8 +85,8 @@ El `.npmrc` commiteado usa `${CLOUDSMITH_READ_TOKEN}` (npm lo expande desde el e
 Composer corre en el servidor. Vercel no instala PHP.
 
 1. Sitio Partes → **Environment** (o *Environment Variables*).
-2. Agregar `CLOUDSMITH_READ_TOKEN` = token read (mismo valor que GitHub).
-3. En el **Deploy Script**, **antes** de `composer install` / `composer update`:
+2. Agregar `CLOUDSMITH_READ_TOKEN` = token read (mismo valor que GitHub). Forge **enlaza** ese valor al `.env` del release; **no** lo exporta al bash del Deploy Script. `backend/scripts/forge-composer-install.sh` lee la clave del `.env` si el proceso no la tiene.
+3. En el **Deploy Script**, invocar el script del repo (`cd $FORGE_RELEASE_DIRECTORY/backend` + `bash scripts/forge-composer-install.sh`). Si hace falta un export explícito **antes** de `composer install` / `composer update`:
 
 ```bash
 cd /home/forge/.../backend   # path real del sitio

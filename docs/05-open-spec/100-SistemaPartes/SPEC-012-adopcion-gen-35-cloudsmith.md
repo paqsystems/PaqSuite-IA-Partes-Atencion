@@ -6,13 +6,14 @@
 | **Título** | Readaptar el uso del SDK Framework (`paqsuite/laravel-core`, `@paqsuite/react-core`) de Satis + Verdaccio a Cloudsmith |
 | **Producto** | Partes de Atención |
 | **Épica / carpeta** | 100 — Sistema Partes (ops; no UI) |
-| **Estado** | Especificado |
-| **Última actualización** | 2026-10-08 |
+| **Estado** | Finalizado |
+| **Última actualización** | 2026-10-09 |
 | **Tipo** | Adopción Framework GEN-35 en el **host**. **No** duplicar `SPEC-001-35` (publicación). |
 | **SoT Framework** | `PaqSuite-IA-FRAMEWORK` SPEC-001-35 · `docs/06-operacion/adopcion-sdk-registry.md` |
 | **Anexo normativo (pasos)** | [`docs/06-operacion/adopcion-gen-35-cloudsmith.md`](../../06-operacion/adopcion-gen-35-cloudsmith.md) |
 | **HU relacionada(s)** | [HU-012-adopcion-gen-35-cloudsmith](../../03-historias-usuario/100-SistemaPartes/HU-012-adopcion-gen-35-cloudsmith.md) |
 | **TR relacionada(s)** | [TR-012-adopcion-gen-35-cloudsmith](../../04-tareas/100-SistemaPartes/TR-012-adopcion-gen-35-cloudsmith.md) |
+| **F** | [F-TR-012-adopcion-gen-35-cloudsmith](../../04-tareas/100-SistemaPartes/F-TR-012-adopcion-gen-35-cloudsmith.md) |
 | **A1** | [`SPEC-012-adopcion-gen-35-cloudsmith-A1-ambiguity-review.md`](./SPEC-012-adopcion-gen-35-cloudsmith-A1-ambiguity-review.md) |
 
 ```text
@@ -87,16 +88,16 @@ No hay flujo de usuario de producto. Flujo de **install**:
 
 ## 5. Criterios verificables
 
-- [ ] `backend/composer.json` apunta a Cloudsmith (sin `/basic/`) y pin `paqsuite/laravel-core` de esta oleada; `composer.lock` regenerado contra ese origen.
-- [ ] `frontend/package.json` pin `@paqsuite/react-core` de esta oleada; `package-lock.json` resuelve tarball `npm.cloudsmith.io` (no Funnel).
-- [ ] `.npmrc` usa Cloudsmith + `${CLOUDSMITH_READ_TOKEN}` sin secreto en git.
-- [ ] `vercel-install.sh` exige `CLOUDSMITH_READ_TOKEN` y no requiere Verdaccio/Tailscale para el SDK.
-- [ ] Forge: `composer show paqsuite/laravel-core` muestra el pin de oleada y origen Cloudsmith.
-- [ ] Build Vercel resuelve `@paqsuite/react-core` desde `npm.cloudsmith.io`.
-- [ ] Login + health del producto siguen funcionando; **sin** Tailscale para paquetes.
-- [ ] No hay `CLOUDSMITH_API_KEY` en este repo ni en env del host.
-- [ ] Si existe job GHA de install, usa el mismo secreto y registry; si no existe, no se inventa pipeline como alcance.
-- [ ] Documentación de deploy del host deja de presentar Satis/Verdaccio como vía vigente de SDK (legado marcado).
+- [x] `backend/composer.json` apunta a Cloudsmith (sin `/basic/`) y pin `paqsuite/laravel-core` de esta oleada; `composer.lock` regenerado contra ese origen.
+- [x] `frontend/package.json` pin `@paqsuite/react-core` de esta oleada; `package-lock.json` resuelve tarball `npm.cloudsmith.io` (no Funnel).
+- [x] `.npmrc` usa Cloudsmith + `${CLOUDSMITH_READ_TOKEN}` sin secreto en git.
+- [x] `vercel-install.sh` exige `CLOUDSMITH_READ_TOKEN` y no requiere Verdaccio/Tailscale para el SDK.
+- [x] Forge: `composer show paqsuite/laravel-core` muestra el pin de oleada y origen Cloudsmith.
+- [x] Build Vercel resuelve `@paqsuite/react-core` desde `npm.cloudsmith.io`.
+- [x] Login + health del producto siguen funcionando; **sin** Tailscale para paquetes.
+- [x] No hay `CLOUDSMITH_API_KEY` en este repo ni en env del host.
+- [x] Si existe job GHA de install, usa el mismo secreto y registry; si no existe, no se inventa pipeline como alcance.
+- [x] Documentación de deploy del host deja de presentar Satis/Verdaccio como vía vigente de SDK (legado marcado).
 
 ## 6. Impacto técnico (visión para TR)
 
@@ -126,3 +127,4 @@ No hay flujo de usuario de producto. Flujo de **install**:
 | 2026-10-08 | Borrador inicial (Must = “ver instructivo”). |
 | 2026-10-08 | A1: no apto. Alcance reescrito: **readaptar consumo SDK** Satis+Verdaccio → Cloudsmith; instructivo = anexo de pasos. |
 | 2026-10-08 | Partes B+B1+C: HU-012 y TR-012 enlazadas; Estado Especificado. |
+| 2026-10-09 | F + I: deploy Forge/Vercel Cloudsmith; sin updates que fusionar; Estado **Finalizado**. |
