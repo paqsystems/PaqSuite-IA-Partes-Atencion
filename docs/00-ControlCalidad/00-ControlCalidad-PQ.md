@@ -49,8 +49,96 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 1 | 31/07/2026 | Especificado | `es_tarea` + Paquete de Horas — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md)) |
 | 2 | 01/08/2026 | Especificado | ERP clientes + informes — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md)) |
 | 3 | 09/08/2026 | Especificado | Masivo tilde + carga decimal/Excel/plantillas/tipo default + Smart Capture controles — **F1/F Aprobado 16/09/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-03-2026-09-16.md)) |
-| 4 | 04/10/2026 | Especificado | ABM asistentes/clientes: código de usuario, vínculo único y selector vinculable; Paquete de Horas: filtro y columnas de tipo de cliente |
-| 5 | 05/10/2026 | Especificado | Errores de validación en modal de carga (usuarios y regla transversal UI) |
+| 4 | 04/10/2026 | Especificado | ABM asistentes/clientes + Paquete de Horas tipo cliente — **F1/F Aprobado 11/10/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-04-2026-10-04.md)) |
+| 5 | 05/10/2026 | Especificado | Errores de validación en modal — **F1/F Aprobado 11/10/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/001-Generalidades/D-VERIFICACION-CC-PQ-05-2026-10-05.md)) |
+| 6 | 11/10/2026 | Pendiente | Deuda de cableado SDK por GEN (PA-01…PA-14) — origen [deuda-cableado-sdk-por-gen.md](../06-operacion/deuda-cableado-sdk-por-gen.md) |
+
+---
+
+## Control de Calidad #6
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 11/10/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Pendiente |
+| **F1/F** | — |
+| **Parte I** | — |
+| **Cierre updates** | — |
+| **Origen** | [deuda-cableado-sdk-por-gen.md](../06-operacion/deuda-cableado-sdk-por-gen.md) · relevamiento Framework 11/10/2026 |
+| **Pin de referencia** | `@paqsuite/react-core` **2.4.24-beta.1** · `paqsuite/laravel-core` **1.3.13-beta.1** |
+
+### Hallazgos
+
+Cerrar la **deuda de cableado SDK** del host Partes-Atención: mala invocación de exports GEN listos, forks de pantallas/motores que el SDK ya exporta, o contratos que el SDK ya cubre (headers, cliente, envelope, tema, i18n GEN).
+
+**Fuera de alcance de este control:** pantallas de dominio (carga diaria, maestros, informes); gaps de producto no ofrecidos (GEN-13, GEN-17, GEN-23, GEN-32).
+
+**Qué no pedir (ya está bien):** `registerGridI18nResources`; `MenuSidebar` con `t`/`locale`/`labels`/`openInNewTab`/`onItemsLoaded`; `UserAvatarMenu`; `DashboardContainer`; `EmpresaSelectorPage`; `ParametrosGeneralesPage`; `ProcessDataGrid` (salvo permisos); `ConsultaGrillaPivotShell`; `ExcelImportToolbar`; `SmartCapturePanel`; `ChatAssistantPage`; `LlmPreferencesPanel`; `ShellLayout` + CSS SDK; `EmpresasAdminPage` con `tenancyMode="single"` y preview sin reload.
+
+**Criterio de aceptación (por ítem, al resolver vía SDD):** se invoca el **export** del SDK (sin pantalla/motor GEN duplicado); i18n GEN con `register*I18nResources` y el mismo namespace (sin JSON/mapper host de las mismas claves); envelope `{ error: 0, respuesta, resultado }`; `bootstrapClienteFromWindow` antes del Router y headers con `buildPlatformHeaders`; smoke login + una pantalla GEN tocada (empresas o usuarios/permisos) en ES y EN/FR.
+
+**Orden sugerido de resolución (Parte G / D):** P0 PA-02 → P1 GEN-06 (PA-03, PA-04, PA-05, PA-06, PA-14) → P1 GEN-19 (PA-09, PA-10, PA-08) → P1 GEN-07 PA-07 → P2 PA-11, PA-12, PA-13 → GEN-35 PA-01 al pasar de labo a Cloudsmith en CI/Forge.
+
+*Sugerencia:* módulo **001-Generalidades** (adopción GEN / reglas BASE 19, 34, 36, 42, 43, 44). Volcar en Parte G a SPEC/HU/TR-update (o originales si no existen) alineados a cada GEN.
+
+### Errores encontrados - Mejoras solicitadas
+
+#### GEN-20 — Envelope API (PA-02, P0)
+
+*Sugerencia:* HU Generalidades / GEN-20
+
+- `ApiEnvelope::ok` serializa `'error' => null`. Contrato SDK: `'error' => 0` y `resultado` objeto, no `null`. Rompe clientes que usan `isEnvelope` / `error === 0`.
+- Dónde: `backend/app/Support/ApiEnvelope.php`, `AuthController.php`.
+- Pedido: eliminar `ApiEnvelope` o alinearlo a `PaqSuite\LaravelCore` `ApiResponse`. Auth (y status) deben usar el envelope canónico.
+
+#### GEN-06 — Seguridad admin (PA-03, PA-04, PA-05, PA-06, PA-14)
+
+*Sugerencia:* HU Generalidades / GEN-06 · SoT regla BASE `44-host-framework-gen-cableado-componentes` · errores de guardado en modal: regla 36
+
+- **PA-03 P1:** el SDK exporta `UsuariosAdminPage`; el host reimplementa listado, popup, alta/edición e inhabilitación (`UsuariosAdminPage.tsx`). Pedido: wrapper fino del export SDK. Dominio solo: token, `platform`, permisos, menú.
+- **PA-04 P1:** el SDK exporta `PermisosAdminPage`; el host monta tres `DataGrid` DX y lógica batch propia (`PermisosAdminPage.tsx`). Pedido: montar `PermisosAdminPage` del SDK. No DataGrid crudo de proceso.
+- **PA-05 P1:** wrapper de empresas **no pasa** `i18nNamespace="common"` (init usa `defaultNS: 'common'`). Pasa `t={translateSdk}` (`securityEmpresasSdkI18n`) **y** `registerEmpresasAdminI18nResources` **y** `empresasAdminHostFallback` con overwrite. Triple fuente de `admin.empresas.*` / `appearance.paqsuite.*`. Pedido: `registerEmpresasAdminI18nResources(i18n, 'common')` + `i18nNamespace="common"`. Quitar mapper y fallback host de claves GEN.
+- **PA-06 P1:** `SecurityRolesPage` recibe `t` que mapea a claves host. **No** se llama `registerSecurityRolesI18nResources`. Pedido: registrar recursos SDK y no mapear claves GEN.
+- **PA-14 P2:** existen `registerUsuariosAdminI18nResources` / `registerPermisosAdminI18nResources`; el host no los registra (coherente con el fork de pantallas). Pedido: cerrar junto con PA-03 / PA-04.
+
+#### GEN-07 + GEN-02 — Menú / i18n GEN (PA-07, PA-11)
+
+*Sugerencia:* HU Generalidades / GEN-07 · GEN-02 · reglas 42 y 43. El `MenuSidebar` en sí está bien cableado; no rehacer el árbol.
+
+- **PA-07 P1:** `shellI18n.ts` duplica chrome `menu.*`. Pedido: labels del sidebar vía `t('menu.*')` / helper SDK (`menuSidebarLabelsFromT`). Catálogo host solo claves **producto**.
+- **PA-11 P2:** `main.tsx` hace `syncDevExtremeLocale('es')` y `i18n.ts` sincroniza `getGuestLocale()`. Arranque EN/FR puede pintar DX en ES un tick. Pedido: un solo `syncDevExtremeLocale` con el locale real (guest/sesión), no forzar `'es'` al boot.
+
+#### GEN-19 — Shell / tenancy / tema / `{cliente}` (PA-08, PA-09, PA-10)
+
+*Sugerencia:* HU Generalidades / GEN-19 · SoT regla 34 (`bootstrapClienteFromWindow` antes del Router)
+
+- **PA-08 P1:** con pin ≥ 2.4.20 el SDK exporta `normalizeThemeFromApi`, `mapThemeForApiPersistence`, `paqsuiteDxStockBridge`, `useEmpresaAppearanceBridge`. El host mantiene `sdkEmpresaThemeCompat.ts` y switcher DX propio. Pedido: un solo puente SDK. Preview/restore sin reload de página.
+- **PA-09 P1:** `main.tsx` llama `bootstrapPlatformCliente()` **antes** del Router (orden OK) pero **no** `bootstrapClienteFromWindow`. Reimplementa query/cookie/session/Vercel/landing. Pedido: delegar a `bootstrapClienteFromWindow`. Conservar wrap de landing Vercel **solo** si el SoT de resolución host lo admite.
+- **PA-10 P1:** `buildAuthPlatformHeaders()` arma `{ cliente, companyId, tenancy }` a mano. Pedido: usar `buildPlatformHeaders`. MONO: `X-Paq-Cliente` ≠ id de empresa.
+
+#### GEN-04 — Auth / cambio de clave (PA-12, P2)
+
+*Sugerencia:* HU Generalidades / GEN-04
+
+- `ChangePasswordPage` sin `AuthCardLayout` / `AuthPageLayout`, literales en español.
+- Pedido: layouts SDK + i18n (mismo patrón que login/forgot/reset, que ya están bien).
+
+#### GEN-01 — Layouts de proceso (PA-13, P2)
+
+*Sugerencia:* HU Generalidades / GEN-01 · regla 42 (títulos)
+
+- Procesos de dominio no usan `ProcessPageLayout` (div/h2 propios) en varias páginas `features/partes/**`.
+- Pedido: adoptar `ProcessPageLayout`. Título desde menú localizado (`resolveMenuCaption`) o `t()` de producto — no literal ES.
+
+#### GEN-35 — Distribución SDK (PA-01, lab / ops)
+
+*Sugerencia:* ops / GEN-35 · regla 45 Cloudsmith. **No** tratarlo como bug de invocación si el host está en consumo “repo labo”.
+
+- `composer.lock` resuelve `laravel-core` por **path** al checkout Framework. En `composer.json` el repo `path` está **primero** que Cloudsmith. El FE ya va por Cloudsmith; el BE quedó en modo labo.
+- Pedido: antes de CI/Forge/prod, quitar el path (o no commitearlo) y regenerar lock **solo** Cloudsmith con `CLOUDSMITH_READ_TOKEN`.
 
 ---
 
@@ -63,12 +151,15 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | **Fecha** | 05/10/2026 |
 | **Responsable** | Pablo Quarracino (PQ) |
 | **Estado** | Especificado |
+| **F1/F** | Aprobado 11/10/2026 → [D-VERIFICACION](../04-tareas/updates/001-Generalidades/D-VERIFICACION-CC-PQ-05-2026-10-05.md) |
+| **Parte I** | Unificado 11/10/2026 → originales [SPEC/HU/TR-001](../05-open-spec/001-Generalidades/SPEC-001-ui-errores-validacion-contexto-carga.md) |
+| **Cierre updates** | 11/10/2026 — Parte I ejecutada; originales en **Finalizado** |
 
 ### Hallazgos
 
 Alta de usuario (ABM Usuarios): si la contraseña no cumple la política, el mensaje aparece como texto en la **pantalla principal** (bajo el título), no dentro del modal «Nuevo usuario».
 
-*Procesado* → [SPEC-001-update](../05-open-spec/updates/001-Generalidades/SPEC-001-ui-errores-validacion-contexto-carga-update.md) · [HU-001-update](../03-historias-usuario/updates/001-Generalidades/HU-001-ui-errores-validacion-contexto-carga-update.md) · [TR-001-update](../04-tareas/updates/001-Generalidades/TR-001-ui-errores-validacion-contexto-carga-update.md) · Regla BASE [36-ui-errores-validacion-contexto-carga](../../.cursor/rules/base/20-frontend/36-ui-errores-validacion-contexto-carga.mdc)
+*Procesado* (unificado Parte I 11/10/2026) → [SPEC-001](../05-open-spec/001-Generalidades/SPEC-001-ui-errores-validacion-contexto-carga.md) · [HU-001](../03-historias-usuario/001-Generalidades/HU-001-ui-errores-validacion-contexto-carga.md) · [TR-001](../04-tareas/001-Generalidades/TR-001-ui-errores-validacion-contexto-carga.md) · Regla BASE [36-ui-errores-validacion-contexto-carga](../../.cursor/rules/base/20-frontend/36-ui-errores-validacion-contexto-carga.mdc)
 
 ### Errores encontrados - Mejoras solicitadas
 
@@ -88,19 +179,21 @@ Alta de usuario (ABM Usuarios): si la contraseña no cumple la política, el men
 | **Fecha** | 04/10/2026 |
 | **Responsable** | Pablo Quarracino (PQ) |
 | **Estado** | Especificado |
-| **F1/F** | Verificación agente 05/10/2026 → [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-04-2026-10-04.md) |
+| **F1/F** | Aprobado 11/10/2026 → [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-04-2026-10-04.md) |
+| **Parte I** | Unificado 11/10/2026 → originales [SPEC/HU/TR-003](../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md), [006](../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) |
+| **Cierre updates** | 11/10/2026 — Parte I ejecutada; originales en **Finalizado** |
 
 ### Hallazgos
 
 Mejoras y correcciones tras control de calidad manual y completo
 
-*Procesado* → [SPEC-003-update](../05-open-spec/updates/100-SistemaPartes/SPEC-003-maestros-y-catalogos-update.md) · [HU-003-update](../03-historias-usuario/updates/100-SistemaPartes/HU-003-maestros-y-catalogos-update.md) · [TR-003-update](../04-tareas/updates/100-SistemaPartes/TR-003-maestros-y-catalogos-update.md) · [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion-update.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-consultas-dashboard-navegacion-update.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-consultas-dashboard-navegacion-update.md)
+*Procesado* (unificado Parte I 11/10/2026) → [SPEC-003](../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) · [HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) · [TR-003](../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) · [SPEC-006](../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) · [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md)
 
 ### Errores encontrados - Mejoras solicitadas
 
 #### ABM Asistentes
 
-*Procesado* → [SPEC-003-update](../05-open-spec/updates/100-SistemaPartes/SPEC-003-maestros-y-catalogos-update.md) · [HU-003-update](../03-historias-usuario/updates/100-SistemaPartes/HU-003-maestros-y-catalogos-update.md) · [TR-003-update](../04-tareas/updates/100-SistemaPartes/TR-003-maestros-y-catalogos-update.md)
+*Procesado* (unificado Parte I 11/10/2026) → [SPEC-003](../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) · [HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) · [TR-003](../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md)
 
 - No aparece el codigo de usuario asociado.
 - Verificar que no se duplique el usuario asignado. (ni en asistente ni en clientes)
@@ -108,14 +201,14 @@ Mejoras y correcciones tras control de calidad manual y completo
 
 #### ABM Clientes
 
-*Procesado* → [SPEC-003-update](../05-open-spec/updates/100-SistemaPartes/SPEC-003-maestros-y-catalogos-update.md) · [HU-003-update](../03-historias-usuario/updates/100-SistemaPartes/HU-003-maestros-y-catalogos-update.md) · [TR-003-update](../04-tareas/updates/100-SistemaPartes/TR-003-maestros-y-catalogos-update.md)
+*Procesado* (unificado Parte I 11/10/2026) → [SPEC-003](../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) · [HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) · [TR-003](../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md)
 
 - Verificar que no se duplique el usuario asignado. (ni en asistente ni en clientes)
 - limitar la lista de usuario a elegir, a los activos, habilitados y no asignados previamente.
 
 #### Paquete de Horas
 
-*Procesado* → [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion-update.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-consultas-dashboard-navegacion-update.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-consultas-dashboard-navegacion-update.md)
+*Procesado* (unificado Parte I 11/10/2026) → [SPEC-006](../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) · [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md)
 
 -  Agregar filtro "Tipo de Cliente".
 - Agregar columna "Tipo de Cliente" (codigo y descripcion)

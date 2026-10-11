@@ -7,8 +7,8 @@
 | ID | SPEC-003 |
 | Título | Maestros y catálogos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | En revisión |
-| Última actualización | 2026-08-01 |
+| Estado | Finalizado |
+| Última actualización | 2026-10-11 |
 | HU relacionada(s) | [HU-003-maestros-y-catalogos](../../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) |
 | TR relacionada(s) | [TR-003-maestros-y-catalogos](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |
 | Depende de | [SPEC-001](./SPEC-001-modelo-datos-modulo.md), [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md) (quién opera; exclusividad `user_id`) |
@@ -84,7 +84,8 @@
 | `code` | Obligatorio; único |
 | `nombre` | Obligatorio |
 | `email` | Opcional |
-| `user_id` | Obligatorio; selector de usuario Framework existente; único; no puede estar en clientes |
+| Código de usuario | Columna de listado con `users.usuario` del `user_id` vinculado (`usuarioCodigo`). Vacío solo si no hay usuario (`user_id` es obligatorio). |
+| `user_id` | Obligatorio; selector del universo vinculable §4.9; único; no puede estar en otro asistente ni en clientes |
 | `supervisor` | Checkbox; capacidad de dominio |
 | `activo` / `inhabilitado` | Estado operativo |
 
@@ -102,7 +103,7 @@
 | `email` | Opcional |
 | `erp_cliente` | Opcional; texto libre; máx. 15 caracteres; rechazo (422) si excede |
 | `erp_articulo` | Opcional; texto libre; máx. 15 caracteres; rechazo (422) si excede |
-| `user_id` | Opcional; si informado → acceso autenticado |
+| `user_id` | Opcional; si informado → acceso autenticado; selector del universo vinculable §4.9 |
 | `activo` / `inhabilitado` | Estado operativo |
 
 - Campos `erp_cliente` / `erp_articulo` (API `erpCliente` / `erpArticulo`): visibles como columnas en el listado y como campos del formulario modal (caption a la izquierda, sin cambios en el patrón de catálogo código+descripción). Referencia externa a ERP; sin integración activa ni sincronización.
@@ -177,7 +178,16 @@ Endpoint de catálogo (lectura) debe exponer este universo; la UI de carga lo co
 
 Criterio “usable” en selectores de nuevas operaciones: `activo = 1` **y** `inhabilitado = 0`.
 
-### 4.9 Reglas numeradas
+### 4.9 Universo de usuarios vinculables
+
+Un usuario Framework es elegible si y solo si:
+
+1. `activo = 1` y `inhabilitado = 0`.
+2. Su `id` no está en `PQ_PARTES_USUARIOS.user_id` ni en `PQ_PARTES_CLIENTES.user_id`, salvo el `user_id` del registro que se está editando.
+
+Contrato de lectura: `GET /api/v1/partes/catalogos/usuarios-vinculables?exceptoUserId=`.
+
+### 4.10 Reglas numeradas
 
 | ID | Regla |
 |----|--------|
@@ -195,6 +205,12 @@ Criterio “usable” en selectores de nuevas operaciones: `activo = 1` **y** `i
 | R-MA-12 | Acceso a datos de negocio vía SP (MUST); firmas en TR. |
 | R-MA-13 | ABM clientes: `erp_cliente` / `erp_articulo` opcionales en listado y formulario; se persisten en get/list/upsert. |
 | R-MA-14 | Rechazar (422) valores de `erp_cliente` / `erp_articulo` con longitud > 15. |
+| R-MA-15 | El listado de asistentes expone el código de usuario Framework (`usuarioCodigo` = `users.usuario`). |
+| R-MA-16 | El selector de usuario de asistentes y de clientes lista solo el universo §4.9. |
+| R-MA-17 | Un `users.id` no puede quedar en dos asistentes, en dos clientes, ni a la vez en asistente y cliente. La edición del propio registro no dispara el rechazo. |
+| R-MA-18 | No se puede vincular un usuario inactivo o inhabilitado. |
+
+R-MA-05 permanece: la exclusividad cruzada sigue vigente y queda cubierta por R-MA-17.
 
 ---
 
@@ -211,6 +227,10 @@ Criterio “usable” en selectores de nuevas operaciones: `activo = 1` **y** `i
 - [ ] UI muestra código + nombre/descripción; i18n + `data-testid`.
 - [ ] Menú/ruta de maestros no expuesta a perfil cliente ni en mobile.
 - [x] List/get/create/update de clientes exponen y persisten `erpCliente` / `erpArticulo`; UI de maestro los captura y muestra en grilla; valores > 15 caracteres se rechazan (422).
+- [x] La grilla de asistentes muestra el código de usuario Framework asociado.
+- [x] El selector de asistentes y el de clientes omiten inactivos, inhabilitados y ya asignados; en edición el usuario actual de la fila sigue en el selector.
+- [x] Alta de un segundo asistente o cliente con el mismo `user_id` responde 422 `partes.maestros.exclusividadUserId`.
+- [x] Alta con usuario inactivo o inhabilitado responde 422 `partes.maestros.usuarioNoVinculable`.
 
 ---
 
@@ -220,7 +240,7 @@ Criterio “usable” en selectores de nuevas operaciones: `activo = 1` **y** `i
 |------|---------|
 | Backend | Controllers/services + adapters SP (`pq_sp_partes_*` list/get/upsert/disable/delete según entidad); envelope estándar |
 | Seed menú | Ítems ABM maestros Partes; permisos rol supervisor/admin producto |
-| Frontend | Features ABM bajo `features/partes/` (o equivalente); SelectBox usuarios vía lookup admin (patrón PedidosWeb + filtro activos/todos) |
+| Frontend | Features ABM bajo `features/partes/` (o equivalente); SelectBox de vínculo usuario contra `usuarios-vinculables`; lookup admin GEN sigue para ABM Usuarios |
 | Tests | Feature API + Vitest/E2E humo de un ABM representativo |
 | Docs | Cierra en checklist el ítem de revocación de acceso cliente (MVP §4.3.2) |
 
@@ -233,7 +253,7 @@ Criterio “usable” en selectores de nuevas operaciones: `activo = 1` **y** `i
 | Perfil editable | Sigue fuera (SPEC-002: solo lectura) |
 | Sesión viva tras revocar acceso | **Cerrado:** SPEC-002 R-ID-11. |
 | Quién exactamente tiene cada ítem de menú | Seed/TR; regla de negocio: no clientes |
-| Selector de `users` | **Cerrado:** `GET /api/v1/admin/usuarios?soloActivos=1\|0` (default `1`). Usuario vinculable: `activo=1` e `inhabilitado=0` en `users`. |
+| Selector de `users` en ABM asistentes/clientes | **Cerrado (CC #4):** `GET /api/v1/partes/catalogos/usuarios-vinculables`. El lookup admin GEN no alimenta este vínculo. |
 | Inhabilitar asistente con sesiones abiertas | Nuevo login falla; sesión viva → mismo criterio que revocación cliente |
 
 ---
@@ -254,6 +274,7 @@ Criterio “usable” en selectores de nuevas operaciones: `activo = 1` **y** `i
 | 2026-07-30 | Parte C+C1: enlazada [TR-003](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md); param `soloActivos`. |
 | 2026-08-01 | CC-PQ #2 (01/08/2026): ABM clientes captura/muestra `erpCliente` / `erpArticulo` (R-MA-13/14). |
 | 2026-08-01 | Parte I: fusionado SPEC-003-update (CC-PQ #2, 01/08) en este original; update eliminado. Estado → Finalizado. |
+| 2026-10-11 | Parte I CC-PQ #4 (04/10/2026): código de usuario en asistentes, universo vinculable y unicidad R-MA-15…18; update eliminado. Estado → Finalizado. |
 
 ---
 

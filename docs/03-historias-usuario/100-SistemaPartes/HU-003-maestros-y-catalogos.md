@@ -8,8 +8,8 @@
 | Título | Maestros y catálogos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-08-01 |
+| Estado | Finalizado |
+| Última actualización | 2026-10-11 |
 | SPEC origen | [SPEC-003-maestros-y-catalogos](../../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) |
 | TR relacionada(s) | [TR-003-maestros-y-catalogos](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |
 
@@ -100,6 +100,10 @@ La carga diaria y el gate post-login dependen de maestros administrables: asiste
 | R-MA-12 | Acceso a datos de negocio vía SP (MUST); firmas en TR. |
 | R-MA-13 | ABM clientes: `erp_cliente` / `erp_articulo` opcionales en listado y formulario; se persisten en get/list/upsert. |
 | R-MA-14 | Rechazar (422) valores de `erp_cliente` / `erp_articulo` con longitud > 15. |
+| R-MA-15 | Listado de asistentes muestra `usuarioCodigo`. |
+| R-MA-16 | Selector de usuario = universo vinculable (activos, habilitados, no asignados; en edición se conserva el de la fila). |
+| R-MA-17 | Un `users.id` solo en un asistente o en un cliente, nunca en ambos ni repetido. |
+| R-MA-18 | Usuario inactivo o inhabilitado no se vincula. |
 
 Criterio “usable” en selectores: `activo = 1` **y** `inhabilitado = 0`.
 
@@ -121,6 +125,10 @@ Criterio “usable” en selectores: `activo = 1` **y** `inhabilitado = 0`.
 - [ ] **CA-11** El selector de `users` usa lookup tipo PedidosWeb (`/admin/usuarios` o equivalente) con parámetro para listar solo habilitados o todos.
 - [ ] **CA-12** Al cambiar `user_id` de un asistente de modo que el usuario Framework anterior quede sin vínculo Partes usable, la UI muestra advertencia confirmable antes de guardar.
 - [x] **CA-13** Puedo grabar `erpCliente` y `erpArticulo` en alta/edición de cliente; ambos aparecen en el listado del maestro; un valor con más de 15 caracteres se rechaza (422).
+- [x] **CA-U01** La grilla de asistentes muestra el código de usuario Framework.
+- [x] **CA-U02** El selector de asistentes y el de clientes no ofrecen inactivos, inhabilitados ni ya asignados; en edición sí ofrece el usuario de esa fila.
+- [x] **CA-U03** Persistir un `user_id` ya usado en otro asistente o en un cliente responde 422 `partes.maestros.exclusividadUserId`.
+- [x] **CA-U04** Persistir un usuario inactivo o inhabilitado responde 422 `partes.maestros.usuarioNoVinculable`.
 
 ---
 
@@ -228,3 +236,4 @@ Feature: ABM maestros y catálogos Partes
 | 2026-07-30 | Parte C+C1: enlazada TR-003. |
 | 2026-08-01 | CC-PQ #2 (01/08/2026): ABM clientes captura/muestra `erpCliente` / `erpArticulo` (CA-13, R-MA-13/14). |
 | 2026-08-01 | Parte I: fusionado HU-003-update (CC-PQ #2, 01/08) en esta HU; update eliminado. Estado → Finalizado. |
+| 2026-10-11 | Parte I CC-PQ #4: código de usuario, selector vinculable y unicidad (CA-U01…U04); update eliminado. Estado → Finalizado. |

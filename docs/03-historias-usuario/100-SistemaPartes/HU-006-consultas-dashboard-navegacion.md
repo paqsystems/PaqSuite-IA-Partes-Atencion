@@ -8,8 +8,8 @@
 | Título | Consultas, dashboard y navegación del módulo |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-08-01 |
+| Estado | Finalizado |
+| Última actualización | 2026-10-11 |
 | SPEC origen | [SPEC-006-consultas-dashboard-navegacion](../../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) |
 | TR relacionada(s) | [TR-006-consultas-dashboard-navegacion](../../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) |
 
@@ -101,6 +101,8 @@ Tras registrar tareas (SPEC-004), el usuario necesita **lectura** de dedicación
 | R-CO-11 | Consulta detallada, agrupadas y dashboard: solo `esTarea = true`. |
 | R-CO-12 | Paquete de Horas **no** filtra por `esTarea` (incluye tareas y compras); fila «Saldo inicial» = movimientos con fecha &lt; `fechaDesde` (tarea suma, compra resta); columna Saldo = running balance en grilla, excluida del pivot; mismos atributos de detalle que consulta detallada; filtros periodo + cliente según rol. |
 | R-CO-13 | Consulta detallada y agrupada exponen `erpCliente` / `erpArticulo` en grilla y pivot; valores vacíos/NULL no rompen la consulta. |
+| R-CO-14 | `tipoClienteId` opcional acota saldo inicial y movimientos de Paquete de Horas. |
+| R-CO-15 | Movimientos de Paquete de Horas exponen código y descripción de tipo; pivot los incluye y excluye Saldo. |
 
 Visibilidad por rol en menú seed (orientativo): cliente sin Archivos ABM, sin carga, sin masivo; sí dashboard + informes de su org. Perfil vía avatar; no ítem de menú dedicado Must.
 
@@ -125,6 +127,9 @@ Visibilidad por rol en menú seed (orientativo): cliente sin Archivos ABM, sin c
 - [x] **CA-15** Paquete de Horas incluye tareas y compras del periodo (sin filtrar por `esTarea`).
 - [x] **CA-16** Paquete de Horas muestra fila «Saldo inicial» con acumulado correcto (exclusive `fechaDesde`); columna Saldo corre en grilla; pivot no expone Saldo; filtro cliente disponible para asistente/supervisor.
 - [x] **CA-17** Consulta detallada muestra Erp Cliente y Erp Articulo en grilla y pivot; consulta agrupada los expone en grilla y pivot.
+- [x] **CA-U05** Paquete de Horas muestra `tipoClienteCode` y `tipoClienteDescripcion` en cada movimiento.
+- [x] **CA-U06** El filtro de tipo de cliente limita saldo inicial y filas al tipo elegido.
+- [x] **CA-U07** El pivot ofrece las dos columnas de tipo y no ofrece Saldo.
 
 ---
 
@@ -240,3 +245,4 @@ Feature: Consultas, dashboard y navegación Partes
 | 2026-07-31 | CC-PQ #1 (31/07/2026): detalle, agrupadas y dashboard filtran `esTarea = true` (CA-14, R-CO-11); nuevo Informe Paquete de Horas como cuenta corriente (CA-15/16, R-CO-12). |
 | 2026-08-01 | CC-PQ #2 (01/08/2026): consulta detallada y agrupada incorporan Erp Cliente / Erp Articulo en grilla y pivot (CA-17, R-CO-13). |
 | 2026-08-01 | Parte I: fusionados HU-006-update (CC-PQ #1, 31/07) y HU-006-update-01 (CC-PQ #2, 01/08) en esta HU; updates eliminados. Estado → Finalizado. |
+| 2026-10-11 | Parte I CC-PQ #4: tipo de cliente en Paquete de Horas (CA-U05…U07); update eliminado. Estado → Finalizado. |

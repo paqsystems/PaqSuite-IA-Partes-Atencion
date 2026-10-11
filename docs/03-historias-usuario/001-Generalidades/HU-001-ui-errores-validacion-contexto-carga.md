@@ -1,17 +1,17 @@
-# HU-001-update – Errores de validación visibles en el modal de carga
+# HU-001 – Errores de validación visibles en el modal de carga
 
 ## Metadatos
 
 | Campo | Valor |
 |-------|-------|
-| ID | HU-001-ui-errores-validacion-contexto-carga-update |
+| ID | HU-001-ui-errores-validacion-contexto-carga |
 | Título | Errores de guardado en el contexto del modal de alta/edición |
 | Épica / carpeta | `001-Generalidades` |
 | Clasificación | MUST-HAVE |
-| Estado | Especificado |
-| Última actualización | 2026-10-05 |
-| SPEC origen | [SPEC-001-update](../../../05-open-spec/updates/001-Generalidades/SPEC-001-ui-errores-validacion-contexto-carga-update.md) |
-| TR relacionada(s) | [TR-001-update](../../../04-tareas/updates/001-Generalidades/TR-001-ui-errores-validacion-contexto-carga-update.md) |
+| Estado | Finalizado |
+| Última actualización | 2026-10-11 |
+| SPEC origen | [SPEC-001](../../05-open-spec/001-Generalidades/SPEC-001-ui-errores-validacion-contexto-carga.md) |
+| TR relacionada(s) | [TR-001](../../04-tareas/001-Generalidades/TR-001-ui-errores-validacion-contexto-carga.md) |
 
 ## Origen
 
@@ -47,17 +47,17 @@ para corregir los datos sin confundir el mensaje con la pantalla de fondo.
 
 | ID | Regla |
 |----|--------|
-| R-UI-ERR-01 … R-UI-ERR-06 | Ver [SPEC-001-update](../../../05-open-spec/updates/001-Generalidades/SPEC-001-ui-errores-validacion-contexto-carga-update.md) §4.1 |
+| R-UI-ERR-01 … R-UI-ERR-06 | Ver [SPEC-001](../../05-open-spec/001-Generalidades/SPEC-001-ui-errores-validacion-contexto-carga.md) §4.1 |
 
 ---
 
 ## Criterios de aceptación
 
-- [ ] **CA-U01** Crear usuario con contraseña inválida: el texto de error aparece en el Popup, con `data-testid` `adminUsuariosFormError` (o equivalente documentado en TR).
-- [ ] **CA-U02** El Popup no se cierra automáticamente ante error de validación.
-- [ ] **CA-U03** Al cancelar/cerrar el Popup, desaparece el error del formulario; un nuevo alta no muestra el error anterior.
-- [ ] **CA-U04** ABM maestros Partes y admin roles/permisos/empresas cumplen el mismo criterio en sus modales de guardado.
-- [ ] **CA-U05** Regresión: carga diaria sigue mostrando errores de tarea solo en el contexto del modal de tarea.
+- [x] **CA-U01** Crear usuario con contraseña inválida: el texto de error aparece en el Popup, con `data-testid` `adminUsuariosFormError` (o equivalente documentado en TR).
+- [x] **CA-U02** El Popup no se cierra automáticamente ante error de validación.
+- [x] **CA-U03** Al cancelar/cerrar el Popup, desaparece el error del formulario; un nuevo alta no muestra el error anterior.
+- [x] **CA-U04** ABM maestros Partes y admin roles/permisos/empresas cumplen el mismo criterio en sus modales de guardado.
+- [x] **CA-U05** Regresión: carga diaria sigue mostrando errores de tarea solo en el contexto del modal de tarea.
 
 ---
 
@@ -85,4 +85,5 @@ Scenario: Error de guardado en maestro con modal abierto
 
 | Fecha | Cambio |
 |-------|--------|
-| 2026-10-05 | Volcado Parte G desde CC-PQ #5. |
+| 2026-10-05 | Volcado Parte G desde CC-PQ #5 (HU-update). |
+| 2026-10-11 | F1/F Aprobado. Parte I: promovido a original `001-Generalidades`; update eliminado. Estado → Finalizado. |

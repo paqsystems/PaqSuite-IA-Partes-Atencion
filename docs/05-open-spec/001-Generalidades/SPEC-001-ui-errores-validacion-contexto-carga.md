@@ -1,18 +1,19 @@
-# SPEC-001-update – Errores de validación en el contexto de carga (modal)
+# SPEC-001 – Errores de validación en el contexto de carga (modal)
 
 ## Metadatos
 
 | Campo | Valor |
 |-------|-------|
-| ID | SPEC-001-ui-errores-validacion-contexto-carga-update |
+| ID | SPEC-001-ui-errores-validacion-contexto-carga |
 | Título | Mostrar errores de validación y guardado dentro del modal de carga, no en la página de fondo |
 | Épica / carpeta | `001-Generalidades` (transversal hosts PaqSuite IA) |
-| Estado | Especificado |
-| Última actualización | 2026-10-05 |
-| HU relacionada(s) | [HU-001-update](../../../03-historias-usuario/updates/001-Generalidades/HU-001-ui-errores-validacion-contexto-carga-update.md) |
-| TR relacionada(s) | [TR-001-update](../../../04-tareas/updates/001-Generalidades/TR-001-ui-errores-validacion-contexto-carga-update.md) |
+| Estado | Finalizado |
+| Última actualización | 2026-10-11 |
+| HU relacionada(s) | [HU-001](../../03-historias-usuario/001-Generalidades/HU-001-ui-errores-validacion-contexto-carga.md) |
+| TR relacionada(s) | [TR-001](../../04-tareas/001-Generalidades/TR-001-ui-errores-validacion-contexto-carga.md) |
 | Regla BASE | `.cursor/rules/base/20-frontend/36-ui-errores-validacion-contexto-carga.mdc` |
 | Origen | `00-ControlCalidad-PQ` · fecha 05/10/2026 · Control de Calidad #5 · ABM Usuarios (GEN-06) |
+| F1/F | [D-VERIFICACION-CC-PQ-05](../../04-tareas/updates/001-Generalidades/D-VERIFICACION-CC-PQ-05-2026-10-05.md) |
 
 ---
 
@@ -28,7 +29,7 @@
 ### 2.1 En alcance
 
 - Pantallas con patrón **grilla + Popup** de alta/edición (regla 24).
-- Errores de **envelope** (`error: true`, clave `respuesta` i18n) y errores de **validación de campo** cuando el backend los exponga en el mismo flujo de guardado.
+- Errores de **envelope** (`error ≠ 0`, clave `respuesta` i18n) y errores de **validación de campo** cuando el backend los exponga en el mismo flujo de guardado.
 - Procesos **GEN** en el host (admin usuarios, roles, permisos, empresas) y procesos **de dominio** con el mismo patrón (maestros Partes, tipos de tarea por cliente, etc.).
 - Referencia de implementación correcta existente: **Carga diaria** (`CargaDiariaPage` — alerta de formulario solo dentro del Popup cuando está abierto).
 
@@ -77,12 +78,12 @@ Operador o administrador con permiso del proceso. Precondición: modal de alta/e
 
 ## 5. Criterios verificables
 
-- [ ] **CV-01** En ABM Usuarios, contraseña inválida al crear usuario: mensaje visible **dentro** del Popup «Nuevo usuario», no solo bajo el título «Usuarios».
-- [ ] **CV-02** Tras error en el Popup, el listado sigue visible detrás pero el mensaje no queda **solo** en el fondo.
-- [ ] **CV-03** Maestros Partes (`MaestroCrudPage` y pantallas que lo usan): mismo criterio al fallar guardado en el Popup.
-- [ ] **CV-04** Admin roles / permisos / empresas: mismo criterio en sus Popups de alta-edición.
-- [ ] **CV-05** Carga diaria mantiene el patrón actual (regresión cero).
-- [ ] **CV-06** Tests automatizados cubren al menos un caso (Usuarios o maestro) con `data-testid` de alerta en el formulario.
+- [x] **CV-01** En ABM Usuarios, contraseña inválida al crear usuario: mensaje visible **dentro** del Popup «Nuevo usuario», no solo bajo el título «Usuarios».
+- [x] **CV-02** Tras error en el Popup, el listado sigue visible detrás pero el mensaje no queda **solo** en el fondo.
+- [x] **CV-03** Maestros Partes (`MaestroCrudPage` y pantallas que lo usan): mismo criterio al fallar guardado en el Popup.
+- [x] **CV-04** Admin roles / permisos / empresas: mismo criterio en sus Popups de alta-edición.
+- [x] **CV-05** Carga diaria mantiene el patrón actual (regresión cero).
+- [x] **CV-06** Tests automatizados cubren al menos un caso (Usuarios o maestro) con `data-testid` de alerta en el formulario.
 
 ---
 
@@ -90,7 +91,7 @@ Operador o administrador con permiso del proceso. Precondición: modal de alta/e
 
 | Capa | Impacto |
 |------|---------|
-| Frontend | Refactor estado error contextual; opcional helper compartido en `frontend/src/shared/ui/`; alinear páginas listadas en TR |
+| Frontend | Refactor estado error contextual; helper `FormContextErrorAlert` en `frontend/src/shared/ui/` |
 | Backend | Sin cambio de contrato |
 | i18n | Reutilizar claves existentes (`auth.password.*`, `validation.failed`, dominio) |
 | SDK GEN | Recomendación futura: export en `@paqsuite/react-core` si el patrón se repite en más hosts |
@@ -101,7 +102,7 @@ Operador o administrador con permiso del proceso. Precondición: modal de alta/e
 
 | Tema | Tratamiento |
 |------|-------------|
-| Popup DevExtreme sin `contentRender` | Permisos admin ya documenta children vs `contentRender`; la alerta debe ir en el mismo árbol que el formulario visible |
+| Popup DevExtreme sin `contentRender` | Permisos admin: la alerta debe ir en el mismo árbol que el formulario visible |
 | Múltiples Popups anidados | El error se ata al Popup que disparó la acción (el más interno) |
 
 ---
@@ -110,4 +111,9 @@ Operador o administrador con permiso del proceso. Precondición: modal de alta/e
 
 | Fecha | Cambio |
 |-------|--------|
-| 2026-10-05 | Volcado Parte G desde CC-PQ #5. |
+| 2026-10-05 | Volcado Parte G desde CC-PQ #5 (SPEC-update). |
+| 2026-10-11 | F1/F Aprobado. Parte I: promovido a original `001-Generalidades`; update eliminado. Estado → Finalizado. |
+
+---
+
+**Trazabilidad:** [HU-001](../../03-historias-usuario/001-Generalidades/HU-001-ui-errores-validacion-contexto-carga.md) · [TR-001](../../04-tareas/001-Generalidades/TR-001-ui-errores-validacion-contexto-carga.md) · [regla 36](../../../.cursor/rules/base/20-frontend/36-ui-errores-validacion-contexto-carga.mdc).

@@ -36,9 +36,11 @@ Documentos **SPEC-CTX-***: alcance de épica redactado como **insumo previo** al
 
 ### 001 – Generalidades (`001-Generalidades/`) — bloque vigente
 
-Ver índice principal: [README de 001-Generalidades](001-Generalidades/README.md).
+Ver índice: [README de 001-Generalidades](001-Generalidades/README.md).
 
-Este bloque es la referencia vigente para generalidades de `SistemaPartes` y productos que reutilicen la base replicada desde PedidosWeb.
+| SPEC | Título | HU |
+|------|--------|-----|
+| [SPEC-001](001-Generalidades/SPEC-001-ui-errores-validacion-contexto-carga.md) | Errores de validación en modal de carga | [HU-001](../03-historias-usuario/001-Generalidades/HU-001-ui-errores-validacion-contexto-carga.md) · [TR-001](../04-tareas/001-Generalidades/TR-001-ui-errores-validacion-contexto-carga.md) |
 
 ### 000 – Generalidades (`000-Generalidades/`) — histórico / deprecado
 
