@@ -52,4 +52,31 @@ if (existsSync(sdkGridRoot) && existsSync(gridLayoutOverlay)) {
   console.log('overlay-react-core-framework: GEN-11 useGridLayouts overlay aplicado.')
 }
 
+const sdkPivotRoot = join(
+  frontendRoot,
+  'node_modules',
+  '@paqsuite',
+  'react-core',
+  'src',
+  'ui',
+  'pivot',
+)
+const pivotFiles = [
+  'mapCatalogToPivotFields.ts',
+  'pivotCatalogClient.ts',
+  'usePivotLayouts.ts',
+  'PivotGridBlock.tsx',
+]
+if (existsSync(sdkPivotRoot)) {
+  for (const fileName of pivotFiles) {
+    const from = join(overlayRoot, 'pivot', fileName)
+    if (!existsSync(from)) {
+      console.warn(`overlay-react-core-framework: falta ${from}`)
+      process.exit(1)
+    }
+    copyFileSync(from, join(sdkPivotRoot, fileName))
+  }
+  console.log('overlay-react-core-framework: GEN-12 pivot overlay aplicado.')
+}
+
 console.log('overlay-react-core-framework: GEN-14 hoja Excel overlay aplicado.')
