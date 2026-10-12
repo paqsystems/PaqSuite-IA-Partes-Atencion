@@ -24,12 +24,26 @@ export function formatMinutosAsHhMm(minutos: number): string {
   return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`
 }
 
-/** Convierte minutos a horas decimales para sumatoria en grilla (p. ej. 90 → 1.5). */
+/** Formato DX de horas decimales con 2 decimales (1:15 → 1,25). */
+export const DURACION_HORAS_NUMBER_FORMAT = '#0.00'
+
+/** Convierte minutos a horas decimales (p. ej. 75 → 1.25; 90 → 1.5). */
 export function minutosToHorasDecimal(minutos: number): number {
   if (!Number.isFinite(minutos)) {
     return 0
   }
-  return Math.round((minutos / 60) * 10000) / 10000
+  return Math.round((minutos / 60) * 100) / 100
+}
+
+export function enrichRowsWithDuracionHoras(
+  rows: Record<string, unknown>[],
+  minutosField = 'duracionMinutos',
+  horasField = 'duracionHoras',
+): Record<string, unknown>[] {
+  return rows.map((row) => ({
+    ...row,
+    [horasField]: minutosToHorasDecimal(Number(row[minutosField] ?? 0)),
+  }))
 }
 
 /**

@@ -14,6 +14,7 @@ import { listCatalogo } from '../maestros/partesMaestrosApi'
 import {
   dateDisplayFormat,
   dateSerializationFormat,
+  enrichRowsWithDuracionHoras,
   formatMinutosAsHhMm,
   isoDateFromDateBox,
 } from '../carga/partesTareaDuration'
@@ -56,7 +57,7 @@ export function PaqueteHorasPage() {
   const [ejeChart, setEjeChart] = useState<'cliente' | 'tipo'>('cliente')
 
   const rows = useMemo(
-    () => enrichRowsWithDiaSemana(rawRows, t, 'fecha'),
+    () => enrichRowsWithDuracionHoras(enrichRowsWithDiaSemana(rawRows, t, 'fecha')),
     [rawRows, t, i18n.language]
   )
 
@@ -80,7 +81,7 @@ export function PaqueteHorasPage() {
       if ((result.envelope.resultado.total ?? 0) <= 1) {
         setError(resolveAuthMessage('partes.consulta.empty'))
       }
-      const enriched = enrichRowsWithDiaSemana(items, t, 'fecha')
+      const enriched = enrichRowsWithDuracionHoras(enrichRowsWithDiaSemana(items, t, 'fecha'))
       return enriched.filter((row) => !row.esSaldoInicial)
     }
     if (result.kind === 'envelopeError') {

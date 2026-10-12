@@ -12,11 +12,13 @@ import { resolveAuthMessage } from '../../auth/authMessages'
 import {
   dateDisplayFormat,
   dateSerializationFormat,
+  DURACION_HORAS_NUMBER_FORMAT,
+  enrichRowsWithDuracionHoras,
   formatMinutosAsHhMm,
   isoDateFromDateBox,
 } from '../carga/partesTareaDuration'
 import { monthRange, currentMonthValue } from './PartesDashboardPage'
-import { usePartesMinutosColumnSummaryItems } from '../partesGridSummary'
+import { usePartesDuracionHorasSummaryItems, usePartesMinutosColumnSummaryItems } from '../partesGridSummary'
 import { listCatalogo, listPartesResource } from '../maestros/partesMaestrosApi'
 import { fetchInformeAgrupado, fetchInformeTareas } from './partesInformeApi'
 import { enrichRowsWithDiaSemana } from './partesInformeDiaSemana'
@@ -80,7 +82,7 @@ export function ConsultaDetalladaPage() {
   const [catalogosLoading, setCatalogosLoading] = useState(false)
 
   const rows = useMemo(
-    () => enrichRowsWithDiaSemana(rawRows, t, 'fecha'),
+    () => enrichRowsWithDuracionHoras(enrichRowsWithDiaSemana(rawRows, t, 'fecha')),
     [rawRows, t, i18n.language]
   )
 
@@ -114,7 +116,7 @@ export function ConsultaDetalladaPage() {
       if ((result.envelope.resultado.total ?? 0) === 0) {
         setError(resolveAuthMessage('partes.consulta.empty'))
       }
-      return enrichRowsWithDiaSemana(items, t, 'fecha')
+      return enrichRowsWithDuracionHoras(enrichRowsWithDiaSemana(items, t, 'fecha'))
     }
     if (result.kind === 'envelopeError') {
       const message = resolveAuthMessage(result.envelope.respuesta)
@@ -251,15 +253,7 @@ export function ConsultaDetalladaPage() {
     [],
   )
 
-  const durationSummaryFormatter = useCallback(
-    (value: unknown) => formatMinutosAsHhMm(Number(value ?? 0)),
-    []
-  )
-
-  const duracionSummaryItems = usePartesMinutosColumnSummaryItems(
-    'duracionMinutos',
-    'pq-duracionMinutos-sum',
-  )
+  const duracionSummaryItems = usePartesDuracionHorasSummaryItems()
 
   const renderDetalladaGridView = useCallback(
     (toolbarLeading: ReactNode) => (
@@ -275,9 +269,6 @@ export function ConsultaDetalladaPage() {
           accessToken={accessToken}
           platform={platform}
           defaultTotalItems={duracionSummaryItems}
-          columnSummaryFormatters={{
-            duracionMinutos: durationSummaryFormatter,
-          }}
           toolbarLeading={toolbarLeading}
         >
           <Paging defaultPageSize={20} />
@@ -295,10 +286,10 @@ export function ConsultaDetalladaPage() {
             caption={t('partes.informe.field.tipoTareaDescripcion')}
           />
           <Column
-            dataField="duracionMinutos"
+            dataField="duracionHoras"
             caption={t('partes.informe.field.duracion')}
             dataType="number"
-            customizeText={formatDuracionCell}
+            format={DURACION_HORAS_NUMBER_FORMAT}
           />
           <Column dataField="observacion" caption={t('partes.informe.field.observacion')} />
           <Column
@@ -319,7 +310,7 @@ export function ConsultaDetalladaPage() {
         </ProcessDataGrid>
       </div>
     ),
-    [accessToken, duracionSummaryItems, durationSummaryFormatter, load, loading, platform, rows, t],
+    [accessToken, duracionSummaryItems, load, loading, platform, rows, t],
   )
 
   return (

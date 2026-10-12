@@ -7,6 +7,7 @@ import {
   isoDateFromDateBox,
   isValidDuracionMinutos,
   isValidIsoDate,
+  enrichRowsWithDuracionHoras,
   minutosToHorasDecimal,
   parseDuracionToMinutos,
   parseHhMmToMinutos,
@@ -34,9 +35,16 @@ describe('partesTareaDuration', () => {
     expect(minutosToHorasDecimal(30)).toBe(0.5)
     expect(minutosToHorasDecimal(90)).toBe(1.5)
     expect(minutosToHorasDecimal(15)).toBe(0.25)
+    expect(minutosToHorasDecimal(75)).toBe(1.25)
     expect(minutosToHorasDecimal(135)).toBe(2.25)
     expect(minutosToHorasDecimal(930)).toBe(15.5)
     expect(minutosToHorasDecimal(885)).toBe(14.75)
+    expect(minutosToHorasDecimal(480)).toBe(8)
+  })
+
+  it('enriquece filas con duracionHoras a 2 decimales', () => {
+    const rows = enrichRowsWithDuracionHoras([{ id: 1, duracionMinutos: 75 }])
+    expect(rows[0].duracionHoras).toBe(1.25)
   })
 
   it('distingue reloj h:mm de horas decimales', () => {

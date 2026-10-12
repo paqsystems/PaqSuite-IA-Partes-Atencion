@@ -58,12 +58,11 @@ export function buildConsultaDetalladaPivotFields(t: TFunction, locale = 'es') {
         caption: t('partes.informe.field.tipoTareaDescripcion'),
       },
       {
-        dataField: 'duracionMinutos',
+        dataField: 'duracionHoras',
         caption: t('partes.informe.field.duracion'),
         dataType: 'number' as const,
         area: 'data' as const,
         summaryType: 'sum' as const,
-        customizeText: formatDuracionPivot,
       },
       {
         dataField: 'observacion',
