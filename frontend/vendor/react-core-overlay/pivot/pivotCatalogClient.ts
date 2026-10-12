@@ -12,8 +12,6 @@ export type PivotCampoCatalogDto = {
   allowedSummaryTypes?: PivotSummaryType[];
   /** Área inicial DX. Si falta, el mapper solo pone `data` en numéricos. */
   area?: 'row' | 'column' | 'data' | 'filter';
-  /** Fecha: default host/SDK `day`. El Field Chooser DX permite cambiar el intervalo. */
-  groupInterval?: 'year' | 'quarter' | 'month' | 'day' | 'dayOfWeek' | 'hour';
 };
 
 export type PivotConsultaCatalogDto = {

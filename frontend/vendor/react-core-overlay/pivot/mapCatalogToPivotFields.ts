@@ -3,6 +3,8 @@ import type { PivotCampoCatalogDto, PivotConsultaCatalogDto, PivotSummaryType } 
 
 export type PivotFieldConfig = {
   dataField: string;
+  /** Distingue campos calculados (año/mes) que reutilizan el mismo `dataField`. */
+  name?: string;
   dataType?: string;
   caption: string;
   summaryType?: PivotSummaryType;
@@ -11,8 +13,8 @@ export type PivotFieldConfig = {
   /** DevExtreme format (p. ej. shortDate). */
   format?: string;
   customizeText?: (cellInfo: { value?: unknown }) => string;
-  /** Fecha: sin jerarquía año/mes si es `day` (el usuario puede cambiarlo en DX). */
-  groupInterval?: 'year' | 'quarter' | 'month' | 'day' | 'dayOfWeek' | 'hour';
+  /** Normaliza el valor de fila (p. ej. ISO fecha → día calendario local). */
+  selector?: (data: Record<string, unknown>) => unknown;
 };
 
 const NUMERIC_TYPES = new Set(['number', 'numeric']);
@@ -23,6 +25,56 @@ export function isPivotDateDataType(dataType: string | undefined): boolean {
 }
 
 /**
+ * Fecha calendario local. ISO `YYYY-MM-DD` no se parsea como UTC (evita correr el día en UTC-3).
+ * Números chicos (día del mes / año de groupInterval DX) no se tratan como timestamp.
+ */
+export function toLocalCalendarDate(value: unknown): Date | null {
+  if (value == null || value === '') {
+    return null;
+  }
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) {
+      return null;
+    }
+    return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    if (value < 1e11) {
+      return null;
+    }
+    const fromTs = new Date(value);
+    if (Number.isNaN(fromTs.getTime())) {
+      return null;
+    }
+    return new Date(fromTs.getFullYear(), fromTs.getMonth(), fromTs.getDate());
+  }
+  const raw = String(value).trim();
+  const isoDate = /^(\d{4})-(\d{2})-(\d{2})/.exec(raw);
+  if (isoDate) {
+    return new Date(Number(isoDate[1]), Number(isoDate[2]) - 1, Number(isoDate[3]));
+  }
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+}
+
+export function toIsoDateOnly(value: unknown): string | null {
+  const local = toLocalCalendarDate(value);
+  if (!local) {
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value.trim())) {
+      return value.trim();
+    }
+    return null;
+  }
+  const year = String(local.getFullYear()).padStart(4, '0');
+  const month = String(local.getMonth() + 1).padStart(2, '0');
+  const day = String(local.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
  * Texto visible de fecha en Pivot según locale i18n activo (GEN-02 / regla BASE 32).
  * Día/mes/año vía `Intl.DateTimeFormat(locale)`.
  */
@@ -30,10 +82,29 @@ export function formatPivotDateCellText(
   value: unknown,
   locale: string
 ): string {
-  if (value == null || value === '') {
-    return '';
+  const local = toLocalCalendarDate(value);
+  if (!local) {
+    return value == null || value === '' ? '' : String(value);
   }
-  return formatDate(value as Date | string | number, locale);
+  return new Intl.DateTimeFormat(locale, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(local);
+}
+
+const dateGroupSuffix: Record<string, { year: string; month: string }> = {
+  es: { year: 'año', month: 'mes' },
+  en: { year: 'year', month: 'month' },
+  pt: { year: 'ano', month: 'mês' },
+  fr: { year: 'année', month: 'mois' },
+  it: { year: 'anno', month: 'mese' },
+};
+
+function dateGroupCaption(caption: string, kind: 'year' | 'month', locale: string): string {
+  const lang = locale.slice(0, 2).toLowerCase();
+  const suffix = (dateGroupSuffix[lang] ?? dateGroupSuffix.es)[kind];
+  return `${caption} (${suffix})`;
 }
 
 /**
@@ -150,7 +221,9 @@ export type MapCatalogToPivotFieldsOptions = {
 
 /**
  * Mapper catálogo → fields PivotGrid. Default numérico `sum` (CA-13).
- * Fechas `date`/`datetime`: `shortDate` + texto vía locale (regla BASE 32).
+ * Fechas: un valor por día calendario (string ISO local). No usar `groupInterval: 'day'`
+ * (en DX es día del mes 1–31 y `new Date(n)` cae en 31/12/1969). Año/mes van como
+ * campos extra en el Field Chooser, sin área inicial.
  */
 export function mapCatalogToPivotFields(
   catalog: PivotConsultaCatalogDto,
@@ -158,27 +231,64 @@ export function mapCatalogToPivotFields(
   options: MapCatalogToPivotFieldsOptions = {}
 ): PivotFieldConfig[] {
   const locale = options.locale ?? 'es';
-  const mapped = catalog.campos.map((campo) => {
+  const mapped = catalog.campos.flatMap((campo) => {
     const dataType = campo.dataType;
     const summaryType = resolveDefaultSummaryType(dataType, campo.summaryType);
     const allowedSummaryTypes = resolveAllowedSummaryTypes(
       dataType,
       campo.allowedSummaryTypes
     );
+    const caption = resolveCaption?.(campo) ?? campo.nombreVisible;
+    const dataField = campo.dataField;
+
+    if (DATE_TYPES.has(dataType)) {
+      const calendarDay: PivotFieldConfig = {
+        dataField,
+        name: dataField,
+        dataType: 'string',
+        caption,
+        allowedSummaryTypes: ['count'],
+        selector: (row) => toIsoDateOnly(row[dataField]),
+        customizeText: (cellInfo) => formatPivotDateCellText(cellInfo.value, locale),
+      };
+      if (campo.area) {
+        calendarDay.area = campo.area;
+      }
+      const yearField: PivotFieldConfig = {
+        dataField,
+        name: `${dataField}__year`,
+        dataType: 'number',
+        caption: dateGroupCaption(caption, 'year', locale),
+        allowedSummaryTypes: ['count', 'min', 'max'],
+        selector: (row) => toLocalCalendarDate(row[dataField])?.getFullYear() ?? null,
+        customizeText: (cellInfo) =>
+          cellInfo.value == null || cellInfo.value === '' ? '' : String(cellInfo.value),
+      };
+      const monthField: PivotFieldConfig = {
+        dataField,
+        name: `${dataField}__month`,
+        dataType: 'number',
+        caption: dateGroupCaption(caption, 'month', locale),
+        allowedSummaryTypes: ['count', 'min', 'max'],
+        selector: (row) => {
+          const local = toLocalCalendarDate(row[dataField]);
+          return local ? local.getMonth() + 1 : null;
+        },
+        customizeText: (cellInfo) =>
+          cellInfo.value == null || cellInfo.value === '' ? '' : String(cellInfo.value),
+      };
+      return [calendarDay, yearField, monthField];
+    }
 
     const field: PivotFieldConfig = {
-      dataField: campo.dataField,
+      dataField,
       dataType,
-      caption: resolveCaption?.(campo) ?? campo.nombreVisible,
+      caption,
       allowedSummaryTypes,
     };
 
     if (campo.area) {
       field.area = campo.area;
-    }
-
-    if (DATE_TYPES.has(dataType)) {
-      field.groupInterval = campo.groupInterval ?? 'day';
     }
 
     if (NUMERIC_TYPES.has(dataType) || summaryType === 'sum' || summaryType === 'avg') {
@@ -190,7 +300,7 @@ export function mapCatalogToPivotFields(
       field.summaryType = summaryType;
     }
 
-    return field;
+    return [field];
   });
 
   return enrichPivotFieldsWithNumericFormat(
