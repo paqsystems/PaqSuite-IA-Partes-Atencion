@@ -85,8 +85,8 @@ El `.npmrc` commiteado usa `${CLOUDSMITH_READ_TOKEN}` (npm lo expande desde el e
 Composer corre en el servidor. Vercel no instala PHP.
 
 1. Sitio Partes → **Environment** (o *Environment Variables*).
-2. Agregar `CLOUDSMITH_READ_TOKEN` = token read (mismo valor que GitHub).
-3. En el **Deploy Script**, **antes** de `composer install` / `composer update`:
+2. Agregar `CLOUDSMITH_READ_TOKEN` = token read (mismo valor que GitHub). Forge **enlaza** ese valor al `.env` del release; **no** lo exporta al bash del Deploy Script. `backend/scripts/forge-composer-install.sh` lee la clave del `.env` si el proceso no la tiene.
+3. En el **Deploy Script**, invocar el script del repo (`bash $FORGE_RELEASE_DIRECTORY/scripts/forge-composer-install.sh`). El script: exige token, **rechaza** repo `path`/Satis, exige dist Cloudsmith en el lock, genera `auth.json` y reescribe de forma efímera el repo Composer a `https://dl.cloudsmith.io/<token>/paqsystems/paqsuite-sdk/composer/` (el endpoint `composer.cloudsmith.io` suele dar 404 con token *entitlement*). El `composer.json` **commiteado** sigue siendo `composer.cloudsmith.io` **sin** slug. Snippet de referencia (el script ya lo hace):
 
 ```bash
 cd /home/forge/.../backend   # path real del sitio
@@ -161,7 +161,7 @@ replace-registry-host=never
 
 | Archivo | Qué hacer |
 |---------|-----------|
-| `backend/composer.json` | `repositories` → `https://composer.cloudsmith.io/paqsystems/paqsuite-sdk/` **sin** `/basic/`. Pin `1.3.13-beta.1`. `minimum-stability`: `beta` (o equivalente para prerelease). `secure-http`: `true`. |
+| `backend/composer.json` | `repositories` → **solo** `https://composer.cloudsmith.io/paqsystems/paqsuite-sdk/` **sin** `/basic/`. Pin `1.3.13-beta.1`. **Prohibido** commitear repo `type: path` al Framework. Lab path = local only (`sdk-link.ps1`). `minimum-stability`: `beta` (o equivalente para prerelease). `secure-http`: `true`. |
 | `backend/composer.lock` | Regenerar con token read. |
 | `frontend/.npmrc` | Cloudsmith + `${CLOUDSMITH_READ_TOKEN}` |
 | `frontend/package.json` | pin `2.4.24-beta.1` |
@@ -169,7 +169,11 @@ replace-registry-host=never
 | `frontend/scripts/vercel-install.sh` | Cloudsmith; secret `CLOUDSMITH_READ_TOKEN` |
 | `docs/06-operacion/verdaccio-vercel-conectividad.md` | Marcar legado / apuntar a este archivo |
 
-Prohibido commitear `auth.json`, `_authToken=` con valor, o el write key.
+**Lab path (solo local):** `sdk-link.ps1` / repo Composer `path` al Framework **no** se commitea. Antes de PR/Forge: `sdk-unlink.ps1` y lock Cloudsmith.
+
+**PC — regenerar lock:** si `composer.cloudsmith.io` responde 404, usar URL temporal `https://dl.cloudsmith.io/<CLOUDSMITH_READ_TOKEN>/paqsystems/paqsuite-sdk/composer/` solo para el `update`; restaurar `composer.json` sin slug; en el lock dejar dist `https://dl.cloudsmith.io/basic/paqsystems/...`.
+
+Prohibido commitear `auth.json`, `_authToken=` con valor, slug de entitlement, o el write key.
 
 ---
 

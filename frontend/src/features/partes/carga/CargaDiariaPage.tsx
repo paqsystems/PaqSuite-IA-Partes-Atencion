@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ProcessDataGrid,
+  ProcessPageLayout,
   ExcelImportToolbar,
   isNativeApp,
   SmartCapturePanel,
@@ -406,13 +407,15 @@ export function CargaDiariaPage() {
   }
 
   return (
-    <div data-testid="partesCargaPage" style={{ padding: 16 }}>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-        <h2 style={{ margin: 0, flex: 1 }}>{pageTitle}</h2>
+    <ProcessPageLayout
+      title={pageTitle}
+      toolbar={
         <Link to="/partes/proceso-masivo" data-testid="partesCargaLinkMasivo">
           {t('partes.carga.linkMasivo')}
         </Link>
-      </div>
+      }
+    >
+    <div data-testid="partesCargaPage">
 
       <div
         data-testid="partesCargaFiltros"
@@ -501,7 +504,7 @@ export function CargaDiariaPage() {
               void load()
             }
           }}
-          t={(key) => resolveAuthMessage(key) || key}
+          t={(key, options) => t(key, options)}
         />
       ) : null}
 
@@ -762,5 +765,6 @@ export function CargaDiariaPage() {
         onCredentialsChanged={() => setCredentialsRevision((current) => current + 1)}
       />
     </div>
+    </ProcessPageLayout>
   )
 }

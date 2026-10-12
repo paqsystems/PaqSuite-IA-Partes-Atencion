@@ -4,8 +4,9 @@ import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
 import SelectBox from 'devextreme-react/select-box'
 import { useTranslation } from 'react-i18next'
+import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 import Chart, { CommonSeriesSettings, Series, ArgumentAxis, ValueAxis, Legend } from 'devextreme-react/chart'
-import { ConsultaKardexList, isNativeApp, ProcessDataGrid } from '@paqsuite/react-core'
+import { ConsultaKardexList, isNativeApp, ProcessDataGrid, ProcessPageLayout } from '@paqsuite/react-core'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
@@ -32,6 +33,10 @@ const PAQUETE_HORAS_CONSULTA_ID = 'partes.informes.paqueteHoras'
 
 export function PaqueteHorasPage() {
   const { t, i18n } = useTranslation()
+  const pageTitle = useProcessMenuTitle(
+    t('partes.informe.page.paqueteHoras'),
+    '/partes/informes/paquete-horas',
+  )
   const native = isNativeApp()
   const session = getAuthSession()
   const esCliente = session?.partes?.tipoFuncional === 'cliente'
@@ -204,10 +209,10 @@ export function PaqueteHorasPage() {
 
   if (native) {
     return (
-      <div className="pqProcessPage partesMobileProcess" data-testid="partesPaqueteHorasPage">
-        <div className="pqProcessHeader partesMobileProcessHeader">
-          <h2 className="pqProcessTitle">{t('dashboard.linkPaqueteHoras')}</h2>
-          <div className="pqProcessToolbar partesMobileProcessToolbar">
+      <ProcessPageLayout
+        title={pageTitle}
+        toolbar={
+          <div className="partesMobileProcessToolbar">
             <DateBox
               value={fechaDesde}
               type="date"
@@ -264,7 +269,9 @@ export function PaqueteHorasPage() {
               elementAttr={{ 'data-testid': 'partesPaqueteBuscar' }}
             />
           </div>
-        </div>
+        }
+      >
+        <div className="partesMobileProcess" data-testid="partesPaqueteHorasPage">
         <div className="pqProcessStats partesMobileKpiBlock">
           <strong>{t('partes.mobile.saldoInicial')}:</strong> {formatMinutosAsHhMm(saldoInicial)}
         </div>
@@ -312,13 +319,14 @@ export function PaqueteHorasPage() {
             t={(key) => t(key)}
           />
         </section>
-      </div>
+        </div>
+      </ProcessPageLayout>
     )
   }
 
   return (
+    <ProcessPageLayout title={pageTitle}>
     <div data-testid="partesPaqueteHorasPage" style={{ padding: 16 }}>
-      <h2>{t('partes.informe.page.paqueteHoras')}</h2>
       <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'end', flexWrap: 'wrap' }}>
         <DateBox
           value={fechaDesde}
@@ -410,5 +418,6 @@ export function PaqueteHorasPage() {
         renderGridView={renderPaqueteGridView}
       />
     </div>
+    </ProcessPageLayout>
   )
 }

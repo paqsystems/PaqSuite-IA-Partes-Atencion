@@ -3,7 +3,7 @@ specId: SPEC-009
 titulo: Importación desde Excel (carga diaria)
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-05
+ultimaActualizacion: 2026-10-11
 openSpec: docs/02-producto/Sistema-Partes-IA/13-importacion-partes-excel.md
 ---
 
@@ -20,10 +20,11 @@ En **Partes → Carga diaria** (solo **web**) podés cargar muchas tareas desde 
 1. Abrí **Carga diaria** y definí el filtro de fechas que usarás después (se mantiene tras importar).
 2. En la barra bajo los filtros, elegí **Descargar plantilla**.
 3. Completá la planilla con una fila por tarea (cliente, tipo, fecha, duración, descripción, etc., según columnas de la plantilla).
-4. **Importar** → seleccioná el archivo `.xlsx`.
-5. **Validar**: revisá la grilla de errores por número de fila y columna.
-6. Corregí la planilla o eliminá filas erróneas.
-7. **Procesar**: se graban las filas válidas; la grilla de carga se actualiza.
+4. **Importar** → seleccioná el archivo `.xlsx` (o arrastralo al recuadro).
+5. Si el archivo tiene más de una hoja, elegí la **hoja** que contiene los datos de la plantilla.
+6. **Validar**: revisá la grilla de errores por número de fila. Los textos se muestran en el idioma de tu sesión.
+7. Corregí la planilla o eliminá filas erróneas.
+8. **Procesar**: se graban las filas válidas; la grilla de carga se actualiza.
 
 ### Reglas importantes
 

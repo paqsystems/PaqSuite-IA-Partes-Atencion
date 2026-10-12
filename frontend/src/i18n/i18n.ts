@@ -1,10 +1,13 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import * as paqsuiteReactCore from '@paqsuite/react-core'
 import {
   getGuestLocale,
   normalizeLocale,
+  registerEmpresasAdminI18nResources,
   registerGridI18nResources,
+  registerPermisosAdminI18nResources,
+  registerSecurityRolesI18nResources,
+  registerUsuariosAdminI18nResources,
   setGuestLocale,
   syncDevExtremeLocale,
   type LocaleCode,
@@ -14,7 +17,6 @@ import commonEn from './locales/en/common.json'
 import commonPt from './locales/pt/common.json'
 import commonFr from './locales/fr/common.json'
 import commonIt from './locales/it/common.json'
-import { empresasAdminHostFallback } from './empresasAdminHostFallback'
 
 const initialLocale: LocaleCode = normalizeLocale(getGuestLocale()) ?? 'es'
 
@@ -38,31 +40,10 @@ void i18n.use(initReactI18next).init({
 })
 
 registerGridI18nResources(i18n, 'common')
-// Fallback host con overwrite: el SDK EmpresasAdmin exige estas claves vía prop `t`
-// (sin `t` el SDK hace `(key) => key` y se ven claves crudas en UI).
-for (const [locale, bundle] of Object.entries(empresasAdminHostFallback)) {
-  i18n.addResourceBundle(locale, 'common', bundle, true, true)
-}
-const appearancePaqsuiteI18nCatalogs = (
-  paqsuiteReactCore as {
-    appearancePaqsuiteI18nCatalogs?: Record<string, Record<string, string>>
-  }
-).appearancePaqsuiteI18nCatalogs
-if (appearancePaqsuiteI18nCatalogs) {
-  for (const [locale, bundle] of Object.entries(appearancePaqsuiteI18nCatalogs)) {
-    i18n.addResourceBundle(locale, 'common', bundle, true, true)
-  }
-}
-const registerEmpresasAdminI18nResources = (
-  paqsuiteReactCore as {
-    registerEmpresasAdminI18nResources?: (
-      instance: typeof i18n,
-      namespace: string,
-    ) => void
-  }
-).registerEmpresasAdminI18nResources
-// SDK completo (incl. appearance.paqsuite.*) sobrescribe cuando el export existe.
-registerEmpresasAdminI18nResources?.(i18n, 'common')
+registerEmpresasAdminI18nResources(i18n, 'common')
+registerSecurityRolesI18nResources(i18n, 'common')
+registerUsuariosAdminI18nResources(i18n, 'common')
+registerPermisosAdminI18nResources(i18n, 'common')
 syncDevExtremeLocale(initialLocale)
 
 /** Aplica idioma guest: i18n + DX + persistencia local. */

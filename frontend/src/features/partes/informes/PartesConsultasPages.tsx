@@ -4,7 +4,7 @@ import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
 import SelectBox from 'devextreme-react/select-box'
 import { useTranslation } from 'react-i18next'
-import { isNativeApp, ProcessDataGrid, getEmissionProcess } from '@paqsuite/react-core'
+import { isNativeApp, ProcessDataGrid, ProcessPageLayout, getEmissionProcess } from '@paqsuite/react-core'
 import { PartesEmissionDialog as EmissionDialog } from './PartesEmissionDialog'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
@@ -294,8 +294,8 @@ export function ConsultaDetalladaPage() {
   )
 
   return (
+    <ProcessPageLayout title={pageTitle}>
     <div data-testid="partesConsultaDetalladaPage" style={{ padding: 16 }}>
-      <h2>{pageTitle}</h2>
       <div
         style={{
           display: 'flex',
@@ -435,11 +435,16 @@ export function ConsultaDetalladaPage() {
         />
       ) : null}
     </div>
+    </ProcessPageLayout>
   )
 }
 
 export function ConsultasAgrupadasPage() {
   const { t, i18n } = useTranslation()
+  const pageTitle = useProcessMenuTitle(
+    t('partes.informe.page.consultasAgrupadas'),
+    '/partes/informes/consultas-agrupadas',
+  )
   const native = isNativeApp()
   const defaultRange = monthRange(currentMonthValue())
   const [fechaDesde, setFechaDesde] = useState(defaultRange.fechaDesde)
@@ -562,8 +567,8 @@ export function ConsultasAgrupadasPage() {
   )
 
   return (
+    <ProcessPageLayout title={pageTitle}>
     <div data-testid="partesConsultaAgrupadaPage" style={{ padding: 16 }}>
-      <h2>{t('partes.informe.page.consultasAgrupadas')}</h2>
       <div style={{ display: 'flex', gap: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'end' }}>
         <DateBox
           value={fechaDesde}
@@ -626,5 +631,6 @@ export function ConsultasAgrupadasPage() {
         renderGridView={renderAgrupadaGridView}
       />
     </div>
+    </ProcessPageLayout>
   )
 }

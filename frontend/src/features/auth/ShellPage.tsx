@@ -35,10 +35,15 @@ import {
   getActiveEmpresaThemeFromSession,
 } from '../../theme/devExtremeThemeSwitcher'
 import { resolveAppProductTitle } from './appProductBranding'
+import {
+  openShellProcess,
+  readOpenInNewTabPreference,
+  writeOpenInNewTabPreference,
+} from './openShellProcess'
 import { productI18nCatalogs } from './productI18n'
 import {
-  buildMenuSidebarLabels,
   createAppTranslator,
+  menuSidebarLabelsFromT,
   type AppTranslateFn,
   type ShellOutletContext,
 } from './shellI18n'
@@ -70,7 +75,7 @@ export function AuthenticatedShell() {
     session?.tenancy,
   ])
   const [locale, setLocale] = useState<LocaleCode>(resolveSessionLocale)
-  const [openInNewTab, setOpenInNewTab] = useState(false)
+  const [openInNewTab, setOpenInNewTab] = useState(readOpenInNewTabPreference)
   const [profileVisible, setProfileVisible] = useState(false)
   const [llmPreferencesVisible, setLlmPreferencesVisible] = useState(false)
   const [menuItems, setMenuItems] = useState<MenuNode[]>([])
@@ -81,7 +86,7 @@ export function AuthenticatedShell() {
     [locale, productCatalog],
   )
   const productTitle = useMemo(() => resolveAppProductTitle(locale), [locale])
-  const menuSidebarLabels = useMemo(() => buildMenuSidebarLabels(appT), [appT])
+  const menuSidebarLabels = useMemo(() => menuSidebarLabelsFromT((key) => appT(key)), [appT])
   const menuTranslate = useCallback((key: string) => appT(key), [appT])
   const shellOutletContext = useMemo(
     (): ShellOutletContext => ({ locale, t: appT }),
@@ -123,7 +128,23 @@ export function AuthenticatedShell() {
         payload.kind === 'ok' &&
         typeof payload.envelope.resultado?.openInNewTab === 'boolean'
       ) {
-        setOpenInNewTab(payload.envelope.resultado.openInNewTab)
+        const fromApi = payload.envelope.resultado.openInNewTab
+        const fromLocal = readOpenInNewTabPreference()
+        if (fromApi) {
+          setOpenInNewTab(true)
+          writeOpenInNewTabPreference(true)
+        } else if (fromLocal) {
+          setOpenInNewTab(true)
+          await apiRequest('/api/v1/user/preferences', {
+            method: 'PATCH',
+            headers: { Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ openInNewTab: true }),
+            platform,
+          })
+        } else {
+          setOpenInNewTab(false)
+          writeOpenInNewTabPreference(false)
+        }
       }
     })()
   }, [platform, session?.token])
@@ -161,6 +182,7 @@ export function AuthenticatedShell() {
 
   async function handleOpenInNewTabChange(value: boolean) {
     setOpenInNewTab(value)
+    writeOpenInNewTabPreference(value)
     const token = session?.token
     if (!token) {
       return
@@ -245,9 +267,12 @@ export function AuthenticatedShell() {
               t={menuTranslate}
               labels={menuSidebarLabels}
               onItemsLoaded={handleMenuItemsLoaded}
-              openInNewTab={openInNewTab}
+              openInNewTab={false}
               onNavigate={(routeName) => {
-                navigate(routeName)
+                openShellProcess(routeName, {
+                  openInNewTab,
+                  navigate,
+                })
               }}
             />
           )
@@ -360,7 +385,7 @@ export function SelectEmpresaPage() {
                   activeCompanyId: companyId,
                   empresas: nextSession?.empresas ?? session?.empresas ?? [],
                 }),
-                { reloadOnGroupChange: true }
+                { reloadOnGroupChange: false },
               )
               navigate(path)
             },

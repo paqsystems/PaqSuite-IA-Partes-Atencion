@@ -6,8 +6,9 @@ import SelectBox from 'devextreme-react/select-box'
 import TextBox from 'devextreme-react/text-box'
 import CheckBox from 'devextreme-react/check-box'
 import { confirm } from 'devextreme/ui/dialog'
-import { ConsultaKardexList } from '@paqsuite/react-core'
+import { ConsultaKardexList, ProcessPageLayout } from '@paqsuite/react-core'
 import { useTranslation } from 'react-i18next'
+import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 import { getAuthSession } from '../../auth/authSessionStore'
 import { resolveAuthMessage } from '../../auth/authMessages'
 import { listCatalogo } from '../maestros/partesMaestrosApi'
@@ -31,6 +32,7 @@ import { mapPartesTareaToKardexItem } from './mapPartesTareaToKardexItem'
 
 export function ConsultaKardexMobilePage() {
   const { t } = useTranslation()
+  const pageTitle = useProcessMenuTitle(t('partes.mobile.kardexTitle'), '/partes/consulta')
   const session = getAuthSession()
   const readOnly = session?.partes?.tipoFuncional === 'cliente'
   const esSupervisor = Boolean(session?.partes?.esSupervisor)
@@ -220,13 +222,13 @@ export function ConsultaKardexMobilePage() {
   }
 
   return (
-    <div className="pqProcessPage partesMobileProcess" data-testid="partesConsultaKardex">
+    <ProcessPageLayout title={pageTitle}>
+    <div className="partesMobileProcess" data-testid="partesConsultaKardex">
       {error ? <div role="alert">{error}</div> : null}
       <ConsultaKardexList
         items={kardexItems}
         filtersSlot={
           <div className="partesMobileKardexFilters">
-            <h2 className="pqProcessTitle">{t('partes.mobile.kardexTitle')}</h2>
             <div style={formRowStyle}>
               <label>{t('partes.informe.field.fecha')}</label>
               <DateBox
@@ -355,5 +357,6 @@ export function ConsultaKardexMobilePage() {
         </div>
       </Popup>
     </div>
+    </ProcessPageLayout>
   )
 }

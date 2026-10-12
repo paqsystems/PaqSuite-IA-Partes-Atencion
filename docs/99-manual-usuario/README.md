@@ -34,4 +34,4 @@ Un archivo `.md` por capacidad (prefijo `SPEC-00N`). Los archivos que empiezan c
 | [SPEC-010-emisiones-informes.md](./SPEC-010-emisiones-informes.md) | Emitir reportes y diseñador | Publicado |
 | [SPEC-011-parametros-seguridad.md](./SPEC-011-parametros-seguridad.md) | Parámetros y administración de seguridad | Publicado |
 
-Última actualización del índice: **2026-10-05**.
+Última actualización del índice: **2026-10-11**.

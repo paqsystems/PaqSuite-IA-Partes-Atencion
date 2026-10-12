@@ -31,6 +31,8 @@ class ApiV1AuthAndSystemTest extends TestCase
                 'respuesta',
                 'resultado' => ['token', 'user', 'empresas', 'tenancy', 'db', 'firstLogin', 'minutosWeb'],
             ]);
+        $this->assertSame(0, $response->json('error'));
+        $this->assertIsArray($response->json('resultado'));
         $this->assertNotEmpty($response->json('resultado.token'));
     }
 
@@ -73,5 +75,8 @@ class ApiV1AuthAndSystemTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure(['error', 'respuesta', 'resultado' => ['installationMode', 'appName', 'environment']]);
+        $this->assertSame(0, $response->json('error'));
+        $this->assertIsArray($response->json('resultado'));
+        $this->assertNotNull($response->json('resultado'));
     }
 }

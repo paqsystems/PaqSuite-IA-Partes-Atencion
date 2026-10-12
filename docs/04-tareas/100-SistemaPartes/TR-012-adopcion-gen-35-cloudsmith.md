@@ -9,9 +9,10 @@
 | **Roles** | Desarrollador / operación Forge / Vercel |
 | **Dependencias** | GEN-35 publicado en Cloudsmith (Framework); instructivo [adopcion-gen-35-cloudsmith.md](../../06-operacion/adopcion-gen-35-cloudsmith.md) |
 | **Clasificación** | HU SIMPLE (ops; sin UI) |
-| **Estado** | Pendiente de Revisión |
-| **F1** | [F1-TR-012-adopcion-gen-35-cloudsmith.md](./F1-TR-012-adopcion-gen-35-cloudsmith.md) — Aprobado con observaciones |
-| **Última actualización** | 2026-10-08 |
+| **Estado** | Finalizado |
+| **F1** | [F1-TR-012](./F1-TR-012-adopcion-gen-35-cloudsmith.md) · [F1 PA-01](./F1-TR-012-adopcion-gen-35-cloudsmith-update.md) — Aprobado con observaciones |
+| **F** | [F-TR-012](./F-TR-012-adopcion-gen-35-cloudsmith.md) · [F PA-01](./F-TR-012-adopcion-gen-35-cloudsmith-PA-01.md) — Aprobado con observaciones |
+| **Última actualización** | 2026-10-11 |
 
 **Origen:** HU-012 · **SPEC:** SPEC-012 · **Anexo de pasos:** instructivo Cloudsmith del host.
 
@@ -64,7 +65,7 @@ Igual que SPEC/HU: publicación, Fase 7 global, Tango, UI/SP/menú, pipelines nu
    - `config.secure-http`: `true` (hoy está `false` por Satis HTTP).
 2. Con token en el entorno, regenerar `composer.lock` (`composer update paqsuite/laravel-core --with-dependencies` o equivalente que deje el pin).
 3. Asegurar `auth.json` en `.gitignore` si no está.
-4. `backend/scripts/forge-composer-install.sh`: exigir `CLOUDSMITH_READ_TOKEN`, validar lock Cloudsmith (no path, no Satis), `auth.json` efímero + header `X-API-KEY` en el checkout del deploy. Quitar comprobación Satis/Tailscale para paquetes.
+4. `backend/scripts/forge-composer-install.sh`: exigir `CLOUDSMITH_READ_TOKEN`, validar lock Cloudsmith (no path, no Satis), `auth.json` efímero. En el checkout del deploy reescribir el repo a `dl.cloudsmith.io/<token>/paqsystems/paqsuite-sdk/composer/` (token entitlement; `composer.cloudsmith.io` puede 404). **Prohibido** commitear repo `type: path` al Framework (PA-01).
 
 ### 3.3 Frontend
 
@@ -97,14 +98,15 @@ replace-registry-host=never
 
 ## 4) Verificación (DoD)
 
-- [ ] Locks y manifests según CA-01…03.
-- [ ] `vercel-install.sh` CA-04 (prueba local: sin token → exit ≠ 0).
-- [ ] Forge CA-05; Vercel CA-06 (cuando haya deploy).
-- [ ] Health/login CA-07.
-- [ ] Grep repo: no `CLOUDSMITH_API_KEY`; no `_authToken=` con valor; `auth.json` no versionado (CA-08).
-- [ ] Sin workflows GHA nuevos (CA-09).
-- [ ] Docs legado (CA-10).
-- [ ] Rollback descrito en instructivo o este TR §1.
+- [x] Locks y manifests según CA-01…03.
+- [x] `vercel-install.sh` CA-04 (prueba local: sin token → exit ≠ 0).
+- [x] Forge CA-05; Vercel CA-06 (cuando haya deploy).
+- [x] Health/login CA-07.
+- [x] Grep repo: no `CLOUDSMITH_API_KEY`; no `_authToken=` con valor; `auth.json` no versionado (CA-08).
+- [x] Sin workflows GHA nuevos (CA-09).
+- [x] Docs legado (CA-10).
+- [x] Rollback descrito en instructivo o este TR §1.
+- [x] PA-01: `composer.json` sin path; lock dist `dl.cloudsmith.io/basic/…`; Forge rechaza path/Satis (CA-CS-11…14).
 
 No se exige `npm run test:all` como prueba de esta TR salvo que un cambio de pin rompa tipos/runtime (entonces Parte E sobre la suite existente).
 
@@ -181,3 +183,15 @@ No se crean workflows, no se toca UI, no se publica a Cloudsmith.
 - Estado: **Apto**
 - Críticas: ninguna.
 - Puede ejecutar D: **Sí** (D1 breve: orden 3.1 secretos → 3.2/3.3 código → 3.4 docs → 3.5 ops).
+
+---
+
+## 8) F / I (2026-10-09)
+
+- F: [F-TR-012](./F-TR-012-adopcion-gen-35-cloudsmith.md).
+- I: sin archivos `*-update` de la familia 012. Originales → **Finalizado**.
+
+## 9) F / I PA-01 (2026-10-11)
+
+- F: [F PA-01](./F-TR-012-adopcion-gen-35-cloudsmith-PA-01.md) Aprobado con observaciones (sin deploy Forge de este lock).
+- I: SPEC/HU/TR-012-update fusionados aquí; updates eliminados. Estado **Finalizado**.

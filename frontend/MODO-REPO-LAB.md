@@ -4,8 +4,8 @@ Desarrollo con el monorepo hermano `PaqSuite-IA-FRAMEWORK` (misma carpeta `C:\Pr
 
 | Capa | Configuración actual |
 |------|----------------------|
-| **FE** | **Deploy (default en repo):** pin Cloudsmith en `package.json` (ej. `"@paqsuite/react-core": "2.4.24-beta.1"`), `.npmrc` + `CLOUDSMITH_READ_TOKEN` para install; Vite sin alias al monorepo. **Lab opcional:** `file:../../PaqSuite-IA-FRAMEWORK/packages/js/react-core` + `PAQ_REPO_LAB=1` en `frontend/.env` (no commitear `file:` en ramas de release). |
-| **BE** | Cloudsmith en `composer.json`; para lab PHP usar `PaqSuite-IA-FRAMEWORK\tools\sdk\sdk-link.ps1` (no commitear path en `composer.json`) |
+| **FE** | **Deploy (default en repo):** pin Cloudsmith en `package.json` (ej. `"@paqsuite/react-core": "2.4.24-beta.1"`), `.npmrc` + `CLOUDSMITH_READ_TOKEN` para install; Vite sin alias al monorepo. **Lab:** `PAQ_REPO_LAB=1` en `frontend/.env` (gitignored) activa alias Vite a `PaqSuite-IA-FRAMEWORK/packages/js/react-core`. Opcional `file:…` (no commitear en ramas de release). |
+| **BE** | Cloudsmith en `composer.json` para deploy. **Lab:** repo `path` a `packages/php/laravel-core` (symlink). No commitear path/lock path en ramas de release; revertir con `sdk-unlink.ps1`. |
 
 Tras cambiar código en `packages/js/react-core`: `npm install` en `frontend/` y `npm run dev`.
 

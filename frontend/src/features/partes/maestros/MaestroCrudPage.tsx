@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ProcessDataGrid } from '@paqsuite/react-core'
+import { ProcessDataGrid, ProcessPageLayout } from '@paqsuite/react-core'
 import { Column, Paging, Pager } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
 import TextBox from 'devextreme-react/text-box'
@@ -174,8 +174,8 @@ export function MaestroCrudPage({
   }
 
   return (
+    <ProcessPageLayout title={pageTitle}>
     <div data-testid={`${testIdPrefix}Page`} style={{ padding: 16 }}>
-      <h2 style={{ margin: '0 0 12px' }}>{pageTitle}</h2>
       {shouldShowPageListError(formOpen, listError) ? (
         <FormContextErrorAlert message={listError} testId={`${testIdPrefix}ListError`} />
       ) : null}
@@ -289,5 +289,6 @@ export function MaestroCrudPage({
         </div>
       </Popup>
     </div>
+    </ProcessPageLayout>
   )
 }

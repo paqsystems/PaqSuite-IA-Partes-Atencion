@@ -7,8 +7,8 @@
 | ID | SPEC-009 |
 | Título | Importación de partes (tareas) desde Excel bajo Carga de Partes |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Pendiente |
-| Última actualización | 2026-08-02 |
+| Estado | Finalizado |
+| Última actualización | 2026-10-11 |
 | HU relacionada(s) | [HU-009-importacion-partes-excel](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) |
 | TR relacionada(s) | [TR-009-importacion-partes-excel](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) |
 | Depende de | [SPEC-001](./SPEC-001-modelo-datos-modulo.md), [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-003](./SPEC-003-maestros-y-catalogos.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md) (grilla/filtros/validaciones de tarea) |
@@ -70,7 +70,8 @@ Precondiciones: sesión Partes usable (SPEC-002); maestros usables (SPEC-003); p
 1. La importación **solo** se ofrece **embebida en Carga diaria** (toolbar en la misma pantalla SPEC-004).
 2. **No** hay pantalla hermana ni entrada de menú adicional dedicada en este MVP (el usuario llega por Carga diaria).
 3. La UI canónica es el **componente embebido GEN** (`ExcelImportToolbar`: Descargar plantilla | Importar) en **fila exclusiva** (norma Framework 14: no compartir fila con filtros de la grilla).
-4. Flujo: plantilla → subir `.xlsx` → validar/staging → ver errores por fila → **Procesar** (si hay válidas según política parcial) → `onComplete` en el host → refresco §4.6.
+4. Flujo: plantilla → subir `.xlsx` → **elegir hoja** si el archivo tiene más de una → validar/staging → ver errores por fila → **Procesar** (si hay válidas según política parcial) → `onComplete` en el host → refresco §4.6.
+5. i18n Must (host): claves `excelImport.sheet.label` / `placeholder` / `required` y `partes.import.*` en `es`, `en`, `pt`, `fr`, `it`. El `ExcelImportToolbar` recibe `t` de i18next (`common`), no un mapa solo-español. Caption de hoja nunca es la clave cruda. El handler emite `messageKey` (`partes.import.…`), no prosa.
 
 ### 4.2 Plantilla de columnas (Must — D-IMP-05)
 
@@ -184,6 +185,9 @@ Si el procesamiento **graba al menos una fila**, el host debe **volver a cargar*
 - [ ] Tras Procesar con altas > 0, la grilla se refresca manteniendo filtros previos.
 - [ ] Mobile: proceso no expuesto / policy excluye Excel.
 - [ ] Feature/API o tests de handler cubren al menos: OK mínimo, error de código, parcial, fuerza `es_tarea`, fuerza propietario no-supervisor.
+- [ ] Locale `es`: caption de hoja «Hoja» (no `excelImport.sheet.label`).
+- [ ] Locale `en` (u otro ≠ es): caption de hoja y error `partes.import.tipoFueraUniverso` en ese idioma.
+- [ ] Cinco JSON `common` con `excelImport.sheet.*` y `partes.import.*`.
 
 ---
 
@@ -225,3 +229,4 @@ Si el procesamiento **graba al menos una fila**, el host debe **volver a cargar*
 | 2026-08-02 | Parte B: enlazada HU-009. |
 | 2026-08-02 | Parte B1: HU-009 enriquecida. |
 | 2026-08-02 | Parte C: enlace TR-009. |
+| 2026-10-11 | Parte I: i18n GEN-14 (`excelImport.sheet.*` + `partes.import.*` 5 locales; `t` i18next). F1/F Aprobado. Update eliminado. Estado → Finalizado. |

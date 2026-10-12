@@ -11,7 +11,7 @@ Fuente conceptual: `docs/02-producto/Sistema-Partes-IA/`.
 3. Batch de ambigüedades HU — **cerrado** (2026-07-30)
 4. **Parte C (TR)** → [`docs/04-tareas/100-SistemaPartes/`](../../04-tareas/100-SistemaPartes/README.md) — 001–007 hechos; **008 Especificado** (C+C1 2026-08-01)
 5. **SPEC-008** Asistente IA — A→F1 (2026-08-01); revisión humana pendiente
-6. **SPEC-009** Importación Excel partes — A→C+C1 (2026-08-02); siguiente **D1**
+6. **SPEC-009** Importación Excel partes — A→C+C1 (2026-08-02); D/E 2026-08-02; F1/F/I i18n **2026-10-11** (**Finalizado**)
 7. **SPEC-011** Reportes / emisiones (adopción GEN-15) — A→C1 + D1 (2026-08-25); siguiente **D**
 
 ## SPECs redactados
@@ -26,7 +26,7 @@ Fuente conceptual: `docs/02-producto/Sistema-Partes-IA/`.
 | [SPEC-006](./SPEC-006-consultas-dashboard-navegacion.md) | Consultas, dashboard y navegación | [HU-006](../../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) | Pendiente (C1 OK → D1) |
 | [SPEC-007](./SPEC-007-mobile-capacitor.md) | Mobile Capacitor | [HU-007](../../03-historias-usuario/100-SistemaPartes/HU-007-mobile-capacitor.md) · [TR-007](../../04-tareas/100-SistemaPartes/TR-007-mobile-capacitor.md) | Pendiente de Revisión (build/sync OK; humo manual pendiente) |
 | [SPEC-008](./SPEC-008-asistente-ia-chat-documental.md) | Asistente IA — chat documental (adopción GEN-21) | [HU-008](../../03-historias-usuario/100-SistemaPartes/HU-008-asistente-ia-chat-documental.md) · [TR-008](../../04-tareas/100-SistemaPartes/TR-008-asistente-ia-chat-documental.md) | Especificado (C+C1 2026-08-01) |
-| [SPEC-009](./SPEC-009-importacion-partes-excel.md) | Importación de partes desde Excel | [HU-009](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) · [TR-009](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) | Pendiente (C+C1 2026-08-02; D1 pendiente) |
+| [SPEC-009](./SPEC-009-importacion-partes-excel.md) | Importación de partes desde Excel | [HU-009](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) · [TR-009](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) | **Finalizado** (F1/F/I i18n 2026-10-11) |
 | [SPEC-010](./SPEC-010-smart-capture-carga-diaria.md) | Smart Capture en carga diaria | [HU-010](../../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md) · [TR-010](../../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) | Pendiente (A→C) |
 | [SPEC-011](./SPEC-011-reportes-emisiones.md) | Reportes / emisiones (adopción GEN-15) | [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) · [TR-011](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) | Pendiente (A→C1+D1 2026-08-25; D pendiente) |
-| [SPEC-012](./SPEC-012-adopcion-gen-35-cloudsmith.md) | Adopción GEN-35 Cloudsmith (ops) | Instructivo [`adopcion-gen-35-cloudsmith.md`](../../06-operacion/adopcion-gen-35-cloudsmith.md) | Borrador — cableado Host |
+| [SPEC-012](./SPEC-012-adopcion-gen-35-cloudsmith.md) | Adopción GEN-35 Cloudsmith (ops) | [HU-012](../../03-historias-usuario/100-SistemaPartes/HU-012-adopcion-gen-35-cloudsmith.md) · [TR-012](../../04-tareas/100-SistemaPartes/TR-012-adopcion-gen-35-cloudsmith.md) | **Finalizado** (F 2026-10-09 · PA-01 F+I 2026-10-11) |

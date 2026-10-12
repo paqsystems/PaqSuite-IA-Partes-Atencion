@@ -70,9 +70,10 @@ También es válido ejecutar directamente el script del backend después de hace
 
 `composer.json` trae `"secure-http": true` y el repo Cloudsmith.
 
-El script exige `CLOUDSMITH_READ_TOKEN`, rechaza `laravel-core` como `path` y
-exige que el lock resuelva desde `cloudsmith.io`. Genera `auth.json` efímero
-(no se commitea).
+El script exige `CLOUDSMITH_READ_TOKEN`, rechaza repo `path` o Satis en
+`composer.json`, rechaza `laravel-core` como `path` en el lock y exige dist
+`cloudsmith.io`. Genera `auth.json` efímero (no se commitea). Path lab solo
+fuera de git.
 
 ### Health check post-deploy (Forge)
 

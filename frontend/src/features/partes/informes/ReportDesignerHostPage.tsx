@@ -1,5 +1,6 @@
-import { isNativeApp } from '@paqsuite/react-core'
+import { isNativeApp, ProcessPageLayout } from '@paqsuite/react-core'
 import { useTranslation } from 'react-i18next'
+import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 import { useSearchParams } from 'react-router-dom'
 import { DxReportDesignerPanel, type PartesReportDesignerContext } from './DxReportDesignerPanel'
 import { EmissionReportDesignerPage } from './EmissionReportDesignerPage'
@@ -14,10 +15,11 @@ export function ReportDesignerHostPage() {
   const [searchParams] = useSearchParams()
   const initialProcessCode = readInitialProcessCodeFromSearch(searchParams)
   const native = isNativeApp()
+  const pageTitle = useProcessMenuTitle(t('emissions.designer.title'), '/emisiones/disenador')
 
   return (
+    <ProcessPageLayout title={pageTitle}>
     <div data-testid="partesEmisionesDisenadorPage" style={{ padding: 16 }}>
-      <h2>{t('emissions.designer.title')}</h2>
       <EmissionReportDesignerPage
         initialProcessCode={initialProcessCode}
         hasDesignPermission={!native}
@@ -28,6 +30,7 @@ export function ReportDesignerHostPage() {
         )}
       />
     </div>
+    </ProcessPageLayout>
   )
 }
 

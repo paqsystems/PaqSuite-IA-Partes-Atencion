@@ -9,8 +9,32 @@ lockFile="$backendDirectory/composer.lock"
 
 cd "$backendDirectory"
 
+# Forge Environment vive en .env (enlace del release). No se exporta al bash del deploy.
 if [[ -z "${CLOUDSMITH_READ_TOKEN:-}" ]]; then
-    echo "ERROR: falta CLOUDSMITH_READ_TOKEN (Forge Environment)." >&2
+    for dotenvCandidate in \
+        "$backendDirectory/.env" \
+        "$backendDirectory/../.env"; do
+        if [[ -f "$dotenvCandidate" ]]; then
+            CLOUDSMITH_READ_TOKEN="$(
+                php -r '
+                    if (!is_file($argv[1])) {
+                        exit(0);
+                    }
+                    if (preg_match("/^CLOUDSMITH_READ_TOKEN=(.*)$/m", file_get_contents($argv[1]), $matches)) {
+                        echo trim($matches[1], "\"'\'' \r\n");
+                    }
+                ' "$dotenvCandidate"
+            )"
+            if [[ -n "${CLOUDSMITH_READ_TOKEN:-}" ]]; then
+                export CLOUDSMITH_READ_TOKEN
+                break
+            fi
+        fi
+    done
+fi
+
+if [[ -z "${CLOUDSMITH_READ_TOKEN:-}" ]]; then
+    echo "ERROR: falta CLOUDSMITH_READ_TOKEN (Forge Environment / .env)." >&2
     exit 1
 fi
 
@@ -21,6 +45,22 @@ fi
 
 lockValidationStatus=0
 php -r '
+$composerJson = json_decode(file_get_contents($argv[2]), true, 512, JSON_THROW_ON_ERROR);
+foreach ($composerJson["repositories"] ?? [] as $repo) {
+    if (!is_array($repo)) {
+        continue;
+    }
+    if (($repo["type"] ?? "") === "path") {
+        fwrite(STDERR, "ERROR: composer.json contiene un repo path; no se instala en Forge.\n");
+        exit(4);
+    }
+    $repoUrl = (string) ($repo["url"] ?? "");
+    if (stripos($repoUrl, "satis") !== false || stripos($repoUrl, "100.110.69.93") !== false) {
+        fwrite(STDERR, "ERROR: composer.json apunta a Satis; usar Cloudsmith.\n");
+        exit(6);
+    }
+}
+
 $lock = json_decode(file_get_contents($argv[1]), true, 512, JSON_THROW_ON_ERROR);
 foreach (array_merge($lock["packages"] ?? [], $lock["packages-dev"] ?? []) as $package) {
     if (($package["name"] ?? null) !== "paqsuite/laravel-core") {
@@ -37,13 +77,17 @@ foreach (array_merge($lock["packages"] ?? [], $lock["packages-dev"] ?? []) as $p
         fwrite(STDERR, "ERROR: composer.lock no resuelve laravel-core desde Cloudsmith.\n");
         exit(5);
     }
+    if (stripos($url, "satis") !== false || stripos($url, "100.110.69.93") !== false) {
+        fwrite(STDERR, "ERROR: composer.lock resuelve laravel-core desde Satis.\n");
+        exit(6);
+    }
 
     exit(0);
 }
 
 fwrite(STDERR, "ERROR: composer.lock no contiene paqsuite/laravel-core.\n");
 exit(3);
-' "$lockFile" || lockValidationStatus=$?
+' "$lockFile" "$backendDirectory/composer.json" || lockValidationStatus=$?
 if (( lockValidationStatus != 0 )); then
     exit "$lockValidationStatus"
 fi
@@ -58,13 +102,27 @@ file_put_contents("auth.json", json_encode([
 ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 $j = json_decode(file_get_contents("composer.json"), true, 512, JSON_THROW_ON_ERROR);
 $repos = $j["repositories"] ?? [];
-if (isset($repos[0]) && is_array($repos[0])) {
-    $j["repositories"][0]["options"] = ["http" => ["header" => ["X-API-KEY: ".$k]]];
-} elseif (is_array($repos)) {
-    foreach ($repos as $key => $repo) {
-        $j["repositories"][$key]["options"] = ["http" => ["header" => ["X-API-KEY: ".$k]]];
-        break;
+$rewritten = false;
+foreach ($repos as $key => $repo) {
+    if (!is_array($repo)) {
+        continue;
     }
+    $repoUrl = (string) ($repo["url"] ?? "");
+    $isCloudsmith = stripos($repoUrl, "composer.cloudsmith.io") !== false
+        || stripos($repoUrl, "dl.cloudsmith.io") !== false;
+    if (!$isCloudsmith) {
+        continue;
+    }
+    $j["repositories"][$key] = [
+        "type" => "composer",
+        "url" => "https://dl.cloudsmith.io/".$k."/paqsystems/paqsuite-sdk/composer/",
+    ];
+    $rewritten = true;
+    break;
+}
+if (!$rewritten) {
+    fwrite(STDERR, "ERROR: composer.json no tiene repo Cloudsmith para inyectar el token.\n");
+    exit(7);
 }
 file_put_contents("composer.json", json_encode($j, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)."\n");
 '

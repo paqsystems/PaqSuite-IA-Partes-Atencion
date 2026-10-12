@@ -8,7 +8,8 @@ import SelectBox from 'devextreme-react/select-box'
 import { confirm } from 'devextreme/ui/dialog'
 import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LoadingOverlay, ProcessDataGrid } from '@paqsuite/react-core'
+import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
+import { LoadingOverlay, ProcessDataGrid, ProcessPageLayout } from '@paqsuite/react-core'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
@@ -62,6 +63,7 @@ export function ProcesoMasivoPage() {
 
 function ProcesoMasivoView() {
   const { t } = useTranslation()
+  const pageTitle = useProcessMenuTitle(t('partes.masivo.title'), '/partes/proceso-masivo')
   const estadoOpciones = usePartesEstadoCerradoOptions()
   const gridCaptions = usePartesTareaGridCaptions()
   const hoy = todayIsoDate()
@@ -419,9 +421,9 @@ function ProcesoMasivoView() {
   }
 
   return (
+    <ProcessPageLayout title={pageTitle}>
     <div data-testid="partesMasivoPage" style={{ padding: 16 }}>
       <LoadingOverlay visible={loading} />
-      <h2 style={{ marginTop: 0 }}>{t('partes.masivo.title')}</h2>
       <div
         data-testid="partesMasivoFiltros"
         style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 12, alignItems: 'end' }}
@@ -774,5 +776,6 @@ function ProcesoMasivoView() {
         <div style={{ marginTop: 8, opacity: 0.7 }}>{t('partes.common.totalFiltro', { count: total })}</div>
       </div>
     </div>
+    </ProcessPageLayout>
   )
 }

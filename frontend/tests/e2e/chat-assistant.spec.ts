@@ -13,8 +13,8 @@ test('avatar abre chat-assistant con empty sin LLM', async ({ page }) => {
 
   await expect(page).toHaveURL(/\/partes\/?$/, { timeout: 45_000 })
 
-  await page.getByTestId('userAvatarMenuTrigger').click()
-  await page.getByTestId('userAvatarMenuItem-chat').click()
+  await page.getByTestId('userMenu.trigger').click()
+  await page.getByTestId('userMenu.chatAssistant').click()
 
   await expect(page).toHaveURL(/\/chat-assistant\/?$/, { timeout: 15_000 })
   await expect(page.getByTestId('partesChatAssistantHost')).toBeVisible()
