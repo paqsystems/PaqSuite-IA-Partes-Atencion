@@ -279,6 +279,7 @@
   "change.newPassword": "Nova senha",
   "change.confirmPassword": "Confirmar senha",
   "change.submit": "Alterar senha",
+  "change.cancel": "Cancelar",
   "change.loading": "Salvando…",
   "auth.invalidCredentials": "Usuário ou senha incorretos.",
   "auth.emailNotFound": "O e-mail não existe.",

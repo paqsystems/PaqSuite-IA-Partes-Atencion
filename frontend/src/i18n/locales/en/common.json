@@ -296,6 +296,7 @@
   "change.newPassword": "New password",
   "change.confirmPassword": "Confirm password",
   "change.submit": "Change password",
+  "change.cancel": "Cancel",
   "change.loading": "Saving…",
   "auth.invalidCredentials": "Incorrect username or password.",
   "auth.emailNotFound": "The email does not exist.",

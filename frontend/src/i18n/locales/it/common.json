@@ -279,6 +279,7 @@
   "change.newPassword": "Nuova password",
   "change.confirmPassword": "Conferma password",
   "change.submit": "Cambia password",
+  "change.cancel": "Annulla",
   "change.loading": "Salvataggio…",
   "auth.invalidCredentials": "Utente o password non corretti.",
   "auth.emailNotFound": "L'email non esiste.",

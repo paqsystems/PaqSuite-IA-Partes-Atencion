@@ -21,6 +21,8 @@ Plan de adopción sin forks GEN: [plan-partes-adopcion-sdk-sin-fork-gen.md](./pl
 
 Vercel: `scripts/vercel-install.sh` + `CLOUDSMITH_READ_TOKEN`. Vite **no** alias al monorepo salvo `PAQ_REPO_LAB=1`.
 
+Hasta el próximo bump Cloudsmith que publique el SelectBox de hoja (GEN-14, ya en el monorepo Framework), el host aplica `frontend/vendor/react-core-overlay` vía `postinstall` (`scripts/overlay-react-core-framework.mjs`). Quitar el overlay cuando el pin publicado incluya `excelImport.sheet`.
+
 ## Modo repo-lab (opcional, local)
 
 Ver `frontend/MODO-REPO-LAB.md`. No commitear `file:` ni Composer `path` en ramas de release; volver a pins registry antes del PR.

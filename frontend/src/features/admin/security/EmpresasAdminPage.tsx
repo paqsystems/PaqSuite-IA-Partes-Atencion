@@ -1,24 +1,27 @@
 import {
   EmpresasAdminPage as EmpresasAdminPageSdk,
-  useEmpresaAppearanceBridge,
   type EmpresaListItem,
 } from '@paqsuite/react-core'
 import { useCallback } from 'react'
 import { getAuthSession, getAuthToken, patchAuthSession } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
+import { applyDevExtremeTheme } from '../../../theme/devExtremeThemeSwitcher'
 
 export function EmpresasAdminPage() {
-  const { previewTheme, restoreTheme, applyCommitted } = useEmpresaAppearanceBridge()
+  const previewTheme = useCallback((themeKey: string) => {
+    void applyDevExtremeTheme(themeKey, { reloadOnGroupChange: false })
+  }, [])
 
-  const handleEmpresaSaved = useCallback(
-    (item: EmpresaListItem) => {
-      const session = getAuthSession()
-      if (!session) {
-        return
-      }
+  const restoreTheme = useCallback((themeKey: string) => {
+    void applyDevExtremeTheme(themeKey, { reloadOnGroupChange: false })
+  }, [])
+
+  const handleEmpresaSaved = useCallback((item: EmpresaListItem) => {
+    const session = getAuthSession()
+    if (session) {
       patchAuthSession({
         empresas: session.empresas.map((empresa) =>
-          empresa.id === item.id
+          Number(empresa.id) === Number(item.id)
             ? {
                 ...empresa,
                 nombreEmpresa: item.nombreEmpresa,
@@ -27,10 +30,9 @@ export function EmpresasAdminPage() {
             : empresa,
         ),
       })
-      applyCommitted(item.theme)
-    },
-    [applyCommitted],
-  )
+    }
+    void applyDevExtremeTheme(item.theme, { reloadOnGroupChange: false })
+  }, [])
 
   return (
     <div data-testid="adminEmpresasPage" style={{ padding: 16 }}>

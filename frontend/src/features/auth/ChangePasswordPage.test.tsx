@@ -58,5 +58,7 @@ describe('ChangePasswordPage PA-12', () => {
     expect(screen.getByTestId('changePassword')).toBeInTheDocument()
     expect(screen.getByTestId('changePasswordConfirmation')).toBeInTheDocument()
     expect(screen.getByTestId('changeSubmit')).toBeInTheDocument()
+    expect(screen.getByTestId('changeCancel')).toBeInTheDocument()
+    expect(screen.getByTestId('changeCancel')).toHaveTextContent('Cancelar')
   })
 })

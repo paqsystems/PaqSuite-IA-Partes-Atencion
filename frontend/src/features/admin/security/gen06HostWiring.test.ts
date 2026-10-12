@@ -7,13 +7,13 @@ const dir = dirname(fileURLToPath(import.meta.url))
 const srcRoot = join(dir, '../../..')
 
 describe('GEN-06 host wiring PA-05 / PA-06', () => {
-  it('EmpresasAdminPage pasa i18nNamespace common y puente tema SDK (PA-05/08)', () => {
+  it('EmpresasAdminPage pasa i18nNamespace common y preview host sin reload (PA-05/08)', () => {
     const source = readFileSync(join(dir, 'EmpresasAdminPage.tsx'), 'utf8')
     expect(source).toContain('i18nNamespace="common"')
-    expect(source).toContain('useEmpresaAppearanceBridge')
+    expect(source).toContain('applyDevExtremeTheme')
+    expect(source).toContain('reloadOnGroupChange: false')
     expect(source).not.toMatch(/\bt=\{/)
-    expect(source).not.toContain('reloadOnGroupChange')
-    expect(source).not.toContain('applyDevExtremeTheme')
+    expect(source).not.toContain('useEmpresaAppearanceBridge')
   })
 
   it('RolesAdminPage usa t de i18n (claves SDK) sin mapper host', () => {

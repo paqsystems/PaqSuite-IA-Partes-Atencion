@@ -20,4 +20,11 @@ describe('GEN-19 host wiring PA-09 / PA-10', () => {
     expect(bootstrapIdx).toBeGreaterThan(-1)
     expect(rootIdx).toBeGreaterThan(bootstrapIdx)
   })
+
+  it('ShellPage abre procesos con openShellProcess y no delega openInNewTab al SDK', () => {
+    const source = readFileSync(join(dir, 'ShellPage.tsx'), 'utf8')
+    expect(source).toContain('openShellProcess')
+    expect(source).toContain('openInNewTab={false}')
+    expect(source).toContain('readOpenInNewTabPreference')
+  })
 })

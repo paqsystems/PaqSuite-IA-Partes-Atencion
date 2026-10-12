@@ -279,6 +279,7 @@
   "change.newPassword": "Nouveau mot de passe",
   "change.confirmPassword": "Confirmer le mot de passe",
   "change.submit": "Changer le mot de passe",
+  "change.cancel": "Annuler",
   "change.loading": "Enregistrement…",
   "auth.invalidCredentials": "Nom d'utilisateur ou mot de passe incorrect.",
   "auth.emailNotFound": "L'e-mail n'existe pas.",

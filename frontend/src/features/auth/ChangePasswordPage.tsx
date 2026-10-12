@@ -2,13 +2,13 @@ import type { FormEvent } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import {
   AuthCardLayout,
+  DialogActionButton,
   LanguageSelector,
   authClassNames,
   getGuestLocale,
   normalizeLocale,
   type LocaleCode,
 } from '@paqsuite/react-core'
-import Button from 'devextreme-react/button'
 import TextBox from 'devextreme-react/text-box'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -156,15 +156,35 @@ export function ChangePasswordPage() {
             elementAttr={{ 'data-testid': 'changePasswordConfirmation' }}
           />
         </label>
-        <Button
-          text={isSubmitting ? t('change.loading') : t('change.submit')}
-          type="default"
-          stylingMode="contained"
-          useSubmitBehavior
-          disabled={isSubmitting}
-          className={authClassNames.cta}
-          elementAttr={{ 'data-testid': 'changeSubmit' }}
-        />
+        <div
+          style={{
+            display: 'flex',
+            gap: 8,
+            justifyContent: 'flex-end',
+            flexWrap: 'wrap',
+            marginTop: 8,
+          }}
+        >
+          {!session?.firstLogin ? (
+            <DialogActionButton
+              text={t('change.cancel')}
+              stylingMode="outlined"
+              useSubmitBehavior={false}
+              disabled={isSubmitting}
+              onClick={() => navigate('/partes')}
+              elementAttr={{ 'data-testid': 'changeCancel' }}
+            />
+          ) : null}
+          <DialogActionButton
+            text={isSubmitting ? t('change.loading') : t('change.submit')}
+            type="default"
+            stylingMode="contained"
+            useSubmitBehavior
+            disabled={isSubmitting}
+            accessCaption={t('change.submit')}
+            elementAttr={{ 'data-testid': 'changeSubmit', class: authClassNames.cta }}
+          />
+        </div>
       </form>
     </AuthCardLayout>
   )
