@@ -18,7 +18,8 @@ describe('partesInformePivotFields', () => {
     expect(fields.some((field) => field.dataField === 'id')).toBe(false)
     expect(fields.some((field) => field.dataField === 'createdAt')).toBe(false)
     const fecha = fields.find((field) => field.dataField === 'fecha')
-    expect(fecha?.groupInterval).toBe('day')
+    expect(fecha?.dataType).toBe('date')
+    expect(fecha?.groupInterval).toBeUndefined()
   })
 
   it('agrupada: captions i18n e incluye diaSemana', () => {

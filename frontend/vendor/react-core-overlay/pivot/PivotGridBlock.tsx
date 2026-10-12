@@ -146,7 +146,7 @@ const PivotGridBlockInner = forwardRef<PivotGridBlockHandle, PivotGridBlockProps
     const catalogFieldsKey = useMemo(
       () =>
         catalog.campos
-          .map((campo) => `${campo.dataField}:${campo.area ?? ''}:${campo.groupInterval ?? ''}`)
+          .map((campo) => `${campo.dataField}:${campo.area ?? ''}:${campo.dataType}`)
           .join('|'),
       [catalog]
     );

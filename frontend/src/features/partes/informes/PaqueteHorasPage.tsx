@@ -62,7 +62,8 @@ export function PaqueteHorasPage() {
 
   const pivotCatalog = useMemo(
     () => buildPartesPaqueteHorasPivotCatalog(t, i18n.language),
-    [t, i18n.language],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- locale
+    [i18n.language],
   )
 
   const fetchPaqueteHorasRows = useCallback(async () => {

@@ -18,8 +18,6 @@ export function buildConsultaDetalladaPivotFields(t: TFunction, locale = 'es') {
         dataField: 'fecha',
         caption: t('partes.informe.field.fecha'),
         dataType: 'date' as const,
-        // Día calendario. El Field Chooser DX permite cambiar a año/mes/trimestre.
-        groupInterval: 'day' as const,
       },
       {
         dataField: 'diaSemana',
