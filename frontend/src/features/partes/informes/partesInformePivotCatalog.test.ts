@@ -30,7 +30,7 @@ describe('partesInformePivotCatalog (GEN-12)', () => {
 
   it('normaliza dataType numérico en campos', () => {
     const catalog = buildPartesConsultaDetalladaPivotCatalog(t, 'es')
-    const duracion = catalog.campos.find((c) => c.dataField === 'duracionMinutos')
+    const duracion = catalog.campos.find((c) => c.dataField === 'duracionHoras')
     expect(duracion?.dataType).toBe('number')
   })
 
@@ -38,7 +38,7 @@ describe('partesInformePivotCatalog (GEN-12)', () => {
     const catalog = buildPartesConsultaDetalladaPivotCatalog(t, 'es')
     expect(catalog.campos.find((c) => c.dataField === 'clienteCode')?.area).toBe('row')
     expect(catalog.campos.find((c) => c.dataField === 'tipoTareaCode')?.area).toBe('column')
-    expect(catalog.campos.find((c) => c.dataField === 'duracionMinutos')?.area).toBe('data')
+    expect(catalog.campos.find((c) => c.dataField === 'duracionHoras')?.area).toBe('data')
   })
 
   it('fecha de consulta detallada es date; el mapper GEN-12 arma el día calendario', () => {

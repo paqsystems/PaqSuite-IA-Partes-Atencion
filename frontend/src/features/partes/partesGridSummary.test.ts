@@ -12,6 +12,7 @@ describe('partes domain grid summary items', () => {
       column: 'duracionHoras',
       summaryType: 'sum',
       name: 'pq-duracionHoras-sum',
+      valueFormat: '#0.00',
     })
   })
 

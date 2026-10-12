@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { formatMinutosAsHhMm } from './carga/partesTareaDuration'
+import { DURACION_HORAS_NUMBER_FORMAT, formatMinutosAsHhMm } from './carga/partesTareaDuration'
 
 /** Pie de grilla: suma de columna `duracionHoras` (horas decimales). */
 export function usePartesDuracionHorasSummaryItems() {
@@ -14,7 +14,7 @@ export function usePartesDuracionHorasSummaryItems() {
         summaryType: 'sum' as const,
         name: 'pq-duracionHoras-sum',
         displayFormat: `${sumLabel}: {0} ${hoursSuffix}`,
-        valueFormat: '#0.##',
+        valueFormat: DURACION_HORAS_NUMBER_FORMAT,
       },
     ],
     [sumLabel, hoursSuffix, i18n.language],

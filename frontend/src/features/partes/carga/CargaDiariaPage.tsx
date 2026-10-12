@@ -39,6 +39,7 @@ import {
   buildTramoHhMmOptions,
   dateDisplayFormat,
   dateSerializationFormat,
+  DURACION_HORAS_NUMBER_FORMAT,
   formatMinutosAsHhMm,
   isFechaFutura,
   isoDateFromDateBox,
@@ -531,13 +532,13 @@ export function CargaDiariaPage() {
           {esSupervisor ? <Column dataField="usuarioCode" caption={gridCaptions.asistente} /> : null}
           <Column dataField="clienteNombre" caption={gridCaptions.cliente} />
           <Column dataField="tipoTareaDescripcion" caption={gridCaptions.tipoTarea} />
-          <Column dataField="duracionHhMm" caption={gridCaptions.duracion} />
           <Column
             dataField="duracionHoras"
-            caption={gridCaptions.duracionDecimal}
+            caption={gridCaptions.duracion}
             dataType="number"
-            format="#0.##"
+            format={DURACION_HORAS_NUMBER_FORMAT}
           />
+          <Column dataField="duracionHhMm" caption={gridCaptions.duracion} visible={false} />
           <Column dataField="sinCargo" caption={gridCaptions.sinCargo} dataType="boolean" />
           <Column dataField="presencial" caption={gridCaptions.presencial} dataType="boolean" />
           <Column dataField="observacion" caption={gridCaptions.observacion} />

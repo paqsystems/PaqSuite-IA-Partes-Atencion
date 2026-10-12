@@ -20,6 +20,9 @@ describe('partesInformePivotFields', () => {
     const fecha = fields.find((field) => field.dataField === 'fecha')
     expect(fecha?.dataType).toBe('date')
     expect(fecha?.groupInterval).toBeUndefined()
+    const duracion = fields.find((field) => field.dataField === 'duracionHoras')
+    expect(duracion?.area).toBe('data')
+    expect(duracion?.summaryType).toBe('sum')
   })
 
   it('agrupada: captions i18n e incluye diaSemana', () => {
@@ -44,7 +47,8 @@ describe('partesInformePivotFields', () => {
     expect(fields.some((field) => field.dataField === 'tipoClienteCode')).toBe(true)
     expect(fields.some((field) => field.dataField === 'tipoClienteDescripcion')).toBe(true)
     expect(fields.some((field) => field.dataField === 'saldo')).toBe(false)
-    expect(fields.some((field) => field.dataField === 'duracionMinutos')).toBe(true)
+    expect(fields.some((field) => field.dataField === 'duracionHoras')).toBe(true)
+    expect(fields.some((field) => field.dataField === 'duracionMinutos')).toBe(false)
     expect(fields.every((field) => String(field.caption).startsWith('i18n:'))).toBe(true)
   })
 })
