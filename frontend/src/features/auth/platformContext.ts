@@ -1,9 +1,10 @@
 import {
-  isDevOrNonCanonicalHostname,
+  bootstrapClienteFromWindow,
+  buildPlatformHeaders,
   isNativeApp,
   persistClienteCode,
   readPersistedClienteCode,
-  resolveClienteCode,
+  type BuildPlatformHeadersInput,
 } from '@paqsuite/react-core'
 import { getAuthSession, invalidateSessionIfClienteMismatch } from './authSessionStore'
 import {
@@ -45,10 +46,21 @@ export function readStoredClienteCode(): string {
   return (persisted.sessionCliente || persisted.cookieCliente || '').trim()
 }
 
+function windowHostname(): string {
+  return typeof window !== 'undefined' ? window.location.hostname : 'localhost'
+}
+
+function windowSearch(): string {
+  return typeof window !== 'undefined' ? window.location.search : ''
+}
+
+function windowReferrer(): string {
+  return typeof document !== 'undefined' ? document.referrer : ''
+}
+
 /**
- * Persiste `{cliente}` mientras la URL de landing todavía tiene `?cliente=`
- * (antes de que React Router reemplace `/` → `/login` y pierda el query).
- * Si había sesión de otro tenant en el mismo vercel.app, la invalida.
+ * Landing canónico / Vercel (SoT MONO) y luego `bootstrapClienteFromWindow`.
+ * Llamar en `main.tsx` antes del Router.
  */
 export function bootstrapPlatformCliente(): string {
   const cliente = resolvePlatformCliente()
@@ -57,50 +69,57 @@ export function bootstrapPlatformCliente(): string {
 }
 
 export function resolvePlatformCliente(overrideTenant?: string): string {
-  const hostname =
-    typeof window !== 'undefined' ? window.location.hostname : 'localhost'
-  const search = typeof window !== 'undefined' ? window.location.search : ''
-  const referrer = typeof document !== 'undefined' ? document.referrer : ''
+  const hostname = windowHostname()
+  const search = windowSearch()
   const isDev = import.meta.env.DEV
-  const persisted = readPersistedClienteCode(browserPersistence)
-  const explicit =
-    overrideTenant?.trim() ||
-    (isNativeApp() ? persisted.sessionCliente || persisted.cookieCliente : null)
+  const explicit = overrideTenant?.trim()
 
   if (explicit) {
     return persistClienteCode(explicit, browserPersistence)
   }
 
-  const landingCliente = resolveLandingClienteCode({
-    hostname,
-    search,
-    referrer,
-    overrideTenant,
-  })
-
-  if (landingCliente && shouldHonorLandingCliente({ hostname, isDevBuild: isDev })) {
-    return persistClienteCode(landingCliente, browserPersistence)
+  if (!isNativeApp()) {
+    const landingCliente = resolveLandingClienteCode({
+      hostname,
+      search,
+      referrer: windowReferrer(),
+      overrideTenant,
+    })
+    if (landingCliente && shouldHonorLandingCliente({ hostname, isDevBuild: isDev })) {
+      persistClienteCode(landingCliente, browserPersistence)
+    }
   }
 
   const vercelFrontDoor = isVercelFrontDoorHostname(hostname)
-  const cliente = resolveClienteCode({
-    isDevOrNonCanonicalUrl:
-      !vercelFrontDoor && isDevOrNonCanonicalHostname(hostname, isDev),
-    queryCliente: landingCliente,
-    cookieCliente: persisted.cookieCliente,
-    sessionCliente: persisted.sessionCliente,
+  return bootstrapClienteFromWindow({
+    persistence: browserPersistence,
+    isDevBuild: vercelFrontDoor ? false : isDev,
+    hostname,
+    search,
   })
-
-  return persistClienteCode(cliente, browserPersistence)
 }
 
-export function buildAuthPlatformHeaders(tenantOverride?: string) {
+/** Input para `apiRequest.platform` / páginas SDK. `companyId` solo MULTI. */
+export function buildAuthPlatformHeaders(tenantOverride?: string): BuildPlatformHeadersInput {
   const session = getAuthSession()
   const cliente = resolvePlatformCliente(tenantOverride)
-
-  return {
+  const tenancy = session?.tenancy ?? 'single'
+  const input: BuildPlatformHeadersInput = {
     cliente,
-    companyId: session?.activeCompanyId ?? session?.empresas[0]?.id,
-    tenancy: session?.tenancy,
+    tenancy,
   }
+
+  if (tenancy === 'multi') {
+    const companyId = session?.activeCompanyId ?? session?.empresas[0]?.id
+    if (companyId !== undefined && companyId !== null) {
+      input.companyId = companyId
+    }
+  }
+
+  return input
+}
+
+/** Headers HTTP GEN-19 (`X-Paq-Cliente`, `X-Company-Id` si MULTI). */
+export function buildAuthHttpHeaders(tenantOverride?: string): Record<string, string> {
+  return buildPlatformHeaders(buildAuthPlatformHeaders(tenantOverride))
 }

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type ReactNode } from 'react'
+import { memo, useCallback, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   ConsultaGrillaPivotShell,
@@ -25,7 +25,7 @@ export type PartesInformeGrillaPivotSectionProps = {
 /**
  * Cableado GEN-12 para informes Partes: shell SDK + plantillas pivot en toolbar.
  */
-export function PartesInformeGrillaPivotSection({
+export const PartesInformeGrillaPivotSection = memo(function PartesInformeGrillaPivotSection({
   consultaId,
   catalog,
   locale,
@@ -37,6 +37,8 @@ export function PartesInformeGrillaPivotSection({
   const { t } = useTranslation()
   const pivotRef = useRef<PivotGridBlockHandle>(null)
   const [saveAsOpen, setSaveAsOpen] = useState(false)
+  const accessToken = getAuthToken()
+  const platform = useMemo(() => buildAuthPlatformHeaders(), [])
 
   const captureState = useCallback(() => pivotRef.current?.captureState() ?? '', [])
   const applyState = useCallback((stateJson: string | null) => {
@@ -45,8 +47,8 @@ export function PartesInformeGrillaPivotSection({
 
   const layouts = usePivotLayouts({
     consultaId,
-    accessToken: getAuthToken(),
-    platform: buildAuthPlatformHeaders(),
+    accessToken,
+    platform,
     captureState,
     applyState,
   })
@@ -97,4 +99,4 @@ export function PartesInformeGrillaPivotSection({
       />
     </>
   )
-}
+})

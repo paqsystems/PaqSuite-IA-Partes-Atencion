@@ -5,7 +5,6 @@ import { I18nextProvider } from 'react-i18next'
 import {
   bootstrapApiBaseUrl,
   isNativeApp,
-  syncDevExtremeLocale,
 } from '@paqsuite/react-core'
 import '@paqsuite/react-core/auth.css'
 import '@paqsuite/react-core/shell.css'
@@ -22,6 +21,7 @@ import './index.css'
 import './features/partes/mobile/partesMobileProcess.css'
 
 async function bootstrap(): Promise<void> {
+  // GEN-19: persiste `{cliente}` vía `bootstrapClienteFromWindow` (dentro de bootstrapPlatformCliente) antes del Router.
   bootstrapPlatformCliente()
   await installCapacitorPreferencesAdapter()
   await bootstrapApiBaseUrl({
@@ -30,7 +30,6 @@ async function bootstrap(): Promise<void> {
     isNative: isNativeApp(),
   })
   installApiAuthFetch()
-  syncDevExtremeLocale('es')
   await bootstrapDevExtremeThemeBeforeMount(EMPRESA_THEME_DEFAULT)
 
   if (isNativeApp()) {

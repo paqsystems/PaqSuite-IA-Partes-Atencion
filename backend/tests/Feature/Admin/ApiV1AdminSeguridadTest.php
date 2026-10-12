@@ -92,9 +92,12 @@ class ApiV1AdminSeguridadTest extends TestCase
         $list = $this->getJson('/api/v1/admin/empresas', $headers);
         $list->assertStatus(200);
         $empresaId = (int) $list->json('resultado.items.0.id');
-        $this->assertSame('generic.light', $list->json('resultado.items.0.theme'));
+        // ABM admin expone clave UI A1 (paqsuite.*) para el SelectBox del SDK.
+        $this->assertSame('paqsuite.light.generic', $list->json('resultado.items.0.theme'));
         $this->assertArrayHasKey('nombreEmpresa', $list->json('resultado.items.0'));
         $this->assertArrayHasKey('habilitada', $list->json('resultado.items.0'));
+        // Persistencia en BD sigue siendo stock DX.
+        $this->assertSame('generic.light', DB::table('pq_empresa')->where('id', $empresaId)->value('theme'));
 
         $show = $this->getJson('/api/v1/admin/empresas/'.$empresaId, $headers);
         $show->assertStatus(200);
@@ -104,8 +107,17 @@ class ApiV1AdminSeguridadTest extends TestCase
             'theme' => 'material.blue.dark',
         ], $headers);
         $update->assertStatus(200)
-            ->assertJsonPath('resultado.item.nombreEmpresa', 'Partes Demo Editada')
-            ->assertJsonPath('resultado.item.theme', 'material.blue.dark');
+            ->assertJsonPath('resultado.item.nombreEmpresa', 'Partes Demo Editada');
+        $this->assertStringStartsWith('paqsuite.', (string) $update->json('resultado.item.theme'));
+        $this->assertSame('material.blue.dark', DB::table('pq_empresa')->where('id', $empresaId)->value('theme'));
+
+        // SDK A1 envía paqsuite.*; el host normaliza a stock al persistir.
+        $updatePaqsuite = $this->putJson('/api/v1/admin/empresas/'.$empresaId, [
+            'theme' => 'paqsuite.dark.compact',
+        ], $headers);
+        $updatePaqsuite->assertStatus(200)
+            ->assertJsonPath('resultado.item.theme', 'paqsuite.dark.compact');
+        $this->assertSame('generic.dark.compact', DB::table('pq_empresa')->where('id', $empresaId)->value('theme'));
     }
 
     public function test_empresas_theme_invalido_422(): void
@@ -228,8 +240,8 @@ class ApiV1AdminSeguridadTest extends TestCase
             ->assertJsonPath('resultado.rol.nombre', 'Consulta')
             ->assertJsonPath('resultado.items', []);
         $this->assertNotEmpty($get->json('resultado.arbol'));
-        $this->assertArrayHasKey('menuTitulo', $get->json('resultado.arbol.0'));
-        $this->assertArrayHasKey('children', $get->json('resultado.arbol.0'));
+        $this->assertArrayHasKey('titulo', $get->json('resultado.arbol.0'));
+        $this->assertArrayHasKey('menuId', $get->json('resultado.arbol.0'));
 
         $menuId = (int) DB::table('pq_menus')->where('codigo', 'admin_roles')->value('id');
 
@@ -241,10 +253,10 @@ class ApiV1AdminSeguridadTest extends TestCase
         $put->assertStatus(200);
         $put->assertJsonFragment([
             'menuId' => $menuId,
-            'create' => true,
-            'delete' => false,
-            'update' => true,
-            'report' => false,
+            'permisoAlta' => true,
+            'permisoBaja' => false,
+            'permisoModi' => true,
+            'permisoRepo' => false,
         ]);
 
         $putEmpty = $this->putJson('/api/v1/admin/roles/'.$rolId.'/atributos', ['items' => []], $headers);
@@ -350,5 +362,58 @@ class ApiV1AdminSeguridadTest extends TestCase
         ], $this->authHeaders($token));
 
         $response->assertStatus(403);
+    }
+
+    public function test_usuarios_acepta_contrato_sdk_name_y_usuario(): void
+    {
+        $token = $this->loginAdmin();
+        $headers = $this->authHeaders($token);
+
+        $create = $this->postJson('/api/v1/admin/usuarios', [
+            'usuario' => 'sdkuser1',
+            'name' => 'SDK User',
+            'email' => 'sdkuser1@partes.local',
+            'password' => 'Secret123!',
+            'activo' => true,
+        ], $headers);
+        $create->assertStatus(201)
+            ->assertJsonPath('resultado.item.usuario', 'sdkuser1')
+            ->assertJsonPath('resultado.item.nombre', 'SDK User')
+            ->assertJsonPath('resultado.item.name', 'SDK User');
+
+        $patch = $this->patchJson('/api/v1/admin/usuarios/'.(int) $create->json('resultado.item.id'), [
+            'name' => 'SDK User Edit',
+        ], $headers);
+        $patch->assertStatus(200)->assertJsonPath('resultado.item.name', 'SDK User Edit');
+    }
+
+    public function test_permisos_acepta_userId_del_sdk(): void
+    {
+        $token = $this->loginAdmin();
+        $headers = $this->authHeaders($token);
+        $empresaId = (int) $this->getJson('/api/v1/admin/empresas', $headers)->json('resultado.items.0.id');
+        $rolId = (int) $this->postJson('/api/v1/admin/roles', [
+            'nombre' => 'SdkRol',
+            'accesoTotal' => false,
+        ], $headers)->json('resultado.item.id');
+        $userId = (int) $this->postJson('/api/v1/admin/usuarios', [
+            'usuario' => 'sdkperm',
+            'name' => 'SDK Perm',
+            'email' => 'sdkperm@partes.local',
+            'password' => 'Secret123!',
+        ], $headers)->json('resultado.item.id');
+
+        $create = $this->postJson('/api/v1/admin/permisos', [
+            'userId' => $userId,
+            'empresaId' => $empresaId,
+            'rolId' => $rolId,
+        ], $headers);
+        $create->assertStatus(201)
+            ->assertJsonPath('resultado.item.userId', $userId)
+            ->assertJsonPath('resultado.item.usuarioId', $userId);
+
+        $list = $this->getJson('/api/v1/admin/permisos?userId='.$userId, $headers);
+        $list->assertStatus(200);
+        $this->assertNotEmpty($list->json('resultado.items'));
     }
 }

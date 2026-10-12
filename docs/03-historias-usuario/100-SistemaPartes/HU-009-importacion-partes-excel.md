@@ -8,8 +8,8 @@
 | Título | Importar altas de partes (tareas) desde Excel embebido en Carga diaria |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente |
-| Última actualización | 2026-08-02 |
+| Estado | Finalizado |
+| Última actualización | 2026-10-11 |
 | SPEC origen | [SPEC-009-importacion-partes-excel](../../05-open-spec/100-SistemaPartes/SPEC-009-importacion-partes-excel.md) |
 | TR relacionada(s) | [TR-009-importacion-partes-excel](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) |
 
@@ -38,6 +38,7 @@
 | Capacidad GEN habilitada (precondición §3) | Contexto; Supuestos |
 | Fuera: compras, edit Excel, auditoría, IA, ABM catálogo, redefinir GEN, SPEC-005 | Fuera de alcance |
 | Criterios verificables §5 | CA-01…12 |
+| Caption hoja / 5 locales / sin mapa ES (R-IMP-I18N) | CA-I18N-01…05 |
 
 ---
 
@@ -73,7 +74,7 @@ Registrar dedicación fila a fila es costoso cuando el dato ya está en planilla
 ## Alcance incluido
 
 - Toolbar GEN (**Descargar plantilla** \| **Importar**) **solo** en Carga diaria, en **fila exclusiva** (no compartida con filtros).
-- Flujo: plantilla → subir `.xlsx` → validar/staging → errores por fila → **Procesar** (si hay válidas) → refresco de grilla si hubo altas.
+- Flujo: plantilla → subir `.xlsx` → elegir **hoja** → validar/staging → errores por fila → **Procesar** (si hay válidas) → refresco de grilla si hubo altas.
 - Plantilla con cabeceras canónicas: `cliente`, `asistente`, `tipo_tarea`, `fecha`, `duracion` (`hh:mm`), `sin_cargo`, `presencial`, `descripcion`.
 - Flag de proceso con **procesamiento parcial permitido** (`permiteProcesamientoParcial` / allowPartial).
 - Validaciones de fila alineadas a alta de carga diaria: códigos usables, tipo ∈ universo del cliente, duración `hh:mm` positiva múltiplo del tramo (default 15, tope 1440 min), booleanos verdadero/falso (case-insensitive), descripción no vacía.
@@ -81,7 +82,7 @@ Registrar dedicación fila a fila es costoso cuando el dato ya está en planilla
 - Cada alta: `es_tarea = true`, `cerrado = 0` (abierta).
 - `fecha` en Excel según formato de fecha configurado de la app; UI de carga sigue presentando según locale; fecha nativa Excel aceptada si el motor la tipifica.
 - Filas Excel totalmente vacías ignoradas; sin deduplicación obligatoria.
-- Solo web; i18n `excelImport.*` + mensajes de validación Partes; testids GEN `excelImport.*`.
+- Solo web; i18n `excelImport.*` (incl. `sheet.*`) + `partes.import.*` en 5 locales; testids GEN `excelImport.*`. El toolbar usa `t` de i18next, no un mapa solo-español.
 - Persistencia de negocio vía SP (MUST).
 
 ---
@@ -120,6 +121,11 @@ Registrar dedicación fila a fila es costoso cuando el dato ya está en planilla
 | R-IMP-11 | La grabación de negocio va por SP (MUST). |
 | R-IMP-12 | `fecha` en Excel sigue el formato de fecha configurado de la app; también vale fecha nativa tipificada por el motor. |
 | R-IMP-13 | Filas Excel vacías se ignoran; no hay deduplicación obligatoria. |
+| R-IMP-I18N-01 | El selector de hoja muestra caption traducido; nunca la clave cruda. |
+| R-IMP-I18N-02 | Sin hoja, el aviso de requerido está traducido. |
+| R-IMP-I18N-03 | Cada error de fila es `t(messageKey)` (dominio `partes.import.*` o GEN `excelImport.row.*`). |
+| R-IMP-I18N-04 | Las mismas claves existen en es, en, pt, fr, it. |
+| R-IMP-I18N-05 | Prohibido resolver esos textos con un mapa solo-español si la clave no está en i18n. |
 
 ---
 
@@ -138,6 +144,11 @@ Registrar dedicación fila a fila es costoso cuando el dato ya está en planilla
 - [ ] **CA-10** Tras Procesar con ≥1 alta, la grilla de Carga diaria se vuelve a cargar **conservando** filtros vigentes (fechas, cliente, asistente, estado, etc.).
 - [ ] **CA-11** En mobile la importación Excel de partes no se ofrece.
 - [ ] **CA-12** Filas Excel totalmente vacías no generan error ni alta; filas duplicadas en contenido pueden generar múltiples altas (sin dedupe Must).
+- [x] **CA-I18N-01** Con idioma español, el selector de hoja no muestra `excelImport.sheet.label`; muestra un rótulo entendible (p. ej. «Hoja»).
+- [x] **CA-I18N-02** `excelImport.sheet.placeholder` y `required` existen en los cinco locales.
+- [x] **CA-I18N-03** Una fila con tipo fuera del universo del cliente lista el error traducido (`partes.import.tipoFueraUniverso`).
+- [x] **CA-I18N-04** Al pasar a inglés, el rótulo de hoja y ese error cambian de idioma.
+- [x] **CA-I18N-05** El resto de `partes.import.*` tiene traducción en los cinco idiomas.
 
 ### Escenarios Gherkin
 
@@ -184,6 +195,17 @@ Feature: Importación Excel en Carga diaria
     When valida el lote
     Then las filas vacías no aparecen como error
     And no se cuentan como filas válidas a grabar
+
+  Scenario: Caption de hoja en español
+    Given un asistente en Carga diaria con idioma español
+    And abre Importar y elige un .xlsx
+    Then el selector de hoja muestra un rótulo en español
+    And no muestra el texto excelImport.sheet.label
+
+  Scenario: Cambio a inglés
+    Given el mismo flujo con idioma de sesión inglés
+    When abre el modal
+    Then el rótulo de hoja está en inglés
 ```
 
 ---
@@ -229,3 +251,4 @@ Cerradas en Parte C (TR-009). Ninguna bloquea C1/D1.
 | 2026-08-02 | Parte B: HU-009 desde SPEC-009 (post A1). |
 | 2026-08-02 | Parte B1: enriquecimiento desde SPEC (actores, CA-07b/12, supuestos, riesgos, Gherkin). |
 | 2026-08-02 | Parte C: enlace TR-009; preguntas B1 cerradas en TR. |
+| 2026-10-11 | Parte I: i18n modal/hoja y `partes.import.*` (F1/F Aprobado). Update eliminado. Estado → Finalizado. |

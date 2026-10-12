@@ -8,7 +8,7 @@ use PaqSuite\LaravelCore\Security\RolAdminRepository;
 
 /**
  * ABM roles (GEN-06) vía SP `pq_sp_admin_roles_*`.
- * Contrato SPEC: nombre, descripcion, accesoTotal.
+ * Contrato SPEC: codigo, nombre, descripcion, accesoTotal, activo.
  */
 final class SpRolAdminRepository implements RolAdminRepository
 {
@@ -98,12 +98,15 @@ final class SpRolAdminRepository implements RolAdminRepository
     private function mapRow(object $row): array
     {
         $descripcion = $row->descripcion ?? null;
+        $codigo = $row->codigo ?? $row->Codigo ?? null;
 
         return [
             'id' => (int) $row->id,
+            'codigo' => $codigo !== null && $codigo !== '' ? (string) $codigo : '',
             'nombre' => (string) $row->nombre,
             'descripcion' => $descripcion !== null ? (string) $descripcion : null,
-            'accesoTotal' => (bool) $row->accesoTotal,
+            'accesoTotal' => (bool) ($row->accesoTotal ?? $row->acceso_total ?? false),
+            'activo' => (bool) ($row->activo ?? true),
         ];
     }
 

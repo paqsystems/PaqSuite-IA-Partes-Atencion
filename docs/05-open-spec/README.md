@@ -32,12 +32,16 @@ Documentos **SPEC-CTX-***: alcance de épica redactado como **insumo previo** al
 | [SPEC-009](100-SistemaPartes/SPEC-009-importacion-partes-excel.md) | Importación de partes desde Excel | [HU-009](../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) · [TR-009](../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) |
 | [SPEC-010](100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md) | Smart Capture en carga diaria | [HU-010](../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md) · [TR-010](../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) |
 | [SPEC-011](100-SistemaPartes/SPEC-011-reportes-emisiones.md) | Reportes / emisiones (adopción GEN-15) | [HU-011](../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) · [TR-011](../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
+| [SPEC-012](100-SistemaPartes/SPEC-012-adopcion-gen-35-cloudsmith.md) | Adopción GEN-35 Cloudsmith (ops) | [HU-012](../03-historias-usuario/100-SistemaPartes/HU-012-adopcion-gen-35-cloudsmith.md) · [TR-012](../04-tareas/100-SistemaPartes/TR-012-adopcion-gen-35-cloudsmith.md) · [instructivo](../06-operacion/adopcion-gen-35-cloudsmith.md) |
 
 ### 001 – Generalidades (`001-Generalidades/`) — bloque vigente
 
-Ver índice principal: [README de 001-Generalidades](001-Generalidades/README.md).
+Ver índice: [README de 001-Generalidades](001-Generalidades/README.md).
 
-Este bloque es la referencia vigente para generalidades de `SistemaPartes` y productos que reutilicen la base replicada desde PedidosWeb.
+| SPEC | Título | HU |
+|------|--------|-----|
+| [SPEC-001](001-Generalidades/SPEC-001-ui-errores-validacion-contexto-carga.md) | Errores de validación en modal de carga | [HU-001](../03-historias-usuario/001-Generalidades/HU-001-ui-errores-validacion-contexto-carga.md) · [TR-001](../04-tareas/001-Generalidades/TR-001-ui-errores-validacion-contexto-carga.md) |
+| [SPEC-002-update](updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) | Adopción cableado SDK (CC-PQ #6; cola updates) | [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md) |
 
 ### 000 – Generalidades (`000-Generalidades/`) — histórico / deprecado
 

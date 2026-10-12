@@ -7,10 +7,10 @@
 | **Épica** | 100 — Sistema Partes |
 | **Prioridad** | MUST-HAVE |
 | **Roles** | Operador con permiso menú Archivos (seed: admin/PQ + rol SUPERVISOR); **no** cliente funcional |
-| **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md), [TR-002](./TR-002-identidad-funcional-y-acceso.md); lookup GEN `GET /api/v1/admin/usuarios` (o implementar lookup si aún no existe en host) |
+| **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md), [TR-002](./TR-002-identidad-funcional-y-acceso.md); catálogo vínculo `GET /api/v1/partes/catalogos/usuarios-vinculables`; lookup GEN admin usuarios para ABM Usuarios |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | En Control Calidad |
-| **Última actualización** | 2026-08-01 |
+| **Estado** | Finalizado |
+| **Última actualización** | 2026-10-11 |
 
 **Origen:** [HU-003](../../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md)  
 **Referencia SPEC:** [SPEC-003](../../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md)  
@@ -29,8 +29,9 @@ Maestros y catálogos del módulo Sistema Partes
 - Catálogos usables + universo tipos por cliente (§4.7).
 - Seed menú Archivos + rutas FE; denegar cliente funcional y mobile.
 - SP MUST; reutilizar `pq_sp_partes_assert_user_id_exclusividad` y `pq_sp_partes_tipos_tarea_marcar_default` (TR-001).
-- Lookup users PedidosWeb + `soloActivos`.
+- Lookup users PedidosWeb + `soloActivos` (ABM Usuarios GEN).
 - **(CC-PQ #2, 01/08)** Maestro clientes: capturar/mostrar `erpCliente` / `erpArticulo` (máx. 15) en API (map/upsert) y UI (columnas + formulario).
+- **(CC-PQ #4, 04/10)** Columna `usuarioCodigo` en asistentes; selector de vínculo contra `usuarios-vinculables`; unicidad R-MA-17/18.
 
 ### Out of scope
 - DDL tablas; gate login; carga/consultas; reinventar ABM users/roles (usar menú Seguridad GEN existente/patrón Framework); Excel; mobile ABM.
@@ -55,6 +56,10 @@ Maestros y catálogos del módulo Sistema Partes
 | AC-11 | Lookup `GET /api/v1/admin/usuarios?soloActivos=1\|0` (default UI `1`) |
 | AC-12 | Cambio `userId` asistente que deja al anterior sin vínculo → confirm UI antes de guardar |
 | AC-13 | Clientes: `erpCliente` / `erpArticulo` persisten en list/get/upsert; visibles en listado y modal; valor > 15 caracteres → 422 |
+| AC-U01 | `GET /api/v1/partes/asistentes` incluye `usuarioCodigo`; la grilla lo muestra |
+| AC-U02 | `GET /api/v1/partes/catalogos/usuarios-vinculables` omite inactivos, inhabilitados y asignados; `exceptoUserId` reincorpora el de la fila |
+| AC-U03 | Segundo asistente o cliente con el mismo `userId` → 422 `partes.maestros.exclusividadUserId`. Editar la misma fila conservando el `userId` → 200 |
+| AC-U04 | `userId` inactivo o `inhabilitado = 1` → 422 `partes.maestros.usuarioNoVinculable` |
 
 ### Gherkin
 Heredar HU-003; añadir escenario AC-05b y AC-12.
@@ -72,7 +77,10 @@ R-MA-01…12 (SPEC/HU).
 | RN-TR-03 | Al marcar `isDefault=true` en upsert tipos: invocar `pq_sp_partes_tipos_tarea_marcar_default` (no UPDATE suelto). |
 | RN-TR-04 | Middleware `EnsurePartesFunctionalProfile` + deny si `tipoFuncional=cliente` en rutas maestros (403 `partes.maestros.forbidden`). |
 | RN-TR-05 | Permiso menú Framework obligatorio además del perfil Partes. |
-| RN-TR-06 | Query param lookup users: **`soloActivos`** = `1` (default FE) \| `0`. |
+| RN-TR-06 | Query param lookup users GEN: **`soloActivos`** = `1` (default FE) \| `0` (ABM Usuarios). |
+| RN-TR-U01 | Universo vinculable con `NOT EXISTS` sobre `PQ_PARTES_USUARIOS` y `PQ_PARTES_CLIENTES`. Prohibido `whereIn` de ids asignados. |
+| RN-TR-U02 | La comprobación de unicidad ignora el `id` del registro en edición del lado que se graba. |
+| RN-TR-U03 | Clave de rechazo de duplicado: `partes.maestros.exclusividadUserId`. |
 
 ---
 
@@ -157,13 +165,12 @@ Base: `/api/v1/partes/...` — Auth Bearer + `X-Paq-Cliente` + perfil Partes no-
 | GET | `/partes/catalogos/tipos-cliente` | |
 | GET | `/partes/catalogos/tipos-tarea` | query `clienteId` (universo §4.7) **obligatorio** para uso en carga; sin `clienteId` → solo genéricos usables **o** 422 (cerrado C1: **422** si falta `clienteId` en este endpoint de universo; genéricos puros = otro path opcional no Must) |
 
-### 5.2 Lookup users (GEN)
+### 5.2 Lookup users (GEN) y catálogo vinculable (Partes)
 
 | Método | Path | Query |
 |--------|------|-------|
-| GET | `/api/v1/admin/usuarios` | `soloActivos=1\|0` (default servidor `1` si omitido), búsqueda/paginación según host PedidosWeb |
-
-Si el host aún no expone el endpoint: **T0** de este TR implementa GET lookup mínimo (sin POST/PUT/DELETE users) alineado a GEN.
+| GET | `/api/v1/admin/usuarios` | `soloActivos=1\|0` — ABM Usuarios GEN, no el selector de vínculo de maestros |
+| GET | `/api/v1/partes/catalogos/usuarios-vinculables` | `exceptoUserId` opcional. Ítems: `id`, `codigo` (`users.usuario`), `nombre` (`users.name`) |
 
 ### 5.3 Errores
 
@@ -288,6 +295,7 @@ Filtrar menú: no mostrar ítems Archivos Partes si `resultado.partes.tipoFuncio
 | 2026-07-30 | Parte D: API maestros (Operations + SpCaller), lookup usuarios, menú Archivos, 5 ABM FE, deny cliente/native, Feature tests OK. Nota: SP T-SQL maestros = follow-up gateway; runtime MONO vía Operations. |
 | 2026-08-01 | CC-PQ #2 (01/08/2026): maestro clientes captura/muestra `erpCliente` / `erpArticulo` (AC-13, T8/T9); [D-VERIFICACION-CC-PQ-02](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md). |
 | 2026-08-01 | Parte I: fusionado TR-003-update (CC-PQ #2, 01/08) en esta TR; update eliminado. Estado → Finalizado. |
+| 2026-10-11 | Parte I CC-PQ #4: AC-U01…U04, catálogo vinculable; update eliminado. Estado → Finalizado. |
 
 ---
 

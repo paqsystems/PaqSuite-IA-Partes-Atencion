@@ -31,6 +31,8 @@ class ApiV1AuthAndSystemTest extends TestCase
                 'respuesta',
                 'resultado' => ['token', 'user', 'empresas', 'tenancy', 'db', 'firstLogin', 'minutosWeb'],
             ]);
+        $this->assertSame(0, $response->json('error'));
+        $this->assertIsArray($response->json('resultado'));
         $this->assertNotEmpty($response->json('resultado.token'));
     }
 
@@ -40,6 +42,14 @@ class ApiV1AuthAndSystemTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('resultado.serviceName', 'paqsuite-partes-backend');
+    }
+
+    public function test_up_responde_ok_para_forge_health_check(): void
+    {
+        $response = $this->get('/up');
+
+        $response->assertOk()
+            ->assertSee('OK');
     }
 
     public function test_system_status_requiere_autenticacion(): void
@@ -65,5 +75,8 @@ class ApiV1AuthAndSystemTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure(['error', 'respuesta', 'resultado' => ['installationMode', 'appName', 'environment']]);
+        $this->assertSame(0, $response->json('error'));
+        $this->assertIsArray($response->json('resultado'));
+        $this->assertNotNull($response->json('resultado'));
     }
 }

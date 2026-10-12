@@ -110,6 +110,7 @@ final class SpUserAdminRepository implements UserAdminRepository
             'codigo' => $usuario,
             'usuario' => $usuario,
             'nombre' => (string) ($row->nombre ?? ''),
+            'name' => (string) ($row->nombre ?? ''),
             'email' => (string) ($row->email ?? ''),
             'activo' => (bool) ($row->activo ?? false),
             'inhabilitado' => (bool) ($row->inhabilitado ?? false),

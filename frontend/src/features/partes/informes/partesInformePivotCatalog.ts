@@ -18,6 +18,7 @@ type PivotFieldLike = {
   caption?: string
   dataType?: string
   summaryType?: string
+  area?: 'row' | 'column' | 'data' | 'filter'
 }
 
 function normalizeDataType(value?: string): PivotCampoDataType {
@@ -43,11 +44,14 @@ function mapPivotFieldToCatalog(field: PivotFieldLike): PivotCampoCatalogDto {
     ? (summaryRaw as PivotSummaryType)
     : undefined
 
+  const dataType = normalizeDataType(field.dataType)
+
   return {
     dataField: field.dataField,
-    dataType: normalizeDataType(field.dataType),
+    dataType,
     nombreVisible: field.caption ?? field.dataField,
     summaryType,
+    area: field.area,
   }
 }
 

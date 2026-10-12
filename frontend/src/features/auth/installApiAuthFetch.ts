@@ -1,6 +1,6 @@
-import { clienteHeaderName } from '@paqsuite/react-core'
+import { clienteHeaderName, companyHeaderName } from '@paqsuite/react-core'
 import { getAuthToken } from './authSessionStore'
-import { resolvePlatformCliente } from './platformContext'
+import { buildAuthHttpHeaders } from './platformContext'
 import {
   getEmissionHostContextSnapshot,
   isEmissionHostContextUrl,
@@ -52,8 +52,12 @@ export function installApiAuthFetch(): void {
       headers.set('Authorization', `Bearer ${token}`)
     }
 
-    if (!headers.has(clienteHeaderName)) {
-      headers.set(clienteHeaderName, resolvePlatformCliente())
+    const platformHeaders = buildAuthHttpHeaders()
+    if (!headers.has(clienteHeaderName) && platformHeaders[clienteHeaderName]) {
+      headers.set(clienteHeaderName, platformHeaders[clienteHeaderName])
+    }
+    if (!headers.has(companyHeaderName) && platformHeaders[companyHeaderName]) {
+      headers.set(companyHeaderName, platformHeaders[companyHeaderName])
     }
 
     const method = String(init?.method ?? (input instanceof Request ? input.method : 'GET'))

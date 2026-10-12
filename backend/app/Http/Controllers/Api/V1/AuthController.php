@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Support\ApiEnvelope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use PaqSuite\LaravelCore\Http\Responses\ApiResponse;
+use PaqSuite\LaravelCore\Http\Responses\PaqSuiteEnvelopeCatalog;
 
 /**
  * Legacy scaffold (no enrutado). Auth real: App\Http\Controllers\Api\V1\Auth\*.
@@ -34,7 +35,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('spa')->plainTextToken;
 
-        return ApiEnvelope::ok([
+        return ApiResponse::success([
             'tokenType' => 'Bearer',
             'token' => $token,
             'user' => [
@@ -49,17 +50,17 @@ class AuthController extends Controller
     {
         $request->user()?->currentAccessToken()?->delete();
 
-        return ApiEnvelope::ok(['loggedOut' => true]);
+        return ApiResponse::success(['loggedOut' => true]);
     }
 
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
         if (! $user) {
-            return ApiEnvelope::fail(['codigo' => 'unauthenticated', 'mensaje' => 'No autenticado'], 401);
+            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::AUTH_UNAUTHENTICATED);
         }
 
-        return ApiEnvelope::ok([
+        return ApiResponse::success([
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,

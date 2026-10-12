@@ -9,8 +9,8 @@
 | **Roles** | Asistente / supervisor (cliente denegado) |
 | **Dependencias** | [TR-004](./TR-004-operacion-carga-diaria.md) (carga + `pq_sp_partes_tarea_upsert`); [TR-002](./TR-002-identidad-funcional-y-acceso.md); [TR-003](./TR-003-maestros-y-catalogos.md); paquetes `@paqsuite/react-core` + `paqsuite/laravel-core`; GEN-14 (SPEC-001-14 / TR-GEN-14-*) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Pendiente |
-| **Última actualización** | 2026-08-02 |
+| **Estado** | Finalizado |
+| **Última actualización** | 2026-10-11 |
 | **Revisión C1** | Apto con observaciones (ver §11) |
 
 **Origen:** [HU-009](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md)  
@@ -41,6 +41,7 @@ Como asistente o supervisor quiero importar altas de tareas desde Excel **dentro
 - Handler host: `validateRow` + `processBatch` → altas vía **`pq_sp_partes_tarea_upsert`** con `es_tarea = 1`, `cerrado = 0`.
 - Reglas propietario D-IMP-04; cliente siempre obligatorio; fecha por locale app; refresco grilla D-IMP-08.
 - Capacidad `ExcelImportEnabled`; ocultar toolbar si off o si actor cliente / native.
+- i18n host: `excelImport.sheet.*` + `partes.import.*` en 5 locales; `t` de i18next en el toolbar.
 
 ### Out of scope
 
@@ -74,6 +75,7 @@ Mapear HU CA-01…12. Verificación técnica:
 | CA-10 | `onComplete` done/partial + processedRows>0 → `load()` filtros actuales; `queued`/`failed` → sin refresh de éxito |
 | CA-11 | `isNativeApp()` → no montar toolbar |
 | CA-12 | Filas vacías skip; sin dedupe |
+| CA-I18N-01…05 | JSON 5 locales; `t` i18next; Vitest `excelImportI18n.test.ts`; smoke UI hoja ES/EN |
 
 ---
 
@@ -90,7 +92,7 @@ Mapear HU CA-01…12. Verificación técnica:
 | RN-TR-07 | `processBatch`: abrir transacción; por cada staging válida llamar **misma lógica** que alta TR-004 (`pq_sp_partes_tarea_upsert` / `PartesTareaOperations`) con `es_tarea=1`, `cerrado=0`, `usuario_id` forzado si !supervisor; commit o rollback completo. |
 | RN-TR-08 | FE: fila exclusiva (encima o debajo de filtros, no en la misma fila) en `CargaDiariaPage`. Props Must GEN: `processCode`, `onComplete` (+ opcionales `disabled`, `showTemplateButton`, `sheetName`). **No** inventar prop `capabilityEnabled`: el toolbar GEN se auto-oculta con `ExcelImportEnabled=No` (**4604**); el host además no monta si cliente/native. `onComplete` según §1. |
 | RN-TR-09 | No montar toolbar si identidad funcional **cliente** (`session.partes` / flag equivalente del host) o `isNativeApp()`. |
-| RN-TR-10 | i18n: reutilizar `excelImport.*` GEN; claves Partes `partes.import.*` para errores de fila de dominio. testids GEN `excelImport.*`. |
+| RN-TR-10 | i18n: `excelImport.*` GEN (incl. `sheet.label` / `placeholder` / `required`) + `partes.import.*` en es/en/pt/fr/it. Toolbar: `t` de `useTranslation`, no `resolveAuthMessage`. Conservar `{{tramo}}` en `duracionInvalida`. testids GEN `excelImport.*`. |
 | RN-TR-11 | Manual usuario: sección breve “Importar desde Excel” en `docs/99-manual-usuario/Partes-Atencion.md`. |
 | RN-TR-12 | Envelope errores familia **4600–4699** GEN; no inventar códigos fuera del catálogo. |
 
@@ -247,3 +249,4 @@ Ninguna bloqueante.
 | 2026-08-02 | Parte C1: apto con obs.; cierre props FE, códigos 4603/4604/4607, queued sin GEN-17 Must. |
 | 2026-08-02 | Parte D: adopción host (DB Excel, handler, rutas, toolbar Carga diaria, tests). |
 | 2026-08-02 | Parte E: suite OK — [E-TR-009](../updates/100-SistemaPartes/E-TR-009-importacion-excel-2026-08-02.md). |
+| 2026-10-11 | Parte I: i18n hoja + `partes.import.*`. F1/F Aprobado — [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-TR-009-update-i18n-2026-10-11.md). Update eliminado. Estado → Finalizado. |

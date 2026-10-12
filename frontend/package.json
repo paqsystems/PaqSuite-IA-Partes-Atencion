@@ -21,7 +21,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:all": "npm run test && npm run test:e2e"
+    "test:all": "npm run test && npm run test:e2e",
+    "postinstall": "node scripts/overlay-react-core-framework.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.4",
@@ -29,7 +30,7 @@
     "@capacitor/ios": "^7.4.4",
     "@capacitor/preferences": "^7.0.2",
     "@devexpress/analytics-core": "26.1.4",
-    "@paqsuite/react-core": "2.4.17",
+    "@paqsuite/react-core": "2.4.25-beta.1",
     "ace-builds": "^1.44.0",
     "axios": "^1.16.0",
     "devexpress-reporting": "26.1.4",

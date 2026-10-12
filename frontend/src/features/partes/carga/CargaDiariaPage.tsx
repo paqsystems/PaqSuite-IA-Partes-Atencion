@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ProcessDataGrid,
+  ProcessPageLayout,
   ExcelImportToolbar,
   isNativeApp,
   SmartCapturePanel,
@@ -38,6 +39,7 @@ import {
   buildTramoHhMmOptions,
   dateDisplayFormat,
   dateSerializationFormat,
+  DURACION_HORAS_NUMBER_FORMAT,
   formatMinutosAsHhMm,
   isFechaFutura,
   isoDateFromDateBox,
@@ -406,13 +408,15 @@ export function CargaDiariaPage() {
   }
 
   return (
-    <div data-testid="partesCargaPage" style={{ padding: 16 }}>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-        <h2 style={{ margin: 0, flex: 1 }}>{pageTitle}</h2>
+    <ProcessPageLayout
+      title={pageTitle}
+      toolbar={
         <Link to="/partes/proceso-masivo" data-testid="partesCargaLinkMasivo">
           {t('partes.carga.linkMasivo')}
         </Link>
-      </div>
+      }
+    >
+    <div data-testid="partesCargaPage">
 
       <div
         data-testid="partesCargaFiltros"
@@ -501,7 +505,7 @@ export function CargaDiariaPage() {
               void load()
             }
           }}
-          t={(key) => resolveAuthMessage(key) || key}
+          t={(key, options) => t(key, options)}
         />
       ) : null}
 
@@ -528,13 +532,13 @@ export function CargaDiariaPage() {
           {esSupervisor ? <Column dataField="usuarioCode" caption={gridCaptions.asistente} /> : null}
           <Column dataField="clienteNombre" caption={gridCaptions.cliente} />
           <Column dataField="tipoTareaDescripcion" caption={gridCaptions.tipoTarea} />
-          <Column dataField="duracionHhMm" caption={gridCaptions.duracion} />
           <Column
             dataField="duracionHoras"
-            caption={gridCaptions.duracionDecimal}
+            caption={gridCaptions.duracion}
             dataType="number"
-            format="#0.##"
+            format={DURACION_HORAS_NUMBER_FORMAT}
           />
+          <Column dataField="duracionHhMm" caption={gridCaptions.duracion} visible={false} />
           <Column dataField="sinCargo" caption={gridCaptions.sinCargo} dataType="boolean" />
           <Column dataField="presencial" caption={gridCaptions.presencial} dataType="boolean" />
           <Column dataField="observacion" caption={gridCaptions.observacion} />
@@ -762,5 +766,6 @@ export function CargaDiariaPage() {
         onCredentialsChanged={() => setCredentialsRevision((current) => current + 1)}
       />
     </div>
+    </ProcessPageLayout>
   )
 }

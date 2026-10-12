@@ -91,6 +91,8 @@ return [
             'prefix_indexes' => true,
             'encrypt' => env('DB_ENCRYPT', 'yes'),
             'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
+            // Evita cuelgues largos en Forge si SQL/VPN no responde (default driver ~15s).
+            'login_timeout' => (int) env('DB_LOGIN_TIMEOUT', 5),
         ],
 
         /*
@@ -110,6 +112,7 @@ return [
             'encrypt' => env('PAQSUITE_CENTRAL_ENCRYPT') ?: env('DB_ENCRYPT', 'yes'),
             'trust_server_certificate' => env('PAQSUITE_CENTRAL_TRUST_SERVER_CERTIFICATE')
                 ?: env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
+            'login_timeout' => (int) env('DB_LOGIN_TIMEOUT', 5),
         ],
 
     ],

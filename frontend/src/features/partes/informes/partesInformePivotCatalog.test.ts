@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { mapCatalogToPivotFields } from '@paqsuite/react-core'
 import type { TFunction } from 'i18next'
 import {
   buildPartesConsultaDetalladaPivotCatalog,
@@ -29,7 +30,30 @@ describe('partesInformePivotCatalog (GEN-12)', () => {
 
   it('normaliza dataType numérico en campos', () => {
     const catalog = buildPartesConsultaDetalladaPivotCatalog(t, 'es')
-    const duracion = catalog.campos.find((c) => c.dataField === 'duracionMinutos')
+    const duracion = catalog.campos.find((c) => c.dataField === 'duracionHoras')
     expect(duracion?.dataType).toBe('number')
+  })
+
+  it('conserva áreas iniciales de consulta detallada (fila/columna/datos)', () => {
+    const catalog = buildPartesConsultaDetalladaPivotCatalog(t, 'es')
+    expect(catalog.campos.find((c) => c.dataField === 'clienteCode')?.area).toBe('row')
+    expect(catalog.campos.find((c) => c.dataField === 'tipoTareaCode')?.area).toBe('column')
+    expect(catalog.campos.find((c) => c.dataField === 'duracionHoras')?.area).toBe('data')
+  })
+
+  it('fecha de consulta detallada es date; el mapper GEN-12 arma el día calendario', () => {
+    const catalog = buildPartesConsultaDetalladaPivotCatalog(t, 'es')
+    const fecha = catalog.campos.find((c) => c.dataField === 'fecha')
+    expect(fecha?.dataType).toBe('date')
+    expect(fecha?.groupInterval).toBeUndefined()
+
+    const mapped = mapCatalogToPivotFields(catalog, undefined, { locale: 'es' })
+    const calendarDay = mapped.find((field) => field.name === 'fecha' || field.dataField === 'fecha')
+    expect(calendarDay?.dataType).toBe('string')
+    expect(calendarDay?.groupInterval).toBeUndefined()
+    expect(calendarDay?.selector?.({ fecha: '2026-10-31' })).toBe('2026-10-31')
+    expect(calendarDay?.customizeText?.({ value: '2026-10-31' })).not.toMatch(/1969/)
+    expect(mapped.some((field) => field.name === 'fecha__year')).toBe(true)
+    expect(mapped.some((field) => field.name === 'fecha__month')).toBe(true)
   })
 })

@@ -4,7 +4,7 @@ import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
 import SelectBox from 'devextreme-react/select-box'
 import { useTranslation } from 'react-i18next'
-import { isNativeApp, ProcessDataGrid, getEmissionProcess } from '@paqsuite/react-core'
+import { isNativeApp, ProcessDataGrid, ProcessPageLayout, getEmissionProcess } from '@paqsuite/react-core'
 import { PartesEmissionDialog as EmissionDialog } from './PartesEmissionDialog'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
@@ -12,11 +12,13 @@ import { resolveAuthMessage } from '../../auth/authMessages'
 import {
   dateDisplayFormat,
   dateSerializationFormat,
+  DURACION_HORAS_NUMBER_FORMAT,
+  enrichRowsWithDuracionHoras,
   formatMinutosAsHhMm,
   isoDateFromDateBox,
 } from '../carga/partesTareaDuration'
 import { monthRange, currentMonthValue } from './PartesDashboardPage'
-import { usePartesMinutosColumnSummaryItems } from '../partesGridSummary'
+import { usePartesDuracionHorasSummaryItems, usePartesMinutosColumnSummaryItems } from '../partesGridSummary'
 import { listCatalogo, listPartesResource } from '../maestros/partesMaestrosApi'
 import { fetchInformeAgrupado, fetchInformeTareas } from './partesInformeApi'
 import { enrichRowsWithDiaSemana } from './partesInformeDiaSemana'
@@ -59,6 +61,8 @@ export function ConsultaDetalladaPage() {
   const session = getAuthSession()
   const esSupervisor = Boolean(session?.partes?.esSupervisor)
   const isCliente = session?.partes?.tipoFuncional === 'cliente'
+  const accessToken = getAuthToken()
+  const platform = useMemo(() => buildAuthPlatformHeaders(), [])
   const defaultRange = monthRange(currentMonthValue())
   const [fechaDesde, setFechaDesde] = useState(defaultRange.fechaDesde)
   const [fechaHasta, setFechaHasta] = useState(defaultRange.fechaHasta)
@@ -78,17 +82,23 @@ export function ConsultaDetalladaPage() {
   const [catalogosLoading, setCatalogosLoading] = useState(false)
 
   const rows = useMemo(
-    () => enrichRowsWithDiaSemana(rawRows, t, 'fecha'),
+    () => enrichRowsWithDuracionHoras(enrichRowsWithDiaSemana(rawRows, t, 'fecha')),
     [rawRows, t, i18n.language]
   )
 
   const pivotCatalog = useMemo(
     () => buildPartesConsultaDetalladaPivotCatalog(t, i18n.language),
-    [t, i18n.language],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- locale
+    [i18n.language],
   )
 
   const fetchDetalladaRows = useCallback(async () => {
-    const query: Record<string, string> = { fechaDesde, fechaHasta, estadoCerrado }
+    const query: Record<string, string> = {
+      fechaDesde,
+      fechaHasta,
+      estadoCerrado,
+      pageSize: '0',
+    }
     if (filtroClienteId != null) {
       query.clienteId = String(filtroClienteId)
     }
@@ -106,7 +116,7 @@ export function ConsultaDetalladaPage() {
       if ((result.envelope.resultado.total ?? 0) === 0) {
         setError(resolveAuthMessage('partes.consulta.empty'))
       }
-      return enrichRowsWithDiaSemana(items, t, 'fecha')
+      return enrichRowsWithDuracionHoras(enrichRowsWithDiaSemana(items, t, 'fecha'))
     }
     if (result.kind === 'envelopeError') {
       const message = resolveAuthMessage(result.envelope.respuesta)
@@ -206,31 +216,44 @@ export function ConsultaDetalladaPage() {
   const showEmit = shouldMountConsultaDetalladaEmit(native, emissionEnabled)
   const emitDisabled = shouldDisableConsultaDetalladaEmit(loading, total)
 
-  function openEmitDialog() {
+  const openEmitDialog = useCallback(() => {
     syncHostContext()
     setEmitDialogVisible(true)
-  }
+  }, [syncHostContext])
 
-  const emitButton = showEmit ? (
-    <Button
-      text={t('partes.informe.emitir')}
-      disabled={emitDisabled}
-      onClick={openEmitDialog}
-      elementAttr={{ 'data-testid': 'partesConsultaDetalladaEmit' }}
-    />
-  ) : null
+  const emitButton = useMemo(
+    () =>
+      showEmit ? (
+        <Button
+          text={t('partes.informe.emitir')}
+          disabled={emitDisabled}
+          onClick={openEmitDialog}
+          elementAttr={{ 'data-testid': 'partesConsultaDetalladaEmit' }}
+        />
+      ) : null,
+    [emitDisabled, openEmitDialog, showEmit, t],
+  )
 
   const catalogLoadingText = catalogosLoading ? t('catalog.loading') : undefined
-
-  const durationSummaryFormatter = useCallback(
-    (value: unknown) => formatMinutosAsHhMm(Number(value ?? 0)),
-    []
+  const estadoOptions = useMemo(
+    () => [
+      { id: 'todas', text: t('partes.informe.estado.todas') },
+      { id: 'abiertas', text: t('partes.informe.estado.abiertas') },
+      { id: 'cerradas', text: t('partes.informe.estado.cerradas') },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- locale
+    [i18n.language],
+  )
+  const displayClienteNombre = useCallback(
+    (item: Record<string, unknown> | null) => catalogDisplay(item, 'nombre'),
+    [],
+  )
+  const displayTipoDescripcion = useCallback(
+    (item: Record<string, unknown> | null) => catalogDisplay(item, 'descripcion'),
+    [],
   )
 
-  const duracionSummaryItems = usePartesMinutosColumnSummaryItems(
-    'duracionMinutos',
-    'pq-duracionMinutos-sum',
-  )
+  const duracionSummaryItems = usePartesDuracionHorasSummaryItems()
 
   const renderDetalladaGridView = useCallback(
     (toolbarLeading: ReactNode) => (
@@ -243,12 +266,9 @@ export function ConsultaDetalladaPage() {
           onRefresh={() => void load()}
           proceso="partes.informes.consultaDetallada"
           gridId="consultaDetallada"
-          accessToken={getAuthToken()}
-          platform={buildAuthPlatformHeaders()}
+          accessToken={accessToken}
+          platform={platform}
           defaultTotalItems={duracionSummaryItems}
-          columnSummaryFormatters={{
-            duracionMinutos: durationSummaryFormatter,
-          }}
           toolbarLeading={toolbarLeading}
         >
           <Paging defaultPageSize={20} />
@@ -266,10 +286,10 @@ export function ConsultaDetalladaPage() {
             caption={t('partes.informe.field.tipoTareaDescripcion')}
           />
           <Column
-            dataField="duracionMinutos"
+            dataField="duracionHoras"
             caption={t('partes.informe.field.duracion')}
             dataType="number"
-            customizeText={formatDuracionCell}
+            format={DURACION_HORAS_NUMBER_FORMAT}
           />
           <Column dataField="observacion" caption={t('partes.informe.field.observacion')} />
           <Column
@@ -290,12 +310,12 @@ export function ConsultaDetalladaPage() {
         </ProcessDataGrid>
       </div>
     ),
-    [duracionSummaryItems, durationSummaryFormatter, load, loading, rows, t],
+    [accessToken, duracionSummaryItems, load, loading, platform, rows, t],
   )
 
   return (
+    <ProcessPageLayout title={pageTitle}>
     <div data-testid="partesConsultaDetalladaPage" style={{ padding: 16 }}>
-      <h2>{pageTitle}</h2>
       <div
         style={{
           display: 'flex',
@@ -312,9 +332,10 @@ export function ConsultaDetalladaPage() {
             type="date"
             displayFormat={dateDisplayFormat}
             dateSerializationFormat={dateSerializationFormat}
+            useMaskBehavior
             onValueChanged={(e) => {
               const next = isoDateFromDateBox(e)
-              if (next !== null) {
+              if (next !== null && next !== fechaDesde) {
                 setFechaDesde(next)
               }
             }}
@@ -325,9 +346,10 @@ export function ConsultaDetalladaPage() {
           type="date"
           displayFormat={dateDisplayFormat}
           dateSerializationFormat={dateSerializationFormat}
+          useMaskBehavior
           onValueChanged={(e) => {
             const next = isoDateFromDateBox(e)
-            if (next !== null) {
+            if (next !== null && next !== fechaHasta) {
               setFechaHasta(next)
             }
           }}
@@ -343,7 +365,7 @@ export function ConsultaDetalladaPage() {
                 dataSource={clientes}
                 value={filtroClienteId}
                 valueExpr="id"
-                displayExpr={(item: Record<string, unknown> | null) => catalogDisplay(item, 'nombre')}
+                displayExpr={displayClienteNombre}
                 showClearButton
                 placeholder={catalogLoadingText}
                 noDataText={catalogosLoading ? t('catalog.loading') : undefined}
@@ -362,7 +384,7 @@ export function ConsultaDetalladaPage() {
                   dataSource={asistentes}
                   value={filtroUsuarioId}
                   valueExpr="id"
-                  displayExpr={(item: Record<string, unknown> | null) => catalogDisplay(item, 'nombre')}
+                  displayExpr={displayClienteNombre}
                   showClearButton
                   placeholder={catalogLoadingText}
                   noDataText={catalogosLoading ? t('catalog.loading') : undefined}
@@ -381,9 +403,7 @@ export function ConsultaDetalladaPage() {
                 dataSource={tipos}
                 value={filtroTipoTareaId}
                 valueExpr="id"
-                displayExpr={(item: Record<string, unknown> | null) =>
-                  catalogDisplay(item, 'descripcion')
-                }
+                displayExpr={displayTipoDescripcion}
                 showClearButton
                 placeholder={catalogLoadingText}
                 noDataText={catalogosLoading ? t('catalog.loading') : undefined}
@@ -397,11 +417,7 @@ export function ConsultaDetalladaPage() {
         <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span>{t('partes.informe.filtro.estadoCerrado')}</span>
           <SelectBox
-            dataSource={[
-              { id: 'todas', text: t('partes.informe.estado.todas') },
-              { id: 'abiertas', text: t('partes.informe.estado.abiertas') },
-              { id: 'cerradas', text: t('partes.informe.estado.cerradas') },
-            ]}
+            dataSource={estadoOptions}
             value={estadoCerrado}
             valueExpr="id"
             displayExpr="text"
@@ -435,12 +451,19 @@ export function ConsultaDetalladaPage() {
         />
       ) : null}
     </div>
+    </ProcessPageLayout>
   )
 }
 
 export function ConsultasAgrupadasPage() {
   const { t, i18n } = useTranslation()
+  const pageTitle = useProcessMenuTitle(
+    t('partes.informe.page.consultasAgrupadas'),
+    '/partes/informes/consultas-agrupadas',
+  )
   const native = isNativeApp()
+  const accessToken = getAuthToken()
+  const platform = useMemo(() => buildAuthPlatformHeaders(), [])
   const defaultRange = monthRange(currentMonthValue())
   const [fechaDesde, setFechaDesde] = useState(defaultRange.fechaDesde)
   const [fechaHasta, setFechaHasta] = useState(defaultRange.fechaHasta)
@@ -455,7 +478,11 @@ export function ConsultasAgrupadasPage() {
     [rawRows, t, i18n.language]
   )
 
-  const pivotCatalog = useMemo(() => buildPartesConsultasAgrupadasPivotCatalog(t), [t])
+  const pivotCatalog = useMemo(
+    () => buildPartesConsultasAgrupadasPivotCatalog(t),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- locale
+    [i18n.language],
+  )
 
   const fetchAgrupadaRows = useCallback(async () => {
     const query: Record<string, string> = { fechaDesde, fechaHasta, eje }
@@ -503,6 +530,25 @@ export function ConsultasAgrupadasPage() {
     []
   )
 
+  const ejeOptions = useMemo(
+    () => [
+      { id: 'cliente', text: t('partes.informe.field.clienteNombre') },
+      { id: 'asistente', text: t('partes.informe.field.usuarioNombre') },
+      { id: 'tipo', text: t('partes.informe.field.tipoTareaDescripcion') },
+      { id: 'fecha', text: t('partes.informe.field.fecha') },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- locale
+    [i18n.language],
+  )
+  const granularidadOptions = useMemo(
+    () => [
+      { id: 'dia', text: t('partes.informe.granularidad.dia') },
+      { id: 'mes', text: t('partes.informe.granularidad.mes') },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- locale
+    [i18n.language],
+  )
+
   const duracionSummaryItems = usePartesMinutosColumnSummaryItems(
     'totalMinutos',
     'pq-totalMinutos-sum',
@@ -519,8 +565,8 @@ export function ConsultasAgrupadasPage() {
           onRefresh={() => void load()}
           proceso="partes.informes.consultasAgrupadas"
           gridId="consultasAgrupadas"
-          accessToken={getAuthToken()}
-          platform={buildAuthPlatformHeaders()}
+          accessToken={accessToken}
+          platform={platform}
           defaultTotalItems={duracionSummaryItems}
           columnSummaryFormatters={{
             totalMinutos: durationSummaryFormatter,
@@ -558,21 +604,22 @@ export function ConsultasAgrupadasPage() {
         </ProcessDataGrid>
       </div>
     ),
-    [duracionSummaryItems, durationSummaryFormatter, load, loading, rows, t],
+    [accessToken, duracionSummaryItems, durationSummaryFormatter, load, loading, platform, rows, t],
   )
 
   return (
+    <ProcessPageLayout title={pageTitle}>
     <div data-testid="partesConsultaAgrupadaPage" style={{ padding: 16 }}>
-      <h2>{t('partes.informe.page.consultasAgrupadas')}</h2>
       <div style={{ display: 'flex', gap: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'end' }}>
         <DateBox
           value={fechaDesde}
           type="date"
           displayFormat={dateDisplayFormat}
           dateSerializationFormat={dateSerializationFormat}
+          useMaskBehavior
           onValueChanged={(e) => {
             const next = isoDateFromDateBox(e)
-            if (next !== null) {
+            if (next !== null && next !== fechaDesde) {
               setFechaDesde(next)
             }
           }}
@@ -582,20 +629,16 @@ export function ConsultasAgrupadasPage() {
           type="date"
           displayFormat={dateDisplayFormat}
           dateSerializationFormat={dateSerializationFormat}
+          useMaskBehavior
           onValueChanged={(e) => {
             const next = isoDateFromDateBox(e)
-            if (next !== null) {
+            if (next !== null && next !== fechaHasta) {
               setFechaHasta(next)
             }
           }}
         />
         <SelectBox
-          dataSource={[
-            { id: 'cliente', text: t('partes.informe.field.clienteNombre') },
-            { id: 'asistente', text: t('partes.informe.field.usuarioNombre') },
-            { id: 'tipo', text: t('partes.informe.field.tipoTareaDescripcion') },
-            { id: 'fecha', text: t('partes.informe.field.fecha') },
-          ]}
+          dataSource={ejeOptions}
           value={eje}
           valueExpr="id"
           displayExpr="text"
@@ -604,10 +647,7 @@ export function ConsultasAgrupadasPage() {
         />
         {eje === 'fecha' ? (
           <SelectBox
-            dataSource={[
-              { id: 'dia', text: t('partes.informe.granularidad.dia') },
-              { id: 'mes', text: t('partes.informe.granularidad.mes') },
-            ]}
+            dataSource={granularidadOptions}
             value={granularidadFecha}
             valueExpr="id"
             displayExpr="text"
@@ -626,5 +666,6 @@ export function ConsultasAgrupadasPage() {
         renderGridView={renderAgrupadaGridView}
       />
     </div>
+    </ProcessPageLayout>
   )
 }

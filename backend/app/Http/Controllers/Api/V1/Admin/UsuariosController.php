@@ -29,7 +29,8 @@ final class UsuariosController extends Controller
         $items = $this->userAdminRepository->listAll();
 
         $soloActivosRaw = $request->query('soloActivos');
-        $soloActivos = $soloActivosRaw === null || $soloActivosRaw === '' ? '1' : (string) $soloActivosRaw;
+        // Sin query: ABM SDK lista todos. Maestros envían soloActivos=1.
+        $soloActivos = $soloActivosRaw === null || $soloActivosRaw === '' ? '0' : (string) $soloActivosRaw;
 
         if ($soloActivos !== '0') {
             $items = array_values(array_filter(
@@ -56,7 +57,8 @@ final class UsuariosController extends Controller
         $validator = Validator::make($request->all(), [
             'codigo' => ['required_without:usuario', 'string', 'max:64', Rule::unique('users', 'usuario')],
             'usuario' => ['required_without:codigo', 'string', 'max:64', Rule::unique('users', 'usuario')],
-            'nombre' => ['required', 'string', 'max:255'],
+            'nombre' => ['required_without:name', 'string', 'max:255'],
+            'name' => ['required_without:nombre', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
             'password' => ['required', 'string'],
             'activo' => ['sometimes', 'boolean'],
@@ -81,6 +83,9 @@ final class UsuariosController extends Controller
         if (!isset($data['codigo']) && isset($data['usuario'])) {
             $data['codigo'] = $data['usuario'];
         }
+        if (!isset($data['nombre']) && isset($data['name'])) {
+            $data['nombre'] = $data['name'];
+        }
 
         $user = $this->userAdminRepository->create($data);
 
@@ -93,6 +98,7 @@ final class UsuariosController extends Controller
             'codigo' => ['sometimes', 'string', 'max:64', Rule::unique('users', 'usuario')->ignore($id)],
             'usuario' => ['sometimes', 'string', 'max:64', Rule::unique('users', 'usuario')->ignore($id)],
             'nombre' => ['sometimes', 'string', 'max:255'],
+            'name' => ['sometimes', 'string', 'max:255'],
             'email' => ['sometimes', 'email', 'max:255', Rule::unique('users', 'email')->ignore($id)],
             'password' => ['sometimes', 'nullable', 'string'],
             'activo' => ['sometimes', 'boolean'],
@@ -109,6 +115,9 @@ final class UsuariosController extends Controller
         $data = $validator->validated();
         if (!isset($data['codigo']) && isset($data['usuario'])) {
             $data['codigo'] = $data['usuario'];
+        }
+        if (!isset($data['nombre']) && isset($data['name'])) {
+            $data['nombre'] = $data['name'];
         }
         if (array_key_exists('password', $data) && ($data['password'] === null || $data['password'] === '')) {
             unset($data['password']);

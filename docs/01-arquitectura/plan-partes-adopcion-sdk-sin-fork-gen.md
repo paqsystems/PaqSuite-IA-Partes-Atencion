@@ -116,7 +116,7 @@ Refinamiento opcional post-registro: reducir hooks de dominio a `columnSummaryFo
 | Eliminación `summaryTypeLabels` + `grid.summary.*` en locales | Preparado en working tree (pendiente commit) |
 | `partesGridSummary.ts` reducido a dominio duración | Preparado en working tree |
 | `registerGridI18nResources` en `i18n.ts` | **Verificado** con `@paqsuite/react-core` 2.4.14 y namespace `common` |
-| Pin `package.json` | **Deploy:** `@paqsuite/react-core` **2.4.17** (Verdaccio); lock con tarball `https://srv-pq…/react-core-2.4.17.tgz` |
+| Pin `package.json` | **Deploy:** `@paqsuite/react-core` **2.4.22** (Verdaccio); lock con tarball `https://srv-pq…/react-core-2.4.22.tgz` |
 | `shellI18n.ts` fork menú GEN | **Pendiente/bloqueado**: SDK/template sin exports `createAppTranslator` / `buildMenuSidebarLabels`; no eliminar sin contrato SDK |
 | Registry / release empaquetado | Vercel: `vercel-install.sh` + `VERDACCIO_AUTH_TOKEN`; lab local opcional vía `MODO-REPO-LAB.md` |
 

@@ -9,8 +9,8 @@
 | **Roles** | Cliente / asistente / supervisor (delimitación SPEC-002) |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-003](./TR-003-maestros-y-catalogos.md) (menú Archivos), [TR-004](./TR-004-operacion-carga-diaria.md) (tareas), [TR-005](./TR-005-supervision-proceso-masivo.md) (ítem masivo menú) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | En Control Calidad |
-| **Última actualización** | 2026-08-01 |
+| **Estado** | Finalizado |
+| **Última actualización** | 2026-10-11 |
 
 **Origen:** [HU-006](../../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md)  
 **Referencia SPEC:** [SPEC-006](../../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md)
@@ -29,6 +29,7 @@
 - Delimitación servidor en todos los SP de lectura.
 - **(CC-PQ #1, 31/07)** Consulta detallada, agrupado y dashboard filtran `es_tarea = 1`; nuevo Informe **Paquete de Horas** (cuenta corriente): sin filtro `es_tarea`, saldo inicial + columna Saldo running (pivot sin Saldo).
 - **(CC-PQ #2, 01/08)** Consulta detallada y agrupada incorporan `erpCliente` / `erpArticulo` en grilla y pivot.
+- **(CC-PQ #4, 04/10)** Paquete de Horas: filtro `tipoClienteId`; columnas `tipoClienteCode` / `tipoClienteDescripcion` en grilla y pivot (web y mobile).
 
 ### Out of scope
 - Export Excel Must; edición desde informes; BI avanzado; mobile kardex/pivot (TR-007); excepciones de refresh por rol.
@@ -56,6 +57,9 @@
 | AC-15 | Paquete de Horas incluye tareas y compras del periodo (sin filtrar `es_tarea`) |
 | AC-16 | Paquete de Horas: fila «Saldo inicial» con acumulado correcto (exclusive `fechaDesde`); columna Saldo running en grilla; pivot sin campo Saldo; filtro cliente disponible para asistente/supervisor |
 | AC-17 | Consulta detallada muestra `erpCliente`/`erpArticulo` en grilla y pivot; agrupada los expone en grilla y pivot |
+| AC-U05 | Cada ítem de movimiento de Paquete de Horas trae `tipoClienteCode` y `tipoClienteDescripcion`. La fila saldo inicial los trae vacíos |
+| AC-U06 | `tipoClienteId` excluye movimientos de otro tipo y recalcula `saldoInicial` solo con el tipo |
+| AC-U07 | `buildPaqueteHorasPivotFields` incluye ambos dataField y no incluye `saldo` |
 
 ---
 
@@ -76,6 +80,8 @@ R-CO-01…10.
 | RN-TR-09 | Consulta detallada, agrupado y dashboard: filtro implícito `es_tarea = 1`. |
 | RN-TR-10 | Paquete de Horas: **no** filtra `es_tarea`; saldo inicial = movimientos con fecha &lt; `fechaDesde` (tarea suma, compra resta); orden de filas: fecha ASC, id ASC tras la fila «Saldo inicial»; columna Saldo running en grilla, excluida del pivot; SP `pq_sp_partes_informe_paquete_horas`. |
 | RN-TR-11 | Detalle y agrupado incluyen `erpCliente` / `erpArticulo` (join a cliente) en la salida; grilla y pivot los exponen. |
+| RN-TR-U04 | Filtro de tipo de cliente en Paquete de Horas: igualdad `c.tipo_cliente_id = @p` (un valor). No usar `IN`. |
+| RN-TR-U05 | El join del tipo no se agrega a `baseScoped` compartido con detallada/agrupado/dashboard: solo en la query de paquete. |
 
 ---
 
@@ -130,7 +136,7 @@ Base `/api/v1` — Bearer + tenant + perfil Partes.
 | GET | `/partes/informes/agrupado` | Query: `eje` **req**, `granularidadFecha?` (req si eje=fecha), `fechaDesde`/`fechaHasta` **req**, filtros opcionales |
 | GET | `/partes/dashboard` | Query: `fechaDesde`, `fechaHasta` **req** (o `mes=YYYY-MM` que el backend expande); lee top N y refresh no van en query — top N desde param en server; FE lee refresh vía bootstrap/param |
 | GET | `/partes/parametros/dashboard` | `{ topN, refreshSeg }` desde GRAL (evita hardcode FE) |
-| GET | `/partes/informes/paquete-horas` | Query: `fechaDesde`, `fechaHasta` **req**; `clienteId` **req** (cliente funcional usa el propio); sin filtro `es_tarea` → SP `pq_sp_partes_informe_paquete_horas` |
+| GET | `/partes/informes/paquete-horas` | Query: `fechaDesde`, `fechaHasta` **req**; `clienteId` **req** (cliente funcional usa el propio); `tipoClienteId` opcional; sin filtro `es_tarea` → SP `pq_sp_partes_informe_paquete_horas` |
 
 Errores: 422 fechas faltantes / eje inválido / granularidad faltante / `clienteId` faltante en Paquete de Horas; empty = **200** + `data: []` / ceros (no 404).
 
@@ -142,7 +148,7 @@ Errores: 422 fechas faltantes / eje inválido / granularidad faltante / `cliente
 |-------|---------|
 | Consulta detallada | `/partes/informes/consulta-detallada`; **`ProcessDataGrid`** (plantillas + column chooser inherentes) + toggle Pivot; filtros; empty i18n; duración en **`hh:mm`**; columnas `erpCliente`/`erpArticulo`; **solo lectura** |
 | Consultas agrupadas | `/partes/informes/consultas-agrupadas`; selector eje + granularidad fecha; **`ProcessDataGrid`** + Pivot; `totalMinutos` en **`hh:mm`**; `erpCliente`/`erpArticulo` en grilla y pivot |
-| Paquete de horas | `/partes/informes/paquete-horas`; filtros `fechaDesde`/`fechaHasta`/cliente; **`ProcessDataGrid`** con fila «Saldo inicial» + columna Saldo running (**`hh:mm`**); toggle Pivot **sin** el campo Saldo; mismos atributos que detalle (incl. ERP) |
+| Paquete de horas | `/partes/informes/paquete-horas`; filtros `fechaDesde`/`fechaHasta`/cliente/`tipoClienteId`; **`ProcessDataGrid`** con fila «Saldo inicial» + columna Saldo running (**`hh:mm`**) + tipo de cliente (código y descripción); toggle Pivot **sin** el campo Saldo; mismos atributos que detalle (incl. ERP); `data-testid` `partesPaqueteTipoCliente` |
 | Dashboard | Ruta `/partes`; indicadores; top N en **`ProcessDataGrid`**; DateBox mes; botón refresh; timer; totales en **`hh:mm`**; **sin** Pivot |
 | Post-login | Redirect a `/partes` |
 | Layouts | Via **`ProcessDataGrid`** (`proceso` + `gridId`); no redefinir chooser/plantillas por menú |
@@ -239,6 +245,7 @@ Errores: 422 fechas faltantes / eje inválido / granularidad faltante / `cliente
 | 2026-07-31 | CC-PQ #1 (31/07/2026): detalle/agrupado/dashboard filtran `es_tarea=1` (AC-14, RN-TR-09, T7); nuevo Informe Paquete de Horas cuenta corriente vía `pq_sp_partes_informe_paquete_horas` (AC-15/16, RN-TR-10, T8/T9); [D-VERIFICACION-CC-PQ-01](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md). |
 | 2026-08-01 | CC-PQ #2 (01/08/2026): detalle y agrupada incorporan `erpCliente`/`erpArticulo` en grilla y pivot (AC-17, RN-TR-11, T10/T11); [D-VERIFICACION-CC-PQ-02](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md). |
 | 2026-08-01 | Parte I: fusionados TR-006-update (CC-PQ #1, 31/07) y TR-006-update-01 (CC-PQ #2, 01/08) en esta TR; updates eliminados. Estado → Finalizado. |
+| 2026-10-11 | Parte I CC-PQ #4: AC-U05…U07 tipo de cliente en Paquete de Horas; update eliminado. Estado → Finalizado. |
 
 ---
 
