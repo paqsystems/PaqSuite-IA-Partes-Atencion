@@ -37,8 +37,8 @@ import {
 import { resolveAppProductTitle } from './appProductBranding'
 import { productI18nCatalogs } from './productI18n'
 import {
-  buildMenuSidebarLabels,
   createAppTranslator,
+  menuSidebarLabelsFromT,
   type AppTranslateFn,
   type ShellOutletContext,
 } from './shellI18n'
@@ -81,7 +81,7 @@ export function AuthenticatedShell() {
     [locale, productCatalog],
   )
   const productTitle = useMemo(() => resolveAppProductTitle(locale), [locale])
-  const menuSidebarLabels = useMemo(() => buildMenuSidebarLabels(appT), [appT])
+  const menuSidebarLabels = useMemo(() => menuSidebarLabelsFromT((key) => appT(key)), [appT])
   const menuTranslate = useCallback((key: string) => appT(key), [appT])
   const shellOutletContext = useMemo(
     (): ShellOutletContext => ({ locale, t: appT }),
@@ -360,7 +360,7 @@ export function SelectEmpresaPage() {
                   activeCompanyId: companyId,
                   empresas: nextSession?.empresas ?? session?.empresas ?? [],
                 }),
-                { reloadOnGroupChange: true }
+                { reloadOnGroupChange: false },
               )
               navigate(path)
             },

@@ -363,4 +363,57 @@ class ApiV1AdminSeguridadTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    public function test_usuarios_acepta_contrato_sdk_name_y_usuario(): void
+    {
+        $token = $this->loginAdmin();
+        $headers = $this->authHeaders($token);
+
+        $create = $this->postJson('/api/v1/admin/usuarios', [
+            'usuario' => 'sdkuser1',
+            'name' => 'SDK User',
+            'email' => 'sdkuser1@partes.local',
+            'password' => 'Secret123!',
+            'activo' => true,
+        ], $headers);
+        $create->assertStatus(201)
+            ->assertJsonPath('resultado.item.usuario', 'sdkuser1')
+            ->assertJsonPath('resultado.item.nombre', 'SDK User')
+            ->assertJsonPath('resultado.item.name', 'SDK User');
+
+        $patch = $this->patchJson('/api/v1/admin/usuarios/'.(int) $create->json('resultado.item.id'), [
+            'name' => 'SDK User Edit',
+        ], $headers);
+        $patch->assertStatus(200)->assertJsonPath('resultado.item.name', 'SDK User Edit');
+    }
+
+    public function test_permisos_acepta_userId_del_sdk(): void
+    {
+        $token = $this->loginAdmin();
+        $headers = $this->authHeaders($token);
+        $empresaId = (int) $this->getJson('/api/v1/admin/empresas', $headers)->json('resultado.items.0.id');
+        $rolId = (int) $this->postJson('/api/v1/admin/roles', [
+            'nombre' => 'SdkRol',
+            'accesoTotal' => false,
+        ], $headers)->json('resultado.item.id');
+        $userId = (int) $this->postJson('/api/v1/admin/usuarios', [
+            'usuario' => 'sdkperm',
+            'name' => 'SDK Perm',
+            'email' => 'sdkperm@partes.local',
+            'password' => 'Secret123!',
+        ], $headers)->json('resultado.item.id');
+
+        $create = $this->postJson('/api/v1/admin/permisos', [
+            'userId' => $userId,
+            'empresaId' => $empresaId,
+            'rolId' => $rolId,
+        ], $headers);
+        $create->assertStatus(201)
+            ->assertJsonPath('resultado.item.userId', $userId)
+            ->assertJsonPath('resultado.item.usuarioId', $userId);
+
+        $list = $this->getJson('/api/v1/admin/permisos?userId='.$userId, $headers);
+        $list->assertStatus(200);
+        $this->assertNotEmpty($list->json('resultado.items'));
+    }
 }

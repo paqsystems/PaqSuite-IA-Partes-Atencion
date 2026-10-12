@@ -51,7 +51,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 3 | 09/08/2026 | Especificado | Masivo tilde + carga decimal/Excel/plantillas/tipo default + Smart Capture controles — **F1/F Aprobado 16/09/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-03-2026-09-16.md)) |
 | 4 | 04/10/2026 | Especificado | ABM asistentes/clientes + Paquete de Horas tipo cliente — **F1/F Aprobado 11/10/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-04-2026-10-04.md)) |
 | 5 | 05/10/2026 | Especificado | Errores de validación en modal — **F1/F Aprobado 11/10/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/001-Generalidades/D-VERIFICACION-CC-PQ-05-2026-10-05.md)) |
-| 6 | 11/10/2026 | Pendiente | Deuda de cableado SDK por GEN (PA-01…PA-14) — origen [deuda-cableado-sdk-por-gen.md](../06-operacion/deuda-cableado-sdk-por-gen.md) |
+| 6 | 11/10/2026 | Especificado | Deuda cableado SDK — PA-01…14 **F+I** (PA-03/04/14: 12/10/2026, pin 2.4.25-beta.1) |
 
 ---
 
@@ -63,12 +63,12 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 |-------|--------|
 | **Fecha** | 11/10/2026 |
 | **Responsable** | Pablo Quarracino (PQ) |
-| **Estado** | Pendiente |
-| **F1/F** | — |
-| **Parte I** | — |
-| **Cierre updates** | — |
+| **Estado** | Especificado |
+| **F1/F** | PA-01…14: F Aprobado (PA-03/04/14: 12/10/2026). |
+| **Parte I** | PA-01 (012); PA-02…14 en SPEC-002. Update 002 **Finalizado**. |
+| **Cierre updates** | SPEC/HU/TR-002-update **Finalizado** 12/10/2026. |
 | **Origen** | [deuda-cableado-sdk-por-gen.md](../06-operacion/deuda-cableado-sdk-por-gen.md) · relevamiento Framework 11/10/2026 |
-| **Pin de referencia** | `@paqsuite/react-core` **2.4.24-beta.1** · `paqsuite/laravel-core` **1.3.13-beta.1** |
+| **Pin de referencia** | `@paqsuite/react-core` **2.4.25-beta.1** · `paqsuite/laravel-core` **1.3.13-beta.1** |
 
 ### Hallazgos
 
@@ -82,13 +82,13 @@ Cerrar la **deuda de cableado SDK** del host Partes-Atención: mala invocación 
 
 **Orden sugerido de resolución (Parte G / D):** P0 PA-02 → P1 GEN-06 (PA-03, PA-04, PA-05, PA-06, PA-14) → P1 GEN-19 (PA-09, PA-10, PA-08) → P1 GEN-07 PA-07 → P2 PA-11, PA-12, PA-13 → GEN-35 PA-01 al pasar de labo a Cloudsmith en CI/Forge.
 
-*Sugerencia:* módulo **001-Generalidades** (adopción GEN / reglas BASE 19, 34, 36, 42, 43, 44). Volcar en Parte G a SPEC/HU/TR-update (o originales si no existen) alineados a cada GEN.
+*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md) · PA-01 **F+I** → [SPEC-012](../05-open-spec/100-SistemaPartes/SPEC-012-adopcion-gen-35-cloudsmith.md)
 
 ### Errores encontrados - Mejoras solicitadas
 
 #### GEN-20 — Envelope API (PA-02, P0)
 
-*Sugerencia:* HU Generalidades / GEN-20
+*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md)
 
 - `ApiEnvelope::ok` serializa `'error' => null`. Contrato SDK: `'error' => 0` y `resultado` objeto, no `null`. Rompe clientes que usan `isEnvelope` / `error === 0`.
 - Dónde: `backend/app/Support/ApiEnvelope.php`, `AuthController.php`.
@@ -96,7 +96,7 @@ Cerrar la **deuda de cableado SDK** del host Partes-Atención: mala invocación 
 
 #### GEN-06 — Seguridad admin (PA-03, PA-04, PA-05, PA-06, PA-14)
 
-*Sugerencia:* HU Generalidades / GEN-06 · SoT regla BASE `44-host-framework-gen-cableado-componentes` · errores de guardado en modal: regla 36
+*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md) · regla 44 / 36
 
 - **PA-03 P1:** el SDK exporta `UsuariosAdminPage`; el host reimplementa listado, popup, alta/edición e inhabilitación (`UsuariosAdminPage.tsx`). Pedido: wrapper fino del export SDK. Dominio solo: token, `platform`, permisos, menú.
 - **PA-04 P1:** el SDK exporta `PermisosAdminPage`; el host monta tres `DataGrid` DX y lógica batch propia (`PermisosAdminPage.tsx`). Pedido: montar `PermisosAdminPage` del SDK. No DataGrid crudo de proceso.
@@ -106,14 +106,14 @@ Cerrar la **deuda de cableado SDK** del host Partes-Atención: mala invocación 
 
 #### GEN-07 + GEN-02 — Menú / i18n GEN (PA-07, PA-11)
 
-*Sugerencia:* HU Generalidades / GEN-07 · GEN-02 · reglas 42 y 43. El `MenuSidebar` en sí está bien cableado; no rehacer el árbol.
+*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md)
 
 - **PA-07 P1:** `shellI18n.ts` duplica chrome `menu.*`. Pedido: labels del sidebar vía `t('menu.*')` / helper SDK (`menuSidebarLabelsFromT`). Catálogo host solo claves **producto**.
 - **PA-11 P2:** `main.tsx` hace `syncDevExtremeLocale('es')` y `i18n.ts` sincroniza `getGuestLocale()`. Arranque EN/FR puede pintar DX en ES un tick. Pedido: un solo `syncDevExtremeLocale` con el locale real (guest/sesión), no forzar `'es'` al boot.
 
 #### GEN-19 — Shell / tenancy / tema / `{cliente}` (PA-08, PA-09, PA-10)
 
-*Sugerencia:* HU Generalidades / GEN-19 · SoT regla 34 (`bootstrapClienteFromWindow` antes del Router)
+*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md) · regla 34
 
 - **PA-08 P1:** con pin ≥ 2.4.20 el SDK exporta `normalizeThemeFromApi`, `mapThemeForApiPersistence`, `paqsuiteDxStockBridge`, `useEmpresaAppearanceBridge`. El host mantiene `sdkEmpresaThemeCompat.ts` y switcher DX propio. Pedido: un solo puente SDK. Preview/restore sin reload de página.
 - **PA-09 P1:** `main.tsx` llama `bootstrapPlatformCliente()` **antes** del Router (orden OK) pero **no** `bootstrapClienteFromWindow`. Reimplementa query/cookie/session/Vercel/landing. Pedido: delegar a `bootstrapClienteFromWindow`. Conservar wrap de landing Vercel **solo** si el SoT de resolución host lo admite.
@@ -121,24 +121,23 @@ Cerrar la **deuda de cableado SDK** del host Partes-Atención: mala invocación 
 
 #### GEN-04 — Auth / cambio de clave (PA-12, P2)
 
-*Sugerencia:* HU Generalidades / GEN-04
+*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md)
 
 - `ChangePasswordPage` sin `AuthCardLayout` / `AuthPageLayout`, literales en español.
 - Pedido: layouts SDK + i18n (mismo patrón que login/forgot/reset, que ya están bien).
 
 #### GEN-01 — Layouts de proceso (PA-13, P2)
 
-*Sugerencia:* HU Generalidades / GEN-01 · regla 42 (títulos)
+*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md)
 
 - Procesos de dominio no usan `ProcessPageLayout` (div/h2 propios) en varias páginas `features/partes/**`.
 - Pedido: adoptar `ProcessPageLayout`. Título desde menú localizado (`resolveMenuCaption`) o `t()` de producto — no literal ES.
 
 #### GEN-35 — Distribución SDK (PA-01, lab / ops)
 
-*Sugerencia:* ops / GEN-35 · regla 45 Cloudsmith. **No** tratarlo como bug de invocación si el host está en consumo “repo labo”.
+*Procesado* (Parte G 11/10/2026) · **F+I 11/10/2026** → [SPEC-012](../05-open-spec/100-SistemaPartes/SPEC-012-adopcion-gen-35-cloudsmith.md) · [HU-012](../03-historias-usuario/100-SistemaPartes/HU-012-adopcion-gen-35-cloudsmith.md) · [TR-012](../04-tareas/100-SistemaPartes/TR-012-adopcion-gen-35-cloudsmith.md) · [F PA-01](../04-tareas/100-SistemaPartes/F-TR-012-adopcion-gen-35-cloudsmith-PA-01.md)
 
-- `composer.lock` resuelve `laravel-core` por **path** al checkout Framework. En `composer.json` el repo `path` está **primero** que Cloudsmith. El FE ya va por Cloudsmith; el BE quedó en modo labo.
-- Pedido: antes de CI/Forge/prod, quitar el path (o no commitearlo) y regenerar lock **solo** Cloudsmith con `CLOUDSMITH_READ_TOKEN`.
+**F+I 11/10/2026:** path quitado; lock Cloudsmith `/basic/`; Forge rechaza path/Satis. F: [F PA-01](../04-tareas/100-SistemaPartes/F-TR-012-adopcion-gen-35-cloudsmith-PA-01.md) **Aprobado con observaciones**. SPEC/HU/TR-012-update fusionados en originales (**Finalizado**). El ítem #6 de la tabla sigue abierto por PA-02…PA-14.
 
 ---
 

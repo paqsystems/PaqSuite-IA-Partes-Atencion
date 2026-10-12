@@ -10,8 +10,10 @@ import {
   isNativeApp,
   LoadingOverlay,
   ProcessDataGrid,
+  ProcessPageLayout,
 } from '@paqsuite/react-core'
 import { getAuthToken } from '../../auth/authSessionStore'
+import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
 import { formatMinutosAsHhMm, todayIsoDate } from '../carga/partesTareaDuration'
@@ -31,6 +33,7 @@ function monthRange(mes: string): { fechaDesde: string; fechaHasta: string } {
 
 export function PartesDashboardPage() {
   const { t } = useTranslation()
+  const pageTitle = useProcessMenuTitle(t('dashboard.title'), '/partes')
   const native = isNativeApp()
   const [mes, setMes] = useState(currentMonthValue())
   const [refreshSeg, setRefreshSeg] = useState(60)
@@ -117,10 +120,10 @@ export function PartesDashboardPage() {
 
   if (native) {
     return (
-      <div className="pqProcessPage partesMobileProcess" data-testid="partesDashboardRoot">
-        <div className="pqProcessHeader partesMobileProcessHeader">
-          <h2 className="pqProcessTitle">{t('dashboard.title')}</h2>
-          <div className="pqProcessToolbar partesMobileProcessToolbar">
+      <ProcessPageLayout
+        title={pageTitle}
+        toolbar={
+          <div className="partesMobileProcessToolbar">
             {mesPicker}
             <Button
               text={t('dashboard.refresh')}
@@ -135,7 +138,9 @@ export function PartesDashboardPage() {
               {t('dashboard.linkPaqueteHoras')}
             </Link>
           </div>
-        </div>
+        }
+      >
+      <div className="partesMobileProcess" data-testid="partesDashboardRoot">
         <DashboardContainer
           loading={loading}
           error={error}
@@ -173,15 +178,15 @@ export function PartesDashboardPage() {
           ]}
         />
       </div>
+      </ProcessPageLayout>
     )
   }
 
   return (
-    <div className="pqProcessPage" data-testid="partesDashboardRoot">
-      <LoadingOverlay visible={loading} />
-      <div className="pqProcessHeader">
-        <h2 className="pqProcessTitle">{t('dashboard.title')}</h2>
-        <div className="pqProcessToolbar">
+    <ProcessPageLayout
+      title={pageTitle}
+      toolbar={
+        <>
           <DateBox
             value={mes}
             type="date"
@@ -201,8 +206,11 @@ export function PartesDashboardPage() {
           <Link to="/partes/informes/paquete-horas" data-testid="partesDashboardLinkPaquete">
             {t('dashboard.linkPaqueteHoras')}
           </Link>
-        </div>
-      </div>
+        </>
+      }
+    >
+    <div className="pqProcessPage" data-testid="partesDashboardRoot">
+      <LoadingOverlay visible={loading} />
 
       {error ? (
         <div role="alert" className="error">
@@ -252,6 +260,7 @@ export function PartesDashboardPage() {
         <Column dataField="cantidadTareas" caption={t('dashboard.colTareas')} dataType="number" />
       </ProcessDataGrid>
     </div>
+    </ProcessPageLayout>
   )
 }
 

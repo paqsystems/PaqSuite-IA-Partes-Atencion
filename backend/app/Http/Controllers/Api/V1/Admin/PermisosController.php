@@ -28,8 +28,8 @@ final class PermisosController extends Controller
     public function index(Request $request): JsonResponse
     {
         $filters = [];
-        if ($request->filled('usuarioId')) {
-            $filters['usuarioId'] = (int) $request->query('usuarioId');
+        if ($request->filled('usuarioId') || $request->filled('userId')) {
+            $filters['usuarioId'] = (int) $request->query('usuarioId', $request->query('userId'));
         }
         if ($request->filled('empresaId')) {
             $filters['empresaId'] = (int) $request->query('empresaId');
@@ -46,7 +46,8 @@ final class PermisosController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'usuarioId' => ['required', 'integer', Rule::exists('users', 'id')],
+            'usuarioId' => ['required_without:userId', 'integer', Rule::exists('users', 'id')],
+            'userId' => ['required_without:usuarioId', 'integer', Rule::exists('users', 'id')],
             'empresaId' => ['required', 'integer', Rule::exists('pq_empresa', 'id')],
             'rolId' => ['required', 'integer', Rule::exists('pq_roles', 'id')],
         ]);
@@ -59,7 +60,11 @@ final class PermisosController extends Controller
         }
 
         try {
-            $item = $this->permisoAdminRepository->create($validator->validated());
+            $data = $validator->validated();
+            if (! isset($data['usuarioId']) && isset($data['userId'])) {
+                $data['usuarioId'] = $data['userId'];
+            }
+            $item = $this->permisoAdminRepository->create($data);
         } catch (QueryException) {
             return ApiResponse::errorFromCatalog(
                 PaqSuiteEnvelopeCatalog::VALIDATION_FAILED,
@@ -74,7 +79,8 @@ final class PermisosController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'items' => ['required', 'array', 'min:1', 'max:'.self::BATCH_MAX_ITEMS],
-            'items.*.usuarioId' => ['required', 'integer', Rule::exists('users', 'id')],
+            'items.*.usuarioId' => ['required_without:items.*.userId', 'integer', Rule::exists('users', 'id')],
+            'items.*.userId' => ['required_without:items.*.usuarioId', 'integer', Rule::exists('users', 'id')],
             'items.*.empresaId' => ['required', 'integer', Rule::exists('pq_empresa', 'id')],
             'items.*.rolId' => ['required', 'integer', Rule::exists('pq_roles', 'id')],
         ]);

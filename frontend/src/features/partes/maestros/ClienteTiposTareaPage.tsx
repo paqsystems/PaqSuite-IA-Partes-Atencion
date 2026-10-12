@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ProcessDataGrid } from '@paqsuite/react-core'
+import { ProcessDataGrid, ProcessPageLayout } from '@paqsuite/react-core'
 import { Column, Paging, Pager } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
 import SelectBox from 'devextreme-react/select-box'
 import { Popup } from 'devextreme-react/popup'
 import { confirm } from 'devextreme/ui/dialog'
 import { useTranslation } from 'react-i18next'
+import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 import { resolveAuthMessage } from '../../auth/authMessages'
 import { getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
@@ -22,6 +23,10 @@ import {
 
 export function ClienteTiposTareaPage() {
   const { t } = useTranslation()
+  const pageTitle = useProcessMenuTitle(
+    t('partes.maestros.asignaciones.title'),
+    '/archivos/partes/cliente-tipos-tarea',
+  )
   const [rows, setRows] = useState<Record<string, unknown>[]>([])
   const [loading, setLoading] = useState(true)
   const [clientes, setClientes] = useState<Record<string, unknown>[]>([])
@@ -109,8 +114,8 @@ export function ClienteTiposTareaPage() {
   }
 
   return (
+    <ProcessPageLayout title={pageTitle}>
     <div data-testid="partesMaestrosAsignacionesPage" style={{ padding: 16 }}>
-      <h2 style={{ margin: '0 0 12px' }}>{t('partes.maestros.asignaciones.title')}</h2>
       {shouldShowPageListError(formOpen, listError) ? (
         <FormContextErrorAlert
           message={listError}
@@ -202,5 +207,6 @@ export function ClienteTiposTareaPage() {
         </div>
       </Popup>
     </div>
+    </ProcessPageLayout>
   )
 }

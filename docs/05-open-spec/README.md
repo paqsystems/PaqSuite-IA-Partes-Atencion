@@ -41,6 +41,7 @@ Ver índice: [README de 001-Generalidades](001-Generalidades/README.md).
 | SPEC | Título | HU |
 |------|--------|-----|
 | [SPEC-001](001-Generalidades/SPEC-001-ui-errores-validacion-contexto-carga.md) | Errores de validación en modal de carga | [HU-001](../03-historias-usuario/001-Generalidades/HU-001-ui-errores-validacion-contexto-carga.md) · [TR-001](../04-tareas/001-Generalidades/TR-001-ui-errores-validacion-contexto-carga.md) |
+| [SPEC-002-update](updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) | Adopción cableado SDK (CC-PQ #6; cola updates) | [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md) |
 
 ### 000 – Generalidades (`000-Generalidades/`) — histórico / deprecado
 

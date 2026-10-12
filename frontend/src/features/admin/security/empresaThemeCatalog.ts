@@ -7,7 +7,7 @@ export {
   defaultEmpresaTheme as EMPRESA_THEME_DEFAULT,
   empresaThemeKeys as EMPRESA_THEME_VALUES,
 } from '@paqsuite/react-core'
-export { mapThemeForApiPersistence, normalizeThemeFromApi } from '../../../theme/sdkEmpresaThemeCompat'
+export { mapThemeForApiPersistence, normalizeThemeFromApi } from '@paqsuite/react-core'
 
 import { buildEmpresaThemeOptions } from '@paqsuite/react-core'
 

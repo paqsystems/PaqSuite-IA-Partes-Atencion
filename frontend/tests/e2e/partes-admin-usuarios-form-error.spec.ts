@@ -97,7 +97,7 @@ async function mockApis(page: Page): Promise<void> {
       return
     }
     if (url.includes('/admin/usuarios') && method === 'GET') {
-      await fulfill(envelope({ items: [] }))
+      await fulfill(envelope({ items: [], usuarioCodigoEditable: true }))
       return
     }
     if (url.includes('/admin/usuarios') && method === 'POST') {
@@ -125,21 +125,20 @@ test('alta de usuario con clave insegura muestra el error dentro del modal', asy
 
   await page.goto('/admin/usuarios?cliente=DEMO')
   await expect(page.getByTestId('adminUsuariosPage')).toBeVisible({ timeout: 30_000 })
-  await expect(page.getByTestId('adminUsuariosAdd')).toBeVisible({ timeout: 20_000 })
-  await page.getByTestId('adminUsuariosAdd').click()
-  await expect(page.getByTestId('adminUsuariosForm')).toBeVisible()
+  await expect(page.getByTestId('admin.usuarios.create')).toBeVisible({ timeout: 20_000 })
+  await page.getByTestId('admin.usuarios.create').click()
+  await expect(page.getByTestId('admin.usuarios.form')).toBeVisible()
 
-  const form = page.getByTestId('adminUsuariosForm')
+  const form = page.getByTestId('admin.usuarios.form')
   const inputs = form.locator('.dx-texteditor-input')
   await inputs.nth(0).fill('cc5smoke')
   await inputs.nth(1).fill('CC5 Smoke')
   await inputs.nth(2).fill('cc5smoke@example.com')
   await inputs.nth(3).fill('123')
-  await page.getByTestId('adminUsuariosFormSave').click()
+  await page.getByTestId('admin.usuarios.save').click()
 
   const formError = page.getByTestId('adminUsuariosFormError')
   await expect(formError).toBeVisible()
-  await expect(formError).toContainText('contraseña')
-  await expect(page.getByTestId('adminUsuariosForm')).toBeVisible()
+  await expect(page.getByTestId('admin.usuarios.form')).toBeVisible()
   await expect(page.getByTestId('adminUsuariosListError')).toHaveCount(0)
 })

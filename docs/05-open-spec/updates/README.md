@@ -10,4 +10,10 @@ Convención de nombres: `SPEC-NNN-slug-update.md`, `SPEC-NNN-slug-update-01.md`,
 
 Las carpetas se crean al primer update; no es obligatorio tener archivos aquí solo por existir los SPEC base.
 
+Cola activa (11/10/2026, CC-PQ #6):
+
+- `updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md` (PA-02…PA-14) — **Especificado**, sin implementar
+
+PA-01 (SPEC-012-update): **unificado** 11/10/2026 en SPEC/HU/TR-012 originales.
+
 `updates/000-Generalidades/` debe considerarse histórico si existiera; para trabajo nuevo de generalidades, usar `001-Generalidades`.
