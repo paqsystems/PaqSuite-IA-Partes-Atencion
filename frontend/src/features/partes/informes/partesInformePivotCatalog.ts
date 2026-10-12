@@ -18,6 +18,8 @@ type PivotFieldLike = {
   caption?: string
   dataType?: string
   summaryType?: string
+  area?: 'row' | 'column' | 'data' | 'filter'
+  groupInterval?: 'year' | 'quarter' | 'month' | 'day' | 'dayOfWeek' | 'hour'
 }
 
 function normalizeDataType(value?: string): PivotCampoDataType {
@@ -43,11 +45,18 @@ function mapPivotFieldToCatalog(field: PivotFieldLike): PivotCampoCatalogDto {
     ? (summaryRaw as PivotSummaryType)
     : undefined
 
+  const dataType = normalizeDataType(field.dataType)
+  const groupInterval =
+    field.groupInterval ??
+    (dataType === 'date' || dataType === 'datetime' ? 'day' : undefined)
+
   return {
     dataField: field.dataField,
-    dataType: normalizeDataType(field.dataType),
+    dataType,
     nombreVisible: field.caption ?? field.dataField,
     summaryType,
+    area: field.area,
+    ...(groupInterval ? { groupInterval } : {}),
   }
 }
 

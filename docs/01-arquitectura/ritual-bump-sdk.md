@@ -21,7 +21,7 @@ Plan de adopción sin forks GEN: [plan-partes-adopcion-sdk-sin-fork-gen.md](./pl
 
 Vercel: `scripts/vercel-install.sh` + `CLOUDSMITH_READ_TOKEN`. Vite **no** alias al monorepo salvo `PAQ_REPO_LAB=1`.
 
-Hasta el próximo bump Cloudsmith que publique el SelectBox de hoja (GEN-14, ya en el monorepo Framework), el host aplica `frontend/vendor/react-core-overlay` vía `postinstall` (`scripts/overlay-react-core-framework.mjs`). Quitar el overlay cuando el pin publicado incluya `excelImport.sheet`.
+Hasta el próximo bump Cloudsmith, el host aplica `frontend/vendor/react-core-overlay` vía `postinstall` (`scripts/overlay-react-core-framework.mjs`): hoja Excel (GEN-14), fecha pivot por `groupInterval: day` y dataSource estable (GEN-12). Quitar el overlay cuando el pin publicado lo incluya.
 
 ## Modo repo-lab (opcional, local)
 

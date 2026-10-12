@@ -86,6 +86,12 @@ export function AuthenticatedShell() {
     [locale, productCatalog],
   )
   const productTitle = useMemo(() => resolveAppProductTitle(locale), [locale])
+  const committedThemeKey = session
+    ? getActiveEmpresaThemeFromSession({
+        activeCompanyId: session.activeCompanyId,
+        empresas: session.empresas,
+      })
+    : null
   const menuSidebarLabels = useMemo(() => menuSidebarLabelsFromT((key) => appT(key)), [appT])
   const menuTranslate = useCallback((key: string) => appT(key), [appT])
   const shellOutletContext = useMemo(
@@ -150,17 +156,11 @@ export function AuthenticatedShell() {
   }, [platform, session?.token])
 
   useEffect(() => {
-    if (!session) {
+    if (!committedThemeKey) {
       return
     }
-    void applyDevExtremeTheme(
-      getActiveEmpresaThemeFromSession({
-        activeCompanyId: session.activeCompanyId,
-        empresas: session.empresas,
-      }),
-      { reloadOnGroupChange: false }
-    )
-  }, [session?.activeCompanyId, session?.empresas])
+    void applyDevExtremeTheme(committedThemeKey, { reloadOnGroupChange: false })
+  }, [committedThemeKey])
 
   async function handleLocaleChange(next: LocaleCode) {
     setLocale(next)

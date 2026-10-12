@@ -32,4 +32,18 @@ describe('partesInformePivotCatalog (GEN-12)', () => {
     const duracion = catalog.campos.find((c) => c.dataField === 'duracionMinutos')
     expect(duracion?.dataType).toBe('number')
   })
+
+  it('conserva áreas iniciales de consulta detallada (fila/columna/datos)', () => {
+    const catalog = buildPartesConsultaDetalladaPivotCatalog(t, 'es')
+    expect(catalog.campos.find((c) => c.dataField === 'clienteCode')?.area).toBe('row')
+    expect(catalog.campos.find((c) => c.dataField === 'tipoTareaCode')?.area).toBe('column')
+    expect(catalog.campos.find((c) => c.dataField === 'duracionMinutos')?.area).toBe('data')
+  })
+
+  it('fecha de consulta detallada agrupa por día (sin jerarquía año/mes por defecto)', () => {
+    const catalog = buildPartesConsultaDetalladaPivotCatalog(t, 'es')
+    const fecha = catalog.campos.find((c) => c.dataField === 'fecha')
+    expect(fecha?.dataType).toBe('date')
+    expect(fecha?.groupInterval).toBe('day')
+  })
 })

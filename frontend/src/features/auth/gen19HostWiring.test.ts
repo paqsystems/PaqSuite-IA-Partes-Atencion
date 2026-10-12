@@ -21,6 +21,12 @@ describe('GEN-19 host wiring PA-09 / PA-10', () => {
     expect(rootIdx).toBeGreaterThan(bootstrapIdx)
   })
 
+  it('ShellPage reaplica tema solo si cambia la clave de apariencia', () => {
+    const source = readFileSync(join(dir, 'ShellPage.tsx'), 'utf8')
+    expect(source).toContain('committedThemeKey')
+    expect(source).not.toContain('[session?.activeCompanyId, session?.empresas]')
+  })
+
   it('ShellPage abre procesos con openShellProcess y no delega openInNewTab al SDK', () => {
     const source = readFileSync(join(dir, 'ShellPage.tsx'), 'utf8')
     expect(source).toContain('openShellProcess')
