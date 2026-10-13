@@ -1,4 +1,7 @@
-# TR-008 – Asistente IA (chat documental) — adopción host en Partes
+# TR-008 – Asistente IA (chat documental) — adopción host en Partes
+
+Jira: PIAPARTES-36
+
 
 | Campo | Valor |
 |-------|--------|

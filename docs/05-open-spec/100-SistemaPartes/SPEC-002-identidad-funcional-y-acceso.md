@@ -1,4 +1,7 @@
-# SPEC-002 – Identidad funcional y acceso al módulo
+# SPEC-002 – Identidad funcional y acceso al módulo
+
+Jira: PIAPARTES-2
+
 
 ## Metadatos
 

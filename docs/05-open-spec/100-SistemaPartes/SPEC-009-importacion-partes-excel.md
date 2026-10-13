@@ -1,5 +1,9 @@
 # SPEC-009 – Importación de partes desde Excel
 
+
+Jira: PIAPARTES-9
+
+
 ## Metadatos
 
 | Campo | Valor |

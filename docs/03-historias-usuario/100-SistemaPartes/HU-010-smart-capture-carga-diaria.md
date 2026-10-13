@@ -1,4 +1,7 @@
-# HU-010 – Smart Capture en el modal de carga de tarea
+# HU-010 – Smart Capture en el modal de carga de tarea
+
+Jira: PIAPARTES-24
+
 
 ## Metadatos
 

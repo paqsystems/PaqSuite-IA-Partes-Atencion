@@ -1,4 +1,7 @@
-# TR-011 – Reportes / emisiones — adopción GEN-15 en Consulta detallada
+# TR-011 – Reportes / emisiones — adopción GEN-15 en Consulta detallada
+
+Jira: PIAPARTES-39
+
 
 | Campo | Valor |
 |-------|--------|

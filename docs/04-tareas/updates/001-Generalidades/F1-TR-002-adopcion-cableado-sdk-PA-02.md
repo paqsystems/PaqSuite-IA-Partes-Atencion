@@ -4,7 +4,7 @@ Fecha: 2026-10-11
 
 | Campo | Valor |
 |-------|--------|
-| **TR** | [TR-002-update](./TR-002-adopcion-cableado-sdk-update.md) T1 · originales PA-02 |
+| **TR** | [TR-002](../../001-Generalidades/TR-002-adopcion-cableado-sdk.md) T1 · originales PA-02 |
 | **Alcance** | GEN-20 / PA-02 envelope |
 | **Resultado** | **Aprobado** |
 

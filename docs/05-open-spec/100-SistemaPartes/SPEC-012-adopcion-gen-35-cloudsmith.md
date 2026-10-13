@@ -1,4 +1,7 @@
-# SPEC-012 — Readaptar consumo del SDK Framework a Cloudsmith
+# SPEC-012 — Readaptar consumo del SDK Framework a Cloudsmith
+
+Jira: PIAPARTES-12
+
 
 | Campo | Valor |
 |-------|--------|

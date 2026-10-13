@@ -1,5 +1,8 @@
 # HU-001 – Errores de validación visibles en el modal de carga
 
+Jira: PIAPARTES-27
+
+
 ## Metadatos
 
 | Campo | Valor |

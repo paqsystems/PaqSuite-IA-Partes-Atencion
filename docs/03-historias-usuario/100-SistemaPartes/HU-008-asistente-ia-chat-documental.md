@@ -1,4 +1,7 @@
-# HU-008 – Asistente IA (chat documental) desde menú avatar
+# HU-008 – Asistente IA (chat documental) desde menú avatar
+
+Jira: PIAPARTES-22
+
 
 ## Metadatos
 

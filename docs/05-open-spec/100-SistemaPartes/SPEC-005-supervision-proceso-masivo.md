@@ -1,4 +1,7 @@
-# SPEC-005 – Supervisión (terceros y proceso masivo)
+# SPEC-005 – Supervisión (terceros y proceso masivo)
+
+Jira: PIAPARTES-5
+
 
 ## Metadatos
 

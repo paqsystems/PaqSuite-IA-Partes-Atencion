@@ -1,4 +1,7 @@
-# TR-007 – Mobile Capacitor del módulo Sistema Partes
+# TR-007 – Mobile Capacitor del módulo Sistema Partes
+
+Jira: PIAPARTES-35
+
 
 | Campo | Valor |
 |-------|--------|
@@ -270,7 +273,10 @@ Backend fachada/menú seed: **no rehacer** si ya está de la D previa.
 
 ## 12) Informe C1
 
-# Revisión de ambigüedad - TR-007
+# Revisión de ambigüedad - TR-007
+
+Jira: PIAPARTES-35
+
 
 ## Resultado general
 

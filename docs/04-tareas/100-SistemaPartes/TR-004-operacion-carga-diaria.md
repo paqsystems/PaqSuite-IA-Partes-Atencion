@@ -1,4 +1,7 @@
-# TR-004 – Operación / carga diaria de tareas
+# TR-004 – Operación / carga diaria de tareas
+
+Jira: PIAPARTES-32
+
 
 | Campo | Valor |
 |-------|--------|
@@ -201,7 +204,10 @@ IA: no UI.
 
 ## 11) Informe C1
 
-# Revisión de ambigüedad - TR-004
+# Revisión de ambigüedad - TR-004
+
+Jira: PIAPARTES-32
+
 
 ## Resultado general
 - **Apto con observaciones** (absorbidas)

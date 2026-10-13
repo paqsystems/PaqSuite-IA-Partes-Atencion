@@ -1,4 +1,7 @@
-# HU-005 – Supervisión y proceso masivo sobre tareas
+# HU-005 – Supervisión y proceso masivo sobre tareas
+
+Jira: PIAPARTES-19
+
 
 ## Metadatos
 

@@ -20,4 +20,4 @@ Fecha: 2026-10-11
 
 ## Parte I
 
-No unificar el update: queda cola **PA-03 / PA-04 / PA-14** hasta un pin con esos exports. T1–T6 ejecutados; T2 wrappers usuarios/permisos diferidos.
+En esta fecha T6: cola **PA-03 / PA-04 / PA-14** por pin `2.4.24-beta.1`. **Cierre posterior 2026-10-12:** [F PA-03/04/14](./F-TR-002-adopcion-cableado-sdk-PA-03-04-14.md) (pin `2.4.25-beta.1`). T1–T6 de esta corrida se mantienen; el pin-gap ya no aplica.

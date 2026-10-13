@@ -1,4 +1,7 @@
-# SPEC-008 – Asistente IA (chat documental) — adopción en Partes
+# SPEC-008 – Asistente IA (chat documental) — adopción en Partes
+
+Jira: PIAPARTES-8
+
 
 ## Metadatos
 

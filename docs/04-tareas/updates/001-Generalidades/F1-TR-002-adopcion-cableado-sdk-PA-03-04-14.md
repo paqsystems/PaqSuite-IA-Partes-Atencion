@@ -1,6 +1,6 @@
 # F1 — Tests TR-002 PA-03 / PA-04 / PA-14
 
-Fecha: 2026-10-12
+Fecha: 2026-10-12 (reejecución F1)
 
 | Campo | Valor |
 |-------|--------|
@@ -9,9 +9,9 @@ Fecha: 2026-10-12
 
 | Suite | Resultado |
 |-------|-----------|
-| PHPUnit `ApiV1AdminSeguridadTest` | **OK** (12 tests; incluye contrato SDK `name`/`userId`) |
-| Vitest admin GEN-06 + i18n boot | **OK** (12 tests) |
-| Playwright `partes-admin-usuarios-form-error.spec.ts` | **OK** (`adminUsuariosFormError` en Popup SDK) |
-| Playwright `partes-admin-empresas-sdk-smoke.spec.ts` | **OK** (ES/EN/FR) |
+| PHPUnit `tests/Feature/Admin/ApiV1AdminSeguridadTest.php` | **OK** (12 tests, 101 assertions) |
+| Vitest `gen06HostWiring` + `UsuariosAdminPage` + `hostGenCatalogGuard` + `i18nDxLocaleBoot` | **OK** (10 tests) |
+| Playwright `partes-admin-usuarios-form-error.spec.ts` | **OK** (error en Popup SDK) |
+| Playwright `partes-admin-empresas-sdk-smoke.spec.ts` | **OK** (ES / EN / FR) |
 
-**testids SDK (documentados vs SPEC-001 host):** alta `admin.usuarios.create`, formulario `admin.usuarios.form`, guardar `admin.usuarios.save`. Error de modal: **`adminUsuariosFormError`** (igual que CC #5).
+**testids SDK (vs SPEC-001 host):** alta `admin.usuarios.create`, formulario `admin.usuarios.form`, guardar `admin.usuarios.save`. Error de modal: **`adminUsuariosFormError`** (CC #5).

@@ -1,4 +1,7 @@
-# TR-006 – Consultas, dashboard y navegación
+# TR-006 – Consultas, dashboard y navegación
+
+Jira: PIAPARTES-34
+
 
 | Campo | Valor |
 |-------|--------|
@@ -209,7 +212,10 @@ Errores: 422 fechas faltantes / eje inválido / granularidad faltante / `cliente
 
 ## 11) Informe C1
 
-# Revisión de ambigüedad - TR-006
+# Revisión de ambigüedad - TR-006
+
+Jira: PIAPARTES-34
+
 
 ## Resultado general
 - **Apto con observaciones** (absorbidas)

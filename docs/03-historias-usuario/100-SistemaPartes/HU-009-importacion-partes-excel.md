@@ -1,5 +1,9 @@
 # HU-009 – Importación de partes desde Excel (Carga diaria)
 
+
+Jira: PIAPARTES-23
+
+
 ## Metadatos
 
 | Campo | Valor |
