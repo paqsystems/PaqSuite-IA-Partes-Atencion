@@ -1,4 +1,7 @@
-# SPEC-010 – Smart Capture en carga diaria (modal de tarea)
+# SPEC-010 – Smart Capture en carga diaria (modal de tarea)
+
+Jira: PIAPARTES-10
+
 
 ## Metadatos
 

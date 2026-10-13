@@ -1,4 +1,7 @@
-# TR-003 – Maestros y catálogos del módulo
+# TR-003 – Maestros y catálogos del módulo
+
+Jira: PIAPARTES-31
+
 
 | Campo | Valor |
 |-------|--------|
@@ -258,7 +261,10 @@ Filtrar menú: no mostrar ítems Archivos Partes si `resultado.partes.tipoFuncio
 
 ## 11) Informe C1
 
-# Revisión de ambigüedad - TR-003
+# Revisión de ambigüedad - TR-003
+
+Jira: PIAPARTES-31
+
 
 ## Resultado general
 - Estado: **Apto con observaciones** (absorbidas abajo)

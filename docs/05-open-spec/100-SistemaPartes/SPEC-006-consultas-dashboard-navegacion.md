@@ -1,4 +1,7 @@
-# SPEC-006 – Consultas, dashboard y navegación
+# SPEC-006 – Consultas, dashboard y navegación
+
+Jira: PIAPARTES-6
+
 
 ## Metadatos
 

@@ -11,7 +11,7 @@ if [[ -z "${CLOUDSMITH_READ_TOKEN:-}" ]]; then
   exit 1
 fi
 
-reactCoreVersion="${PAQSUITE_REACT_CORE_VERSION:-2.4.24-beta.1}"
+reactCoreVersion="${PAQSUITE_REACT_CORE_VERSION:-2.4.26-beta.1}"
 echo "refresh-react-core-lock: npm install @paqsuite/react-core@${reactCoreVersion} …"
 npm install "@paqsuite/react-core@${reactCoreVersion}" --save-exact
 npm list @paqsuite/react-core

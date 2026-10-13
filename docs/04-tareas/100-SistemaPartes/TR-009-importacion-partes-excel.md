@@ -1,5 +1,9 @@
 # TR-009 – Importación de partes desde Excel — adopción GEN-14 en Carga diaria
 
+
+Jira: PIAPARTES-37
+
+
 | Campo | Valor |
 |-------|--------|
 | **HU relacionada** | [HU-009-importacion-partes-excel](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) |

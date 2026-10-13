@@ -1,4 +1,7 @@
-# HU-003 – Maestros y catálogos del módulo
+# HU-003 – Maestros y catálogos del módulo
+
+Jira: PIAPARTES-17
+
 
 ## Metadatos
 

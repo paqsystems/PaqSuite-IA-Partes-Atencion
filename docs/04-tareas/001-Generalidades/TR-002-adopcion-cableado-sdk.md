@@ -1,4 +1,7 @@
-# TR-002 — Adopción de cableado SDK (slice PA-02)
+# TR-002 — Adopción de cableado SDK (PA-02…PA-14)
+
+Jira: PIAPARTES-42
+
 
 | Campo | Valor |
 |-------|--------|
@@ -6,7 +9,6 @@
 | **SPEC** | [SPEC-002](../../05-open-spec/001-Generalidades/SPEC-002-adopcion-cableado-sdk.md) |
 | **Estado** | Finalizado |
 | **F** | [F PA-02](../updates/001-Generalidades/F-TR-002-adopcion-cableado-sdk-PA-02.md) · [F PA-11/13](../updates/001-Generalidades/F-TR-002-adopcion-cableado-sdk-PA-11-13.md) · [F T6](../updates/001-Generalidades/F-TR-002-adopcion-cableado-sdk-T6.md) · [F PA-03/04/14](../updates/001-Generalidades/F-TR-002-adopcion-cableado-sdk-PA-03-04-14.md) |
-| **Update** | [TR-002-update](../updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md) (**Finalizado**) |
 
 ## AC cerrado
 
@@ -28,6 +30,8 @@
 | AC-ADM-05 | `registerUsuariosAdminI18nResources` / `registerPermisosAdminI18nResources`. |
 | AC-ADM-06 | E2E CC#5: `adminUsuariosFormError` en Popup SDK. |
 
+**Fuera de esta TR:** bulk de permisos SDK; SP GEN-06 laravel-core (Partes MONO con APIs host).
+
 ## Historial
 
 | Fecha | Cambio |
@@ -37,4 +41,4 @@
 | 2026-10-11 | Parte I · PA-08 / PA-09 / PA-10. |
 | 2026-10-11 | Parte I · PA-07. |
 | 2026-10-11 | Parte I · PA-11 / PA-12 / PA-13. |
-| 2026-10-12 | Parte I · PA-03 / PA-04 / PA-14. |
+| 2026-10-12 | Parte F1+F+I · PA-03 / PA-04 / PA-14. TR-002-update unificado y eliminado. |

@@ -1,4 +1,7 @@
-# TR-012 – Readaptar consumo SDK a Cloudsmith (host)
+# TR-012 – Readaptar consumo SDK a Cloudsmith (host)
+
+Jira: PIAPARTES-40
+
 
 | Campo | Valor |
 |-------|--------|
@@ -130,7 +133,10 @@ No se exige `npm run test:all` como prueba de esta TR salvo que un cambio de pin
 
 ## 6) Plan D1 (2026-10-09)
 
-# Plan de implementación - TR-012
+# Plan de implementación - TR-012
+
+Jira: PIAPARTES-40
+
 
 ## Alcance entendido
 

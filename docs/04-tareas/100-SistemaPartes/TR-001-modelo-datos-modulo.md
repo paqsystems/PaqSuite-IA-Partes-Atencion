@@ -1,4 +1,7 @@
-# TR-001 – Modelo de datos del módulo Sistema Partes
+# TR-001 – Modelo de datos del módulo Sistema Partes
+
+Jira: PIAPARTES-29
+
 
 | Campo | Valor |
 |-------|--------|
@@ -280,7 +283,10 @@ Datos de prueba: crear `users` temporales en el test; no depender de producción
 
 ## 3.1) Informe C1 (2026-07-30)
 
-# Revisión de ambigüedad - TR-001
+# Revisión de ambigüedad - TR-001
+
+Jira: PIAPARTES-29
+
 
 ## Resultado general
 - Estado: **Apto con observaciones** (observaciones menores absorbidas en esta misma corrida C1)

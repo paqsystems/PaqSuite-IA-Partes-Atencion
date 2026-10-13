@@ -1,5 +1,8 @@
 # SPEC-001 – Errores de validación en el contexto de carga (modal)
 
+Jira: PIAPARTES-13
+
+
 ## Metadatos
 
 | Campo | Valor |

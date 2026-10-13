@@ -1,4 +1,7 @@
-# SPEC-011 – Reportes / emisiones — adopción GEN-15 en Partes
+# SPEC-011 – Reportes / emisiones — adopción GEN-15 en Partes
+
+Jira: PIAPARTES-11
+
 
 ## Metadatos
 

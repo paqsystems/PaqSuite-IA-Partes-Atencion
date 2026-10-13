@@ -1,4 +1,7 @@
-# SPEC-001 – Modelo de datos del módulo Sistema Partes
+# SPEC-001 – Modelo de datos del módulo Sistema Partes
+
+Jira: PIAPARTES-1
+
 
 ## Metadatos
 

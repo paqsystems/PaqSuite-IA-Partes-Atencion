@@ -1,4 +1,7 @@
-# SPEC-007 – Mobile Capacitor del módulo Sistema Partes
+# SPEC-007 – Mobile Capacitor del módulo Sistema Partes
+
+Jira: PIAPARTES-7
+
 
 ## Metadatos
 

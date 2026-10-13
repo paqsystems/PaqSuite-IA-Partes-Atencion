@@ -1,5 +1,8 @@
 # TR-001 – Errores de validación en contexto de modal (frontend)
 
+Jira: PIAPARTES-41
+
+
 | Campo | Valor |
 |-------|--------|
 | **HU relacionada** | [HU-001](../../03-historias-usuario/001-Generalidades/HU-001-ui-errores-validacion-contexto-carga.md) |

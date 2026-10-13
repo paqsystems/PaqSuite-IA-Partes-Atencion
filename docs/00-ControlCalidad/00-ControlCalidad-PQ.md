@@ -65,10 +65,10 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | **Responsable** | Pablo Quarracino (PQ) |
 | **Estado** | Especificado |
 | **F1/F** | PA-01…14: F Aprobado (PA-03/04/14: 12/10/2026). |
-| **Parte I** | PA-01 (012); PA-02…14 en SPEC-002. Update 002 **Finalizado**. |
-| **Cierre updates** | SPEC/HU/TR-002-update **Finalizado** 12/10/2026. |
+| **Parte I** | PA-01 (012); PA-02…14 unificados en SPEC/HU/TR-002 originales. Updates 002 **eliminados** 12/10/2026. |
+| **Cierre updates** | Familia 002 **Finalizado**. F1+F+I 12/10/2026. |
 | **Origen** | [deuda-cableado-sdk-por-gen.md](../06-operacion/deuda-cableado-sdk-por-gen.md) · relevamiento Framework 11/10/2026 |
-| **Pin de referencia** | `@paqsuite/react-core` **2.4.25-beta.1** · `paqsuite/laravel-core` **1.3.13-beta.1** |
+| **Pin de referencia** | `@paqsuite/react-core` **2.4.26-beta.1** · `paqsuite/laravel-core` **1.3.13-beta.1** |
 
 ### Hallazgos
 
@@ -82,13 +82,13 @@ Cerrar la **deuda de cableado SDK** del host Partes-Atención: mala invocación 
 
 **Orden sugerido de resolución (Parte G / D):** P0 PA-02 → P1 GEN-06 (PA-03, PA-04, PA-05, PA-06, PA-14) → P1 GEN-19 (PA-09, PA-10, PA-08) → P1 GEN-07 PA-07 → P2 PA-11, PA-12, PA-13 → GEN-35 PA-01 al pasar de labo a Cloudsmith en CI/Forge.
 
-*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md) · PA-01 **F+I** → [SPEC-012](../05-open-spec/100-SistemaPartes/SPEC-012-adopcion-gen-35-cloudsmith.md)
+*Procesado* (Parte G 11/10/2026) → [SPEC-002](../05-open-spec/001-Generalidades/SPEC-002-adopcion-cableado-sdk.md) · [HU-002](../03-historias-usuario/001-Generalidades/HU-002-adopcion-cableado-sdk.md) · [TR-002](../04-tareas/001-Generalidades/TR-002-adopcion-cableado-sdk.md) · PA-01 **F+I** → [SPEC-012](../05-open-spec/100-SistemaPartes/SPEC-012-adopcion-gen-35-cloudsmith.md)
 
 ### Errores encontrados - Mejoras solicitadas
 
 #### GEN-20 — Envelope API (PA-02, P0)
 
-*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md)
+*Procesado* (Parte G 11/10/2026) → [SPEC-002](../05-open-spec/001-Generalidades/SPEC-002-adopcion-cableado-sdk.md) · [HU-002](../03-historias-usuario/001-Generalidades/HU-002-adopcion-cableado-sdk.md) · [TR-002](../04-tareas/001-Generalidades/TR-002-adopcion-cableado-sdk.md)
 
 - `ApiEnvelope::ok` serializa `'error' => null`. Contrato SDK: `'error' => 0` y `resultado` objeto, no `null`. Rompe clientes que usan `isEnvelope` / `error === 0`.
 - Dónde: `backend/app/Support/ApiEnvelope.php`, `AuthController.php`.
@@ -96,7 +96,7 @@ Cerrar la **deuda de cableado SDK** del host Partes-Atención: mala invocación 
 
 #### GEN-06 — Seguridad admin (PA-03, PA-04, PA-05, PA-06, PA-14)
 
-*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md) · regla 44 / 36
+*Procesado* (Parte G 11/10/2026) → [SPEC-002](../05-open-spec/001-Generalidades/SPEC-002-adopcion-cableado-sdk.md) · [HU-002](../03-historias-usuario/001-Generalidades/HU-002-adopcion-cableado-sdk.md) · [TR-002](../04-tareas/001-Generalidades/TR-002-adopcion-cableado-sdk.md) · regla 44 / 36
 
 - **PA-03 P1:** el SDK exporta `UsuariosAdminPage`; el host reimplementa listado, popup, alta/edición e inhabilitación (`UsuariosAdminPage.tsx`). Pedido: wrapper fino del export SDK. Dominio solo: token, `platform`, permisos, menú.
 - **PA-04 P1:** el SDK exporta `PermisosAdminPage`; el host monta tres `DataGrid` DX y lógica batch propia (`PermisosAdminPage.tsx`). Pedido: montar `PermisosAdminPage` del SDK. No DataGrid crudo de proceso.
@@ -106,14 +106,14 @@ Cerrar la **deuda de cableado SDK** del host Partes-Atención: mala invocación 
 
 #### GEN-07 + GEN-02 — Menú / i18n GEN (PA-07, PA-11)
 
-*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md)
+*Procesado* (Parte G 11/10/2026) → [SPEC-002](../05-open-spec/001-Generalidades/SPEC-002-adopcion-cableado-sdk.md) · [HU-002](../03-historias-usuario/001-Generalidades/HU-002-adopcion-cableado-sdk.md) · [TR-002](../04-tareas/001-Generalidades/TR-002-adopcion-cableado-sdk.md)
 
 - **PA-07 P1:** `shellI18n.ts` duplica chrome `menu.*`. Pedido: labels del sidebar vía `t('menu.*')` / helper SDK (`menuSidebarLabelsFromT`). Catálogo host solo claves **producto**.
 - **PA-11 P2:** `main.tsx` hace `syncDevExtremeLocale('es')` y `i18n.ts` sincroniza `getGuestLocale()`. Arranque EN/FR puede pintar DX en ES un tick. Pedido: un solo `syncDevExtremeLocale` con el locale real (guest/sesión), no forzar `'es'` al boot.
 
 #### GEN-19 — Shell / tenancy / tema / `{cliente}` (PA-08, PA-09, PA-10)
 
-*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md) · regla 34
+*Procesado* (Parte G 11/10/2026) → [SPEC-002](../05-open-spec/001-Generalidades/SPEC-002-adopcion-cableado-sdk.md) · [HU-002](../03-historias-usuario/001-Generalidades/HU-002-adopcion-cableado-sdk.md) · [TR-002](../04-tareas/001-Generalidades/TR-002-adopcion-cableado-sdk.md) · regla 34
 
 - **PA-08 P1:** con pin ≥ 2.4.20 el SDK exporta `normalizeThemeFromApi`, `mapThemeForApiPersistence`, `paqsuiteDxStockBridge`, `useEmpresaAppearanceBridge`. El host mantiene `sdkEmpresaThemeCompat.ts` y switcher DX propio. Pedido: un solo puente SDK. Preview/restore sin reload de página.
 - **PA-09 P1:** `main.tsx` llama `bootstrapPlatformCliente()` **antes** del Router (orden OK) pero **no** `bootstrapClienteFromWindow`. Reimplementa query/cookie/session/Vercel/landing. Pedido: delegar a `bootstrapClienteFromWindow`. Conservar wrap de landing Vercel **solo** si el SoT de resolución host lo admite.
@@ -121,14 +121,14 @@ Cerrar la **deuda de cableado SDK** del host Partes-Atención: mala invocación 
 
 #### GEN-04 — Auth / cambio de clave (PA-12, P2)
 
-*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md)
+*Procesado* (Parte G 11/10/2026) → [SPEC-002](../05-open-spec/001-Generalidades/SPEC-002-adopcion-cableado-sdk.md) · [HU-002](../03-historias-usuario/001-Generalidades/HU-002-adopcion-cableado-sdk.md) · [TR-002](../04-tareas/001-Generalidades/TR-002-adopcion-cableado-sdk.md)
 
 - `ChangePasswordPage` sin `AuthCardLayout` / `AuthPageLayout`, literales en español.
 - Pedido: layouts SDK + i18n (mismo patrón que login/forgot/reset, que ya están bien).
 
 #### GEN-01 — Layouts de proceso (PA-13, P2)
 
-*Procesado* (Parte G 11/10/2026) → [SPEC-002-update](../05-open-spec/updates/001-Generalidades/SPEC-002-adopcion-cableado-sdk-update.md) · [HU-002-update](../03-historias-usuario/updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) · [TR-002-update](../04-tareas/updates/001-Generalidades/TR-002-adopcion-cableado-sdk-update.md)
+*Procesado* (Parte G 11/10/2026) → [SPEC-002](../05-open-spec/001-Generalidades/SPEC-002-adopcion-cableado-sdk.md) · [HU-002](../03-historias-usuario/001-Generalidades/HU-002-adopcion-cableado-sdk.md) · [TR-002](../04-tareas/001-Generalidades/TR-002-adopcion-cableado-sdk.md)
 
 - Procesos de dominio no usan `ProcessPageLayout` (div/h2 propios) en varias páginas `features/partes/**`.
 - Pedido: adoptar `ProcessPageLayout`. Título desde menú localizado (`resolveMenuCaption`) o `t()` de producto — no literal ES.

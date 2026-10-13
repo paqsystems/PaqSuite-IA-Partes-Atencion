@@ -1,4 +1,7 @@
-# SPEC-003 – Maestros y catálogos del módulo
+# SPEC-003 – Maestros y catálogos del módulo
+
+Jira: PIAPARTES-3
+
 
 ## Metadatos
 
