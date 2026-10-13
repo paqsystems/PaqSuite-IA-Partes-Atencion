@@ -1,4 +1,7 @@
-# TR-002 – Identidad funcional y acceso al módulo
+# TR-002 – Identidad funcional y acceso al módulo
+
+Jira: PIAPARTES-30
+
 
 | Campo | Valor |
 |-------|--------|
@@ -262,7 +265,10 @@ Datos: factory/users de prueba + filas dominio; no depender solo de admin en tod
 
 ## 11) Informe C1 + discrepancias
 
-# Revisión de ambigüedad - TR-002
+# Revisión de ambigüedad - TR-002
+
+Jira: PIAPARTES-30
+
 
 ## Resultado general
 - Estado: **Apto con observaciones** (cerradas en redacción C1 de esta TR)

@@ -1,17 +1,19 @@
-# HU-002 — Adopción de cableado SDK (slice PA-02)
+# HU-002 — Adopción de cableado SDK (slice PA-02)
+
+Jira: PIAPARTES-28
+
 
 ## Metadatos
 
 | Campo | Valor |
 |-------|-------|
 | ID | HU-002-adopcion-cableado-sdk |
-| Título | Envelope API canónico (GEN-20) |
+| Título | Invocar exports GEN del SDK en el host Partes-Atención |
 | Épica | 001 — Generalidades |
 | Clasificación | MUST-HAVE |
 | Estado | Finalizado |
 | SPEC | [SPEC-002](../../05-open-spec/001-Generalidades/SPEC-002-adopcion-cableado-sdk.md) |
 | TR | [TR-002](../../04-tareas/001-Generalidades/TR-002-adopcion-cableado-sdk.md) |
-| Update | [HU-002-update](../updates/001-Generalidades/HU-002-adopcion-cableado-sdk-update.md) (**Finalizado**) |
 
 ## Criterios de aceptación
 
@@ -31,6 +33,8 @@
 - [x] **CA-ADM-06** Error de guardado en Popup (`adminUsuariosFormError`).
 - [x] **CA-SMK-01** Smoke empresas SDK ES/EN/FR.
 
+**Fuera de alcance:** bulk de permisos SDK (diferido Framework); adapters SP GEN-06 de laravel-core; admin en mobile.
+
 ## Historial
 
 | Fecha | Cambio |
@@ -40,4 +44,4 @@
 | 2026-10-11 | Parte I · PA-08 / PA-09 / PA-10. |
 | 2026-10-11 | Parte I · PA-07. |
 | 2026-10-11 | Parte I · PA-11 / PA-12 / PA-13. |
-| 2026-10-12 | Parte I · PA-03 / PA-04 / PA-14. |
+| 2026-10-12 | Parte F1+F+I · PA-03 / PA-04 / PA-14. HU-002-update unificado y eliminado. |

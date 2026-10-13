@@ -1,4 +1,7 @@
-# SPEC-004 – Operación / carga diaria de tareas
+# SPEC-004 – Operación / carga diaria de tareas
+
+Jira: PIAPARTES-4
+
 
 ## Metadatos
 

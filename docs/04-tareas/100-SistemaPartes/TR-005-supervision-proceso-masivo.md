@@ -1,4 +1,7 @@
-# TR-005 – Supervisión y proceso masivo
+# TR-005 – Supervisión y proceso masivo
+
+Jira: PIAPARTES-33
+
 
 | Campo | Valor |
 |-------|--------|
@@ -223,7 +226,10 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 
 ---
 
-# Verificación del agente - TR-005 (F1 2026-07-31)
+# Verificación del agente - TR-005 (F1 2026-07-31)
+
+Jira: PIAPARTES-33
+
 
 ## Resultado
 - **Aprobado con observaciones**

@@ -1,4 +1,7 @@
-# TR-010 – Smart Capture en modal de Carga diaria — adopción GEN-03
+# TR-010 – Smart Capture en modal de Carga diaria — adopción GEN-03
+
+Jira: PIAPARTES-38
+
 
 | Campo | Valor |
 |-------|--------|

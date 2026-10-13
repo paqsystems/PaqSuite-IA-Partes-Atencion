@@ -1,4 +1,7 @@
-# HU-007 – Mobile Capacitor del módulo Sistema Partes
+# HU-007 – Mobile Capacitor del módulo Sistema Partes
+
+Jira: PIAPARTES-21
+
 
 ## Metadatos
 

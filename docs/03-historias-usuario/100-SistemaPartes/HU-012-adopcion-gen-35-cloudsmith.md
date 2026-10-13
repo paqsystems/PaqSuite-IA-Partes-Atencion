@@ -1,4 +1,7 @@
-# HU-012 – Readaptar consumo del SDK Framework a Cloudsmith
+# HU-012 – Readaptar consumo del SDK Framework a Cloudsmith
+
+Jira: PIAPARTES-26
+
 
 ## Metadatos
 

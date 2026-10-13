@@ -1,4 +1,7 @@
-# HU-006 – Consultas, dashboard y navegación
+# HU-006 – Consultas, dashboard y navegación
+
+Jira: PIAPARTES-20
+
 
 ## Metadatos
 

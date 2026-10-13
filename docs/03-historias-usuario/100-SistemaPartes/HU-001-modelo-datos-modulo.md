@@ -1,4 +1,7 @@
-# HU-001 – Modelo de datos del módulo Sistema Partes
+# HU-001 – Modelo de datos del módulo Sistema Partes
+
+Jira: PIAPARTES-15
+
 
 ## Metadatos
 

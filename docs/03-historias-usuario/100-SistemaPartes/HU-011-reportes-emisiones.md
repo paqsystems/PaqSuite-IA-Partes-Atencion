@@ -1,4 +1,7 @@
-# HU-011 – Reportes / emisiones desde Consulta detallada
+# HU-011 – Reportes / emisiones desde Consulta detallada
+
+Jira: PIAPARTES-25
+
 
 ## Metadatos
 

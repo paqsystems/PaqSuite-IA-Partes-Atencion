@@ -1,4 +1,7 @@
-# HU-004 – Operación / carga diaria de tareas
+# HU-004 – Operación / carga diaria de tareas
+
+Jira: PIAPARTES-18
+
 
 ## Metadatos
 
