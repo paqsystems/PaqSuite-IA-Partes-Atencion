@@ -1,4 +1,4 @@
-# SPEC-002 – Identidad funcional y acceso al módulo
+# SPEC-002 – Identidad funcional y acceso al módulo
 
 Jira: PIAPARTES-2
 
@@ -10,8 +10,8 @@ Jira: PIAPARTES-2
 | ID | SPEC-002 |
 | Título | Identidad funcional y acceso al módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Pendiente |
-| Última actualización | 2026-07-30 |
+| Estado | En revisión |
+| Última actualización | 2026-10-20 |
 | HU relacionada(s) | [HU-002-identidad-funcional-y-acceso](../../03-historias-usuario/100-SistemaPartes/HU-002-identidad-funcional-y-acceso.md) |
 | TR relacionada(s) | [TR-002-identidad-funcional-y-acceso](../../04-tareas/100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md) |
 | Depende de | [SPEC-001-modelo-datos-modulo](./SPEC-001-modelo-datos-modulo.md) |

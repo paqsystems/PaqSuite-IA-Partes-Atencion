@@ -1,4 +1,4 @@
-# SPEC-005 – Supervisión (terceros y proceso masivo)
+# SPEC-005 – Supervisión (terceros y proceso masivo)
 
 Jira: PIAPARTES-5
 
@@ -10,8 +10,8 @@ Jira: PIAPARTES-5
 | ID | SPEC-005 |
 | Título | Supervisión: terceros y proceso masivo sobre tareas |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Finalizado |
-| Última actualización | 2026-08-01 |
+| Estado | En revisión |
+| Última actualización | 2026-10-20 |
 | HU relacionada(s) | [HU-005-supervision-proceso-masivo](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md) |

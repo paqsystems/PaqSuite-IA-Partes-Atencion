@@ -1,4 +1,4 @@
-# HU-011 – Reportes / emisiones desde Consulta detallada
+# HU-011 – Reportes / emisiones desde Consulta detallada
 
 Jira: PIAPARTES-25
 
@@ -297,3 +297,4 @@ Ninguna bloquea Parte C.
 | 2026-08-25 | CC Q13: CA-15 deja proceso fijo; monta `EmissionReportDesignerPage` con lista GEN (N=1 visible) + confirmación. |
 | 2026-08-25 | Parte C: enlazada TR-011; preguntas abiertas cerradas en la TR. |
 | 2026-08-25 | Parte C1: TR-011 apta con observaciones (hostContext/jobId, pageSize 0, 4704). |
+| 2026-10-16 | Parte E: evidencia tests en `docs/04-tareas/updates/100-SistemaPartes/E-TR-011-reportes-emisiones-2026-10-16.md`. |

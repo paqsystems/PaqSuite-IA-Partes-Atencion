@@ -52,6 +52,47 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 4 | 04/10/2026 | Especificado | ABM asistentes/clientes + Paquete de Horas tipo cliente — **F1/F Aprobado 11/10/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-04-2026-10-04.md)) |
 | 5 | 05/10/2026 | Especificado | Errores de validación en modal — **F1/F Aprobado 11/10/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/001-Generalidades/D-VERIFICACION-CC-PQ-05-2026-10-05.md)) |
 | 6 | 11/10/2026 | Especificado | Deuda cableado SDK — PA-01…14 **F+I** (PA-03/04/14: 12/10/2026, pin 2.4.25-beta.1) |
+| 7 | 19/10/2026 | Especificado | Mail acceso ABM Usuarios + informar clientes desde Proceso masivo (GEN Mail Engine; cola updates 002/005) |
+
+---
+
+## Control de Calidad #7
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 19/10/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado |
+
+### Hallazgos
+
+Envios de mails a clientes y asistentes antes dos eventos : 1) aviso desde ABM de usuarios para proveedor link del sitio y credenciales iniciales de acceso. 2) Anuncio de novedades a los clientes sobre partes ingresados por los asistentes y aprobado por el supervisor
+
+### Errores encontrados - Mejoras solicitadas
+
+#### Envio mail a usuario para acceder al sitio
+
+*Procesado* (Parte G 20/10/2026) → [SPEC-002-update](../05-open-spec/updates/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update.md) · [HU-002-update](../03-historias-usuario/updates/100-SistemaPartes/HU-002-identidad-funcional-y-acceso-update.md) · [TR-002-update](../04-tareas/updates/100-SistemaPartes/TR-002-identidad-funcional-y-acceso-update.md)
+
+en el Abm de Usuarios, agregar un botón "Notificación", por el cual : 
+- se envia un mail al usuario (en ALTA; se habilita después de haber ingresado un mail)
+- EL mismo notifica en Asunto : Codigo de la Empresa y algo así como " - ingreso a nuestro sistema de Partes de Atención".
+- En el cuerpo del mensaje, hacer mención que se ofrece al receptor el link para poder controlar los servicios que se prestaron a su empresa, aclarando el link de acceso (hipervínculo para eso), y las credenciales de acceso : usuario y contraseña
+- La contraseña se define en el momento con un número random que cumpla con las normas de seguridad parametrizadas (simple o segura, longitud de la clave)
+- se graba en el usuario que es el primer login (para que lo modifique en el proximo acceso)
+
+#### Envio mail a clientes para informar existencia de novedades
+
+*Procesado* (Parte G 20/10/2026) → [SPEC-005-update](../05-open-spec/updates/100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) · [HU-005-update](../03-historias-usuario/updates/100-SistemaPartes/HU-005-supervision-proceso-masivo-update.md) · [TR-005-update](../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md)
+
+En el proceso de "Partes Masivos":
+- habilitar un ícono con la imagen de mail, y tooltip "Informar a clientes", con el cual.
+- se determinan todos los clientes que figuran en la grilla en ese momento, y que tengan asociado un usuario.
+- Enviar un mail a todos los usuarios recolectados.
+- Asunto : Codigo de la empresa y algo así como : "Existen novedades de atención a su empresa".
+- Mensaje : informar que hubo novedades de servicios prestados en el periodod (desde y hasta con se filtró el procesó), recordando la URL de aviso y el codigo de usuario para acceder, y que si no recuerda su contraseña podrá solicitar una nueva en el login.
 
 ---
 
@@ -68,7 +109,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | **Parte I** | PA-01 (012); PA-02…14 unificados en SPEC/HU/TR-002 originales. Updates 002 **eliminados** 12/10/2026. |
 | **Cierre updates** | Familia 002 **Finalizado**. F1+F+I 12/10/2026. |
 | **Origen** | [deuda-cableado-sdk-por-gen.md](../06-operacion/deuda-cableado-sdk-por-gen.md) · relevamiento Framework 11/10/2026 |
-| **Pin de referencia** | `@paqsuite/react-core` **2.4.26-beta.1** · `paqsuite/laravel-core` **1.3.13-beta.1** |
+| **Pin de referencia** | `@paqsuite/react-core` **2.4.29-beta.1** · `paqsuite/laravel-core` **1.3.15-beta.1** |
 
 ### Hallazgos
 

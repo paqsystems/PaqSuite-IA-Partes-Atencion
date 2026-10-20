@@ -2,7 +2,10 @@
 
 ## Objetivo
 
-Definir, en lenguaje de producto, la adopción de **Smart Capture** (asistente operativo GEN-03) en el **alta/edición de una tarea** de **Carga diaria** del módulo Partes de Atención.
+Definir, en lenguaje de producto, la adopción de **Smart Capture** (asistente operativo GEN-03) en el **alta/edición** de:
+
+1. una **tarea** de **Carga diaria**;
+2. un **paquete de horas** (compra/crédito) del proceso definido en [`16-carga-paquetes-horas.md`](./16-carga-paquetes-horas.md).
 
 Este documento es la **definición conceptual de producto**. No es SPEC, HU ni TR; alimenta la posterior generación Open-Spec (flujo SDD / Partes A→C).
 
@@ -34,10 +37,11 @@ Paquete FE de referencia (host): `@paqsuite/react-core` → `SmartCapturePanel`,
 
 | Capacidad | Propósito | Relación con este doc |
 |-----------|-----------|------------------------|
-| **Smart Capture** (este doc) | Completar / proponer datos en el **formulario de tarea** abierto | **Sí — alcance** |
-| **Carga diaria (manual)** | Alta/edición/baja por UI clásica (grilla + modal) | Base; SC es complemento |
+| **Smart Capture** (este doc) | Completar / proponer datos en el **formulario abierto** (tarea o paquete) | **Sí — alcance** |
+| **Carga diaria (manual)** | Alta/edición/baja de **tareas** (grilla + modal) | Base; SC es complemento |
+| **Carga de paquetes** (`16`) | Alta/edición/baja de **compras** (`es_tarea = false`) | Segunda superficie; SC en el mismo patrón de modal |
 | **Importación Excel** (`13`) | Alta **masiva** por archivo | Canal distinto; no se mezcla |
-| **Asistente IA (chat documental)** (`12`) | Explicar el sistema; **no** graba tareas | Fuera de este alcance |
+| **Asistente IA (chat documental)** (`12`) | Explicar el sistema; **no** graba tareas ni paquetes | Fuera de este alcance |
 | **Proceso masivo** | Cambios en lote sobre tareas ya existentes | Fuera de este alcance |
 
 Anti-patrón: usar el Asistente IA del avatar para registrar partes, o montar Smart Capture sobre la **grilla** sin formulario abierto.
@@ -50,17 +54,17 @@ Anti-patrón: usar el Asistente IA del avatar para registrar partes, o montar Sm
 
 | Decisión | Detalle |
 |---------|---------|
-| **D-SC-01** | Smart Capture se monta **dentro del modal** de alta/edición de tarea (Carga diaria), **debajo** del formulario (norma GEN: formulario = fuente de verdad). |
+| **D-SC-01** | Smart Capture se monta **dentro del modal** de alta/edición, **debajo** del formulario (norma GEN: formulario = fuente de verdad). Superficies Partes: **Carga diaria** (tarea) y **Carga de paquetes de horas** (`16`). |
 | **D-SC-02** | **No** se monta en la grilla de listado, ni en informes, dashboard, maestros ni proceso masivo. |
-| **D-SC-03** | Alta y edición usan el **mismo** panel sobre el mismo formulario (draft de la tarea en curso). |
+| **D-SC-03** | Alta y edición usan el **mismo** panel sobre el mismo formulario (draft de la tarea o del paquete en curso). |
 
 Coherente con GEN-03: «solo procesos que ameritan SC (carga / ABM); no en listados ni solo lectura».
 
 ### 3.2 Acceso / menú
 
 - No agrega ítem de menú lateral.
-- Visible cuando el usuario abre **Nueva tarea** o **Editar** en Carga diaria y el producto habilita el panel.
-- Reutiliza el mismo gate de perfil que la carga: asistente / supervisor; **cliente no opera carga** (coherente con `02-actores-identidad-y-acceso.md`).
+- Visible cuando el usuario abre **Nuevo/Editar** en Carga diaria (tarea) o en Carga de paquetes, y el producto habilita el panel.
+- Gate de perfil = el del proceso anfitrión: Carga diaria → asistente / supervisor; paquetes → **solo supervisor**. **Cliente no opera carga**.
 
 ### 3.3 Mobile
 
@@ -70,11 +74,11 @@ Coherente con GEN-03: «solo procesos que ameritan SC (carga / ABM); no en lista
 
 ## 4. Quién puede usarlo
 
-| Actor | ¿Puede usar SC en carga? |
-|-------|--------------------------|
-| Asistente (no supervisor) | Sí |
-| Supervisor | Sí |
-| Cliente | **No** |
+| Actor | SC en Carga diaria | SC en paquetes (`16`) |
+|-------|--------------------|------------------------|
+| Asistente (no supervisor) | Sí | **No** (no opera el proceso) |
+| Supervisor | Sí | Sí |
+| Cliente | **No** | **No** |
 
 Sin credencial LLM válida (BYOK): el panel muestra el gate GEN «Ir a Preferencias» / `configurationRequired`; no se envían turnos.
 

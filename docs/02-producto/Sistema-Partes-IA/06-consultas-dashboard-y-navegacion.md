@@ -207,7 +207,7 @@ El informe **Paquete de Horas** permite llevar una **cuenta corriente de horas**
 
 ### Dependencia
 
-La alta de registros con `es_tarea = false` (compra de horas) es un **proceso a definir** aparte; este informe debe comportarse correctamente cuando existan esos movimientos.
+La alta de registros con `es_tarea = false` (compra de horas) está definida en [`16-carga-paquetes-horas.md`](./16-carga-paquetes-horas.md). Este informe debe comportarse correctamente cuando existan esos movimientos.
 
 ## Criterio final
 
