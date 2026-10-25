@@ -41,7 +41,7 @@ Jira: PIAPARTES-2
 
 ### 2.2 Fuera de alcance
 
-- Redefinir login, logout, forgot/reset, `firstLogin`, Sanctum, tenancy headers (Framework GEN).
+- Redefinir login, logout, forgot/reset, `firstLogin`, Sanctum, tenancy headers (Framework GEN). El TTL del enlace forgot y el copy del mail son **GEN-04** (`PasswordResetTtlMin`; no `MinutosWeb` ni `auth.passwords.users.expire`).
 - ABM de asistentes/clientes y alta de acceso (SPEC maestros).
 - Carga diaria, supervisión masiva, consultas, dashboard, mobile (SPECs posteriores).
 - Roles/permisos Framework (`pq_roles` / menú GEN) salvo coexistencia: el menú GEN puede ocultar pantallas, pero **no** sustituye la delimitación funcional de este SPEC.

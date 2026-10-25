@@ -52,6 +52,7 @@ class PqRolSeeder extends Seeder
             'supervisor' => true,
             'activo' => true,
             'inhabilitado' => false,
+            'permission_slugs' => json_encode(['partes.integracion.maestros']),
             'locale' => 'es',
             'open_in_new_tab' => false,
         ], $now);
@@ -64,6 +65,7 @@ class PqRolSeeder extends Seeder
             'supervisor' => true,
             'activo' => true,
             'inhabilitado' => false,
+            'permission_slugs' => json_encode(['partes.integracion.maestros']),
             'locale' => 'es',
             'open_in_new_tab' => false,
         ], $now);

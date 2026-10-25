@@ -50,6 +50,7 @@ class User extends Authenticatable
         'activo' => 'boolean',
         'inhabilitado' => 'boolean',
         'open_in_new_tab' => 'boolean',
+        'permission_slugs' => 'array',
     ];
 
     public function isLoginAllowed(): bool

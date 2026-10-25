@@ -24,7 +24,9 @@ namespace App\OpenApi;
  * @OA\Tag(name="Parametros", description="Parámetros generales")
  * @OA\Tag(name="Partes Informes", description="Dashboard e informes")
  * @OA\Tag(name="Partes Maestros", description="Maestros Partes (clientes, asistentes, tipos)")
+ * @OA\Tag(name="Partes Integración Maestros", description="Reconciliación REST de maestros Partes")
  * @OA\Tag(name="Partes Tareas", description="Carga diaria y proceso masivo de tareas")
+ * @OA\Tag(name="Partes Paquetes", description="ABM de compras de horas (es_tarea=false); solo supervisor")
  * @OA\Tag(name="Pivot Layouts", description="Layouts de pivot")
  *
  * @OA\SecurityScheme(

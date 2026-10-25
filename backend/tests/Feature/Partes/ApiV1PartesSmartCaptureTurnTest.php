@@ -560,4 +560,135 @@ final class ApiV1PartesSmartCaptureTurnTest extends TestCase
                 && (int) ($a['payload']['value'] ?? 0) === 60
         ));
     }
+
+    /** @return array<string, mixed> */
+    private function draftContextPaquete(array $cat, bool $esSupervisor = true): array
+    {
+        return [
+            'processKind' => 'paquete',
+            'mode' => 'create',
+            'id' => null,
+            'clienteId' => null,
+            'clienteCode' => null,
+            'clienteNombre' => null,
+            'fecha' => now()->toDateString(),
+            'duracionMinutos' => 8 * 60,
+            'observacion' => '',
+            'esSupervisor' => $esSupervisor,
+            'tramoMinutos' => 15,
+            'rowVersion' => null,
+        ];
+    }
+
+    public function test_turn_paquete_sin_credencial_devuelve_4201(): void
+    {
+        $token = $this->login();
+        $this->seedCatalogos();
+
+        $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'cliente CL1',
+            'modality' => 'texto',
+            'credentialId' => 99999,
+            'draftContext' => $this->draftContextPaquete(['asistenteId' => 1]),
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token))
+            ->assertStatus(409)
+            ->assertJsonPath('error', 4201)
+            ->assertJsonPath('resultado.configurationRequired', true);
+    }
+
+    public function test_turn_paquete_no_emite_asistente_ni_tipo(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $credentialId = $this->createCredential($token);
+        $this->bindProposal([
+            'replyText' => 'ok',
+            'save' => true,
+            'fields' => [
+                'cliente' => 'CL1',
+                'asistente' => 'admin',
+                'tipoTarea' => 'GEN',
+                'sinCargo' => true,
+                'duracionMinutos' => 8 * 60,
+                'observacion' => 'Compra SC',
+            ],
+        ]);
+
+        $response = $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'cliente CL1 8 horas',
+            'modality' => 'texto',
+            'credentialId' => $credentialId,
+            'draftContext' => $this->draftContextPaquete($cat),
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token));
+
+        $response->assertOk();
+        $fields = collect($response->json('resultado.actions') ?? [])
+            ->where('action', 'setField')
+            ->pluck('payload.field')
+            ->all();
+        $this->assertContains('clienteId', $fields);
+        $this->assertContains('duracionMinutos', $fields);
+        $this->assertContains('observacion', $fields);
+        $this->assertNotContains('asistenteId', $fields);
+        $this->assertNotContains('tipoTareaId', $fields);
+        $this->assertNotContains('sinCargo', $fields);
+        $this->assertTrue(collect($response->json('resultado.actions') ?? [])->contains(
+            fn ($a) => ($a['action'] ?? null) === 'save'
+        ));
+        $this->assertSame(0, (int) DB::table('PQ_PARTES_REGISTRO_TAREA')->count());
+    }
+
+    public function test_turn_paquete_cliente_ambiguo(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $credentialId = $this->createCredential($token);
+        $this->bindProposal([
+            'replyText' => 'varios',
+            'save' => false,
+            'fields' => ['cliente' => 'Cliente'],
+        ]);
+
+        $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'cliente Cliente',
+            'modality' => 'texto',
+            'credentialId' => $credentialId,
+            'draftContext' => $this->draftContextPaquete($cat),
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token))
+            ->assertOk()
+            ->assertJsonPath('resultado.pendingChoice.kind', 'chooseCliente');
+    }
+
+    public function test_turn_paquete_fecha_futura(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $credentialId = $this->createCredential($token);
+        $this->bindProposal([
+            'replyText' => 'futura',
+            'save' => false,
+            'fields' => ['fecha' => now()->addDays(2)->toDateString()],
+        ]);
+
+        $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'mañana',
+            'modality' => 'texto',
+            'credentialId' => $credentialId,
+            'draftContext' => $this->draftContextPaquete($cat),
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token))
+            ->assertOk()
+            ->assertJsonPath('resultado.pendingChoice.kind', 'confirmFutureDate');
+    }
 }

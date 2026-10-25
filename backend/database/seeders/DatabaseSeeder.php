@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             PqPartesParametrosSeeder::class,
             PqExcelImportSeeder::class,
             PqEmissionSeeder::class,
+            PqTaskProcessFrameworkSeeder::class,
         ]);
     }
 }

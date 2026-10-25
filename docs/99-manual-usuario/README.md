@@ -33,5 +33,6 @@ Un archivo `.md` por capacidad (prefijo `SPEC-00N`). Los archivos que empiezan c
 | [SPEC-009-importacion-excel.md](./SPEC-009-importacion-excel.md) | Importación Excel en carga diaria | Publicado |
 | [SPEC-010-emisiones-informes.md](./SPEC-010-emisiones-informes.md) | Emitir reportes y diseñador | Publicado |
 | [SPEC-011-parametros-seguridad.md](./SPEC-011-parametros-seguridad.md) | Parámetros y administración de seguridad | Publicado |
+| [SPEC-013-carga-paquetes-horas.md](./SPEC-013-carga-paquetes-horas.md) | Carga de paquetes de horas (supervisor) | Publicado |
 
-Última actualización del índice: **2026-10-11**.
+Última actualización del índice: **2026-10-21**.

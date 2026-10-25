@@ -14,12 +14,14 @@ describe('partesMobilePolicy', () => {
     expect(isPartesMobileRouteAllowed('/archivos/partes/asistentes')).toBe(false)
     expect(isPartesMobileRouteAllowed('/partes/proceso-masivo')).toBe(false)
     expect(isPartesMobileRouteAllowed('/partes/carga-diaria')).toBe(false)
+    expect(isPartesMobileRouteAllowed('/partes/carga-paquetes')).toBe(false)
     expect(isPartesMobileRouteAllowed('/partes/informes/consulta-detallada')).toBe(false)
     expect(isPartesMobileRouteAllowed('/partes/informes/consultas-agrupadas')).toBe(false)
     expect(isPartesMobileRouteAllowed('/emisiones/disenador')).toBe(false)
     expect(isPartesMobileRouteAllowed('/emisiones')).toBe(false)
     expect(isPartesMobileRouteAllowed('/admin/usuarios')).toBe(false)
     expect(isPartesMobileRouteAllowed('/parametros/Partes')).toBe(false)
+    expect(isPartesMobileRouteAllowed('/tareas-programadas')).toBe(false)
   })
 
   it('filtra menú', () => {

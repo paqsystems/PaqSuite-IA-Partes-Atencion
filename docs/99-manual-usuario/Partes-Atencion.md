@@ -42,7 +42,7 @@ Detalle de cada objeto y campo: [SPEC-001](./SPEC-001-objetos-datos-y-glosario.m
 |-------|-----------------|-------------------|
 | **Inicio** | Dashboard | Todos los perfiles Partes |
 | **Archivos** | Asistentes, clientes, tipos de cliente, tipos de tarea, asignación tipos por cliente | Administración / supervisor |
-| **Partes** | Carga diaria; proceso masivo | Asistente/supervisor; masivo solo supervisor |
+| **Partes** | Carga diaria; carga de paquetes; proceso masivo | Asistente/supervisor; paquetes y masivo solo supervisor |
 | **Informes** | Consulta detallada, consultas agrupadas, paquete de horas | Según perfil |
 | **Seguridad** | Usuarios, roles, permisos | Administradores |
 | **Parámetros** | Auth, Partes, importación, emisiones | Administradores / supervisor |
@@ -59,6 +59,7 @@ Detalle de cada objeto y campo: [SPEC-001](./SPEC-001-objetos-datos-y-glosario.m
 | Entrar y entender mi perfil | Login / avatar | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md) |
 | Mantener catálogos | Archivos | [SPEC-003](./SPEC-003-maestros-y-catalogos.md) |
 | Cargar el trabajo del día | Partes → Carga diaria | [SPEC-004](./SPEC-004-operacion-carga-diaria.md) |
+| Registrar una compra de horas | Partes → Carga de paquetes | [SPEC-013](./SPEC-013-carga-paquetes-horas.md) |
 | Importar planilla | Carga diaria → Importar | [SPEC-009](./SPEC-009-importacion-excel.md) |
 | Cerrar muchas partes | Partes → Proceso masivo | [SPEC-005](./SPEC-005-supervision-proceso-masivo.md) |
 | Ver totales e informes | Inicio / Informes | [SPEC-006](./SPEC-006-consultas-dashboard-navegacion.md) |
@@ -75,7 +76,7 @@ Detalle de cada objeto y campo: [SPEC-001](./SPEC-001-objetos-datos-y-glosario.m
 3. Si no tenés configuración de modelo, andá a **Preferencias** y cargá la credencial que te dio tu organización.
 4. Preguntá sobre operatoria de Partes; el asistente **orienta** según este manual y **no** crea ni modifica tareas.
 
-La **captura inteligente** del formulario de carga es otra función (completar campos del parte). Ver [SPEC-004](./SPEC-004-operacion-carga-diaria.md) y [SPEC-008](./SPEC-008-asistente-ia-y-preferencias.md).
+La **captura inteligente** del formulario de carga diaria o de paquetes es otra función (completa campos del formulario). **No** es el Asistente IA del avatar. Ver [SPEC-004](./SPEC-004-operacion-carga-diaria.md), [SPEC-013](./SPEC-013-carga-paquetes-horas.md) y [SPEC-008](./SPEC-008-asistente-ia-y-preferencias.md).
 
 ## Particularidades transversales
 

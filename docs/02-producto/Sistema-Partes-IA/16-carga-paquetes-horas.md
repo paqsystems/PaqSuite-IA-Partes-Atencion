@@ -236,7 +236,13 @@ Al cerrar este documento:
 - [`06-consultas-dashboard-y-navegacion.md`](./06-consultas-dashboard-y-navegacion.md): el informe deja de depender de un flujo inexistente.
 - [`11-checklist-temas-definidos-del-modulo.md`](./11-checklist-temas-definidos-del-modulo.md): marcar la carga de paquetes como definida a nivel producto (SPEC/HU/TR posteriores).
 
-Siguiente paso SDD: Parte **A** (SPEC) a partir de este archivo.
+Siguiente paso SDD: Parte **D** (implementar [TR-013](../../04-tareas/100-SistemaPartes/TR-013-carga-paquetes-horas.md); plan [D1-TR-013](../../04-tareas/100-SistemaPartes/d1/D1-TR-013-carga-paquetes-horas.md)).
+
+- [x] Generación SPEC-013 (Parte A, 2026-10-20) — [`SPEC-013-carga-paquetes-horas.md`](../../05-open-spec/100-SistemaPartes/SPEC-013-carga-paquetes-horas.md)
+- [x] A1 SPEC-013 (2026-10-20) — **Apto con observaciones** — [`SPEC-013-carga-paquetes-horas-A1-ambiguity-review.md`](../../05-open-spec/100-SistemaPartes/SPEC-013-carga-paquetes-horas-A1-ambiguity-review.md)
+- [x] HU-013 (Parte B+B1, 2026-10-21) — [`HU-013-carga-paquetes-horas.md`](../../03-historias-usuario/100-SistemaPartes/HU-013-carga-paquetes-horas.md)
+- [x] TR-013 (Parte C+C1, 2026-10-21) — [`TR-013-carga-paquetes-horas.md`](../../04-tareas/100-SistemaPartes/TR-013-carga-paquetes-horas.md)
+- [x] D1 TR-013 (2026-10-21) — [`D1-TR-013-carga-paquetes-horas.md`](../../04-tareas/100-SistemaPartes/d1/D1-TR-013-carga-paquetes-horas.md)
 
 ---
 

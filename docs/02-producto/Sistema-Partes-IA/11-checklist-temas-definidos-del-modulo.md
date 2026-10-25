@@ -210,5 +210,9 @@
 - [x] Generación e implementación de SPEC-008 (Asistente IA chat documental) → A–F1 2026-08-01; HU/TR Pendiente de Revisión (`D-VERIFICACION-TR-008-asistente-ia-2026-08-01.md`)
 - [x] Generación SDD de importación Excel de partes (`13` → SPEC/HU/TR-009 A→D 2026-08-02; pendiente E/F1)
 - [ ] Generación SDD de reportes/emisiones (`15-reportes-emisiones.md` → adopción GEN-15; SPEC/HU/TR-011 A→C1+D1 2026-08-25; D pendiente)
-- [ ] Generación SDD de carga de paquetes de horas (`16-carga-paquetes-horas.md` → A0 2026-10-19 **PIAPARTES-43**; pendiente A)
+- [x] SPEC-013 carga de paquetes (Parte A 2026-10-20, **PIAPARTES-43**)
+- [x] A1 SPEC-013 (2026-10-20) — apto con observaciones
+- [x] HU-013 carga de paquetes (Parte B+B1 2026-10-21)
+- [x] TR-013 carga de paquetes (Parte C+C1 2026-10-21, Especificado)
+- [ ] Implementación D1/D TR-013 (pendiente)
 - [ ] Generación SDD de APIs importar maestros (`17-APis-importar-datos-maestros.md` → A0 2026-10-20 **PIAPARTES-46**; pendiente A)

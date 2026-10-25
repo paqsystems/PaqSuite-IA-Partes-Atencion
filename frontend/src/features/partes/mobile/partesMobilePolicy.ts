@@ -30,6 +30,8 @@ const partesWebOnlyExclusions: GenMobileExclusion[] = [
       '/partes/proceso-masivo/*',
       '/partes/carga-diaria',
       '/partes/carga-diaria/*',
+      '/partes/carga-paquetes',
+      '/partes/carga-paquetes/*',
       '/partes/informes/consulta-detallada',
       '/partes/informes/consulta-detallada/*',
       '/partes/informes/consultas-agrupadas',
@@ -40,6 +42,8 @@ const partesWebOnlyExclusions: GenMobileExclusion[] = [
       '/admin/*',
       '/parametros',
       '/parametros/*',
+      '/tareas-programadas',
+      '/tareas-programadas/*',
     ],
   },
 ]

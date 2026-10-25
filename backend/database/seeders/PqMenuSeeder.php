@@ -41,6 +41,7 @@ class PqMenuSeeder extends Seeder
             $this->folder(30000, null, 'partes', 'Partes', 30000),
             $this->process(30100, 30000, 'partes_carga_diaria', 'Carga diaria', '/partes/carga-diaria', 30100),
             $this->process(30200, 30000, 'partes_proceso_masivo', 'Proceso masivo', '/partes/proceso-masivo', 30200),
+            $this->process(30300, 30000, 'partes_carga_paquetes', 'Carga de paquetes', '/partes/carga-paquetes', 30300),
 
             // 40000 Informes
             $this->folder(40000, null, 'informes', 'Informes', 40000),
@@ -54,6 +55,7 @@ class PqMenuSeeder extends Seeder
             $this->process(50200, 50000, 'admin_roles', 'Roles', '/admin/roles', 50200),
             $this->process(50300, 50000, 'admin_permisos', 'Permisos', '/admin/permisos', 50300),
             $this->process(50400, 50000, 'admin_empresas', 'Empresas', '/admin/empresas', 50400),
+            $this->process(50500, 50000, 'tareas_programadas', 'Tareas programadas', '/tareas-programadas', 50500),
 
             // 60000 Parámetros (Auth Framework + Partes)
             $this->folder(60000, null, 'parametros', 'Parámetros', 60000),

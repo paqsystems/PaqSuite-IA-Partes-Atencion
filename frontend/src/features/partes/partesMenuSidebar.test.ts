@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { MenuNode } from '@paqsuite/react-core'
-import { filterMenuForCliente } from './PartesMenuSidebar'
+import { filterMenuForCliente, filterMenuForNonSupervisor } from './PartesMenuSidebar'
 
 function stubNode(
   partial: Partial<MenuNode> & Pick<MenuNode, 'id' | 'menuKey' | 'text' | 'nodeType'>,
@@ -145,5 +145,43 @@ describe('filterMenuForCliente', () => {
     ])
     expect(filtered).toHaveLength(1)
     expect(filtered[0].menuKey).toBe('inicio')
+  })
+})
+
+describe('filterMenuForNonSupervisor', () => {
+  it('oculta masivo y carga de paquetes', () => {
+    const filtered = filterMenuForNonSupervisor([
+      stubNode({
+        id: 30000,
+        text: 'Partes',
+        menuKey: 'partes',
+        nodeType: 'group',
+        children: [
+          stubNode({
+            id: 30100,
+            text: 'Carga diaria',
+            menuKey: 'partes_carga_diaria',
+            routeName: '/partes/carga-diaria',
+            nodeType: 'process',
+          }),
+          stubNode({
+            id: 30200,
+            text: 'Masivo',
+            menuKey: 'partes_proceso_masivo',
+            routeName: '/partes/proceso-masivo',
+            nodeType: 'process',
+          }),
+          stubNode({
+            id: 30300,
+            text: 'Paquetes',
+            menuKey: 'partes_carga_paquetes',
+            routeName: '/partes/carga-paquetes',
+            nodeType: 'process',
+          }),
+        ],
+      }),
+    ])
+    expect(filtered).toHaveLength(1)
+    expect(filtered[0].children.map((c) => c.menuKey)).toEqual(['partes_carga_diaria'])
   })
 })

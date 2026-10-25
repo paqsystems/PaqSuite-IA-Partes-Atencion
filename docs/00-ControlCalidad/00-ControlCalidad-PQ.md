@@ -53,6 +53,63 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 5 | 05/10/2026 | Especificado | Errores de validación en modal — **F1/F Aprobado 11/10/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/001-Generalidades/D-VERIFICACION-CC-PQ-05-2026-10-05.md)) |
 | 6 | 11/10/2026 | Especificado | Deuda cableado SDK — PA-01…14 **F+I** (PA-03/04/14: 12/10/2026, pin 2.4.25-beta.1) |
 | 7 | 19/10/2026 | Especificado | Mail acceso ABM Usuarios + informar clientes desde Proceso masivo (GEN Mail Engine; cola updates 002/005) |
+| 8 | 25/10/2026 | Pendiente | Carga de paquetes desde 1 hora + destaque de paquetes + cálculo de saldo por renglón |
+
+---
+
+## Control de Calidad #8
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 25/10/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Pendiente |
+| **Origen** | Prueba manual de Paquete de horas e indicación en [`18-obtencion-saldo-por-renglon.md`](../02-producto/Sistema-Partes-IA/18-obtencion-saldo-por-renglon.md) |
+| **Jira** | [PIAPARTES-52](https://paqsystems.atlassian.net/browse/PIAPARTES-52) |
+
+### Hallazgos
+
+En la prueba manual del informe **Paquete de horas** se detectaron tres ajustes:
+
+1. El rango de duración de la **carga de paquetes de horas** debe ser de **1 a 240 horas enteras, inclusive**. La definición anterior que comenzaba en 8 horas queda corregida.
+2. En el informe **Paquete de horas**, los registros con `es_tarea = 0` deben distinguirse visualmente en la columna **Duración**, mediante una presentación negativa, color rojo u otro destaque equivalente.
+3. La columna **Saldo** no está calculándose correctamente.
+
+### Mejoras solicitadas
+
+#### Carga de paquetes — duración de 1 a 240 horas
+
+- Ajustar el rango permitido de duración para la carga de paquetes para aceptar horas enteras de **1 a 240**, inclusive.
+- Alinear validación frontend, backend/SP, Smart Capture, mensajes i18n y tests.
+
+#### Informe Paquete de horas — destaque de paquetes
+
+- Para cada fila con `es_tarea = 0`, destacar el valor de la columna **Duración**.
+- El resultado puede expresarse como duración negativa y/o color rojo, siempre que sea visible y consistente en grilla, exportación si corresponde e informe.
+- Las filas con `es_tarea = 1` deben conservar la presentación normal.
+
+#### Informe Paquete de horas — saldo por renglón
+
+- Calcular el saldo acumulado por cliente y mostrarlo en la columna **Saldo**.
+- Aplicar la convención indicada en [`18-obtencion-saldo-por-renglon.md`](../02-producto/Sistema-Partes-IA/18-obtencion-saldo-por-renglon.md): los registros con `es_tarea = 1` suman duración y los registros con `es_tarea = 0` restan duración.
+- El saldo inicial debe considerar los movimientos anteriores al inicio del período (`fecha < @fechaDesde`) y cada renglón posterior debe continuar el acumulado del cliente.
+- Definir y respetar el orden de cálculo cuando existan varias filas del mismo cliente en la misma fecha.
+
+### Criterios de aceptación preliminares
+
+- [ ] **CA-01** La carga de paquetes acepta duraciones enteras de 1 a 240 horas y rechaza valores fuera del rango.
+- [ ] **CA-02** La regla de duración es consistente en UI, API/SP, Smart Capture, i18n y tests.
+- [ ] **CA-03** Las filas con `es_tarea = 0` muestran la duración destacada en el informe Paquete de horas.
+- [ ] **CA-04** Las filas con `es_tarea = 1` mantienen la presentación normal de duración.
+- [ ] **CA-05** El saldo inicial se obtiene sumando/restando los movimientos anteriores al período por cliente.
+- [ ] **CA-06** El saldo de cada renglón continúa el acumulado del cliente según `es_tarea`.
+- [ ] **CA-07** La solución funciona para clientes distintos sin mezclar sus saldos.
+
+### Derivación SDD
+
+Pendiente de Parte G: generar SPEC-update, HU-update y TR-update para los tres ajustes antes de implementar.
 
 ---
 
