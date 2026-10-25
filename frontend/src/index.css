@@ -82,3 +82,13 @@ body {
 .tareas-programadas__body {
   min-width: 0;
 }
+
+/* GEN-13: el diálogo de error solo contiene un mensaje y no debe ocupar toda
+   la altura de la pantalla. El SDK conserva el data-testid en el overlay. */
+[data-testid='tareasProgramadas.definiciones.errorPopup'] .dx-popup-content,
+[data-testid='tareasProgramadas.definiciones.errorPopup'] .dx-popup-normal,
+[data-testid='tareasProgramadas.definiciones.errorPopup'] .dx-overlay-content {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: 16rem !important;
+}

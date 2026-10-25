@@ -4,8 +4,33 @@ import { translateTareasProgramadas } from '@paqsuite/react-core'
 type TaskI18nCatalog = Record<string, string>
 
 const catalogs: Record<LocaleCode, TaskI18nCatalog> = {
-  es: {},
+  es: {
+    'tareasProgramadas.procesos.item.BACKUP_DATABASE': 'Backup de base de datos',
+    'tareasProgramadas.definiciones.parameter.includeDateTimeInName':
+      'Incluir fecha y hora en el nombre',
+    'tareasProgramadas.definiciones.parameter.backupPolicy': 'Política de backup',
+    'tareasProgramadas.definiciones.parameter.windowsBackupFolder':
+      'Carpeta de resguardo Windows',
+    'tareasProgramadas.definiciones.parameter.backupPolicy.value.overwrite': 'Sobrescribir',
+    'tareasProgramadas.definiciones.parameter.backupPolicy.value.append': 'Agregar',
+    'tareasProgramadas.definiciones.errorTitle': 'Error',
+    'tareasProgramadas.definiciones.closeError': 'Cerrar',
+    'tareasProgramadas.definiciones.saveError': 'No se pudo guardar la definición.',
+    'tareasProgramadas.validationFailed': 'Los datos de la definición no son válidos.',
+  },
   en: {
+    'tareasProgramadas.procesos.item.BACKUP_DATABASE': 'Database backup',
+    'tareasProgramadas.definiciones.parameter.includeDateTimeInName':
+      'Include date and time in name',
+    'tareasProgramadas.definiciones.parameter.backupPolicy': 'Backup policy',
+    'tareasProgramadas.definiciones.parameter.windowsBackupFolder':
+      'Windows backup folder',
+    'tareasProgramadas.definiciones.parameter.backupPolicy.value.overwrite': 'Overwrite',
+    'tareasProgramadas.definiciones.parameter.backupPolicy.value.append': 'Append',
+    'tareasProgramadas.definiciones.errorTitle': 'Error',
+    'tareasProgramadas.definiciones.closeError': 'Close',
+    'tareasProgramadas.definiciones.saveError': 'The definition could not be saved.',
+    'tareasProgramadas.validationFailed': 'The definition data is invalid.',
     'tareasProgramadas.procesos.title': 'Schedulable processes',
     'tareasProgramadas.procesos.code': 'Code',
     'tareasProgramadas.procesos.name': 'Name',
@@ -64,6 +89,18 @@ const catalogs: Record<LocaleCode, TaskI18nCatalog> = {
     'tareasProgramadas.ejecuciones.refresh': 'Refresh',
   },
   pt: {
+    'tareasProgramadas.procesos.item.BACKUP_DATABASE': 'Backup do banco de dados',
+    'tareasProgramadas.definiciones.parameter.includeDateTimeInName':
+      'Incluir data e hora no nome',
+    'tareasProgramadas.definiciones.parameter.backupPolicy': 'Política de backup',
+    'tareasProgramadas.definiciones.parameter.windowsBackupFolder':
+      'Pasta de backup do Windows',
+    'tareasProgramadas.definiciones.parameter.backupPolicy.value.overwrite': 'Sobrescrever',
+    'tareasProgramadas.definiciones.parameter.backupPolicy.value.append': 'Adicionar',
+    'tareasProgramadas.definiciones.errorTitle': 'Erro',
+    'tareasProgramadas.definiciones.closeError': 'Fechar',
+    'tareasProgramadas.definiciones.saveError': 'Não foi possível salvar a definição.',
+    'tareasProgramadas.validationFailed': 'Os dados da definição não são válidos.',
     'tareasProgramadas.procesos.title': 'Processos programáveis',
     'tareasProgramadas.procesos.code': 'Código',
     'tareasProgramadas.procesos.name': 'Nome',
@@ -122,6 +159,18 @@ const catalogs: Record<LocaleCode, TaskI18nCatalog> = {
     'tareasProgramadas.ejecuciones.refresh': 'Atualizar',
   },
   fr: {
+    'tareasProgramadas.procesos.item.BACKUP_DATABASE': 'Sauvegarde de la base de données',
+    'tareasProgramadas.definiciones.parameter.includeDateTimeInName':
+      'Inclure la date et l’heure dans le nom',
+    'tareasProgramadas.definiciones.parameter.backupPolicy': 'Politique de sauvegarde',
+    'tareasProgramadas.definiciones.parameter.windowsBackupFolder':
+      'Dossier de sauvegarde Windows',
+    'tareasProgramadas.definiciones.parameter.backupPolicy.value.overwrite': 'Écraser',
+    'tareasProgramadas.definiciones.parameter.backupPolicy.value.append': 'Ajouter',
+    'tareasProgramadas.definiciones.errorTitle': 'Erreur',
+    'tareasProgramadas.definiciones.closeError': 'Fermer',
+    'tareasProgramadas.definiciones.saveError': 'Impossible d’enregistrer la définition.',
+    'tareasProgramadas.validationFailed': 'Les données de la définition sont invalides.',
     'tareasProgramadas.procesos.title': 'Processus planifiables',
     'tareasProgramadas.procesos.code': 'Code',
     'tareasProgramadas.procesos.name': 'Nom',
@@ -180,6 +229,18 @@ const catalogs: Record<LocaleCode, TaskI18nCatalog> = {
     'tareasProgramadas.ejecuciones.refresh': 'Actualiser',
   },
   it: {
+    'tareasProgramadas.procesos.item.BACKUP_DATABASE': 'Backup del database',
+    'tareasProgramadas.definiciones.parameter.includeDateTimeInName':
+      'Includi data e ora nel nome',
+    'tareasProgramadas.definiciones.parameter.backupPolicy': 'Politica di backup',
+    'tareasProgramadas.definiciones.parameter.windowsBackupFolder':
+      'Cartella di backup Windows',
+    'tareasProgramadas.definiciones.parameter.backupPolicy.value.overwrite': 'Sovrascrivere',
+    'tareasProgramadas.definiciones.parameter.backupPolicy.value.append': 'Aggiungere',
+    'tareasProgramadas.definiciones.errorTitle': 'Errore',
+    'tareasProgramadas.definiciones.closeError': 'Chiudi',
+    'tareasProgramadas.definiciones.saveError': 'Impossibile salvare la definizione.',
+    'tareasProgramadas.validationFailed': 'I dati della definizione non sono validi.',
     'tareasProgramadas.procesos.title': 'Processi programmabili',
     'tareasProgramadas.procesos.code': 'Codice',
     'tareasProgramadas.procesos.name': 'Nome',
