@@ -1,4 +1,4 @@
-# HU-002 – Identidad funcional y acceso al módulo
+# HU-002 – Identidad funcional y acceso al módulo
 
 Jira: PIAPARTES-16
 
@@ -11,8 +11,8 @@ Jira: PIAPARTES-16
 | Título | Identidad funcional y acceso al módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente |
-| Última actualización | 2026-07-30 |
+| Estado | En Control Calidad |
+| Última actualización | 2026-10-20 |
 | SPEC origen | [SPEC-002-identidad-funcional-y-acceso](../../05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md) |
 | TR relacionada(s) | [TR-002-identidad-funcional-y-acceso](../../04-tareas/100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md) |
 
@@ -65,7 +65,7 @@ El login GEN autentica contra `users`, pero el módulo Partes necesita resolver 
 
 ## Fuera de alcance
 
-- Redefinir login, logout, forgot/reset, `firstLogin`, Sanctum, tenancy headers (Framework GEN).
+- Redefinir login, logout, forgot/reset, `firstLogin`, Sanctum, tenancy headers (Framework GEN). TTL del mail forgot = `PasswordResetTtlMin` (SPEC-001-04).
 - ABM de asistentes/clientes y alta de acceso (SPEC-003).
 - Carga diaria, supervisión masiva, consultas, dashboard, mobile (SPECs posteriores).
 - Roles/permisos Framework (`pq_roles` / menú GEN) salvo coexistencia: el menú puede ocultar pantallas pero no sustituye la delimitación funcional.

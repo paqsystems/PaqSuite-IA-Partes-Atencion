@@ -1,4 +1,4 @@
-# TR-002 – Identidad funcional y acceso al módulo
+# TR-002 – Identidad funcional y acceso al módulo
 
 Jira: PIAPARTES-30
 
@@ -12,8 +12,8 @@ Jira: PIAPARTES-30
 | **Roles** | Asistente / Supervisor / Cliente (funcionales); usuario solo GEN denegado |
 | **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md) (tablas `PQ_PARTES_USUARIOS` / `CLIENTES`); auth GEN (`LoginController`, `MeController`, Sanctum, envelope) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Pendiente (D implementado — verificar F1) |
-| **Última actualización** | 2026-07-30 (D) |
+| **Estado** | En Control Calidad |
+| **Última actualización** | 2026-10-20 |
 
 **Origen:** [HU-002](../../03-historias-usuario/100-SistemaPartes/HU-002-identidad-funcional-y-acceso.md)  
 **Referencia SPEC:** [SPEC-002](../../05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md)  
@@ -265,7 +265,7 @@ Datos: factory/users de prueba + filas dominio; no depender solo de admin en tod
 
 ## 11) Informe C1 + discrepancias
 
-# Revisión de ambigüedad - TR-002
+# Revisión de ambigüedad - TR-002
 
 Jira: PIAPARTES-30
 

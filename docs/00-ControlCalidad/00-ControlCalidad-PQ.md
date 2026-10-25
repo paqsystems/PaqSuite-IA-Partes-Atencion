@@ -52,6 +52,104 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 4 | 04/10/2026 | Especificado | ABM asistentes/clientes + Paquete de Horas tipo cliente — **F1/F Aprobado 11/10/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-04-2026-10-04.md)) |
 | 5 | 05/10/2026 | Especificado | Errores de validación en modal — **F1/F Aprobado 11/10/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/001-Generalidades/D-VERIFICACION-CC-PQ-05-2026-10-05.md)) |
 | 6 | 11/10/2026 | Especificado | Deuda cableado SDK — PA-01…14 **F+I** (PA-03/04/14: 12/10/2026, pin 2.4.25-beta.1) |
+| 7 | 19/10/2026 | Especificado | Mail acceso ABM Usuarios + informar clientes desde Proceso masivo (GEN Mail Engine; cola updates 002/005) |
+| 8 | 25/10/2026 | Pendiente | Carga de paquetes desde 1 hora + destaque de paquetes + cálculo de saldo por renglón |
+
+---
+
+## Control de Calidad #8
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 25/10/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Pendiente |
+| **Origen** | Prueba manual de Paquete de horas e indicación en [`18-obtencion-saldo-por-renglon.md`](../02-producto/Sistema-Partes-IA/18-obtencion-saldo-por-renglon.md) |
+| **Jira** | [PIAPARTES-52](https://paqsystems.atlassian.net/browse/PIAPARTES-52) |
+
+### Hallazgos
+
+En la prueba manual del informe **Paquete de horas** se detectaron tres ajustes:
+
+1. El rango de duración de la **carga de paquetes de horas** debe ser de **1 a 240 horas enteras, inclusive**. La definición anterior que comenzaba en 8 horas queda corregida.
+2. En el informe **Paquete de horas**, los registros con `es_tarea = 0` deben distinguirse visualmente en la columna **Duración**, mediante una presentación negativa, color rojo u otro destaque equivalente.
+3. La columna **Saldo** no está calculándose correctamente.
+
+### Mejoras solicitadas
+
+#### Carga de paquetes — duración de 1 a 240 horas
+
+- Ajustar el rango permitido de duración para la carga de paquetes para aceptar horas enteras de **1 a 240**, inclusive.
+- Alinear validación frontend, backend/SP, Smart Capture, mensajes i18n y tests.
+
+#### Informe Paquete de horas — destaque de paquetes
+
+- Para cada fila con `es_tarea = 0`, destacar el valor de la columna **Duración**.
+- El resultado puede expresarse como duración negativa y/o color rojo, siempre que sea visible y consistente en grilla, exportación si corresponde e informe.
+- Las filas con `es_tarea = 1` deben conservar la presentación normal.
+
+#### Informe Paquete de horas — saldo por renglón
+
+- Calcular el saldo acumulado por cliente y mostrarlo en la columna **Saldo**.
+- Aplicar la convención indicada en [`18-obtencion-saldo-por-renglon.md`](../02-producto/Sistema-Partes-IA/18-obtencion-saldo-por-renglon.md): los registros con `es_tarea = 1` suman duración y los registros con `es_tarea = 0` restan duración.
+- El saldo inicial debe considerar los movimientos anteriores al inicio del período (`fecha < @fechaDesde`) y cada renglón posterior debe continuar el acumulado del cliente.
+- Definir y respetar el orden de cálculo cuando existan varias filas del mismo cliente en la misma fecha.
+
+### Criterios de aceptación preliminares
+
+- [ ] **CA-01** La carga de paquetes acepta duraciones enteras de 1 a 240 horas y rechaza valores fuera del rango.
+- [ ] **CA-02** La regla de duración es consistente en UI, API/SP, Smart Capture, i18n y tests.
+- [ ] **CA-03** Las filas con `es_tarea = 0` muestran la duración destacada en el informe Paquete de horas.
+- [ ] **CA-04** Las filas con `es_tarea = 1` mantienen la presentación normal de duración.
+- [ ] **CA-05** El saldo inicial se obtiene sumando/restando los movimientos anteriores al período por cliente.
+- [ ] **CA-06** El saldo de cada renglón continúa el acumulado del cliente según `es_tarea`.
+- [ ] **CA-07** La solución funciona para clientes distintos sin mezclar sus saldos.
+
+### Derivación SDD
+
+Pendiente de Parte G: generar SPEC-update, HU-update y TR-update para los tres ajustes antes de implementar.
+
+---
+
+## Control de Calidad #7
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 19/10/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado |
+
+### Hallazgos
+
+Envios de mails a clientes y asistentes antes dos eventos : 1) aviso desde ABM de usuarios para proveedor link del sitio y credenciales iniciales de acceso. 2) Anuncio de novedades a los clientes sobre partes ingresados por los asistentes y aprobado por el supervisor
+
+### Errores encontrados - Mejoras solicitadas
+
+#### Envio mail a usuario para acceder al sitio
+
+*Procesado* (Parte G 20/10/2026) → [SPEC-002-update](../05-open-spec/updates/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update.md) · [HU-002-update](../03-historias-usuario/updates/100-SistemaPartes/HU-002-identidad-funcional-y-acceso-update.md) · [TR-002-update](../04-tareas/updates/100-SistemaPartes/TR-002-identidad-funcional-y-acceso-update.md)
+
+en el Abm de Usuarios, agregar un botón "Notificación", por el cual : 
+- se envia un mail al usuario (en ALTA; se habilita después de haber ingresado un mail)
+- EL mismo notifica en Asunto : Codigo de la Empresa y algo así como " - ingreso a nuestro sistema de Partes de Atención".
+- En el cuerpo del mensaje, hacer mención que se ofrece al receptor el link para poder controlar los servicios que se prestaron a su empresa, aclarando el link de acceso (hipervínculo para eso), y las credenciales de acceso : usuario y contraseña
+- La contraseña se define en el momento con un número random que cumpla con las normas de seguridad parametrizadas (simple o segura, longitud de la clave)
+- se graba en el usuario que es el primer login (para que lo modifique en el proximo acceso)
+
+#### Envio mail a clientes para informar existencia de novedades
+
+*Procesado* (Parte G 20/10/2026) → [SPEC-005-update](../05-open-spec/updates/100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) · [HU-005-update](../03-historias-usuario/updates/100-SistemaPartes/HU-005-supervision-proceso-masivo-update.md) · [TR-005-update](../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md)
+
+En el proceso de "Partes Masivos":
+- habilitar un ícono con la imagen de mail, y tooltip "Informar a clientes", con el cual.
+- se determinan todos los clientes que figuran en la grilla en ese momento, y que tengan asociado un usuario.
+- Enviar un mail a todos los usuarios recolectados.
+- Asunto : Codigo de la empresa y algo así como : "Existen novedades de atención a su empresa".
+- Mensaje : informar que hubo novedades de servicios prestados en el periodod (desde y hasta con se filtró el procesó), recordando la URL de aviso y el codigo de usuario para acceder, y que si no recuerda su contraseña podrá solicitar una nueva en el login.
 
 ---
 
@@ -68,7 +166,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | **Parte I** | PA-01 (012); PA-02…14 unificados en SPEC/HU/TR-002 originales. Updates 002 **eliminados** 12/10/2026. |
 | **Cierre updates** | Familia 002 **Finalizado**. F1+F+I 12/10/2026. |
 | **Origen** | [deuda-cableado-sdk-por-gen.md](../06-operacion/deuda-cableado-sdk-por-gen.md) · relevamiento Framework 11/10/2026 |
-| **Pin de referencia** | `@paqsuite/react-core` **2.4.26-beta.1** · `paqsuite/laravel-core` **1.3.13-beta.1** |
+| **Pin de referencia** | `@paqsuite/react-core` **2.4.29-beta.1** · `paqsuite/laravel-core` **1.3.15-beta.1** |
 
 ### Hallazgos
 

@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use PaqSuite\LaravelCore\Http\Responses\ApiResponse;
+use PaqSuite\LaravelCore\Http\Responses\PaqSuiteEnvelopeCatalog;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsurePermission
@@ -12,11 +14,11 @@ class EnsurePermission
     {
         $user = $request->user();
         if (! $user) {
-            return response()->json([
-                'error' => ['codigo' => 'unauthenticated', 'mensaje' => 'No autenticado'],
-                'respuesta' => null,
-                'resultado' => null,
-            ], 401);
+            return ApiResponse::error(
+                PaqSuiteEnvelopeCatalog::AUTH_UNAUTHENTICATED,
+                'auth.unauthenticated',
+                401
+            );
         }
 
         $granted = $user->permission_slugs ?? [];
@@ -26,11 +28,11 @@ class EnsurePermission
 
         foreach ($permissionSlugs as $required) {
             if (! $this->userHasPermission($granted, $required)) {
-                return response()->json([
-                    'error' => ['codigo' => 'forbidden', 'mensaje' => 'Permiso denegado'],
-                    'respuesta' => null,
-                    'resultado' => null,
-                ], 403);
+                return ApiResponse::error(
+                    PaqSuiteEnvelopeCatalog::AUTH_FORBIDDEN,
+                    'auth.forbidden',
+                    403
+                );
             }
         }
 

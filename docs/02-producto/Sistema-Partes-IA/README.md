@@ -35,8 +35,10 @@ La carpeta no reemplaza al contexto comun del framework en `docs/00-contexto/_mo
 11. `11-checklist-temas-definidos-del-modulo.md`
 12. `12-asistente-ia-ayuda-y-chat-documental.md` — Asistente IA (chat documental) desde menú avatar; corpus Partes + generalidades Framework
 13. `13-importacion-partes-excel.md` — Importación de partes (tareas) desde Excel bajo Carga de Partes
-14. `14-smart-capture.md` — Smart Capture (asistente operativo) en el modal de alta/edición de tarea (Carga diaria)
+14. `14-smart-capture.md` — Smart Capture (asistente operativo) en el modal de alta/edición de **tarea** (Carga diaria) y de **paquete de horas** (`16`)
 15. `15-reportes-emisiones.md` — Adopción GEN-15: diseñar informes / salidas por proceso; emisor en Consulta detallada
+16. `16-carga-paquetes-horas.md` — ABM de compras de horas (`es_tarea = false`) + Smart Capture en el modal
+17. `17-APis-importar-datos-maestros.md` — APIs de integración (upsert) de maestros; no Excel; no crea `users`
 
 ## Relacion con otras carpetas
 

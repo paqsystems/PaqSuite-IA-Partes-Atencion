@@ -3,7 +3,9 @@
 namespace App\Repositories\Sp;
 
 use App\Services\Partes\PartesInformeOperations;
+use App\Services\Partes\PartesIntegracionMaestrosOperations;
 use App\Services\Partes\PartesMaestrosOperations;
+use App\Services\Partes\PartesPaqueteOperations;
 use App\Services\Partes\PartesTareaOperations;
 use Illuminate\Support\Facades\DB;
 
@@ -20,8 +22,16 @@ final class SpCaller
      */
     public function call(string $procedure, array $params = []): array
     {
+        if ($this->isPartesIntegracionMaestrosProcedure($procedure)) {
+            return PartesIntegracionMaestrosOperations::dispatch($procedure, $params);
+        }
+
         if ($this->isPartesTareaProcedure($procedure)) {
             return PartesTareaOperations::dispatch($procedure, $params);
+        }
+
+        if ($this->isPartesPaqueteProcedure($procedure)) {
+            return PartesPaqueteOperations::dispatch($procedure, $params);
         }
 
         if ($this->isPartesInformeProcedure($procedure)) {
@@ -50,6 +60,16 @@ final class SpCaller
         return str_starts_with($procedure, 'pq_sp_partes_tarea_');
     }
 
+    private function isPartesIntegracionMaestrosProcedure(string $procedure): bool
+    {
+        return str_starts_with($procedure, 'pq_sp_partes_integracion_maestros_');
+    }
+
+    private function isPartesPaqueteProcedure(string $procedure): bool
+    {
+        return str_starts_with($procedure, 'pq_sp_partes_paquete_');
+    }
+
     private function isPartesInformeProcedure(string $procedure): bool
     {
         return in_array($procedure, [
@@ -66,6 +86,14 @@ final class SpCaller
         }
 
         if ($this->isPartesTareaProcedure($procedure)) {
+            return false;
+        }
+
+        if ($this->isPartesPaqueteProcedure($procedure)) {
+            return false;
+        }
+
+        if ($this->isPartesIntegracionMaestrosProcedure($procedure)) {
             return false;
         }
 

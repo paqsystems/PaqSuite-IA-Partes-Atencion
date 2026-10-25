@@ -94,6 +94,7 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => 'password_reset_tokens',
+            // No es el TTL de forgot PaqSuite: ese es PasswordResetTtlMin (diccionario).
             'expire' => 60,
             'throttle' => 60,
         ],

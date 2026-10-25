@@ -1,14 +1,13 @@
-import { isNativeApp, ProcessPageLayout } from '@paqsuite/react-core'
+import { EmissionReportDesignerPage, isNativeApp, ProcessPageLayout } from '@paqsuite/react-core'
 import { useTranslation } from 'react-i18next'
 import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 import { useSearchParams } from 'react-router-dom'
-import { DxReportDesignerPanel, type PartesReportDesignerContext } from './DxReportDesignerPanel'
-import { EmissionReportDesignerPage } from './EmissionReportDesignerPage'
+import { DxReportDesignerPanel } from './DxReportDesignerPanel'
 import { readInitialProcessCodeFromSearch } from './reportDesignerInitialProcess'
 
 /**
  * Host Partes del diseñador GEN-15.
- * Monta `EmissionReportDesignerPage` sin `processCode` fijo: lista + confirmación Must (también N=1).
+ * Monta `EmissionReportDesignerPage` del SDK sin `processCode` fijo.
  */
 export function ReportDesignerHostPage() {
   const { t } = useTranslation()
@@ -25,9 +24,7 @@ export function ReportDesignerHostPage() {
         hasDesignPermission={!native}
         isNative={native}
         t={(key) => t(key)}
-        renderDesigner={(context) => (
-          <DxReportDesignerPanel context={context as PartesReportDesignerContext} />
-        )}
+        renderDesigner={(context) => <DxReportDesignerPanel context={context} />}
       />
     </div>
     </ProcessPageLayout>

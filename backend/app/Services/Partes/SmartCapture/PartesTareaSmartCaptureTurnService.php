@@ -55,6 +55,9 @@ final class PartesTareaSmartCaptureTurnService
         $this->guard->validateGen($body, $options);
 
         $draftContext = is_array($body['draftContext'] ?? null) ? $body['draftContext'] : [];
+        if ($this->isPaqueteProcess($draftContext) && ! $this->isSupervisor($draftContext)) {
+            return $this->noopResult('partes.paquete.soloSupervisor');
+        }
         $pendingChoice = is_array($body['pendingChoice'] ?? null) ? $body['pendingChoice'] : null;
         $message = trim((string) ($body['message'] ?? ''));
         $images = is_array($body['images'] ?? null) ? $body['images'] : [];
@@ -224,6 +227,10 @@ final class PartesTareaSmartCaptureTurnService
      */
     private function buildResultFromProposal(array $proposal, array $draftContext): array
     {
+        if ($this->isPaqueteProcess($draftContext)) {
+            return $this->buildPaqueteResultFromProposal($proposal, $draftContext);
+        }
+
         $actions = [];
         $pendingChoice = null;
         $replyParts = [trim((string) $proposal['replyText'])];
@@ -325,9 +332,16 @@ final class PartesTareaSmartCaptureTurnService
             }
             $value = $fields[$scalarField];
             if ($scalarField === 'duracionMinutos') {
-                $tramo = self::tramoMinutosFromDraft($draftContext);
                 $parsed = PartesDuracionParser::toMinutos($value);
-                if ($parsed === null || ! PartesDuracionParser::isValidTramo($parsed, $tramo)) {
+                $valid = $parsed !== null && (
+                    $this->isPaqueteProcess($draftContext)
+                        ? PartesDuracionParser::isValidPaqueteHoras($parsed)
+                        : PartesDuracionParser::isValidTramo(
+                            $parsed,
+                            self::tramoMinutosFromDraft($draftContext)
+                        )
+                );
+                if (! $valid) {
                     $actions[] = $this->action('needsRefine', ['field' => 'duracionMinutos']);
                     $replyParts[] = 'partes.smartCapture.duracionInvalida';
 
@@ -494,6 +508,115 @@ final class PartesTareaSmartCaptureTurnService
             'payload' => $payload,
             'resultado' => 'ok',
         ];
+    }
+
+    /**
+     * @param  array{replyText: string, save: bool, fields: array<string, mixed>}  $proposal
+     * @param  array<string, mixed>  $draftContext
+     * @return array{replyText: string, actions: list<array{action: string, payload: array<string, mixed>, resultado: string}>, pendingChoice: array<string, mixed>|null, configurationRequired: bool}
+     */
+    private function buildPaqueteResultFromProposal(array $proposal, array $draftContext): array
+    {
+        $actions = [];
+        $pendingChoice = null;
+        $replyParts = [trim((string) $proposal['replyText'])];
+        $fields = $proposal['fields'];
+
+        if (array_key_exists('cliente', $fields) && $fields['cliente'] !== null && $fields['cliente'] !== '') {
+            $resolved = $this->catalogResolver->resolveCliente((string) $fields['cliente']);
+            $branch = $this->branchCatalog(
+                $resolved,
+                'clienteId',
+                'chooseCliente',
+                'partes.smartCapture.clienteNoEncontrado',
+                'partes.smartCapture.clienteAmbiguo',
+            );
+            $actions = array_merge($actions, $branch['actions']);
+            if ($branch['pendingChoice'] !== null) {
+                $pendingChoice = $branch['pendingChoice'];
+            }
+            if ($branch['replyHint'] !== null) {
+                $replyParts[] = $branch['replyHint'];
+            }
+        }
+
+        if (array_key_exists('fecha', $fields) && $fields['fecha'] !== null && $fields['fecha'] !== '') {
+            $fecha = $this->normalizeFecha((string) $fields['fecha']);
+            if ($fecha === null) {
+                $actions[] = $this->action('needsRefine', ['field' => 'fecha']);
+                $replyParts[] = 'partes.smartCapture.fechaInvalida';
+            } elseif ($this->isFutureDate($fecha)) {
+                if ($pendingChoice === null) {
+                    $pendingChoice = [
+                        'kind' => 'confirmFutureDate',
+                        'options' => [
+                            ['id' => 1, 'label' => 'Sí, confirmar fecha futura'],
+                            ['id' => 2, 'label' => 'No'],
+                        ],
+                        'deferred' => [
+                            [
+                                'cause' => 'confirmationRequired',
+                                'payload' => ['fecha' => $fecha],
+                            ],
+                        ],
+                    ];
+                    $replyParts[] = 'partes.smartCapture.fechaFuturaConfirmar';
+                }
+            } else {
+                $actions[] = $this->action('setField', ['field' => 'fecha', 'value' => $fecha]);
+            }
+        }
+
+        foreach (['duracionMinutos', 'observacion'] as $scalarField) {
+            if (! array_key_exists($scalarField, $fields) || $fields[$scalarField] === null) {
+                continue;
+            }
+            $value = $fields[$scalarField];
+            if ($scalarField === 'duracionMinutos') {
+                $parsed = PartesDuracionParser::toMinutos($value);
+                $valid = $parsed !== null && (
+                    $this->isPaqueteProcess($draftContext)
+                        ? PartesDuracionParser::isValidPaqueteHoras($parsed)
+                        : PartesDuracionParser::isValidTramo(
+                            $parsed,
+                            self::tramoMinutosFromDraft($draftContext)
+                        )
+                );
+                if (! $valid) {
+                    $actions[] = $this->action('needsRefine', ['field' => 'duracionMinutos']);
+                    $replyParts[] = 'partes.smartCapture.duracionInvalida';
+
+                    continue;
+                }
+                $value = $parsed;
+            }
+            if ($scalarField === 'observacion') {
+                $value = (string) $value;
+            }
+            $actions[] = $this->action('setField', ['field' => $scalarField, 'value' => $value]);
+        }
+
+        if (($proposal['save'] ?? false) === true && $pendingChoice === null && ! $this->hasBlockingCatalogAction($actions)) {
+            $actions[] = $this->action('save', []);
+        }
+
+        $replyText = $this->composeReplyText($replyParts, $pendingChoice);
+        if ($pendingChoice === null && $replyText === 'partes.smartCapture.noop' && $actions !== []) {
+            $replyText = 'partes.smartCapture.ok';
+        }
+
+        return [
+            'replyText' => $replyText,
+            'actions' => $actions,
+            'pendingChoice' => $pendingChoice,
+            'configurationRequired' => false,
+        ];
+    }
+
+    /** @param  array<string, mixed>  $draftContext */
+    private function isPaqueteProcess(array $draftContext): bool
+    {
+        return ($draftContext['processKind'] ?? '') === 'paquete';
     }
 
     /**

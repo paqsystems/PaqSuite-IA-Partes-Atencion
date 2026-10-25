@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Http\Middleware\EnsureFirstLoginCompletedMiddleware;
 use App\Http\Middleware\EnsurePartesFunctionalProfile;
 use App\Http\Middleware\EnsurePartesNotCliente;
+use App\Http\Middleware\EnsurePartesSupervisor;
 use App\Http\Middleware\EnsureSeguridadAdminMiddleware;
 use App\Repositories\Sp\SpAccesoTotalChecker;
 use App\Repositories\Sp\SpLlmCredentialRepository;
@@ -66,6 +67,11 @@ use PaqSuite\LaravelCore\Security\UserEmpresasQueryRepository;
 use PaqSuite\LaravelCore\Security\UserPreferencesRepository;
 use PaqSuite\LaravelCore\Tasks\Backup\MonoRdsBackupGateway;
 use PaqSuite\LaravelCore\Tasks\Backup\MonoRdsBackupService;
+use PaqSuite\LaravelCore\Tasks\Backup\BackupCompanyTargetResolver;
+use PaqSuite\LaravelCore\Tasks\Backup\BackupInstallationProfileResolver;
+use PaqSuite\LaravelCore\Tasks\Backup\ConfigBackupInstallationProfileResolver;
+use PaqSuite\LaravelCore\Tasks\Backup\EmpresaAdminBackupCompanyTargetResolver;
+use PaqSuite\LaravelCore\Tasks\Backup\RdsBackupLock;
 use PaqSuite\LaravelCore\Tasks\Processes\BackupDatabaseProcess;
 use PaqSuite\LaravelCore\Tasks\Repositories\TaskDefinitionRepository;
 use PaqSuite\LaravelCore\Tasks\Repositories\TaskExecutionRepository;
@@ -76,6 +82,7 @@ use PaqSuite\LaravelCore\Tasks\StoredProcedureTaskProcessRepository;
 use PaqSuite\LaravelCore\Tasks\TaskProcessRegistry;
 use PaqSuite\LaravelCore\Tenancy\MenuProcedimientoChecker;
 use App\Tasks\Backup\RdsSqlServerBackupGateway;
+use App\Tasks\Backup\RdsBackupCacheLock;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -117,9 +124,15 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(TaskExecutionRepository::class, static fn () => new StoredProcedureTaskExecutionRepository());
         $this->app->singleton(TaskProcessRegistry::class, TaskProcessRegistry::class);
         $this->app->singleton(MonoRdsBackupGateway::class, RdsSqlServerBackupGateway::class);
+        $this->app->singleton(BackupInstallationProfileResolver::class, ConfigBackupInstallationProfileResolver::class);
+        $this->app->singleton(BackupCompanyTargetResolver::class, static fn ($app) => new EmpresaAdminBackupCompanyTargetResolver(
+            $app->make(EmpresaAdminRepository::class),
+        ));
+        $this->app->singleton(RdsBackupLock::class, RdsBackupCacheLock::class);
         $this->app->singleton(MonoRdsBackupService::class, static fn ($app) => new MonoRdsBackupService(
             $app->make(MonoRdsBackupGateway::class),
             max(1, (int) env('TASKS_BACKUP_POLL_SECONDS', 5)),
+            $app->make(RdsBackupLock::class),
         ));
 
         $this->app->singleton(SpLlmCredentialRepository::class);
@@ -286,6 +299,7 @@ class AppServiceProvider extends ServiceProvider
         $router->aliasMiddleware('paqsuite.firstLogin', EnsureFirstLoginCompletedMiddleware::class);
         $router->aliasMiddleware('partes.profile', EnsurePartesFunctionalProfile::class);
         $router->aliasMiddleware('partes.notCliente', EnsurePartesNotCliente::class);
+        $router->aliasMiddleware('partes.supervisor', EnsurePartesSupervisor::class);
         $router->aliasMiddleware('paqsuite.seguridadAdmin', EnsureSeguridadAdminMiddleware::class);
 
         // SQL Server con locale dmy: forzar interpretación ymd en cada conexión.

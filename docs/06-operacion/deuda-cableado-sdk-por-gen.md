@@ -1,9 +1,13 @@
 # Deuda de cableado SDK — Partes-Atención (por GEN)
 
 **Origen:** relevamiento Framework 2026-10-11 (`PaqSuite-IA-FRAMEWORK` / `docs/06-operacion/relevamiento-cableado-hosts-tango-partes.md`).
-**Pin de referencia:** `@paqsuite/react-core` **2.4.26-beta.1** · `paqsuite/laravel-core` **1.3.13-beta.1**.
+**Pin de referencia:** `@paqsuite/react-core` **2.4.29-beta.1** · `paqsuite/laravel-core` **1.3.15-beta.1**.
 **Criterio:** mala invocación de un export GEN listo, fork de una pantalla/motor que el SDK ya exporta, o contrato que el SDK ya cubre (headers, cliente, envelope, tema, i18n GEN).
-**Fuera de alcance:** pantallas de dominio (carga diaria, maestros, informes). Gaps de producto no ofrecidos (GEN-13, GEN-17, GEN-23, GEN-32).
+**Fuera de alcance del relevamiento original:** pantallas de dominio (carga
+diaria, maestros, informes) y gaps de producto no ofrecidos en esa fecha
+(GEN-13, GEN-17, GEN-23, GEN-32). GEN-13 fue adoptado posteriormente de forma
+parcial; su estado operativo vigente está documentado en
+`docs/06-operacion/adopcion-gen-13-tareas-programadas.md`.
 
 **Qué ya está bien (no pedir trabajo):** `registerGridI18nResources`; `MenuSidebar` con `t`/`locale`/`labels`/`openInNewTab`/`onItemsLoaded`; `UserAvatarMenu`; `DashboardContainer`; `EmpresaSelectorPage`; `ParametrosGeneralesPage`; `ProcessDataGrid` (salvo permisos); `ConsultaGrillaPivotShell`; `ExcelImportToolbar`; `SmartCapturePanel`; `ChatAssistantPage`; `LlmPreferencesPanel`; `ShellLayout` + CSS SDK; `EmpresasAdminPage` con `tenancyMode="single"` y preview sin reload.
 

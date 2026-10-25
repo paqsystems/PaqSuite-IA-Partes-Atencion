@@ -106,6 +106,10 @@ Eso significa, como criterio general:
 - si un registro ya esta fuertemente referenciado por tareas o relaciones activas, deberia privilegiarse su inhabilitacion antes que una eliminacion destructiva;
 - las reglas concretas de bloqueo o baja logica se derivaran luego en `SPEC`, `HU` y `TR`.
 
+## Canal de integración (APIs)
+
+Además del ABM web de Archivos, el módulo define un **canal API** para que un origen externo haga upsert de los mismos maestros (`17-APis-importar-datos-maestros.md`). No sustituye este documento: reutiliza las mismas reglas (código único, inhabilitación, tipos genéricos, ERP opcional). No crea usuarios de login ni habilita acceso de cliente.
+
 ## Resultado esperado de esta capa
 
 Si los maestros estan bien definidos:

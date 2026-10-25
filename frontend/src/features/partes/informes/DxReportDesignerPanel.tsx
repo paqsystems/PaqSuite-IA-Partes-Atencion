@@ -1,5 +1,6 @@
 import { Suspense, lazy, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { ReportDesignerContext } from '@paqsuite/react-core'
 import { readDxReportingConfig, resolveDxDesignerReportUrl } from './dxReportingConfig'
 
 const LazyDxReportDesignerApp = lazy(() => import('./DxReportDesignerApp'))
@@ -10,18 +11,10 @@ export type PartesDxReportSavedEvent = {
   isNew: boolean
 }
 
-/** Espejo del context GEN ReportDesignerHost (el paquete 2.3.x no reexporta el type completo). */
-export type PartesReportDesignerContext = {
-  reportId: number | null
-  reportCode?: string | null
-  processCode: string
-  designerEndpoint: string
-  knownReportCodes?: string[]
-  onDxReportSaved?: (event: PartesDxReportSavedEvent) => void | Promise<void>
-}
+export type PartesReportDesignerContext = ReportDesignerContext
 
 type DxReportDesignerPanelProps = {
-  context: PartesReportDesignerContext
+  context: ReportDesignerContext
 }
 
 /**

@@ -14,6 +14,7 @@ const es: Record<string, string> = {
   'menu.partes_cliente_tipo_tarea': 'Asignación tipos por cliente',
   'menu.partes': 'Partes',
   'menu.partes_carga_diaria': 'Carga diaria',
+  'menu.partes_carga_paquetes': 'Carga de paquetes',
   'menu.partes_proceso_masivo': 'Proceso masivo',
   'menu.informes': 'Informes',
   'menu.partes_consulta_detallada': 'Consulta detallada',
@@ -29,6 +30,7 @@ const es: Record<string, string> = {
   'menu.parametros_partes': 'Parámetros Partes',
   'menu.soporte_tecnico': 'Soporte Técnico',
   'menu.partes_disenador_emisiones': 'Diseñador de emisiones',
+  'menu.tareas_programadas': 'Tareas programadas',
 }
 
 const en: Record<string, string> = {
@@ -44,6 +46,7 @@ const en: Record<string, string> = {
   'menu.partes_cliente_tipo_tarea': 'Task types per client',
   'menu.partes': 'Time entries',
   'menu.partes_carga_diaria': 'Daily entry',
+  'menu.partes_carga_paquetes': 'Hour package entry',
   'menu.partes_proceso_masivo': 'Bulk process',
   'menu.informes': 'Reports',
   'menu.partes_consulta_detallada': 'Detailed inquiry',
@@ -59,6 +62,7 @@ const en: Record<string, string> = {
   'menu.parametros_partes': 'Partes parameters',
   'menu.soporte_tecnico': 'Technical support',
   'menu.partes_disenador_emisiones': 'Report designer',
+  'menu.tareas_programadas': 'Scheduled tasks',
 }
 
 const pt: Record<string, string> = {
@@ -74,6 +78,7 @@ const pt: Record<string, string> = {
   'menu.partes_cliente_tipo_tarea': 'Tipos por cliente',
   'menu.partes': 'Partes',
   'menu.partes_carga_diaria': 'Carga diária',
+  'menu.partes_carga_paquetes': 'Carga de pacotes',
   'menu.partes_proceso_masivo': 'Processo massivo',
   'menu.informes': 'Informes',
   'menu.partes_consulta_detallada': 'Consulta detalhada',
@@ -89,6 +94,7 @@ const pt: Record<string, string> = {
   'menu.parametros_partes': 'Parâmetros Partes',
   'menu.soporte_tecnico': 'Suporte técnico',
   'menu.partes_disenador_emisiones': 'Designer de emissões',
+  'menu.tareas_programadas': 'Tarefas programadas',
 }
 
 const fr: Record<string, string> = {
@@ -104,6 +110,7 @@ const fr: Record<string, string> = {
   'menu.partes_cliente_tipo_tarea': 'Types par client',
   'menu.partes': 'Feuilles de temps',
   'menu.partes_carga_diaria': 'Saisie quotidienne',
+  'menu.partes_carga_paquetes': 'Saisie de forfaits',
   'menu.partes_proceso_masivo': 'Traitement massif',
   'menu.informes': 'Rapports',
   'menu.partes_consulta_detallada': 'Consultation détaillée',
@@ -119,6 +126,7 @@ const fr: Record<string, string> = {
   'menu.parametros_partes': 'Paramètres Partes',
   'menu.soporte_tecnico': 'Support technique',
   'menu.partes_disenador_emisiones': 'Concepteur de rapports',
+  'menu.tareas_programadas': 'Tâches planifiées',
 }
 
 const it: Record<string, string> = {
@@ -134,6 +142,7 @@ const it: Record<string, string> = {
   'menu.partes_cliente_tipo_tarea': 'Tipi per cliente',
   'menu.partes': 'Parti',
   'menu.partes_carga_diaria': 'Carico giornaliero',
+  'menu.partes_carga_paquetes': 'Carico pacchetti',
   'menu.partes_proceso_masivo': 'Processo massivo',
   'menu.informes': 'Report',
   'menu.partes_consulta_detallada': 'Consultazione dettagliata',
@@ -149,6 +158,7 @@ const it: Record<string, string> = {
   'menu.parametros_partes': 'Parametri Partes',
   'menu.soporte_tecnico': 'Supporto tecnico',
   'menu.partes_disenador_emisiones': 'Designer report',
+  'menu.tareas_programadas': 'Attività pianificate',
 }
 
 export const productI18nCatalogs: Record<LocaleCode, Record<string, string>> = {

@@ -89,6 +89,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Tareas programadas / backups (GEN-13)
+    |--------------------------------------------------------------------------
+    */
+    'tasks' => [
+        'middleware' => [
+            'paqsuite.instalacion',
+            'paqsuite.instalacion.db',
+            'auth:sanctum',
+        ],
+        'backup' => [
+            'backend' => env('PAQSUITE_TASKS_BACKUP_BACKEND', 'rds'),
+            's3ArnPrefix' => env('TASKS_BACKUP_S3_ARN_PREFIX', ''),
+            'windowsService' => env('TASKS_BACKUP_WINDOWS_SERVICE', ''),
+            'lockLeaseSeconds' => (int) env('TASKS_BACKUP_LOCK_LEASE_SECONDS', 900),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Chat Asistente IA (GEN-21) — timeout producto hacia el proveedor LLM
     |--------------------------------------------------------------------------
     */

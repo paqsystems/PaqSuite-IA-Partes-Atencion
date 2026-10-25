@@ -33,6 +33,7 @@ import {
 } from '../features/partes/maestros/PartesMaestrosPages'
 import { ClienteTiposTareaPage } from '../features/partes/maestros/ClienteTiposTareaPage'
 import { CargaDiariaPage } from '../features/partes/carga/CargaDiariaPage'
+import { CargaPaquetesPage } from '../features/partes/carga/CargaPaquetesPage'
 import { ProcesoMasivoPage } from '../features/partes/masivo/ProcesoMasivoPage'
 import { PartesDashboardPage } from '../features/partes/informes/PartesDashboardPage'
 import {
@@ -49,6 +50,16 @@ import { RoleAtributosPage } from '../features/admin/security/RoleAtributosPage'
 import { RolesAdminPage } from '../features/admin/security/RolesAdminPage'
 import { UsuariosAdminPage } from '../features/admin/security/UsuariosAdminPage'
 import { ChatAssistantHostPage } from '../features/chatAssistant/ChatAssistantHostPage'
+import {
+  TareasProgramadasLayout,
+  TareasProgramadasIndexRedirect,
+  TaskDefinicionesSection,
+  TareasProgramadasSdkProcesosPage,
+  TareasProgramadasSdkDefinicionesPage,
+  TareasProgramadasSdkDefinicionFormPage,
+  TareasProgramadasSdkEjecucionesPage,
+  TareasProgramadasSdkHistorialPage,
+} from '../features/tareasProgramadas'
 
 function RedirectToLogin() {
   const location = useLocation()
@@ -115,6 +126,20 @@ export function AppRouter() {
               <Route path="/admin/roles" element={<RolesAdminPage />} />
               <Route path="/admin/roles/:id/atributos" element={<RoleAtributosPage />} />
               <Route path="/admin/permisos" element={<PermisosAdminPage />} />
+              <Route
+                path="/tareas-programadas"
+                element={<TareasProgramadasLayout />}
+              >
+                <Route index element={<TareasProgramadasIndexRedirect />} />
+                <Route path="procesos" element={<TareasProgramadasSdkProcesosPage />} />
+                <Route path="definiciones" element={<TaskDefinicionesSection />}>
+                  <Route index element={<TareasProgramadasSdkDefinicionesPage />} />
+                  <Route path="nueva" element={<TareasProgramadasSdkDefinicionFormPage />} />
+                  <Route path=":id/editar" element={<TareasProgramadasSdkDefinicionFormPage />} />
+                </Route>
+                <Route path="ejecuciones" element={<TareasProgramadasSdkEjecucionesPage />} />
+                <Route path="historial" element={<TareasProgramadasSdkHistorialPage />} />
+              </Route>
               <Route element={<RequirePartesMaestrosAccess />}>
                 <Route path="/archivos/partes/asistentes" element={<AsistentesPage />} />
                 <Route path="/archivos/partes/clientes" element={<ClientesPage />} />
@@ -122,6 +147,7 @@ export function AppRouter() {
                 <Route path="/archivos/partes/tipos-tarea" element={<TiposTareaPage />} />
                 <Route path="/archivos/partes/cliente-tipos-tarea" element={<ClienteTiposTareaPage />} />
                 <Route path="/partes/carga-diaria" element={<CargaDiariaPage />} />
+                <Route path="/partes/carga-paquetes" element={<CargaPaquetesPage />} />
                 <Route path="/partes/proceso-masivo" element={<ProcesoMasivoPage />} />
               </Route>
             </Route>

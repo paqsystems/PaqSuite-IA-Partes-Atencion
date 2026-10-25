@@ -52,4 +52,9 @@ final class PartesDuracionParser
 
         return $minutos > 0 && $minutos <= 1440 && $minutos % $tramo === 0;
     }
+
+    public static function isValidPaqueteHoras(int $minutos): bool
+    {
+        return $minutos >= 480 && $minutos <= 14400 && $minutos % 60 === 0;
+    }
 }

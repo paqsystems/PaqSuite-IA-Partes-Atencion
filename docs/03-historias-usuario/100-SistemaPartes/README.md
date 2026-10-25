@@ -16,6 +16,8 @@
 | [HU-010](./HU-010-smart-capture-carga-diaria.md) | Smart Capture en carga diaria | [SPEC-010](../../05-open-spec/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md) · [TR-010](../../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) | Pendiente |
 | [HU-011](./HU-011-reportes-emisiones.md) | Reportes / emisiones (Consulta detallada) | [SPEC-011](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) · [TR-011](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) | Pendiente (B+B1+C+C1 2026-08-25) |
 | [HU-012](./HU-012-adopcion-gen-35-cloudsmith.md) | Consumo SDK Cloudsmith (GEN-35) | [SPEC-012](../../05-open-spec/100-SistemaPartes/SPEC-012-adopcion-gen-35-cloudsmith.md) · [TR-012](../../04-tareas/100-SistemaPartes/TR-012-adopcion-gen-35-cloudsmith.md) | **Finalizado** (F+I 2026-10-09 · PA-01 F+I 2026-10-11) |
+| [HU-013](./HU-013-carga-paquetes-horas.md) | Carga de paquetes de horas | [SPEC-013](../../05-open-spec/100-SistemaPartes/SPEC-013-carga-paquetes-horas.md) | Especificado (B+C 2026-10-21) · [TR-013](../../04-tareas/100-SistemaPartes/TR-013-carga-paquetes-horas.md) |
+| [HU-014](./HU-014-apis-importar-datos-maestros.md) | APIs para importar datos maestros | [SPEC-014](../../05-open-spec/100-SistemaPartes/SPEC-014-apis-importar-datos-maestros.md) | Especificado (B+C1 2026-10-23) · [TR-014](../../04-tareas/100-SistemaPartes/TR-014-apis-importar-datos-maestros.md) · [PIAPARTES-50](https://paqsystems.atlassian.net/browse/PIAPARTES-50) |
 
 ## Estrategia
 

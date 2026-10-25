@@ -17,7 +17,12 @@ export function filterMenuForCliente(nodes: MenuNode[]): MenuNode[] {
     if (route.startsWith('/archivos/partes')) {
       return true
     }
-    if (route === '/partes/carga-diaria' || route === '/partes/proceso-masivo' || route === '/partes/carga') {
+    if (
+      route === '/partes/carga-diaria' ||
+      route === '/partes/carga-paquetes' ||
+      route === '/partes/proceso-masivo' ||
+      route === '/partes/carga'
+    ) {
       return true
     }
     if (route.startsWith('/admin/') || route.startsWith('/parametros/') || route.startsWith('/emisiones')) {
@@ -34,7 +39,11 @@ export function filterMenuForCliente(nodes: MenuNode[]): MenuNode[] {
 export function filterMenuForNonSupervisor(nodes: MenuNode[]): MenuNode[] {
   return filterMenuNodes(
     nodes,
-    (node) => node.routeName === '/partes/proceso-masivo' || node.menuKey === 'partes_proceso_masivo',
+    (node) =>
+      node.routeName === '/partes/proceso-masivo' ||
+      node.menuKey === 'partes_proceso_masivo' ||
+      node.routeName === '/partes/carga-paquetes' ||
+      node.menuKey === 'partes_carga_paquetes',
   )
 }
 
