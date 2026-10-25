@@ -5,16 +5,26 @@ import {
   TaskDefinitionsPage,
   TaskExecutionsPage,
   TaskProcessesPage,
+  normalizeLocale,
 } from '@paqsuite/react-core'
 import { useTranslation } from 'react-i18next'
+import { useMemo } from 'react'
 import { buildAuthPlatformHeaders } from '../auth/platformContext'
 import { getAuthSession, getAuthToken } from '../auth/authSessionStore'
+import { createTaskTranslator } from './tareasProgramadasI18n'
 
 function taskRequestProps() {
   return {
     accessToken: getAuthToken(),
     platform: buildAuthPlatformHeaders(),
   }
+}
+
+function useTaskTranslator() {
+  const { i18n } = useTranslation()
+  const locale = normalizeLocale(i18n.language) ?? 'es'
+
+  return useMemo(() => createTaskTranslator(locale), [locale])
 }
 
 export function TareasProgramadasLayout() {
@@ -56,20 +66,24 @@ export function TaskDefinicionesSection() {
 }
 
 export function TareasProgramadasSdkProcesosPage() {
+  const translate = useTaskTranslator()
+
   return (
     <div data-testid="tareasProgramadas.procesos">
-      <TaskProcessesPage {...taskRequestProps()} />
+      <TaskProcessesPage {...taskRequestProps()} t={translate} />
     </div>
   )
 }
 
 export function TareasProgramadasSdkDefinicionesPage() {
   const navigate = useNavigate()
+  const translate = useTaskTranslator()
 
   return (
     <div data-testid="tareasProgramadas.definiciones">
       <TaskDefinitionsPage
         {...taskRequestProps()}
+        t={translate}
         onNew={() => navigate('/tareas-programadas/definiciones/nueva')}
         onEdit={(id) => navigate(`/tareas-programadas/definiciones/${id}/editar`)}
       />
@@ -80,6 +94,7 @@ export function TareasProgramadasSdkDefinicionesPage() {
 export function TareasProgramadasSdkDefinicionFormPage() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
+  const translate = useTaskTranslator()
   const session = getAuthSession()
   const empresa = session?.empresas[0]
   const isEdit = id !== undefined
@@ -90,6 +105,7 @@ export function TareasProgramadasSdkDefinicionFormPage() {
         mode={isEdit ? 'edit' : 'create'}
         definitionId={isEdit ? Number(id) : undefined}
         tenancyMode="single"
+        t={translate}
         empresas={
           empresa
             ? [{ id: empresa.id, nombreEmpresa: empresa.nombreEmpresa }]
@@ -104,18 +120,23 @@ export function TareasProgramadasSdkDefinicionFormPage() {
 }
 
 export function TareasProgramadasSdkEjecucionesPage() {
+  const translate = useTaskTranslator()
+
   return (
     <div data-testid="tareasProgramadas.ejecuciones">
-      <TaskAutomationsMonitorPage {...taskRequestProps()} />
+      <TaskAutomationsMonitorPage {...taskRequestProps()} t={translate} />
     </div>
   )
 }
 
 export function TareasProgramadasSdkHistorialPage() {
+  const translate = useTaskTranslator()
+
   return (
     <div data-testid="tareasProgramadas.historial">
       <TaskExecutionsPage
         {...taskRequestProps()}
+        t={translate}
       />
     </div>
   )
