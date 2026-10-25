@@ -24,7 +24,7 @@ Write-Host "refresh-react-core-lock: registry $registry"
 npm config set '@paqsuite:registry' $registry
 npm config set "//${registryHost}/:_authToken" $token
 
-$reactCoreVersion = if ($env:PAQSUITE_REACT_CORE_VERSION) { $env:PAQSUITE_REACT_CORE_VERSION } else { '2.4.29-beta.1' }
+$reactCoreVersion = if ($env:PAQSUITE_REACT_CORE_VERSION) { $env:PAQSUITE_REACT_CORE_VERSION } else { '2.4.30-beta.1' }
 Write-Host "refresh-react-core-lock: npm install @paqsuite/react-core@${reactCoreVersion} …"
 npm install "@paqsuite/react-core@${reactCoreVersion}" --save-exact
 npm list @paqsuite/react-core
