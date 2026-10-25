@@ -65,7 +65,11 @@ final class PqTaskProcessFrameworkSeeder extends Seeder
                     'parameter_description' => $parameter['parameterName'],
                     'data_type' => $parameter['dataType'],
                     'is_required' => $parameter['isRequired'],
-                    'default_value_text' => isset($parameter['defaultValue']) ? (string) $parameter['defaultValue'] : null,
+                    'default_value_text' => isset($parameter['defaultValue'])
+                        ? (is_array($parameter['defaultValue'])
+                            ? json_encode($parameter['defaultValue'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                            : (string) $parameter['defaultValue'])
+                        : null,
                     'display_order' => $parameter['displayOrder'],
                     'is_user_editable' => $parameter['isUserEditable'],
                     'is_multivalue' => $parameter['isMultivalue'],

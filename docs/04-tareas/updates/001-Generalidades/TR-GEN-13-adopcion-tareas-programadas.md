@@ -7,7 +7,7 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 | HU | [HU-GEN-13 adopción](../../../03-historias-usuario/updates/001-Generalidades/HU-GEN-13-adopcion-tareas-programadas.md) |
 | SPEC | [SPEC-001-13 host](../../../05-open-spec/updates/001-Generalidades/SPEC-001-13-host-adopcion-tareas-programadas.md) |
 | SoT Framework | `TR-GEN-13-backup-windows-rds-update` |
-| Estado | A0 — Backlog |
+| Estado | A0 — Backlog (código parcialmente cableado; D/E/F pendientes) |
 | Prioridad | MUST |
 
 ## 1. Objetivo

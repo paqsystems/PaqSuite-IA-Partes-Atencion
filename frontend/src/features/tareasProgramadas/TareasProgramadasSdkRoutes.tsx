@@ -112,8 +112,6 @@ export function TareasProgramadasSdkEjecucionesPage() {
 }
 
 export function TareasProgramadasSdkHistorialPage() {
-  const session = getAuthSession()
-
   return (
     <div data-testid="tareasProgramadas.historial">
       <TaskExecutionsPage

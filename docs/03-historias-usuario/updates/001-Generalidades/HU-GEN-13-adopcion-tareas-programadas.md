@@ -7,7 +7,7 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 | ID | HU-GEN-13-adopcion-tareas-programadas |
 | SPEC | [SPEC-001-13 host](../../../05-open-spec/updates/001-Generalidades/SPEC-001-13-host-adopcion-tareas-programadas.md) |
 | TR | [TR-GEN-13 adopción](../../../04-tareas/updates/001-Generalidades/TR-GEN-13-adopcion-tareas-programadas.md) |
-| Estado | A0 — Backlog |
+| Estado | A0 — Backlog (código parcialmente cableado; D/E/F pendientes) |
 | Perfil | MONO/RDS |
 
 ## Historia

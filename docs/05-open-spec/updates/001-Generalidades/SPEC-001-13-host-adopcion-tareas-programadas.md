@@ -7,7 +7,7 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 | ID | SPEC-001-13-host-adopcion-tareas-programadas |
 | Host | PaqSuite-IA-Partes-Atencion |
 | GEN | GEN-13 — Tareas programadas |
-| Estado | A0 — Backlog |
+| Estado | A0 — Backlog (código parcialmente cableado; D/E/F pendientes) |
 | HU | [HU-GEN-13-adopcion-tareas-programadas](../../../03-historias-usuario/updates/001-Generalidades/HU-GEN-13-adopcion-tareas-programadas.md) |
 | TR | [TR-GEN-13-adopcion-tareas-programadas](../../../04-tareas/updates/001-Generalidades/TR-GEN-13-adopcion-tareas-programadas.md) |
 | SoT Framework | `SPEC-001-13` + `TR-GEN-13-backup-windows-rds-update` |

@@ -383,7 +383,7 @@ Verificaciones ejecutadas:
 - `php artisan test --filter 'ApiV1PartesMaestrosTest|ApiV1PartesIntegracionMaestrosTest'`: OK, 10 tests y 72 assertions.
 - `php -l` sobre los archivos PHP nuevos/modificados: OK.
 - `ReadLints`: sin errores en los archivos modificados.
-- `php artisan l5-swagger:generate`: OK tras actualizar `paqsuite/laravel-core` a `1.3.16-beta.1`, que incorpora el contrato `RdsBackupLock`, y retirar el adapter local no utilizado `RdsBackupCacheLock`.
+- `php artisan l5-swagger:generate`: OK tras actualizar `paqsuite/laravel-core` a `1.3.16-beta.1`, que incorpora el contrato `RdsBackupLock`. El contrato es provisto por el SDK y el host conserva su adapter concreto `RdsBackupCacheLock` sobre el cache de Laravel para el flujo GEN-13.
 - OpenAPI generado: `backend/storage/api-docs/api-docs.json`, con los cinco paths de integración y sus ejemplos.
 
 ---

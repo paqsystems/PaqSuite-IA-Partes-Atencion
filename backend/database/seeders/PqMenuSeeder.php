@@ -55,16 +55,14 @@ class PqMenuSeeder extends Seeder
             $this->process(50200, 50000, 'admin_roles', 'Roles', '/admin/roles', 50200),
             $this->process(50300, 50000, 'admin_permisos', 'Permisos', '/admin/permisos', 50300),
             $this->process(50400, 50000, 'admin_empresas', 'Empresas', '/admin/empresas', 50400),
-            $this->process(50500, 50000, 'tareas_programadas', 'Tareas programadas', '/tareas-programadas', 50500),
 
             // 60000 Parámetros (Auth Framework + Partes)
             $this->folder(60000, null, 'parametros', 'Parámetros', 60000),
             $this->process(60100, 60000, 'parametros_auth', 'Parámetros Auth', '/parametros/Auth', 60100),
             $this->process(60200, 60000, 'parametros_partes', 'Parámetros Partes', '/parametros/Partes', 60200),
-
-            // 70000 Soporte Técnico
-            $this->folder(70000, null, 'soporte_tecnico', 'Soporte Técnico', 70000),
-            $this->process(70100, 70000, 'partes_disenador_emisiones', 'Diseñador de emisiones', '/emisiones/disenador', 70100),
+            $this->folder(60300, 60000, 'soporte_tecnico', 'Soporte Técnico', 60300),
+            $this->process(60310, 60300, 'partes_disenador_emisiones', 'Diseñador de emisiones', '/emisiones/disenador', 60310),
+            $this->process(60320, 60300, 'tareas_programadas', 'Tareas programadas', '/tareas-programadas', 60320),
         ];
 
         foreach ($rows as $row) {

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             PqExcelImportSeeder::class,
             PqEmissionSeeder::class,
             PqTaskProcessFrameworkSeeder::class,
+            PqMenuSoporteTecnicoMoveSeeder::class,
         ]);
     }
 }

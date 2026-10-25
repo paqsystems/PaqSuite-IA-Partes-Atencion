@@ -93,6 +93,11 @@ return [
     |--------------------------------------------------------------------------
     */
     'tasks' => [
+        'middleware' => [
+            'paqsuite.instalacion',
+            'paqsuite.instalacion.db',
+            'auth:sanctum',
+        ],
         'backup' => [
             'backend' => env('PAQSUITE_TASKS_BACKUP_BACKEND', 'rds'),
             's3ArnPrefix' => env('TASKS_BACKUP_S3_ARN_PREFIX', ''),

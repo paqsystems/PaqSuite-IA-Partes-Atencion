@@ -128,13 +128,13 @@ describe('filterMenuForCliente', () => {
         ],
       }),
       stubNode({
-        id: 70000,
+        id: 60300,
         text: 'Soporte Técnico',
         menuKey: 'soporte_tecnico',
         nodeType: 'group',
         children: [
           stubNode({
-            id: 70100,
+            id: 60310,
             text: 'Diseñador',
             menuKey: 'partes_disenador_emisiones',
             routeName: '/emisiones/disenador',
