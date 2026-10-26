@@ -344,8 +344,8 @@ php artisan queue:restart   # si hay workers para emisiones/excel async
 | **`VITE_API_BASE_URL`** | **Vacío / no definir** | `https://backenddev.partesatencion.paqsystems.com` | `https://backend.partesatencion.paqsystems.com` |
 | **`VITE_API_PROXY_TARGET`** | `http://127.0.0.1:8010` (alineado a `vite.config.ts`) | No aplica (no hay proxy en build) | No aplica |
 | **`VITE_DEVEXTREME_LICENSE_KEY`** | LCP 26.1 local | Misma clave en env Vercel Preview | Misma clave en env Vercel Production |
-| **`VITE_DX_REPORTING_HOST`** | `http://127.0.0.1:5055` | Sidecar dev o rewrites Vercel (ver Anexo A / `plan-dx-reporting-sidecar-aws-gateway.md`) | Sidecar prod o rewrites same-origin |
-| **`VITE_DX_REPORTING_DIRECT`** | Normalmente omitido (proxy Vite) | `true` solo en modo cross-origin explícito | Idem si no hay rewrites `/DXXRD*` |
+| **`VITE_DX_REPORTING_HOST`** | `http://127.0.0.1:5055` | Misma env en Vercel Preview (el cliente usa origin del FE; ver Anexo A.5) | Sidecar prod o rewrites same-origin |
+| **`VITE_DX_REPORTING_DIRECT`** | Normalmente omitido (proxy Vite) | Omitido: rewrites `/DXXRD*` en `frontend/vercel.json` | Idem si no hay rewrites `/DXXRD*` |
 
 Cambios en Vercel → **redeploy** (Vite embebe las `VITE_*` en el build).
 
@@ -584,7 +584,26 @@ Anti-patrón: confundir **Exportar Excel de la grilla** (GEN-11) con **Emitir** 
 | Dataset | `backend/app/Services/Partes/PartesInformeOperations.php` |
 | UI consulta + emitir | `frontend/src/features/partes/informes/PartesConsultasPages.tsx` |
 | Diseñador lazy | `frontend/src/features/partes/informes/ReportDesignerHostPage.tsx`, `DxReportDesignerApp.tsx` |
-| Proxy Vite | `frontend/vite.config.ts` |
+| Proxy Vite (lab) | `frontend/vite.config.ts` |
+| Rewrites Vercel `/DXXRD*` | `frontend/vercel.json` |
+| Proxy Laravel → sidecar | `backend/routes/dx-reporting-proxy.php`, `DxReportingProxyController` |
+
+## A.5 Preview / Forge develop (2026-10-26)
+
+Camino del diseñador en **dev** (no es aún el plan Nginx `dx-reporting.paqsystems.com`):
+
+```text
+Browser (partesatencion-dev.paqsystems.com)
+  → Vercel rewrite /DXXRD*
+  → https://partesatencion-paqsystems-dev.on-forge.com/DXXRD*
+  → Laravel DxReportingProxyController
+  → http://127.0.0.1:5055  (sidecar /home/forge/paqsuite-dx-reporting)
+```
+
+- Variable Forge: `PAQSUITE_DX_REPORTING_SIDECAR_URL=http://127.0.0.1:5055`
+- Health: `curl http://127.0.0.1:5055/health` en la VM → `{"status":"ok","service":"paqsuite-dx-reporting"}`
+- El sidecar **no** tiene unidad systemd; si el proceso cayó, `start.sh` en ese directorio. Crontab `@reboot` del usuario `forge`.
+- `dx-reporting.paqsystems.com` no es el sidecar (DNS a Apache ajeno). Detalle y deudas: `docs/01-arquitectura/plan-dx-reporting-sidecar-aws-gateway.md` §5.2 y §7.
 
 ---
 
