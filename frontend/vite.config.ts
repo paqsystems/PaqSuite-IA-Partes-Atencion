@@ -75,7 +75,6 @@ export default defineConfig(({ mode }) => {
       // recarga y el widget queda en blanco.
       include: [
         'prop-types',
-        'knockout',
         'devextreme/common/core/events/pointer',
         'devextreme/common/core/events/transform',
         'devextreme/core/component_registrator',
@@ -124,6 +123,7 @@ export default defineConfig(({ mode }) => {
         'devextreme/ui/validator',
       ],
       exclude: [
+        'knockout',
         'ace-builds',
         '@devexpress/analytics-core',
         'devexpress-reporting',
