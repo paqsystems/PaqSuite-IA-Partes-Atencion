@@ -31,4 +31,6 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'dx_reporting_sidecar_url' => env('PAQSUITE_DX_REPORTING_SIDECAR_URL', 'http://127.0.0.1:5055'),
+
 ];
