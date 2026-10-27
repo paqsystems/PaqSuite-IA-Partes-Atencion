@@ -1,13 +1,16 @@
 /**
- * DevExpress Reporting (diseñador) espera `knockout` y `ace` como módulos CJS con default.
- * En build de producción (Vite/Rolldown) el shim de vite.config puede dejar `export default undefined`
- * si no hay `globalThis.ko` / `globalThis.ace` aún — rompe con `(void 0) is not a function` y tumba React.
- * Este archivo debe importarse antes que `devexpress-reporting-react`.
+ * DevExpress Reporting usa `import * as ko from 'knockout'` y llama `ko.observable`.
+ * El plugin de Vite reescribe ese import a default y envuelve el UMD; este setup
+ * fija `globalThis.ko` / `ace` antes de montar el widget.
  */
 // Subpath sin .d.ts en ace-builds; Reporting solo necesita el runtime en globalThis.
 // @ts-expect-error ace-builds/src-noconflict/ace no declara tipos
 import ace from 'ace-builds/src-noconflict/ace'
-import ko from 'knockout'
+import * as ko from 'knockout'
+
+if (typeof ko.observable !== 'function') {
+  throw new Error('Knockout observable is not a function')
+}
 
 type ReportingGlobals = typeof globalThis & {
   ko?: typeof ko

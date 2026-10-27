@@ -101,10 +101,12 @@ Forge (cada producto BE)
     └── Gateway jobs ──► Gateway :5000 (SP remoto; independiente de Reporting)
 ```
 
-Referencia código FE (proxy local dev):
+Referencia código FE (proxy local / preview):
 
-- `frontend/vite.config.ts` — proxea `/DXXRD`, `/DXXRDV`, `/DXXQB`
+- `frontend/vite.config.ts` — proxea `/DXXRD`, `/DXXRDV`, `/DXXQB` en lab
+- `frontend/vercel.json` — rewrites `/DXXRD*` al BE Forge (preview/dev; ver §5.2 y §7)
 - `frontend/src/features/partes/informes/dxReportingConfig.ts` — resolución de host en runtime
+- `backend/routes/dx-reporting-proxy.php` — proxy Laravel al sidecar loopback (dev)
 
 Referencia Framework:
 
@@ -352,18 +354,22 @@ Ver también: [`frontend-api-base-url-y-env.md`](./frontend-api-base-url-y-env.m
 
 El browser llama al origin del FE; Vercel reenvía al sidecar. Compatible con `readDxReportingConfig` (same-origin + proxy, como Vite en dev).
 
-Agregar en `frontend/vercel.json` **antes** del rewrite SPA catch-all:
+**Destino objetivo (prod):** subdominio del sidecar, p. ej. `https://dx-reporting.paqsystems.com`. Ese DNS **aún no** apunta al sidecar (Apache 404 en IP ajena a `paq-2021`).
+
+**Destino actual en preview/dev (2026-10-26):** el catch-all SPA de Vercel devolvía `index.html` para `POST /DXXRD/GetDesignerModel` y el diseñador mostraba «Something went wrong». `frontend/vercel.json` reescribe `/DXXRD*` a Forge develop; Laravel (`DxReportingProxyController`) reenvía a `PAQSUITE_DX_REPORTING_SIDECAR_URL` (`http://127.0.0.1:5055`).
 
 ```json
 {
   "rewrites": [
-    { "source": "/DXXRD/:path*", "destination": "https://dx-reporting.paqsystems.com/DXXRD/:path*" },
-    { "source": "/DXXRDV/:path*", "destination": "https://dx-reporting.paqsystems.com/DXXRDV/:path*" },
-    { "source": "/DXXQB/:path*", "destination": "https://dx-reporting.paqsystems.com/DXXQB/:path*" },
+    { "source": "/DXXRD/:path*", "destination": "https://partesatencion-paqsystems-dev.on-forge.com/DXXRD/:path*" },
+    { "source": "/DXXRDV/:path*", "destination": "https://partesatencion-paqsystems-dev.on-forge.com/DXXRDV/:path*" },
+    { "source": "/DXXQB/:path*", "destination": "https://partesatencion-paqsystems-dev.on-forge.com/DXXQB/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
 ```
+
+Antes de merge a `main`, cambiar el `destination` al sidecar de producción (o a un proxy Forge prod) para no dejar production apuntando a develop.
 
 Con rewrites activos, `VITE_DX_REPORTING_HOST` puede apuntar al sidecar o dejarse configurado para que el cliente use el origin del FE (comportamiento equivalente al proxy Vite).
 
@@ -405,14 +411,29 @@ Requiere CORS correcto en el sidecar (§3.5).
 
 ## 7. Estado Partes de Atención (referencia)
 
+Actualizado **2026-10-26** (rama `v1.3.0-CLOUDSMITH`, preview `partesatencion-dev.paqsystems.com`).
+
 | Pieza | Estado |
 |-------|--------|
 | UI diseñador (`DxReportDesignerPanel`, proxy Vite local) | Implementado |
+| Interop Knockout / Vite 8 Rolldown | Implementado (`vite-plugins/reportingCjsInterop.ts`) |
 | API emisiones `/api/v1/emissions/*` | Implementado |
+| `VITE_DX_REPORTING_HOST` en Vercel Preview | Configurado (`https://dx-reporting.paqsystems.com`); el cliente usa same-origin + rewrites |
+| Rewrites Vercel `/DXXRD*` | **Dev:** Forge `partesatencion-paqsystems-dev.on-forge.com` (no el DNS `dx-reporting`) |
+| Proxy Laravel `DXXRD` / `DXXRDV` / `DXXQB` | Implementado (`routes/dx-reporting-proxy.php`) |
+| Sidecar en `paq-2021` | **Dev operativo** en `/home/forge/paqsuite-dx-reporting`, `http://127.0.0.1:5055` (`GET /health` → `paqsuite-dx-reporting`). **Sin systemd** (Forge `forge` no tiene sudo): arranque `start.sh` + crontab `@reboot` del usuario `forge` |
+| DNS `dx-reporting.paqsystems.com` | **Incorrecto** (IP `18.189.37.157`, Apache 404). No usarlo hasta corregir DNS + Nginx |
 | `MinimalDxReportingEngine` en prod | **Pendiente** → `remote` |
-| Variables `VITE_DX_REPORTING_*` en Vercel | **Pendiente** |
-| Sidecar en AWS | **Pendiente** |
-| CORS producción en sidecar | **Pendiente** (solo localhost en código actual) |
+| CORS producción en sidecar | **No aplica** al camino same-origin actual; sigue pendiente si se usa Opción B |
+| Disco VM `paq-2021` | 20 GB casi lleno; el publish RID `linux-x64` cabe. No reintroducir publish portable (win/osx) |
+
+Arranque manual del sidecar (usuario `forge`):
+
+```bash
+/home/forge/paqsuite-dx-reporting/start.sh
+# log: /home/forge/paqsuite-dx-reporting/sidecar.log
+curl -sS http://127.0.0.1:5055/health
+```
 
 ---
 
