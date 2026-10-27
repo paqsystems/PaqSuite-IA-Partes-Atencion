@@ -36,8 +36,10 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
   `App\Tasks\SchedulingTaskDefinitionRepository`.
 - El snapshot de parámetros vive en
   `backend/database/sp/pq_sp_task_execution_save_snapshot.sql`: expande el
-  JSON del SDK a filas con `parameter_code` NOT NULL. Se despliega con
-  `backend/scripts/deploy-sp.php`.
+  JSON del SDK a filas con `parameter_code` NOT NULL.
+- Los SP `pq_sp_task_*` del SDK (`vendor/paqsuite/laravel-core/database/sp/`)
+  y los del host se aplican con `backend/scripts/deploy-sp.php` (el host gana
+  si comparten nombre de archivo).
 - El objeto S3 se nombra con la base de la empresa (`BackupObjectName`) y,
   si `includeDateTimeInName=true`, un sufijo de fecha. No reutiliza el slug
   del producto.
@@ -55,6 +57,47 @@ php artisan schedule:run
 En Forge, habilitar por sitio la integración **Laravel Scheduler** (Scheduled
 Job minutely → `…/current/backend/artisan schedule:run`). Ver skill
 `vercel-github-deployment-standard` §3 al dar de alta un host nuevo.
+
+## Provisionamiento por base tenant (RDS / MONO)
+
+Cada base operativa `paqsystems_partesatencion_{cliente}` (salvo entornos
+`*_dev` de laboratorio) debe recibir **migraciones**, **seed de catálogo** y
+**SP GEN-13** en la conexión que use ese tenant (`DB_DATABASE` / resolución
+por `X-Paq-Cliente`). Si falta alguno, el menú puede verse pero la pantalla
+**Procesos programables** queda vacía (típico: falta `pq_sp_task_process_list`).
+
+Checklist por base (desde `backend/`, con credenciales del host apuntando a
+esa base):
+
+```powershell
+cd backend
+# Opcional: $env:DB_DATABASE = 'paqsystems_partesatencion_paq'
+
+php artisan migrate --force
+php artisan db:seed --class=Database\Seeders\PqTaskProcessFrameworkSeeder --force
+php scripts/deploy-sp.php
+```
+
+Verificación mínima en SQL:
+
+```sql
+SELECT process_code, is_active FROM PQ_TASK_PROCESS;
+EXEC dbo.pq_sp_task_process_list;
+```
+
+Debe existir `BACKUP_DATABASE` con `is_active = 1` y el SP debe devolver al
+menos una fila.
+
+Migración de tablas en el host:
+`database/migrations/2026_07_25_000006_create_pq_task_tables.php` (alineada al
+template Framework). Las migraciones de menú
+`2026_10_25_110000_*` / `2026_10_25_110001_*` ubican **Tareas programadas**
+bajo **Parámetros → Soporte técnico**.
+
+Si el seed falla por columnas extra respecto al template (p. ej.
+`process_description`, `parameters_json`, `log_level`), comparar con la base
+referencia `paqsystems_partesatencion_demo` y añadir columnas faltantes antes
+de reintentar el seed.
 
 ## Smoke documental
 
@@ -79,11 +122,13 @@ El host queda cableado con `@paqsuite/react-core` `2.4.29-beta.1` y
 `BackupInstallationProfile`, `BackupCompanyTargetResolver` y `RdsBackupLock`.
 El SDK publica `RdsBackupLock` como contrato; el host aporta el adapter
 `App\Tasks\Backup\RdsBackupCacheLock` sobre el cache configurado de Laravel.
-El artefacto no incluye una migración de tablas GEN-13: antes del smoke debe
-existir la provisión `PQ_TASK_*` y sus SP `pq_sp_task_*` en la base operativa,
-según el runbook de instalación.
+El host incluye la migración `2026_07_25_000006_create_pq_task_tables` y el
+runbook § «Provisionamiento por base tenant». Antes del smoke deben existir
+`PQ_TASK_*`, el seed `BACKUP_DATABASE` y todos los SP `pq_sp_task_*` en la
+base del tenant.
 
 Complementos de host (2026-10-27): `PAQSUITE_CLIENTE` → `clienteCodigo`;
 wrapper `SchedulingTaskDefinitionRepository` para `nextRunAt`; SP de snapshot
-con `parameter_code`. En Forge demo el Environment ya tiene las vars GEN-13;
-el SP de snapshot se aplicó en la base operativa compartida.
+con `parameter_code`; `deploy-sp.php` despliega SP GEN-13 del SDK. Incidente
+RDS 2026-10-27: en `paqsystems_partesatencion_paq` faltaban SP tras timeout;
+corregido con migrate + seed + `deploy-sp.php`.

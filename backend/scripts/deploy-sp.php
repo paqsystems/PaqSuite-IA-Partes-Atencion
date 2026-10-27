@@ -49,12 +49,19 @@ function runSqlFile(string $connection, string $path): void
     echo "OK " . basename($path) . " ($ok batches)\n";
 }
 
-$companyFiles = glob(__DIR__ . '/../database/sp/*.sql') ?: [];
+$hostSpFiles = glob(__DIR__ . '/../database/sp/*.sql') ?: [];
+$vendorTaskSpFiles = glob(__DIR__ . '/../vendor/paqsuite/laravel-core/database/sp/pq_sp_task_*.sql') ?: [];
+$companyFiles = array_merge($vendorTaskSpFiles, $hostSpFiles);
 sort($companyFiles);
 
+$seenBasenames = [];
 echo "=== Company DB (" . config('database.default') . ") ===\n";
 foreach ($companyFiles as $file) {
     $base = basename($file);
+    if (isset($seenBasenames[$base])) {
+        continue;
+    }
+    $seenBasenames[$base] = true;
     if (in_array($base, ['ensure_paqsystems_instalacion_partesatencion.sql', 'seed_empresas_conexion_partesatencion_demo.sql'], true)) {
         continue;
     }
