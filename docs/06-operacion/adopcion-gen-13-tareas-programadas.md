@@ -52,8 +52,9 @@ un ambiente, una tarea externa debe ejecutar:
 php artisan schedule:run
 ```
 
-La configuración del cron, Forge Scheduler o equivalente pertenece al
-ambiente de despliegue y queda fuera de esta adopción de código.
+En Forge, habilitar por sitio la integración **Laravel Scheduler** (Scheduled
+Job minutely → `…/current/backend/artisan schedule:run`). Ver skill
+`vercel-github-deployment-standard` §3 al dar de alta un host nuevo.
 
 ## Smoke documental
 
