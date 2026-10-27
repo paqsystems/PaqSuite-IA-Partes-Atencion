@@ -38,6 +38,62 @@ class DxReportingProxyTest extends TestCase
         });
     }
 
+    public function test_post_dxxrd_invoke_reconstruye_body_desde_request_bag(): void
+    {
+        Http::fake([
+            'http://127.0.0.1:5055/DXXRD' => Http::response(
+                '{"success":true,"result":[]}',
+                200,
+                ['Content-Type' => 'application/json'],
+            ),
+        ]);
+
+        $response = $this->post('/DXXRD', [
+            'actionKey' => 'getUrls',
+            'arg' => 'true',
+        ]);
+
+        $response->assertOk();
+        $this->assertSame('{"success":true,"result":[]}', $response->getContent());
+
+        Http::assertSent(function ($request) {
+            if ($request->url() !== 'http://127.0.0.1:5055/DXXRD' || $request->method() !== 'POST') {
+                return false;
+            }
+
+            $contentType = $request->header('Content-Type');
+            $contentType = is_array($contentType) ? ($contentType[0] ?? '') : (string) $contentType;
+
+            return $request->body() === 'actionKey=getUrls&arg=true'
+                && str_contains($contentType, 'application/x-www-form-urlencoded');
+        });
+    }
+
+    public function test_post_dxxrd_raw_form_usa_content_type_urlencoded(): void
+    {
+        Http::fake([
+            'http://127.0.0.1:5055/DXXRD' => Http::response('{"success":true}', 200),
+        ]);
+
+        $this->call(
+            'POST',
+            '/DXXRD',
+            [],
+            [],
+            [],
+            [],
+            'actionKey=getUrls&arg=true',
+        )->assertOk();
+
+        Http::assertSent(function ($request) {
+            $contentType = $request->header('Content-Type');
+            $contentType = is_array($contentType) ? ($contentType[0] ?? '') : (string) $contentType;
+
+            return str_contains($contentType, 'application/x-www-form-urlencoded')
+                && $request->body() === 'actionKey=getUrls&arg=true';
+        });
+    }
+
     public function test_prefijo_desconocido_no_existe(): void
     {
         $this->get('/DXXOTHER/GetDesignerModel')->assertNotFound();
