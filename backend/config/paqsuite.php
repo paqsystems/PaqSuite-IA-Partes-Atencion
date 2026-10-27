@@ -46,6 +46,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Cliente de instalación (CLI / GEN-13)
+    |--------------------------------------------------------------------------
+    | En HTTP llega por X-Paq-Cliente. tasks:run-due no tiene header: usar este
+    | código de EMPRESAS_CONEXION. Debe vivir en config para sobrevivir a
+    | config:cache (env() queda vacío).
+    */
+    'clienteCodigo' => env('PAQSUITE_CLIENTE', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Resolver de instalación (GEN-18)
     |--------------------------------------------------------------------------
     | config = mapa instalaciones (PHPUnit / fallback local)
@@ -102,6 +112,7 @@ return [
             'backend' => env('PAQSUITE_TASKS_BACKUP_BACKEND', 'rds'),
             's3ArnPrefix' => env('TASKS_BACKUP_S3_ARN_PREFIX', ''),
             'windowsService' => env('TASKS_BACKUP_WINDOWS_SERVICE', ''),
+            'pollSeconds' => (int) env('TASKS_BACKUP_POLL_SECONDS', 5),
             'lockLeaseSeconds' => (int) env('TASKS_BACKUP_LOCK_LEASE_SECONDS', 900),
         ],
     ],

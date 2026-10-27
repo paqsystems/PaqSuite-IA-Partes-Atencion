@@ -38,6 +38,8 @@ paralelo en PARTES.
    de la misma tarea RDS.
 5. Un lock ocupado registra `OMITIDA`; error o timeout registra `FALLIDA`.
 6. El usuario puede consultar el resultado y los logs de la ejecución.
+7. Una definición activa con frecuencia y `next_run_at` se ejecuta sola vía
+   `tasks:run-due` (sin disparo manual).
 
 ## Fuera de alcance
 
