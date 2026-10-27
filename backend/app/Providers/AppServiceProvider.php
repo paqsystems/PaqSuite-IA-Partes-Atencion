@@ -83,6 +83,7 @@ use PaqSuite\LaravelCore\Tasks\TaskProcessRegistry;
 use PaqSuite\LaravelCore\Tenancy\MenuProcedimientoChecker;
 use App\Tasks\Backup\RdsSqlServerBackupGateway;
 use App\Tasks\Backup\RdsBackupCacheLock;
+use App\Tasks\SchedulingTaskDefinitionRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -120,18 +121,34 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(UserEmpresasQueryRepository::class, SpUserEmpresasQueryRepository::class);
         $this->app->singleton(CompanyAllowedChecker::class, SpCompanyAllowedChecker::class);
         $this->app->singleton(TaskProcessRepository::class, static fn () => new StoredProcedureTaskProcessRepository());
-        $this->app->singleton(TaskDefinitionRepository::class, static fn () => new StoredProcedureTaskDefinitionRepository());
+        $this->app->singleton(TaskDefinitionRepository::class, static fn () => new SchedulingTaskDefinitionRepository(
+            new StoredProcedureTaskDefinitionRepository(),
+        ));
         $this->app->singleton(TaskExecutionRepository::class, static fn () => new StoredProcedureTaskExecutionRepository());
         $this->app->singleton(TaskProcessRegistry::class, TaskProcessRegistry::class);
         $this->app->singleton(MonoRdsBackupGateway::class, RdsSqlServerBackupGateway::class);
-        $this->app->singleton(BackupInstallationProfileResolver::class, ConfigBackupInstallationProfileResolver::class);
+        $this->app->singleton(BackupInstallationProfileResolver::class, static function () {
+            return new ConfigBackupInstallationProfileResolver(static function (): string {
+                $header = (string) config('paqsuite.headers.cliente', 'X-Paq-Cliente');
+                try {
+                    $fromRequest = trim((string) request()->headers->get($header, ''));
+                } catch (\Throwable) {
+                    $fromRequest = '';
+                }
+                if ($fromRequest !== '') {
+                    return $fromRequest;
+                }
+
+                return trim((string) config('paqsuite.clienteCodigo', ''));
+            });
+        });
         $this->app->singleton(BackupCompanyTargetResolver::class, static fn ($app) => new EmpresaAdminBackupCompanyTargetResolver(
             $app->make(EmpresaAdminRepository::class),
         ));
         $this->app->singleton(RdsBackupLock::class, RdsBackupCacheLock::class);
         $this->app->singleton(MonoRdsBackupService::class, static fn ($app) => new MonoRdsBackupService(
             $app->make(MonoRdsBackupGateway::class),
-            max(1, (int) env('TASKS_BACKUP_POLL_SECONDS', 5)),
+            max(1, (int) config('paqsuite.tasks.backup.pollSeconds', 5)),
             $app->make(RdsBackupLock::class),
         ));
 
