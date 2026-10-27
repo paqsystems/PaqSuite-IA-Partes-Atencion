@@ -31,7 +31,8 @@ lock global por instalación y logs trazables.
 - Montar las páginas SDK de procesos, definiciones, ejecuciones y monitor.
 - Exponer la opción de menú de configuración de tareas programadas.
 - Gobernar el acceso exclusivamente por el permiso de esa opción de menú.
-- Operar `TASKS_BACKUP_S3_ARN_PREFIX`, timeout, polling y lock según el SoT.
+- Operar `TASKS_BACKUP_S3_ARN_PREFIX`, `PAQSUITE_CLIENTE`, timeout, polling y lock según el SoT.
+- Completar `next_run_at` en definiciones activas (el SP due no lista `NULL`).
 
 ## 3. Fuera de alcance
 

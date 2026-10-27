@@ -22,6 +22,12 @@ motor y la UI pertenecen a los paquetes SDK.
 - Perfil: `tenancy=single`, backend `rds`.
 - Objetivo: empresa vigente y base resuelta por el contexto de instalación.
 - Destino: `TASKS_BACKUP_S3_ARN_PREFIX` con key normalizada.
+- CLI: `PAQSUITE_CLIENTE` (código `EMPRESAS_CONEXION`) mapeado a
+  `config('paqsuite.clienteCodigo')` para `tasks:run-due`.
+- Agenda: al crear/editar definición el host completa `nextRunAt` si falta
+  (`SchedulingTaskDefinitionRepository`). El SP due exige `next_run_at`.
+- Snapshot: SP host `pq_sp_task_execution_save_snapshot` expande JSON a
+  `parameter_code` + `value_json`.
 - Polling: intervalo configurado y estados `running|success|error`.
 - Lock: `tasks:backup:rds:{cliente}`, adquisición no bloqueante, renovación y
   liberación en `finally`.
