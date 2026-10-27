@@ -1,4 +1,4 @@
-# SPEC-002 – Identidad funcional y acceso al módulo
+# SPEC-002 – Identidad funcional y acceso al módulo
 
 Jira: PIAPARTES-2
 
@@ -10,8 +10,8 @@ Jira: PIAPARTES-2
 | ID | SPEC-002 |
 | Título | Identidad funcional y acceso al módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Pendiente |
-| Última actualización | 2026-07-30 |
+| Estado | En revisión |
+| Última actualización | 2026-10-20 |
 | HU relacionada(s) | [HU-002-identidad-funcional-y-acceso](../../03-historias-usuario/100-SistemaPartes/HU-002-identidad-funcional-y-acceso.md) |
 | TR relacionada(s) | [TR-002-identidad-funcional-y-acceso](../../04-tareas/100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md) |
 | Depende de | [SPEC-001-modelo-datos-modulo](./SPEC-001-modelo-datos-modulo.md) |
@@ -41,7 +41,7 @@ Jira: PIAPARTES-2
 
 ### 2.2 Fuera de alcance
 
-- Redefinir login, logout, forgot/reset, `firstLogin`, Sanctum, tenancy headers (Framework GEN).
+- Redefinir login, logout, forgot/reset, `firstLogin`, Sanctum, tenancy headers (Framework GEN). El TTL del enlace forgot y el copy del mail son **GEN-04** (`PasswordResetTtlMin`; no `MinutosWeb` ni `auth.passwords.users.expire`).
 - ABM de asistentes/clientes y alta de acceso (SPEC maestros).
 - Carga diaria, supervisión masiva, consultas, dashboard, mobile (SPECs posteriores).
 - Roles/permisos Framework (`pq_roles` / menú GEN) salvo coexistencia: el menú GEN puede ocultar pantallas, pero **no** sustituye la delimitación funcional de este SPEC.

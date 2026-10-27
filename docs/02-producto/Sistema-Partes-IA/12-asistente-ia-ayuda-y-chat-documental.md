@@ -35,7 +35,7 @@ La capacidad es **transversal** del Framework. Partes **adopta** y **configura**
 |-----------|---------------------|-------------------------|
 | **Chat documental / Asistente IA** (este doc) | Explicar y orientar: «¿cómo cargo un parte?», «¿qué ve un cliente?», «¿qué es Paquete de Horas?» | **Sí** |
 | **Ayuda externa (URL)** | Enlace a wiki/Zendesk/PDF fuera del portal | **No** en este MVP (fuera de alcance) |
-| **Smart Capture / asistente operativo** | Completar o proponer datos en el modal de tarea (carga diaria) | Definido en [`14-smart-capture.md`](./14-smart-capture.md) — **no** es este canal |
+| **Smart Capture / asistente operativo** | Completar o proponer datos en el modal de **tarea** (carga diaria) o de **paquete de horas** (`16`) | Definido en [`14-smart-capture.md`](./14-smart-capture.md) — **no** es este canal |
 | **Perfil Partes** | Solo lectura desde avatar (SPEC-002) | Ya definido; **ítem distinto** del Asistente IA |
 
 Anti-patrón: usar el Asistente IA para grabar tareas, cerrar lotes o consultar datos vivos de clientes/tareas como si fuera el ERP.

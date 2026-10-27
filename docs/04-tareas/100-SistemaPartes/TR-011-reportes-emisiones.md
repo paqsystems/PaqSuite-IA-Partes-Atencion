@@ -1,4 +1,4 @@
-# TR-011 – Reportes / emisiones — adopción GEN-15 en Consulta detallada
+# TR-011 – Reportes / emisiones — adopción GEN-15 en Consulta detallada
 
 Jira: PIAPARTES-39
 
@@ -14,7 +14,7 @@ Jira: PIAPARTES-39
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Pendiente de Revisión |
 | **Revisión C1** | Apto con observaciones (ver §11) |
-| **Última actualización** | 2026-08-25 (CC Q13 RN-TR-12 / CA-15) |
+| **Última actualización** | 2026-10-16 (Parte E tests) |
 
 **Origen:** [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md)  
 **Referencia SPEC:** [SPEC-011](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md)  
@@ -236,7 +236,7 @@ Códigos a respetar (GEN): **4701** validación (`hostContext` / `mailTo` vacío
 
 ## 10) Checklist DoD
 
-- [x] CA-01…21 HU (Must de esta TR; E2E Playwright y `npm run test:all` pendientes de entorno Node en Parte E)
+- [x] CA-01…21 HU (Must de esta TR; Parte E 2026-10-16: PHPUnit + Vitest + E2E `partes-emisiones.spec.ts` OK)
 - [x] Proceso seed + puerto + `hostContext`
 - [x] Rutas `/api/v1/emissions/*` + 401/4701/4703/4704/4706/4709
 - [x] Emitir en Consulta detallada (grilla y pivot); empty disabled
@@ -318,6 +318,8 @@ Ninguna bloqueante.
 | 2026-08-25 | Parte D1: plan [D1-TR-011](./d1/D1-TR-011-reportes-emisiones.md). |
 | 2026-08-25 | Parte D: adopción GEN-15 en host (DB/SP, puerto Consulta detallada, `EmissionDialog`, diseñador placeholder). |
 | 2026-08-25 | CC Q13: RN-TR-12 / CA-15 → `EmissionReportDesignerPage` sin hardcode; listado processes Must; T6/E2E con lista+confirmación (código FE pendiente de bump `react-core`). |
+| 2026-10-15 | Adopción FE GEN-15: `EmissionDialog` + `EmissionReportDesignerPage` desde `@paqsuite/react-core` 2.4.25-beta.1; se retiran forks host (`PartesEmissionDialog`, diseñador local). i18n `emission.*` alineado al SDK. |
+| 2026-10-16 | Parte E: Playwright `partes-emisiones.spec.ts` (Emitir + diseñador llega a DX `GetDesignerModel` sin error). |
 
 ---
 
@@ -374,9 +376,10 @@ Ninguna bloqueante.
 
 ---
 
-## 16) Pendientes (hacia E / F)
+## 16) Pendientes (hacia F)
 
-- Correr en máquina con Node: `npx vitest run src/features/partes/informes src/features/partes/partesMenuSidebar.test.ts src/features/partes/mobile` y `npx playwright test tests/e2e/partes-emisiones.spec.ts`.
-- Smoke manual: PDF/mail real si hay SMTP; diseñador DX cuando el host inyecte `renderDesigner`.
+- Parte E **2026-10-16:** ver `docs/04-tareas/updates/100-SistemaPartes/E-TR-011-reportes-emisiones-2026-10-16.md`.
+- Smoke manual F1: PDF/mail real si hay SMTP.
 - SQL Server: desplegar `pq_sp_emission_core.sql` (runtime tests = Query Builder MONO / sqlite).
+- E2E `partes-emisiones.spec.ts` endurecido: catálogo GEN antes de `GetDesignerModel`; retry login. Aislado y mix 5 workers **pass**. Suite repo 8 workers sigue saturando `php -S` (fuera de GEN-15).
 

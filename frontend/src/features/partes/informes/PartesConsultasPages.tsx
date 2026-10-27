@@ -4,8 +4,13 @@ import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
 import SelectBox from 'devextreme-react/select-box'
 import { useTranslation } from 'react-i18next'
-import { isNativeApp, ProcessDataGrid, ProcessPageLayout, getEmissionProcess } from '@paqsuite/react-core'
-import { PartesEmissionDialog as EmissionDialog } from './PartesEmissionDialog'
+import {
+  EmissionDialog,
+  getEmissionProcess,
+  isNativeApp,
+  ProcessDataGrid,
+  ProcessPageLayout,
+} from '@paqsuite/react-core'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'

@@ -21,7 +21,9 @@ use App\Http\Controllers\Api\V1\Auth\PasswordPolicyController;
 use App\Http\Controllers\Api\V1\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Partes\PartesInformeController;
+use App\Http\Controllers\Api\V1\Partes\PartesIntegracionMaestrosController;
 use App\Http\Controllers\Api\V1\Partes\PartesMaestrosController;
+use App\Http\Controllers\Api\V1\Partes\PartesPaqueteController;
 use App\Http\Controllers\Api\V1\Partes\PartesTareaController;
 use App\Http\Controllers\Api\V1\Partes\PartesTareasAsistenteTurnController;
 use App\Http\Controllers\Api\V1\SystemStatusController;
@@ -193,6 +195,16 @@ Route::prefix('v1')->group(function () {
             Route::post('/tareas/masivo/set-cerrado', [$t, 'masivoSetCerrado']);
             Route::post('/tareas/masivo/actualizar', [$t, 'masivoActualizar']);
             Route::post('/tareas/asistente/turn', PartesTareasAsistenteTurnController::class);
+
+            $p = PartesPaqueteController::class;
+            Route::middleware(['partes.supervisor'])->group(function () use ($p) {
+                Route::get('/paquetes', [$p, 'list']);
+                Route::get('/paquetes/{id}', [$p, 'show'])->whereNumber('id');
+                Route::post('/paquetes', [$p, 'store']);
+                Route::put('/paquetes/{id}', [$p, 'update'])->whereNumber('id');
+                Route::delete('/paquetes/{id}', [$p, 'destroy'])->whereNumber('id');
+            });
+
             Route::get('/tareas/{id}', [$t, 'show'])->whereNumber('id');
             Route::post('/tareas', [$t, 'store']);
             Route::put('/tareas/{id}', [$t, 'update'])->whereNumber('id');
@@ -200,5 +212,16 @@ Route::prefix('v1')->group(function () {
             Route::post('/tareas/{id}/cerrar', [$t, 'cerrar'])->whereNumber('id');
             Route::post('/tareas/{id}/reabrir', [$t, 'reabrir'])->whereNumber('id');
         });
+
+        Route::middleware(['partes.profile', 'partes.notCliente', 'permission:partes.integracion.maestros'])
+            ->prefix('integracion/maestros')
+            ->group(function () {
+                $i = PartesIntegracionMaestrosController::class;
+                Route::post('/clientes', [$i, 'clientes']);
+                Route::post('/asistentes', [$i, 'asistentes']);
+                Route::post('/tipos-cliente', [$i, 'tiposCliente']);
+                Route::post('/tipos-tarea', [$i, 'tiposTarea']);
+                Route::post('/asignaciones-cliente-tipo', [$i, 'asignaciones']);
+            });
     });
 });

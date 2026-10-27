@@ -6,6 +6,7 @@ use App\Services\Auth\PasswordResetLinkBuilder;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use PaqSuite\LaravelCore\Auth\ParametroStore;
 
 final class ResetPasswordNotification extends Notification
 {
@@ -34,7 +35,7 @@ final class ResetPasswordNotification extends Notification
             $this->mailLocale,
             $this->cliente
         );
-        $expireMin = max(1, (int) config('auth.passwords.users.expire', 60));
+        $expireMin = max(1, (int) (app(ParametroStore::class)->getInt('PasswordResetTtlMin', 10) ?? 10));
 
         return (new MailMessage)
             ->subject(__('auth.resetPasswordSubject', [], $this->mailLocale))

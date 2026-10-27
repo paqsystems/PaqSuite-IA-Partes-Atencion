@@ -8,5 +8,31 @@
   },
   "outputDirectory": "dist",
   "framework": "vite",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/DXXRD",
+      "destination": "https://partesatencion-paqsystems-dev.on-forge.com/DXXRD"
+    },
+    {
+      "source": "/DXXRD/:path*",
+      "destination": "https://partesatencion-paqsystems-dev.on-forge.com/DXXRD/:path*"
+    },
+    {
+      "source": "/DXXRDV",
+      "destination": "https://partesatencion-paqsystems-dev.on-forge.com/DXXRDV"
+    },
+    {
+      "source": "/DXXRDV/:path*",
+      "destination": "https://partesatencion-paqsystems-dev.on-forge.com/DXXRDV/:path*"
+    },
+    {
+      "source": "/DXXQB",
+      "destination": "https://partesatencion-paqsystems-dev.on-forge.com/DXXQB"
+    },
+    {
+      "source": "/DXXQB/:path*",
+      "destination": "https://partesatencion-paqsystems-dev.on-forge.com/DXXQB/:path*"
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

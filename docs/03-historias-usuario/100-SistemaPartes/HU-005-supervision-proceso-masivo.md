@@ -1,4 +1,4 @@
-# HU-005 – Supervisión y proceso masivo sobre tareas
+# HU-005 – Supervisión y proceso masivo sobre tareas
 
 Jira: PIAPARTES-19
 
@@ -11,8 +11,8 @@ Jira: PIAPARTES-19
 | Título | Supervisión: terceros y proceso masivo sobre tareas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Finalizado |
-| Última actualización | 2026-09-16 |
+| Estado | En Control Calidad |
+| Última actualización | 2026-10-20 |
 | SPEC origen | [SPEC-005-supervision-proceso-masivo](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 

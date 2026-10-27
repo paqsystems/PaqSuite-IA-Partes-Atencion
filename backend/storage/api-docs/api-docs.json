@@ -898,6 +898,384 @@
                 ]
             }
         },
+        "/api/v1/emissions/processes/{processCode}": {
+            "get": {
+                "tags": [
+                    "Emisiones"
+                ],
+                "summary": "Metadata del proceso de emisión",
+                "description": "Emisiones GEN-15 (TR-011) — processCode partes.informes.consultaDetallada.\nExtensión host: hostContext en POST preview/jobs.",
+                "operationId": "emissionsShowProcess",
+                "parameters": [
+                    {
+                        "name": "processCode",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "partes.informes.consultaDetallada"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Capacidad off (4704) o sin menú (4703)"
+                    },
+                    "404": {
+                        "description": "Proceso no encontrado (4705)"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/emissions/preview": {
+            "post": {
+                "tags": [
+                    "Emisiones"
+                ],
+                "summary": "Vista previa (no bloquea emitir; requierePreview=false en Consulta detallada)",
+                "operationId": "emissionsPreview",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "processCode",
+                                    "channel",
+                                    "mode",
+                                    "hostContext"
+                                ],
+                                "properties": {
+                                    "processCode": {
+                                        "type": "string",
+                                        "example": "partes.informes.consultaDetallada"
+                                    },
+                                    "channel": {
+                                        "type": "string",
+                                        "example": "pdf"
+                                    },
+                                    "mode": {
+                                        "type": "string",
+                                        "example": "consolidated"
+                                    },
+                                    "hostContext": {
+                                        "$ref": "#/components/schemas/ConsultaDetalladaHostContext"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/emissions/jobs": {
+            "post": {
+                "tags": [
+                    "Emisiones"
+                ],
+                "summary": "Crear job de emisión",
+                "operationId": "emissionsJobsStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "processCode",
+                                    "channel",
+                                    "mode",
+                                    "hostContext"
+                                ],
+                                "properties": {
+                                    "processCode": {
+                                        "type": "string",
+                                        "example": "partes.informes.consultaDetallada"
+                                    },
+                                    "channel": {
+                                        "type": "string",
+                                        "example": "pdf"
+                                    },
+                                    "mode": {
+                                        "type": "string",
+                                        "example": "consolidated"
+                                    },
+                                    "mailTo": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "ops@example.com"
+                                        ]
+                                    },
+                                    "hostContext": {
+                                        "$ref": "#/components/schemas/ConsultaDetalladaHostContext"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK síncrono",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "202": {
+                        "description": "Encolado"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/emissions/jobs/{jobId}": {
+            "get": {
+                "tags": [
+                    "Emisiones"
+                ],
+                "summary": "Estado del job",
+                "operationId": "emissionsJobsShow",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/emissions/jobs/{jobId}/download": {
+            "get": {
+                "tags": [
+                    "Emisiones"
+                ],
+                "summary": "Descargar artefacto (binario)",
+                "operationId": "emissionsJobsDownload",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Archivo"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/emissions/design/processes/{processCode}/reports": {
+            "get": {
+                "tags": [
+                    "Emisiones"
+                ],
+                "summary": "Listar reportes para el diseñador (requiere emission.design / AccesoTotal)",
+                "operationId": "emissionsDesignReports",
+                "parameters": [
+                    {
+                        "name": "processCode",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Sin permiso de diseño (4709)"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Emisiones"
+                ],
+                "summary": "Alta de diseño (Save As DX) en el catálogo del proceso",
+                "operationId": "emissionsDesignCreateReport",
+                "parameters": [
+                    {
+                        "name": "processCode",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Sin permiso de diseño (4709)"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/emissions/design/reports/{reportId}/layout": {
+            "put": {
+                "tags": [
+                    "Emisiones"
+                ],
+                "summary": "Persiste el layout (Save DX)",
+                "operationId": "emissionsDesignUpdateLayout",
+                "parameters": [
+                    {
+                        "name": "reportId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Sin permiso de diseño (4709)"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
         "/api/v1/excel-import/processes/{codigo}/template": {
             "get": {
                 "tags": [
@@ -1421,6 +1799,467 @@
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/integracion/maestros/clientes": {
+            "post": {
+                "tags": [
+                    "Partes Integración Maestros"
+                ],
+                "summary": "Reconciliar clientes",
+                "description": "APIs REST de reconciliación completa de maestros Partes (TR-014).",
+                "operationId": "partesIntegracionMaestrosClientes",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PartesIntegracionMaestrosRequest"
+                            },
+                            "example": {
+                                "fechaProceso": "2026-10-23",
+                                "origen": "ERP",
+                                "dryRun": false,
+                                "items": [
+                                    {
+                                        "code": "CLI-001",
+                                        "nombre": "Acme SA",
+                                        "tipoCliente": {
+                                            "code": "EMPRESA"
+                                        },
+                                        "email": "contacto@acme.example",
+                                        "erpCliente": "1001",
+                                        "erpArticulo": "A-100"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Procesado total o parcialmente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                },
+                                "example": {
+                                    "error": 0,
+                                    "respuesta": "integracion.maestro.procesado",
+                                    "resultado": {
+                                        "recurso": "clientes",
+                                        "dryRun": false,
+                                        "recibidos": 3,
+                                        "aplicados": 2,
+                                        "omitidos": 0,
+                                        "rechazados": 1,
+                                        "erroresTruncados": false,
+                                        "resultados": [
+                                            {
+                                                "indice": 0,
+                                                "clave": "CLI-001",
+                                                "accion": "modificacion"
+                                            },
+                                            {
+                                                "indice": 1,
+                                                "clave": "CLI-002",
+                                                "accion": "inhabilitado"
+                                            },
+                                            {
+                                                "indice": 2,
+                                                "clave": "CLI-404",
+                                                "accion": "rechazado",
+                                                "codigo": "integracion.maestro.referenciaInvalida"
+                                            }
+                                        ],
+                                        "errores": [
+                                            {
+                                                "indice": 2,
+                                                "clave": "CLI-404",
+                                                "codigo": "integracion.maestro.referenciaInvalida"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permiso insuficiente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Contrato, límite o JSON inválido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/integracion/maestros/asistentes": {
+            "post": {
+                "tags": [
+                    "Partes Integración Maestros"
+                ],
+                "summary": "Reconciliar asistentes",
+                "operationId": "partesIntegracionMaestrosAsistentes",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PartesIntegracionMaestrosRequest"
+                            },
+                            "example": {
+                                "fechaProceso": "2026-10-23",
+                                "dryRun": true,
+                                "items": [
+                                    {
+                                        "code": "AST-001",
+                                        "nombre": "Ana Pérez",
+                                        "usuario": {
+                                            "code": "USR-001"
+                                        },
+                                        "email": "ana.perez@example",
+                                        "supervisor": true
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Procesado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permiso insuficiente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Contrato inválido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/integracion/maestros/tipos-cliente": {
+            "post": {
+                "tags": [
+                    "Partes Integración Maestros"
+                ],
+                "summary": "Reconciliar tipos de cliente",
+                "operationId": "partesIntegracionMaestrosTiposCliente",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PartesIntegracionMaestrosRequest"
+                            },
+                            "example": {
+                                "fechaProceso": "2026-10-23",
+                                "items": [
+                                    {
+                                        "code": "TC-001",
+                                        "descripcion": "Empresa"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Procesado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permiso insuficiente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Contrato inválido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/integracion/maestros/tipos-tarea": {
+            "post": {
+                "tags": [
+                    "Partes Integración Maestros"
+                ],
+                "summary": "Reconciliar tipos de tarea",
+                "operationId": "partesIntegracionMaestrosTiposTarea",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PartesIntegracionMaestrosRequest"
+                            },
+                            "example": {
+                                "fechaProceso": "2026-10-23",
+                                "dryRun": false,
+                                "items": [
+                                    {
+                                        "code": "TAR-ADMIN",
+                                        "descripcion": "Administración",
+                                        "isGenerico": true,
+                                        "isDefault": false
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Procesado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permiso insuficiente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Contrato inválido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/integracion/maestros/asignaciones-cliente-tipo": {
+            "post": {
+                "tags": [
+                    "Partes Integración Maestros"
+                ],
+                "summary": "Reconciliar asignaciones cliente/tipo",
+                "operationId": "partesIntegracionMaestrosAsignaciones",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PartesIntegracionMaestrosRequest"
+                            },
+                            "example": {
+                                "fechaProceso": "2026-10-23",
+                                "items": [
+                                    {
+                                        "code": "CLI-001",
+                                        "tiposTarea": [
+                                            {
+                                                "code": "TAR-ADMIN"
+                                            },
+                                            {
+                                                "code": "TAR-CAPAC"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "code": "CLI-002",
+                                        "tiposTarea": [
+                                            {
+                                                "code": "TAR-CAPAC"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Procesado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permiso insuficiente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Contrato inválido",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2578,6 +3417,44 @@
                 ]
             }
         },
+        "/api/v1/partes/catalogos/usuarios-vinculables": {
+            "get": {
+                "tags": [
+                    "Partes Maestros"
+                ],
+                "summary": "Usuarios Framework activos, habilitados y no asignados",
+                "operationId": "partesCatalogoUsuariosVinculables",
+                "parameters": [
+                    {
+                        "name": "exceptoUserId",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
         "/api/v1/partes/parametros/duracion-tramo": {
             "get": {
                 "tags": [
@@ -2798,6 +3675,356 @@
                         }
                     }
                 },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/tareas/asistente/turn": {
+            "post": {
+                "tags": [
+                    "Partes Tareas"
+                ],
+                "summary": "Turno Smart Capture (GEN-03). Carga diaria o paquetes (draftContext.processKind=paquete). No persiste.",
+                "operationId": "partesTareasAsistenteTurn",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "contractVersion": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    },
+                                    "modality": {
+                                        "type": "string",
+                                        "enum": [
+                                            "texto",
+                                            "audio",
+                                            "imagen"
+                                        ]
+                                    },
+                                    "credentialId": {
+                                        "type": "integer"
+                                    },
+                                    "draftContext": {
+                                        "description": "Incluir processKind=paquete en Carga de paquetes",
+                                        "type": "object"
+                                    },
+                                    "pendingChoice": {
+                                        "type": "object",
+                                        "nullable": true
+                                    },
+                                    "images": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Sin LLM (4201)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/paquetes": {
+            "get": {
+                "tags": [
+                    "Partes Paquetes"
+                ],
+                "summary": "Listar compras de horas (es_tarea=false). Solo supervisor.",
+                "operationId": "partesPaquetesList",
+                "parameters": [
+                    {
+                        "name": "fechaDesde",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "fechaHasta",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "clienteId",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Partes Paquetes"
+                ],
+                "summary": "Alta paquete (fuerza es_tarea=false)",
+                "operationId": "partesPaquetesStore",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "clienteId": {
+                                        "type": "integer"
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "duracionMinutos": {
+                                        "type": "integer"
+                                    },
+                                    "observacion": {
+                                        "type": "string"
+                                    },
+                                    "confirmarFechaFutura": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Creado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partes/paquetes/{id}": {
+            "get": {
+                "tags": [
+                    "Partes Paquetes"
+                ],
+                "summary": "Detalle paquete",
+                "operationId": "partesPaquetesShow",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Partes Paquetes"
+                ],
+                "summary": "Actualizar paquete (usuario_id inmutable)",
+                "operationId": "partesPaquetesUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "clienteId": {
+                                        "type": "integer"
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "duracionMinutos": {
+                                        "type": "integer"
+                                    },
+                                    "observacion": {
+                                        "type": "string"
+                                    },
+                                    "rowVersion": {
+                                        "type": "string"
+                                    },
+                                    "confirmarFechaFutura": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    },
+                    {
+                        "tenant": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Partes Paquetes"
+                ],
+                "summary": "Eliminar paquete",
+                "operationId": "partesPaquetesDestroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3965,6 +5192,336 @@
     },
     "components": {
         "schemas": {
+            "ConsultaDetalladaHostContext": {
+                "required": [
+                    "fechaDesde",
+                    "fechaHasta",
+                    "estadoCerrado"
+                ],
+                "properties": {
+                    "fechaDesde": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-08-01"
+                    },
+                    "fechaHasta": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-08-31"
+                    },
+                    "clienteId": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "usuarioId": {
+                        "description": "Ignorado si el actor no es supervisor",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "tipoTareaId": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "estadoCerrado": {
+                        "type": "string",
+                        "enum": [
+                            "todas",
+                            "abiertas",
+                            "cerradas"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "PartesIntegracionMaestrosResultado": {
+                "required": [
+                    "recurso",
+                    "dryRun",
+                    "recibidos",
+                    "aplicados",
+                    "omitidos",
+                    "rechazados",
+                    "resultados",
+                    "errores"
+                ],
+                "properties": {
+                    "recurso": {
+                        "type": "string",
+                        "example": "clientes"
+                    },
+                    "dryRun": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "recibidos": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "aplicados": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "omitidos": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "rechazados": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "erroresTruncados": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "resultados": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "indice": {
+                                    "type": "integer",
+                                    "example": 0,
+                                    "nullable": true
+                                },
+                                "clave": {
+                                    "type": "string",
+                                    "example": "CLI-001",
+                                    "nullable": true
+                                },
+                                "accion": {
+                                    "type": "string",
+                                    "example": "modificacion"
+                                },
+                                "codigo": {
+                                    "type": "string",
+                                    "example": "integracion.maestro.itemInvalido",
+                                    "nullable": true
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "errores": {
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "indice",
+                                "clave",
+                                "codigo"
+                            ],
+                            "properties": {
+                                "indice": {
+                                    "type": "integer",
+                                    "example": 2,
+                                    "nullable": true
+                                },
+                                "clave": {
+                                    "type": "string",
+                                    "example": "CLI-404"
+                                },
+                                "codigo": {
+                                    "type": "string",
+                                    "example": "integracion.maestro.referenciaInvalida"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "maxItems": 50
+                    }
+                },
+                "type": "object"
+            },
+            "PartesIntegracionCliente": {
+                "required": [
+                    "code",
+                    "nombre",
+                    "tipoCliente"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "example": "CLI-001"
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Acme SA"
+                    },
+                    "tipoCliente": {
+                        "required": [
+                            "code"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "example": "EMPRESA"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "contacto@acme.example",
+                        "nullable": true
+                    },
+                    "erpCliente": {
+                        "type": "string",
+                        "maxLength": 15,
+                        "example": "1001",
+                        "nullable": true
+                    },
+                    "erpArticulo": {
+                        "type": "string",
+                        "maxLength": 15,
+                        "example": "A-100",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PartesIntegracionAsistente": {
+                "required": [
+                    "code",
+                    "nombre",
+                    "usuario"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "example": "AST-001"
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Ana Pérez"
+                    },
+                    "usuario": {
+                        "required": [
+                            "code"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "example": "USR-001"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "ana.perez@example",
+                        "nullable": true
+                    },
+                    "supervisor": {
+                        "type": "boolean",
+                        "default": false,
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "PartesIntegracionTipoCliente": {
+                "required": [
+                    "code",
+                    "descripcion"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "example": "TC-001"
+                    },
+                    "descripcion": {
+                        "type": "string",
+                        "example": "Empresa"
+                    }
+                },
+                "type": "object"
+            },
+            "PartesIntegracionTipoTarea": {
+                "required": [
+                    "code",
+                    "descripcion"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "example": "TAR-ADMIN"
+                    },
+                    "descripcion": {
+                        "type": "string",
+                        "example": "Administración"
+                    },
+                    "isGenerico": {
+                        "type": "boolean",
+                        "default": true,
+                        "example": true
+                    },
+                    "isDefault": {
+                        "type": "boolean",
+                        "default": false,
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "PartesIntegracionAsignacion": {
+                "required": [
+                    "code",
+                    "tiposTarea"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "example": "CLI-001"
+                    },
+                    "tiposTarea": {
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "code"
+                            ],
+                            "properties": {
+                                "code": {
+                                    "type": "string",
+                                    "example": "TAR-CAPAC"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "PartesIntegracionMaestrosRequest": {
+                "required": [
+                    "fechaProceso",
+                    "items"
+                ],
+                "properties": {
+                    "fechaProceso": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-10-23"
+                    },
+                    "origen": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "ERP",
+                        "nullable": true
+                    },
+                    "dryRun": {
+                        "type": "boolean",
+                        "default": false,
+                        "example": false
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        },
+                        "maxItems": 1500,
+                        "minItems": 1
+                    }
+                },
+                "type": "object"
+            },
             "ApiEnvelope": {
                 "required": [
                     "error",
@@ -4006,6 +5563,10 @@
     },
     "tags": [
         {
+            "name": "Emisiones",
+            "description": "Emisión de reportes GEN-15"
+        },
+        {
             "name": "Admin",
             "description": "Seguridad ABM + menú/preferencias/empresas del usuario"
         },
@@ -4046,8 +5607,16 @@
             "description": "Maestros Partes (clientes, asistentes, tipos)"
         },
         {
+            "name": "Partes Integración Maestros",
+            "description": "Reconciliación REST de maestros Partes"
+        },
+        {
             "name": "Partes Tareas",
             "description": "Carga diaria y proceso masivo de tareas"
+        },
+        {
+            "name": "Partes Paquetes",
+            "description": "ABM de compras de horas (es_tarea=false); solo supervisor"
         },
         {
             "name": "Pivot Layouts",

@@ -12,20 +12,12 @@ const detallada = source.slice(0, agrupadasStart)
 const agrupadas = source.slice(agrupadasStart)
 
 describe('emisión solo en Consulta detallada', () => {
-  it('Consulta detallada monta EmissionDialog y agrupadas no', () => {
+  it('Consulta detallada monta EmissionDialog GEN y agrupadas no', () => {
     expect(detallada).toContain('EmissionDialog')
+    expect(detallada).toContain("from '@paqsuite/react-core'")
     expect(detallada).toContain('partesConsultaDetalladaEmit')
+    expect(detallada).not.toContain('PartesEmissionDialog')
     expect(agrupadas).not.toContain('EmissionDialog')
     expect(agrupadas).not.toContain('partesConsultaDetalladaEmit')
-  })
-
-  it('el diálogo Emitir del host no usa fieldRender (DX E1010)', () => {
-    const dialogSource = readFileSync(
-      join(dirname(fileURLToPath(import.meta.url)), 'PartesEmissionDialog.tsx'),
-      'utf8',
-    )
-    expect(dialogSource).not.toMatch(/fieldRender\s*=/)
-    expect(dialogSource).toContain("displayExpr=\"label\"")
-    expect(dialogSource).toContain('modeItems.length > 1')
   })
 })

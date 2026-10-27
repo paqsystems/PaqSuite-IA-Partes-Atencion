@@ -41,6 +41,7 @@ class PqMenuSeeder extends Seeder
             $this->folder(30000, null, 'partes', 'Partes', 30000),
             $this->process(30100, 30000, 'partes_carga_diaria', 'Carga diaria', '/partes/carga-diaria', 30100),
             $this->process(30200, 30000, 'partes_proceso_masivo', 'Proceso masivo', '/partes/proceso-masivo', 30200),
+            $this->process(30300, 30000, 'partes_carga_paquetes', 'Carga de paquetes', '/partes/carga-paquetes', 30300),
 
             // 40000 Informes
             $this->folder(40000, null, 'informes', 'Informes', 40000),
@@ -59,10 +60,9 @@ class PqMenuSeeder extends Seeder
             $this->folder(60000, null, 'parametros', 'Parámetros', 60000),
             $this->process(60100, 60000, 'parametros_auth', 'Parámetros Auth', '/parametros/Auth', 60100),
             $this->process(60200, 60000, 'parametros_partes', 'Parámetros Partes', '/parametros/Partes', 60200),
-
-            // 70000 Soporte Técnico
-            $this->folder(70000, null, 'soporte_tecnico', 'Soporte Técnico', 70000),
-            $this->process(70100, 70000, 'partes_disenador_emisiones', 'Diseñador de emisiones', '/emisiones/disenador', 70100),
+            $this->folder(60300, 60000, 'soporte_tecnico', 'Soporte Técnico', 60300),
+            $this->process(60310, 60300, 'partes_disenador_emisiones', 'Diseñador de emisiones', '/emisiones/disenador', 60310),
+            $this->process(60320, 60300, 'tareas_programadas', 'Tareas programadas', '/tareas-programadas', 60320),
         ];
 
         foreach ($rows as $row) {

@@ -62,6 +62,7 @@
 - [x] Tipos no genericos por asignacion
 - [x] Clientes con acceso como capacidad adicional
 - [x] Criterio de bajas o eliminaciones sin romper trazabilidad
+- [x] APIs de importar / upsert maestros (`17-APis-importar-datos-maestros.md`; distinto de Excel GEN-14 y del ABM)
 
 ## Operacion del modulo
 
@@ -117,6 +118,7 @@
 - [x] Consulta detallada de tareas *(duración UI `hh:mm`; columnas Erp Cliente / Erp Articulo; **emisor GEN-15** — `15-reportes-emisiones.md`)*
 - [x] Consultas agrupadas *(totales tiempo UI `hh:mm`; atributos ERP en grilla/pivot)*
 - [x] Paquete de horas *(cuenta corriente: saldo inicial + columna Saldo; no filtra por `es_tarea`; pivot sin Saldo; mismos atributos que carga detallada)*
+- [x] Carga de paquetes de horas *(ABM compras `es_tarea = false`; supervisor; Smart Capture en modal; `16-carga-paquetes-horas.md`)*
 - [x] Consulta detallada / agrupadas / dashboard: solo `es_tarea = true`
 - [x] Restricciones por perfil en consultas
 - [x] Resultados vacios con acciones deshabilitadas
@@ -187,7 +189,7 @@
 
 ## Evolucion ya identificada
 
-- [x] Cuenta corriente de horas como proceso distinto
+- [x] Cuenta corriente de horas como proceso distinto *(informe en `06`; carga de compras en `16`)*
 - [x] Auditoria de partes como linea futura
 - [x] Costeo de horas como linea futura
 - [x] Informe de facturacion como linea futura
@@ -208,3 +210,9 @@
 - [x] Generación e implementación de SPEC-008 (Asistente IA chat documental) → A–F1 2026-08-01; HU/TR Pendiente de Revisión (`D-VERIFICACION-TR-008-asistente-ia-2026-08-01.md`)
 - [x] Generación SDD de importación Excel de partes (`13` → SPEC/HU/TR-009 A→D 2026-08-02; pendiente E/F1)
 - [ ] Generación SDD de reportes/emisiones (`15-reportes-emisiones.md` → adopción GEN-15; SPEC/HU/TR-011 A→C1+D1 2026-08-25; D pendiente)
+- [x] SPEC-013 carga de paquetes (Parte A 2026-10-20, **PIAPARTES-43**)
+- [x] A1 SPEC-013 (2026-10-20) — apto con observaciones
+- [x] HU-013 carga de paquetes (Parte B+B1 2026-10-21)
+- [x] TR-013 carga de paquetes (Parte C+C1 2026-10-21, Especificado)
+- [ ] Implementación D1/D TR-013 (pendiente)
+- [ ] Generación SDD de APIs importar maestros (`17-APis-importar-datos-maestros.md` → A0 2026-10-20 **PIAPARTES-46**; pendiente A)

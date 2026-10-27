@@ -1,4 +1,4 @@
-# TR-005 – Supervisión y proceso masivo
+# TR-005 – Supervisión y proceso masivo
 
 Jira: PIAPARTES-33
 
@@ -12,8 +12,8 @@ Jira: PIAPARTES-33
 | **Roles** | Solo `resultado.partes.esSupervisor = true` |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-004](./TR-004-operacion-carga-diaria.md) (listado/tareas/`rowVersion`/tipos), GEN layouts/export grilla |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Finalizado |
-| **Última actualización** | 2026-09-16 |
+| **Estado** | En Control Calidad |
+| **Última actualización** | 2026-10-20 |
 
 **Origen:** [HU-005](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md)  
 **Referencia SPEC:** [SPEC-005](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md)  
@@ -226,7 +226,7 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 
 ---
 
-# Verificación del agente - TR-005 (F1 2026-07-31)
+# Verificación del agente - TR-005 (F1 2026-07-31)
 
 Jira: PIAPARTES-33
 

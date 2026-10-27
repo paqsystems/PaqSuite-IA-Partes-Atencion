@@ -29,7 +29,7 @@ Otras consultas (agrupadas, Paquete de horas) **no** montan Emitir en esa defini
 
 La **cuenta corriente de horas** por cliente con paquetes anticipados **ya forma parte** de la definicion vigente del informe **Paquete de Horas** (ver `06-consultas-dashboard-y-navegacion.md`).
 
-Lo que sigue como evolucion / proceso a definir es la **pantalla o flujo de alta de compras de horas** (`es_tarea = false`), no el concepto de saldo en el informe.
+La **carga de compras / movimientos de paquete** (`es_tarea = false`) queda definida en [`16-carga-paquetes-horas.md`](./16-carga-paquetes-horas.md) (ABM supervisor, menú propio, sin mobile v1).
 
 ### Auditoria de partes
 
@@ -51,9 +51,11 @@ Se menciona una posible extension para preparar informacion util para facturacio
 
 Eso debe tratarse como linea post-MVP.
 
+La **carga de maestros desde un origen externo** (upsert REST, sin sync bidireccional) queda definida en [`17-APis-importar-datos-maestros.md`](./17-APis-importar-datos-maestros.md). No es el informe de facturación ni una integración activa con el ERP.
+
 ### Carga de tareas con IA
 
-**Conceptualizado** en [`14-smart-capture.md`](./14-smart-capture.md): Smart Capture (GEN-03) embebido en el **modal** de alta/edición de tarea en Carga diaria (texto, audio, imagen; BYOK; sin montaje en grilla).
+**Conceptualizado** en [`14-smart-capture.md`](./14-smart-capture.md): Smart Capture (GEN-03) embebido en el **modal** de alta/edición de **tarea** (Carga diaria) y de **paquete de horas** (`16`) (texto, audio, imagen; BYOK; sin montaje en grilla).
 
 Complementa la carga manual; no la reemplaza. Distinto del Asistente IA documental (`12`) y de la importación Excel (`13`).
 
@@ -78,7 +80,8 @@ La **importación de partes (tareas) desde Excel** bajo **Carga de Partes** qued
 No se confunde con:
 
 - la **exportación** Excel de grillas/informes o del proceso masivo;
-- la línea de **auditoría** (Excel + mails), que sigue como evolución distinta (§ Auditoria de partes).
+- la línea de **auditoría** (Excel + mails), que sigue como evolución distinta (§ Auditoria de partes);
+- las **APIs de importar maestros** (`17`), que no usan GEN-14 ni importan tareas.
 
 ### Mobile
 

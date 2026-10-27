@@ -56,6 +56,42 @@ class PqPartesParametrosSeeder extends Seeder
 
         foreach (
             [
+                [
+                    'PARTES_INTEGRACION_MAESTROS_TIMEOUT_SEGUNDOS',
+                    120,
+                    'Timeout integración maestros (segundos)',
+                    'Tiempo máximo permitido para procesar una importación de maestros',
+                ],
+                [
+                    'PARTES_INTEGRACION_MAESTROS_MAX_JSON_MB',
+                    10,
+                    'Tamaño máximo JSON integración maestros (MB)',
+                    'Tamaño máximo del JSON recibido por las APIs de integración de maestros',
+                ],
+            ] as [$clave, $valor, $caption, $tooltip]
+        ) {
+            DB::table('pq_parametros_gral')->updateOrInsert(
+                ['programa' => 'Partes', 'clave' => $clave],
+                [
+                    'tipo_valor' => 'I',
+                    'valor_string' => null,
+                    'valor_texto' => null,
+                    'valor_int' => $valor,
+                    'valor_decimal' => null,
+                    'valor_bool' => null,
+                    'valor_fecha' => null,
+                    'precision_fecha' => null,
+                    'caption' => $caption,
+                    'tooltip' => $tooltip,
+                    'meta_json' => null,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+            );
+        }
+
+        foreach (
+            [
                 ['PartesDashboardTopN', 10, 'Top N dashboard', 'Cantidad de ítems en ranking del dashboard'],
                 ['PartesDashboardRefreshSeg', 60, 'Refresh dashboard (seg)', '0 = sin auto-refresh'],
             ] as [$clave, $valor, $caption, $tooltip]

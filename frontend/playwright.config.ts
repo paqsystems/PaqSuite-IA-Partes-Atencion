@@ -17,5 +17,10 @@ export default defineConfig({
     url: 'http://localhost:3101',
     reuseExistingServer: false,
     timeout: 120_000,
+    env: {
+      ...process.env,
+      VITE_API_PROXY_TARGET: process.env.VITE_API_PROXY_TARGET ?? 'http://127.0.0.1:8010',
+      VITE_DX_REPORTING_HOST: process.env.VITE_DX_REPORTING_HOST ?? 'http://127.0.0.1:5055',
+    },
   },
 })

@@ -8,20 +8,20 @@ Plan de adopción sin forks GEN: [plan-partes-adopcion-sdk-sin-fork-gen.md](./pl
 
 | Paquete | Objetivo | Registry |
 |---------|----------|----------|
-| `paqsuite/laravel-core` | **1.3.13-beta.1** (oleada GEN-35) | Cloudsmith `paqsystems/paqsuite-sdk` |
-| `@paqsuite/react-core` | **2.4.26-beta.1** (`PermisosAdminPage` altas por usuario/rol + batch) | Cloudsmith `npm.cloudsmith.io/paqsystems/paqsuite-sdk` |
+| `paqsuite/laravel-core` | **1.3.15-beta.1** | Cloudsmith `paqsystems/paqsuite-sdk` |
+| `@paqsuite/react-core` | **2.4.29-beta.1** | Cloudsmith `npm.cloudsmith.io/paqsystems/paqsuite-sdk` |
 | `@paqsuite/create-app` (scaffold, diff obligatorio) | según oleada Framework | Cloudsmith (no es dep runtime de Partes) |
 
 ## Versiones instaladas en repo (deploy — default)
 
 | Paquete | Pin / lock | Nota |
 |---------|------------|------|
-| `paqsuite/laravel-core` | **1.3.13-beta.1** | Cloudsmith en `backend/composer.json` (lock). Bump con `composer update` y `CLOUDSMITH_READ_TOKEN`. |
-| `@paqsuite/react-core` | **2.4.26-beta.1** | Cloudsmith; `frontend/package-lock.json` resuelve tarball `npm.cloudsmith.io` |
+| `paqsuite/laravel-core` | **1.3.15-beta.1** | Cloudsmith en `backend/composer.json` (lock). Bump con `composer update` y `CLOUDSMITH_READ_TOKEN`. |
+| `@paqsuite/react-core` | **2.4.29-beta.1** | Cloudsmith; `frontend/package-lock.json` resuelve tarball `npm.cloudsmith.io` |
 
 Vercel: `scripts/vercel-install.sh` + `CLOUDSMITH_READ_TOKEN`. Vite **no** alias al monorepo salvo `PAQ_REPO_LAB=1`.
 
-Hasta el próximo bump Cloudsmith, el host aplica `frontend/vendor/react-core-overlay` vía `postinstall` (`scripts/overlay-react-core-framework.mjs`): hoja Excel (GEN-14), fecha pivot por `groupInterval: day` y dataSource estable (GEN-12). Quitar el overlay cuando el pin publicado lo incluya.
+El host consume el pin Cloudsmith **sin** overlay `postinstall` sobre `node_modules/@paqsuite/react-core`.
 
 ## Modo repo-lab (opcional, local)
 
@@ -41,7 +41,7 @@ composer show paqsuite/laravel-core
 ```bash
 cd frontend
 # Modo registry (release empaquetado / Cloudsmith):
-npm install @paqsuite/react-core@2.4.26-beta.1
+npm install @paqsuite/react-core@2.4.29-beta.1
 npm list @paqsuite/react-core
 
 # Vercel: CLOUDSMITH_READ_TOKEN (docs/06-operacion/adopcion-gen-35-cloudsmith.md).

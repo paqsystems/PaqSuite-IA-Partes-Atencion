@@ -1,3 +1,4 @@
+import './dxReportingRuntimeSetup'
 import ReportDesigner, { Callbacks, RequestOptions } from 'devexpress-reporting-react/dx-report-designer'
 import 'devextreme/dist/css/dx.light.css'
 import '@devexpress/analytics-core/dist/css/dx-analytics.common.css'

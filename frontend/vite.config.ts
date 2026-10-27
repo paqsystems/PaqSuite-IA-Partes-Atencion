@@ -1,36 +1,8 @@
 import path from 'node:path'
 import react from '@vitejs/plugin-react'
-import { loadEnv, type Plugin } from 'vite'
+import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
-
-/** Vite 8 sirve CJS de ace/knockout sin `export default`; Reporting los importa así. */
-function reportingCjsDefaultExportPlugin(): Plugin {
-  return {
-    name: 'reporting-cjs-default-export',
-    enforce: 'pre',
-    transform(code, id) {
-      const file = id.split('?')[0].replaceAll('\\', '/')
-      const isAce = file.includes('/ace-builds/') && file.endsWith('.js')
-      const isKnockout = file.includes('/knockout/') && file.endsWith('.js')
-      if (!isAce && !isKnockout) {
-        return null
-      }
-      if (/\bexport\s+default\b/.test(code)) {
-        return null
-      }
-      if (isAce) {
-        return {
-          code: `${code}\nexport default (typeof globalThis !== 'undefined' && globalThis.ace) ? globalThis.ace : undefined;\n`,
-          map: null,
-        }
-      }
-      return {
-        code: `${code}\nexport default (typeof globalThis !== 'undefined' && globalThis.ko) ? globalThis.ko : undefined;\n`,
-        map: null,
-      }
-    },
-  }
-}
+import { reportingCjsDefaultExportPlugin } from './vite-plugins/reportingCjsInterop.ts'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -103,7 +75,6 @@ export default defineConfig(({ mode }) => {
       // recarga y el widget queda en blanco.
       include: [
         'prop-types',
-        'knockout',
         'devextreme/common/core/events/pointer',
         'devextreme/common/core/events/transform',
         'devextreme/core/component_registrator',
@@ -152,6 +123,7 @@ export default defineConfig(({ mode }) => {
         'devextreme/ui/validator',
       ],
       exclude: [
+        'knockout',
         'ace-builds',
         '@devexpress/analytics-core',
         'devexpress-reporting',
@@ -162,7 +134,7 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom',
       globals: true,
       setupFiles: ['./src/test/setupTests.ts'],
-      include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+      include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'vite-plugins/**/*.test.ts'],
     },
   }
 })

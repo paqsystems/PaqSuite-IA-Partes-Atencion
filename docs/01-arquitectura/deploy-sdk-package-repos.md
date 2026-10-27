@@ -1,7 +1,7 @@
 # Deploy Partes — SDK vía Cloudsmith (modelo empaquetado)
 
 Fecha: 2026-08-14 · Actualizado: 2026-10-09 (GEN-35)  
-Target: `paqsuite/laravel-core@1.3.13-beta.1` · `@paqsuite/react-core@2.4.24-beta.1`  
+Target: `paqsuite/laravel-core@1.3.15-beta.1` · `@paqsuite/react-core@2.4.29-beta.1`  
 Instructivo: [`docs/06-operacion/adopcion-gen-35-cloudsmith.md`](../06-operacion/adopcion-gen-35-cloudsmith.md)
 
 > Guías Framework: `GUIA_PRUEBA_INSTALACION.md`, `GUIA_ACTUALIZACION_PROYECTO.md`  
@@ -14,8 +14,8 @@ Instructivo: [`docs/06-operacion/adopcion-gen-35-cloudsmith.md`](../06-operacion
 
 | Capa | Dependencia | Registry |
 |------|-------------|----------|
-| Backend | `paqsuite/laravel-core: 1.3.13-beta.1` | Cloudsmith `composer.cloudsmith.io/paqsystems/paqsuite-sdk` |
-| Frontend | `@paqsuite/react-core: 2.4.24-beta.1` | Cloudsmith `npm.cloudsmith.io/paqsystems/paqsuite-sdk` (`frontend/.npmrc`) |
+| Backend | `paqsuite/laravel-core: 1.3.15-beta.1` | Cloudsmith `composer.cloudsmith.io/paqsystems/paqsuite-sdk` |
+| Frontend | `@paqsuite/react-core: 2.4.29-beta.1` | Cloudsmith `npm.cloudsmith.io/paqsystems/paqsuite-sdk` (`frontend/.npmrc`) |
 
 **Sin** path/`file:` al monorepo Framework.  
 **Sin** `git+https` / VCS GitHub como contrato de producto.  
@@ -96,7 +96,7 @@ El builder público **no** resuelve la IP Tailscale `100.110.69.93` ni MagicDNS 
 | Install | `bash scripts/vercel-install.sh` → `npm install` con `.npmrc` (Cloudsmith) |
 | Secret | `CLOUDSMITH_READ_TOKEN` en Vercel |
 | Registry `@paqsuite` | `https://npm.cloudsmith.io/paqsystems/paqsuite-sdk/` (override: `PAQSUITE_NPM_REGISTRY`) |
-| Lock | `@paqsuite/react-core@2.4.24-beta.1` — regenerar con `frontend/scripts/refresh-react-core-lock.ps1` |
+| Lock | `@paqsuite/react-core@2.4.29-beta.1` — regenerar con `frontend/scripts/refresh-react-core-lock.ps1` |
 
 Runbook: [`docs/06-operacion/adopcion-gen-35-cloudsmith.md`](../06-operacion/adopcion-gen-35-cloudsmith.md). Verdaccio/Funnel: legado [`verdaccio-vercel-conectividad.md`](../06-operacion/verdaccio-vercel-conectividad.md).
 

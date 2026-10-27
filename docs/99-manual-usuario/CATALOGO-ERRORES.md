@@ -24,6 +24,7 @@ Este documento reúne **todos los mensajes de error catalogados** del producto P
 | **P09** | App móvil |
 | **P10** | Asistente IA (avatar) y preferencias de modelo |
 | **P11** | Parámetros generales y administración de seguridad |
+| **P12** | Carga de paquetes de horas (supervisor) |
 
 Para conectividad con otros sistemas (integraciones), el administrador debe indicar la **URL de documentación OpenAPI** del backend de su instalación (ruta habitual: `/api/documentation`).
 
@@ -248,3 +249,19 @@ Para conectividad con otros sistemas (integraciones), el administrador debe indi
 | `roles.delete.hasPermisos` | No se puede eliminar el rol | Rol en uso | Quitar asignaciones antes |
 
 *(Edición de parámetros: mensajes de validación según tipo de dato. También **P00**.)*
+
+---
+
+## P12 — Carga de paquetes de horas
+
+| Clave | Qué ve el usuario (resumen) | Causa habitual | Qué hacer |
+|-------|-----------------------------|----------------|-----------|
+| `partes.paquete.soloSupervisor` | Solo un supervisor puede cargar paquetes | Perfil no supervisor | Pedir a un supervisor |
+| `partes.paquete.fechasRequeridas` | Faltan fechas del filtro | Sin desde/hasta | Indicar el rango |
+| `partes.paquete.camposObligatorios` | Faltan datos | Cliente, fecha o duración vacíos | Completar el formulario |
+| `partes.paquete.observacionRequerida` | Falta observación | Observación vacía | Escribir la observación |
+| `partes.paquete.duracionInvalida` | Duración no válida | No es una cantidad entera de horas entre 8 y 240 | Elegir una cantidad entera de horas entre 8 y 240 |
+| `partes.paquete.fechaFuturaConfirmacion` | Pedido de confirmar fecha futura | Fecha posterior a hoy | Confirmar o cambiar la fecha |
+| `partes.paquete.conflictoVersion` | El registro cambió | Otro usuario lo editó | Refrescar e intentar de nuevo |
+| `partes.paquete.notPaquete` | No es un paquete de horas | Se eligió una tarea | Operar desde carga diaria |
+| `partes.paquete.clienteNoUsable` | El cliente no está usable | Cliente inhabilitado | Elegir un cliente activo |
