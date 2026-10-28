@@ -1,0 +1,41 @@
+name: Partes — validate installation manifest
+
+on:
+  pull_request:
+    paths:
+      - 'backend/database/**'
+      - 'backend/tools/build-installation-manifest.php'
+      - 'backend/tools/validate-installation-manifest.php'
+      - '.github/workflows/manifest-validate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Composer install
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Regenerate host manifest (check drift)
+        run: php tools/build-installation-manifest.php --semver=1.3.17-beta.1
+
+      - name: Assert manifest committed
+        run: git diff --exit-code database/manifest/
+
+      - name: Validate merge Framework + host
+        run: php tools/validate-installation-manifest.php --semver=1.3.17-beta.1

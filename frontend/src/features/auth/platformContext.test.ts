@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { buildPlatformHeaders, clienteHeaderName, companyHeaderName } from '@paqsuite/react-core'
 import { clearAuthSession, saveLoginSession } from './authSessionStore'
-import { buildAuthHttpHeaders, buildAuthPlatformHeaders } from './platformContext'
+import { buildAuthHttpHeaders, buildAuthPlatformHeaders, resolveLocalEnvClienteOverride } from './platformContext'
 import type { LoginSessionResultado } from './authTypes'
 
 function baseResultado(tenancy: 'single' | 'multi' = 'single'): LoginSessionResultado {
@@ -18,6 +18,15 @@ function baseResultado(tenancy: 'single' | 'multi' = 'single'): LoginSessionResu
 
 afterEach(() => {
   clearAuthSession()
+})
+
+describe('resolveLocalEnvClienteOverride', () => {
+  it('usa VITE_TENANT_DEFAULT_CLIENT y deja ganar ?cliente=', () => {
+    expect(resolveLocalEnvClienteOverride('DEV', null)).toBe('DEV')
+    expect(resolveLocalEnvClienteOverride('DEV', 'PAQ')).toBe('PAQ')
+    expect(resolveLocalEnvClienteOverride('', null)).toBeNull()
+    expect(resolveLocalEnvClienteOverride('  ', 'demo')).toBeNull()
+  })
 })
 
 describe('PA-10 buildAuthPlatformHeaders', () => {
