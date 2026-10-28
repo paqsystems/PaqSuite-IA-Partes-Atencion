@@ -108,12 +108,14 @@ return [
             'paqsuite.instalacion.db',
             'auth:sanctum',
         ],
+        'scheduleTimezone' => env('PAQSUITE_TASKS_SCHEDULE_TIMEZONE', 'America/Argentina/Buenos_Aires'),
         'backup' => [
             'backend' => env('PAQSUITE_TASKS_BACKUP_BACKEND', 'rds'),
             's3ArnPrefix' => env('TASKS_BACKUP_S3_ARN_PREFIX', ''),
             'windowsService' => env('TASKS_BACKUP_WINDOWS_SERVICE', ''),
             'pollSeconds' => (int) env('TASKS_BACKUP_POLL_SECONDS', 5),
             'lockLeaseSeconds' => (int) env('TASKS_BACKUP_LOCK_LEASE_SECONDS', 900),
+            'rdsTimeoutMinutes' => (int) env('TASKS_BACKUP_RDS_TIMEOUT_MINUTES', 120),
         ],
     ],
 
@@ -181,5 +183,18 @@ return [
             'password' => env('DB_PASSWORD'),
             'dictionary_database' => env('DB_DATABASE'),
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | GEN-34 — manifiesto instalación (host)
+    |--------------------------------------------------------------------------
+    */
+    'installation' => [
+        'hostManifestPath' => env(
+            'PAQSUITE_HOST_MANIFEST',
+            database_path('manifest/partesatencion-1.3.17-beta.1.json')
+        ),
+        'frameworkPackageRoot' => base_path('vendor/paqsuite/laravel-core'),
     ],
 ];

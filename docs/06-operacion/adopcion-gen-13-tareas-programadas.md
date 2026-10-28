@@ -46,7 +46,9 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 
 ## Disparador del scheduler
 
-El host registra `tasks:run-due` cada minuto y `tasks:purge-history`
+El host registra **`partes:tasks-run-due`** cada minuto (resuelve tenant vía
+`PAQSUITE_CLIENTE` + `EMPRESAS_CONEXION`, recupera ejecuciones
+`EN_EJECUCION` expiradas y luego ejecuta due) y `tasks:purge-history`
 diariamente en `backend/app/Console/Kernel.php`. Para que la agenda opere en
 un ambiente, una tarea externa debe ejecutar:
 
@@ -57,6 +59,15 @@ php artisan schedule:run
 En Forge, habilitar por sitio la integración **Laravel Scheduler** (Scheduled
 Job minutely → `…/current/backend/artisan schedule:run`). Ver skill
 `vercel-github-deployment-standard` §3 al dar de alta un host nuevo.
+
+Cada sitio (p. ej. preview **dev**) debe tener **`PAQSUITE_CLIENTE`** igual al
+código de `EMPRESAS_CONEXION` que usa la UI (`dev`, `paq`, …). Sin eso,
+`partes:tasks-run-due` no conmuta la BD tenant y la agenda no corre sobre
+`paqsystems_partesatencion_dev`.
+
+Tras desplegar SP del host, ejecutar `php scripts/deploy-sp.php` (o al menos
+`database/sp/pq_sp_task_execution_append_log.sql`) en **cada** base tenant con
+esquema GEN-13 template (`log_timestamp`), para que los logs de backup no fallen.
 
 ## Provisionamiento por base tenant (RDS / MONO)
 
@@ -108,7 +119,8 @@ de reintentar el seed.
    `OMITIDA`.
 5. Repetir en ambiente autorizado con RDS/S3 e IAM reales.
 6. Comprobar que una definición activa tenga `next_run_at` y que
-   `php artisan tasks:run-due --dry-run` la liste cuando esa fecha ya venció.
+   `php artisan partes:tasks-run-due --dry-run` la liste cuando esa fecha ya
+   venció (mismo tenant que `PAQSUITE_CLIENTE` del sitio).
 7. En CLI, `BackupInstallationProfileResolver` debe resolver `PAQSUITE_CLIENTE`
    (sin header HTTP).
 
