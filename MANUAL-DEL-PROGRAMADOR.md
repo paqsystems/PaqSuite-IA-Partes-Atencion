@@ -4,7 +4,7 @@
 |-------|--------|
 | **Producto** | PaqSuite IA — Partes de Atención (`SistemaPartes`, portal MONO) |
 | **Público** | Programadores, integradores y soporte técnico que necesitan entender el sistema de punta a punta |
-| **Fecha** | 5 de octubre de 2026 |
+| **Fecha** | 28 de octubre de 2026 |
 | **Complementa** | Este documento enseña. No sustituye SPEC, HU, TR ni el contrato OpenAPI. |
 
 Este texto está pensado para que alguien que entra al repositorio por primera vez pueda responder dos preguntas:
@@ -89,7 +89,9 @@ Entrada por subdominio cliente (puente web): `https://{cliente}.partesatencion.p
 
 Header obligatorio en API: `X-Paq-Cliente: {cliente}` (código de instalación en `EMPRESAS_CONEXION`, proyecto `partesatencion`).
 
-En desarrollo local, si `PAQSUITE_INSTALACION_RESOLVER=config`, el mapa fallback incluye `DEMO|partesatencion` y `PAQ|partesatencion` en `backend/config/paqsuite.php`.
+En desarrollo local, si `PAQSUITE_INSTALACION_RESOLVER=config`, el mapa fallback incluye `DEMO|partesatencion`, `PAQ|partesatencion` y `DEV|partesatencion` en `backend/config/paqsuite.php`. Con `resolver=sql` (igual que Forge) el tenant lo resuelve `EMPRESAS_CONEXION` + header `X-Paq-Cliente`.
+
+En **Vite/localhost** el SDK `@paqsuite/react-core` fuerza `DEMO`. Para lab contra `_dev` (o otro código) hay que setear `VITE_TENANT_DEFAULT_CLIENT` y/o abrir `?cliente=DEV`; el host lo persiste en `platformContext.ts` y pisa el force-DEMO. `TENANT_ALLOWED_CLIENTS` del `.env` Laravel **no** lo usa este producto.
 
 ## 1.4 Arquitectura del backend (cómo pensar un cambio)
 
@@ -312,7 +314,8 @@ El FE en Vercel **siempre** llama al BE por URL absoluta (`VITE_API_BASE_URL`). 
 | **`PAQSUITE_PROYECTO`** | `partesatencion` | `partesatencion` | `partesatencion` |
 | **`PAQSUITE_TENANCY`** | `single` | `single` | `single` |
 | **`PAQSUITE_DB`** | `unified` | `unified` | `unified` |
-| **`PAQSUITE_INSTALACION_RESOLVER`** | `config` (PHPUnit / sin PAQSYSTEMS) o `sql` (igual que Forge) | **`sql`** | **`sql`** |
+| **`PAQSUITE_INSTALACION_RESOLVER`** | `config` (PHPUnit / sin PAQSYSTEMS) o `sql` (igual que Forge; lab RDS) | **`sql`** | **`sql`** |
+| **`PAQSUITE_CLIENTE`** | Código default CLI (`DEV` / `DEMO` / `PAQ`); en HTTP manda `X-Paq-Cliente` | Obligatorio en `.env` del sitio (post-deploy lo lee si Forge no exporta la var) | Idem |
 | **`DB_*`** (`sqlsrv`) | Instancia alcanzable (ej. `PAQSYSTEMS_PARTESATENCION_DEMO`) o **sqlite** en tests | Credenciales del sitio; la BD **por tenant** la resuelve `EMPRESAS_CONEXION` | Idem prod |
 | **`PAQSUITE_CENTRAL_*`** | Host/catálogo `PAQSYSTEMS` si `resolver=sql` | Obligatorio con multidominio | Obligatorio |
 | **`FRONTEND_URL`** | `http://localhost:3000` | URL del SPA dev (Vercel develop) | URL operativa o custom domain |
@@ -335,13 +338,14 @@ php artisan queue:restart   # si hay workers para emisiones/excel async
 
 **Capacidades que no van solo en `.env`:** flags como **`ExcelImportEnabled`** (programa `ExcelImport`) y **`EmissionEnabled`** (programa `Emission`) viven en **`PQ_PARAMETROS_GRAL`** tras migrate/seed (`PqExcelImportSeeder`, `PqEmissionSeeder`). En lab, activarlos en la BD que uses; en Forge, verificar en pantalla Parámetros o SQL tras cada deploy de catálogo.
 
-**Resolver `config` en lab:** el mapa `DEMO|partesatencion` / `PAQ|partesatencion` en `backend/config/paqsuite.php` apunta a tu `DB_*` del `.env`. Útil sin catálogo central; **no** sustituye `EMPRESAS_CONEXION` en multidominio real.
+**Resolver `config` en lab:** el mapa `DEMO|partesatencion` / `PAQ|partesatencion` / `DEV|partesatencion` en `backend/config/paqsuite.php` apunta a tu `DB_*` (DEV usa `DB_COMPANY_DATABASE` si está definido). Útil sin catálogo central; **no** sustituye `EMPRESAS_CONEXION` en multidominio real.
 
 ### Frontend web — `frontend/.env` (solo lab)
 
 | Variable | Lab | Vercel develop | Vercel production |
 |----------|-----|----------------|-------------------|
 | **`VITE_API_BASE_URL`** | **Vacío / no definir** | `https://backenddev.partesatencion.paqsystems.com` | `https://backend.partesatencion.paqsystems.com` |
+| **`VITE_TENANT_DEFAULT_CLIENT`** | `DEV` (o el código de `EMPRESAS_CONEXION` que uses en lab). Sin esto, localhost queda en **DEMO** | No aplica (subdominio / `?cliente=`) | No aplica |
 | **`VITE_API_PROXY_TARGET`** | `http://127.0.0.1:8010` (alineado a `vite.config.ts`) | No aplica (no hay proxy en build) | No aplica |
 | **`VITE_DEVEXTREME_LICENSE_KEY`** | LCP 26.1 local | Misma clave en env Vercel Preview | Misma clave en env Vercel Production |
 | **`VITE_DX_REPORTING_HOST`** | `http://127.0.0.1:5055` | Misma env en Vercel Preview (el cliente usa origin del FE; ver Anexo A.5) | Sidecar prod o rewrites same-origin |
@@ -571,10 +575,16 @@ Anti-patrón: confundir **Exportar Excel de la grilla** (GEN-11) con **Emitir** 
 
 ## A.3 Qué necesita el programador al trabajar en local
 
-1. Backend Laravel en `:8010` con emisiones habilitadas y datos de prueba.
-2. Sidecar Reporting en `:5055` (o el puerto que configure `VITE_DX_REPORTING_HOST`).
-3. Frontend Vite en `:3000` para que el proxy unifique origen y cookies de sesión DX.
-4. Permiso de menú para consulta detallada y, para diseño, `emission.design`.
+1. Backend Laravel (`php artisan serve`; si `:8010` está ocupado, p. ej. `:8012`) con `PAQSUITE_EMISSION_DX_MODE=remote`, `EmissionEnabled=S` y datos de prueba.
+2. Sidecar Reporting en `:5055` (o el puerto de `VITE_DX_REPORTING_HOST`).
+3. Frontend Vite (default `:3000`; si está ocupado, p. ej. `:3012`) para que el proxy unifique origen y cookies de sesión DX.
+4. Tenant **correcto**: reportes diseñados viven **por BD empresa**. Login con `?cliente=DEV` (o `VITE_TENANT_DEFAULT_CLIENT=DEV`) si el catálogo está en `paqsystems_partesatencion_dev`. DEMO no ve esos layouts.
+5. Permiso de menú para consulta detallada y, para diseño, `emission.design`.
+6. **Emitir exige un reporte no estándar.** El seed solo crea `<Original>` (`is_standard=1`); esa plantilla **no** aparece en el diálogo y el POST sin `reportId` responde **4701** (`Datos de emisión inválidos`). Hay que **Guardar como** una copia en el diseñador.
+
+Si `:3000`/`:8010` chocan con TANGO o PedidosWeb en la misma PC, usar puertos libres y alinear `APP_URL`, `FRONTEND_URL` y `VITE_API_PROXY_TARGET`.
+
+SDK npm/Composer: **Cloudsmith** (`CLOUDSMITH_READ_TOKEN` en el SO, no en `backend/.env`). Sin token, `npm ci` / `composer install` fallan; no volver a Satis/Verdaccio.
 
 ## A.4 Dónde mirar en el código
 
@@ -605,6 +615,18 @@ Browser (partesatencion-dev.paqsystems.com)
 - El sidecar **no** tiene unidad systemd; si el proceso cayó, `start.sh` en ese directorio. Crontab `@reboot` del usuario `forge`.
 - `dx-reporting.paqsystems.com` no es el sidecar (DNS a Apache ajeno). Detalle y deudas: `docs/01-arquitectura/plan-dx-reporting-sidecar-aws-gateway.md` §5.2 y §7.
 
+## A.6 Estado lab 2026-10-28 (continuar)
+
+Lab local con Cloudsmith + sidecar `:5055` + tenant **DEV**: **Emitir ya genera PDF con filas** del universo de Consulta detallada.
+
+**Pendiente:** el PDF **no aplica el layout** diseñado, y el diseñador **no muestra** los diseños de forma correcta. Hipótesis a verificar (no cerradas):
+
+- `pq_emission_reports.layout_mime` / `layout_definition`: el render host solo reenvía XML REPX (`application/xml`); JSON tabular se ignora y el sidecar carga `.repx` por `report_code`.
+- `<Original>` vive en el sidecar; las copias «Guardar como» tienen que persistir REPX, no el stub JSON del seed.
+- Diseñador: `GetDesignerModel` / proxy `/DXXRD*` / Knockout+Ace en el chunk DX.
+
+Handoff: `docs/_handoff/GEN-15-lab-local-2026-10-28.md`.
+
 ---
 
 ## Documentos de cabecera (si hace falta profundizar)
@@ -624,4 +646,4 @@ Browser (partesatencion-dev.paqsystems.com)
 | Adopción SDK / ritual bump | `docs/01-arquitectura/plan-partes-adopcion-sdk-sin-fork-gen.md` |
 | Contrato vivo de endpoints | `/api/documentation` (Swagger) |
 
-Este manual describe el sistema **tal como está implementado al 5 de octubre de 2026**. Si un SPEC-update o un control de calidad cambia el alcance, prevalecen el SPEC unificado y OpenAPI.
+Este manual describe el sistema **tal como está implementado al 28 de octubre de 2026**. Si un SPEC-update o un control de calidad cambia el alcance, prevalecen el SPEC unificado y OpenAPI.

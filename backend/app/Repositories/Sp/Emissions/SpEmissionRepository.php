@@ -289,7 +289,124 @@ final class SpEmissionRepository implements EmissionRepository
             ],
             'requiresPreview' => $process->requiresPreview,
             'outputPolicy' => $process->outputPolicy->toArray(),
-            'reports' => $process->reports,
+            'reports' => $this->reportsForEmissionDialog($process->processCode),
+        ];
+    }
+
+    /**
+     * Reportes visibles en ventana Emitir (excluye plantillas estándar / &lt;Original&gt;).
+     *
+     * @return list<array{id: int, code: string, name: string, isPrincipal: bool}>
+     */
+    public function reportsForEmissionDialog(string $processCode): array
+    {
+        return DB::table('pq_emission_reports')
+            ->where('process_code', $processCode)
+            ->where('is_active', 1)
+            ->where('is_standard', 0)
+            ->orderByDesc('is_principal')
+            ->orderBy('id')
+            ->get()
+            ->map(fn ($report): array => $this->mapEmissionReportRow($report))
+            ->all();
+    }
+
+    public function resolveDefaultEmitReportId(string $processCode): ?int
+    {
+        $row = DB::table('pq_emission_reports')
+            ->where('process_code', $processCode)
+            ->where('is_active', 1)
+            ->where('is_standard', 0)
+            ->orderByDesc('is_principal')
+            ->orderBy('id')
+            ->first();
+
+        return $row === null ? null : (int) $row->id;
+    }
+
+    public function isEmitReportAllowed(int $reportId, string $processCode): bool
+    {
+        $row = DB::table('pq_emission_reports')
+            ->where('id', $reportId)
+            ->where('process_code', $processCode)
+            ->where('is_active', 1)
+            ->where('is_standard', 0)
+            ->first();
+
+        return $row !== null;
+    }
+
+    public function findReportRenderKeyById(?int $reportId): ?string
+    {
+        if ($reportId === null || $reportId < 1) {
+            return null;
+        }
+
+        $code = DB::table('pq_emission_reports')->where('id', $reportId)->value('report_code');
+
+        return is_string($code) && $code !== '' ? $code : null;
+    }
+
+    /**
+     * Layout inline solo si es REPX/XML; JSON tabular se ignora (sidecar carga .repx por report_code).
+     *
+     * @return array{layoutDefinition: string, layoutMime: string}|null
+     */
+    public function findReportLayoutForRender(?int $reportId): ?array
+    {
+        if ($reportId === null || $reportId < 1) {
+            return null;
+        }
+
+        $row = DB::table('pq_emission_reports')->where('id', $reportId)->first();
+        if ($row === null) {
+            return null;
+        }
+
+        $mime = (string) ($row->layout_mime ?? '');
+        $definition = $row->layout_definition;
+        if ($mime !== 'application/xml' || ! is_string($definition) || trim($definition) === '') {
+            return null;
+        }
+
+        return [
+            'layoutDefinition' => $definition,
+            'layoutMime' => $mime,
+        ];
+    }
+
+    /**
+     * @return list<array{id: int, code: string, name: string, isPrincipal: bool, isStandard: bool}>
+     */
+    public function reportsForDesignCatalog(string $processCode): array
+    {
+        return DB::table('pq_emission_reports')
+            ->where('process_code', $processCode)
+            ->where('is_active', 1)
+            ->orderByDesc('is_principal')
+            ->orderBy('id')
+            ->get()
+            ->map(function ($report): array {
+                $mapped = $this->mapDesignReportRow($report);
+
+                return [
+                    ...$mapped,
+                    'isStandard' => (bool) $report->is_standard,
+                ];
+            })
+            ->all();
+    }
+
+    /**
+     * @return array{id: int, code: string, name: string, isPrincipal: bool}
+     */
+    private function mapEmissionReportRow(object $report): array
+    {
+        return [
+            'id' => (int) $report->id,
+            'code' => (string) $report->report_code,
+            'name' => (string) $report->name,
+            'isPrincipal' => (bool) $report->is_principal,
         ];
     }
 
@@ -367,6 +484,15 @@ final class SpEmissionRepository implements EmissionRepository
 
     public function updateDesignReportLayout(int $reportId, string $layoutMime, ?string $layoutDefinition): bool
     {
+        $row = DB::table('pq_emission_reports')->where('id', $reportId)->first();
+        if ($row === null) {
+            return false;
+        }
+        if ((bool) $row->is_standard) {
+            // Plantilla <Original>: el .repx vive en el sidecar; el catálogo no se sobrescribe.
+            return true;
+        }
+
         $updated = DB::table('pq_emission_reports')->where('id', $reportId)->update([
             'layout_mime' => $layoutMime,
             'layout_definition' => $layoutDefinition,

@@ -108,12 +108,14 @@ return [
             'paqsuite.instalacion.db',
             'auth:sanctum',
         ],
+        'scheduleTimezone' => env('PAQSUITE_TASKS_SCHEDULE_TIMEZONE', 'America/Argentina/Buenos_Aires'),
         'backup' => [
             'backend' => env('PAQSUITE_TASKS_BACKUP_BACKEND', 'rds'),
             's3ArnPrefix' => env('TASKS_BACKUP_S3_ARN_PREFIX', ''),
             'windowsService' => env('TASKS_BACKUP_WINDOWS_SERVICE', ''),
             'pollSeconds' => (int) env('TASKS_BACKUP_POLL_SECONDS', 5),
             'lockLeaseSeconds' => (int) env('TASKS_BACKUP_LOCK_LEASE_SECONDS', 900),
+            'rdsTimeoutMinutes' => (int) env('TASKS_BACKUP_RDS_TIMEOUT_MINUTES', 120),
         ],
     ],
 
@@ -124,6 +126,24 @@ return [
     */
     'chatAssistant' => [
         'llmTimeoutSeconds' => (int) env('PAQSUITE_CHAT_LLM_TIMEOUT_SECONDS', 60),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Emisiones documentales GEN-15 — motor DevExpress (sidecar .NET)
+    |--------------------------------------------------------------------------
+    | mode: fake = MinimalDxReportingEngine (CI/tests); remote = sidecar /render
+    */
+    'emissions' => [
+        'dxReporting' => [
+            'mode' => env('PAQSUITE_EMISSION_DX_MODE', 'fake'),
+            'serviceUrl' => env(
+                'PAQSUITE_EMISSION_DX_SERVICE_URL',
+                env('PAQSUITE_DX_REPORTING_SIDECAR_URL', 'http://127.0.0.1:5055').'/api/v1/dx-reporting',
+            ),
+            'apiKey' => env('PAQSUITE_EMISSION_DX_API_KEY', ''),
+            'timeoutSeconds' => (int) env('PAQSUITE_EMISSION_DX_TIMEOUT', 60),
+        ],
     ],
 
     /*
@@ -181,5 +201,30 @@ return [
             'password' => env('DB_PASSWORD'),
             'dictionary_database' => env('DB_DATABASE'),
         ],
+        'DEV|partesatencion' => [
+            'activo' => true,
+            'nombre' => 'Partes Dev',
+            'connection' => env('DB_CONNECTION', 'sqlsrv'),
+            'singleCompanyId' => 1,
+            'host' => env('DB_HOST'),
+            'port' => (int) env('DB_PORT', 1433),
+            'database_name' => env('DB_COMPANY_DATABASE', env('DB_DATABASE')),
+            'username' => env('DB_USERNAME'),
+            'password' => env('DB_PASSWORD'),
+            'dictionary_database' => env('DB_COMPANY_DATABASE', env('DB_DATABASE')),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | GEN-34 — manifiesto instalación (host)
+    |--------------------------------------------------------------------------
+    */
+    'installation' => [
+        'hostManifestPath' => env(
+            'PAQSUITE_HOST_MANIFEST',
+            database_path('manifest/partesatencion-1.3.17-beta.1.json')
+        ),
+        'frameworkPackageRoot' => base_path('vendor/paqsuite/laravel-core'),
     ],
 ];

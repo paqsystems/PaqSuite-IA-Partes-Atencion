@@ -11,6 +11,7 @@ use Illuminate\Http\Response;
 use PaqSuite\LaravelCore\Emissions\Dto\CommunicationIntent;
 use PaqSuite\LaravelCore\Emissions\Dto\EmissionContext;
 use PaqSuite\LaravelCore\Emissions\Dto\EmissionRequest;
+use PaqSuite\LaravelCore\Emissions\DxReportingMode;
 use PaqSuite\LaravelCore\Emissions\EmissionCapabilityGuard;
 use PaqSuite\LaravelCore\Emissions\EmissionException;
 use PaqSuite\LaravelCore\Emissions\EmissionOrchestrator;
@@ -89,6 +90,11 @@ final class EmissionsController extends CapabilityEnvelopeController
             $channel = 'pdf';
         }
 
+        $reportId = $this->resolveEmitReportId($request, $processCode);
+        if ($reportId instanceof JsonResponse) {
+            return $reportId;
+        }
+
         try {
             $job = $this->orchestrator->emit(new EmissionRequest(
                 processCode: $processCode,
@@ -98,7 +104,7 @@ final class EmissionsController extends CapabilityEnvelopeController
                 userId: $this->userId(),
                 companyId: $companyId,
                 groupId: $request->input('groupId'),
-                reportId: $request->input('reportId'),
+                reportId: $reportId,
                 communicationIntents: $this->communicationIntentsFromRequest($request),
                 previewSessionId: is_string($previewSessionId) ? $previewSessionId : null,
                 mobile: (bool) $request->boolean('mobile'),
@@ -171,6 +177,11 @@ final class EmissionsController extends CapabilityEnvelopeController
 
         $companyId = $this->companyId($request);
 
+        $reportId = $this->resolveEmitReportId($request, $processCode);
+        if ($reportId instanceof JsonResponse) {
+            return $reportId;
+        }
+
         try {
             $session = $this->previewService->preview(
                 new EmissionContext(
@@ -179,7 +190,7 @@ final class EmissionsController extends CapabilityEnvelopeController
                     $this->userId(),
                     (string) $request->input('mode', self::MODE_CONSOLIDATED),
                     (string) $request->input('channel', 'pdf'),
-                    $request->input('reportId'),
+                    $reportId,
                     $request->input('mailTemplateId'),
                     null,
                     $request->input('groupId'),
@@ -216,8 +227,10 @@ final class EmissionsController extends CapabilityEnvelopeController
         }
 
         return ApiResponse::success([
-            'items' => $process->reports,
-            'designer' => 'dx',
+            'items' => $this->repository->reportsForDesignCatalog($processCode),
+            'designer' => DxReportingMode::designerLabel(
+                (string) config('paqsuite.emissions.dxReporting.mode', 'fake'),
+            ),
         ]);
     }
 
@@ -413,7 +426,30 @@ final class EmissionsController extends CapabilityEnvelopeController
             ],
             'requiresPreview' => $process->requiresPreview,
             'outputPolicy' => $process->outputPolicy->toArray(),
-            'reports' => $process->reports,
+            'reports' => $this->repository->reportsForEmissionDialog($process->processCode),
         ];
+    }
+
+    /**
+     * @return int|JsonResponse
+     */
+    private function resolveEmitReportId(Request $request, string $processCode): int|JsonResponse
+    {
+        $rawReportId = $request->input('reportId');
+        if ($rawReportId !== null && $rawReportId !== '') {
+            $reportId = (int) $rawReportId;
+            if (! $this->repository->isEmitReportAllowed($reportId, $processCode)) {
+                return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::EMISSION_VALIDATION_FAILED);
+            }
+
+            return $reportId;
+        }
+
+        $reportId = $this->repository->resolveDefaultEmitReportId($processCode);
+        if ($reportId === null) {
+            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::EMISSION_VALIDATION_FAILED);
+        }
+
+        return $reportId;
     }
 }

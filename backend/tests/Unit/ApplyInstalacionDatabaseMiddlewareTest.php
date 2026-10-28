@@ -27,7 +27,7 @@ class ApplyInstalacionDatabaseMiddlewareTest extends TestCase
             )
         );
 
-        $middleware = new ApplyInstalacionDatabaseMiddleware();
+        $middleware = $this->app->make(ApplyInstalacionDatabaseMiddleware::class);
         $response = $middleware->handle($request, function () {
             return response('ok');
         });
@@ -58,7 +58,7 @@ class ApplyInstalacionDatabaseMiddlewareTest extends TestCase
             )
         );
 
-        $middleware = new ApplyInstalacionDatabaseMiddleware();
+        $middleware = $this->app->make(ApplyInstalacionDatabaseMiddleware::class);
         $middleware->handle($request, function () {
             return response('ok');
         });
@@ -93,7 +93,7 @@ class ApplyInstalacionDatabaseMiddlewareTest extends TestCase
             )
         );
 
-        $middleware = new ApplyInstalacionDatabaseMiddleware();
+        $middleware = $this->app->make(ApplyInstalacionDatabaseMiddleware::class);
         $middleware->handle($request, function () {
             return response('ok');
         });
@@ -119,7 +119,7 @@ class ApplyInstalacionDatabaseMiddlewareTest extends TestCase
             )
         );
 
-        $middleware = new ApplyInstalacionDatabaseMiddleware();
+        $middleware = $this->app->make(ApplyInstalacionDatabaseMiddleware::class);
         $response = $middleware->handle($request, function () {
             return response('ok');
         });
@@ -156,7 +156,7 @@ class ApplyInstalacionDatabaseMiddlewareTest extends TestCase
             )
         );
 
-        $middleware = new ApplyInstalacionDatabaseMiddleware();
+        $middleware = $this->app->make(ApplyInstalacionDatabaseMiddleware::class);
         $middleware->handle($request, function () {
             return response('ok');
         });

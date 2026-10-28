@@ -9,6 +9,11 @@ describe('emissionReportCatalog', () => {
       ]),
     ).toBe(false)
     expect(
+      isUnknownEmissionReportCode('partes_consultaDetallada_principal', [
+        'partes.consultaDetallada.principal',
+      ]),
+    ).toBe(false)
+    expect(
       isUnknownEmissionReportCode('partes.consultaDetallada.copia', [
         'partes.consultaDetallada.principal',
       ]),
@@ -18,6 +23,9 @@ describe('emissionReportCatalog', () => {
   it('catalogCodeFromDxUrl toma el último segmento', () => {
     expect(catalogCodeFromDxUrl('partes.consultaDetallada.principal')).toBe(
       'partes.consultaDetallada.principal',
+    )
+    expect(catalogCodeFromDxUrl('partes_consultaDetallada_principal')).toBe(
+      'partes_consultaDetallada_principal',
     )
   })
 })

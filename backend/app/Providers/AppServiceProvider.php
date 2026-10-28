@@ -84,6 +84,12 @@ use PaqSuite\LaravelCore\Tenancy\MenuProcedimientoChecker;
 use App\Tasks\Backup\RdsSqlServerBackupGateway;
 use App\Tasks\Backup\RdsBackupCacheLock;
 use App\Tasks\SchedulingTaskDefinitionRepository;
+use App\Tasks\StaleTaskExecutionRecovery;
+use App\Tenancy\CliInstalacionContext;
+use App\Tenancy\InstalacionConnectionConfigurator;
+use DateTimeInterface;
+use DateTimeZone;
+use PaqSuite\LaravelCore\Tasks\TaskScheduleCalculator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -121,9 +127,19 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(UserEmpresasQueryRepository::class, SpUserEmpresasQueryRepository::class);
         $this->app->singleton(CompanyAllowedChecker::class, SpCompanyAllowedChecker::class);
         $this->app->singleton(TaskProcessRepository::class, static fn () => new StoredProcedureTaskProcessRepository());
-        $this->app->singleton(TaskDefinitionRepository::class, static fn () => new SchedulingTaskDefinitionRepository(
-            new StoredProcedureTaskDefinitionRepository(),
-        ));
+        $this->app->singleton(InstalacionConnectionConfigurator::class);
+        $this->app->singleton(CliInstalacionContext::class);
+        $this->app->singleton(StaleTaskExecutionRecovery::class);
+        $this->app->singleton(TaskDefinitionRepository::class, static function () {
+            $tzName = (string) config('paqsuite.tasks.scheduleTimezone', config('app.timezone', 'UTC'));
+            $timeZone = new DateTimeZone($tzName !== '' ? $tzName : 'UTC');
+            $calculator = new TaskScheduleCalculator($timeZone);
+
+            return new SchedulingTaskDefinitionRepository(
+                new StoredProcedureTaskDefinitionRepository(),
+                static fn (array $schedule, ?DateTimeInterface $after = null) => $calculator->calculateNextRunAt($schedule, $after),
+            );
+        });
         $this->app->singleton(TaskExecutionRepository::class, static fn () => new StoredProcedureTaskExecutionRepository());
         $this->app->singleton(TaskProcessRegistry::class, TaskProcessRegistry::class);
         $this->app->singleton(MonoRdsBackupGateway::class, RdsSqlServerBackupGateway::class);
@@ -244,7 +260,7 @@ class AppServiceProvider extends ServiceProvider
         );
         $this->app->singleton(
             \PaqSuite\LaravelCore\Emissions\Contracts\DxReportingEngine::class,
-            \App\Services\Emissions\MinimalDxReportingEngine::class
+            fn ($app) => \App\Services\Emissions\EmissionDxReportingEngineFactory::make($app),
         );
         $this->app->singleton(
             \PaqSuite\LaravelCore\Emissions\Contracts\EmissionArtifactStorage::class,

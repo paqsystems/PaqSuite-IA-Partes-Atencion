@@ -38,7 +38,7 @@ describe('dxReportingConfig', () => {
     })
     expect(config.configured).toBe(true)
     expect(config.getDesignerModelAction).toBe('DXXRD/GetDesignerModel')
-    expect(config.reportUrl).toBe('partes.consultaDetallada.principal')
+    expect(config.reportUrl).toBe('partes_consultaDetallada_principal')
   })
 
   it('reportingProxyTarget quita slash final', () => {

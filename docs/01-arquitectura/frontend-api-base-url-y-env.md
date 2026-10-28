@@ -58,6 +58,7 @@ Si el panel hace **HTTP redirect** a `*.vercel.app` (no CNAME), el path debe con
 | `VITE_APP_VERSION` | UI | Versión |
 | `VITE_DEVEXTREME_LICENSE` | Runtime | Licencia DX |
 | `VITE_AUTH_*` | Build | Hero login — no API |
+| **`VITE_TENANT_DEFAULT_CLIENT`** | Solo `npm run dev` | En localhost el SDK fuerza DEMO. Con este valor (o `?cliente=`) el host persiste el código (`platformContext.ts`). |
 
 Ver `frontend/.env.example`.
 
