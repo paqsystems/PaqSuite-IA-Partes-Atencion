@@ -34,12 +34,16 @@ export function normalizeEmissionReportCode(url: string | null | undefined | num
   return safe.trim().length > 0 ? safe : 'report'
 }
 
+export function emissionReportCodeComparisonKey(code: string | null | undefined): string {
+  return normalizeEmissionReportCode(code).toLowerCase().replace(/[._-]/g, '')
+}
+
 export function codesReferToSameEmissionReport(
   left: string | null | undefined,
   right: string | null | undefined,
 ): boolean {
-  const a = normalizeEmissionReportCode(left).toLowerCase()
-  const b = normalizeEmissionReportCode(right).toLowerCase()
+  const a = emissionReportCodeComparisonKey(left)
+  const b = emissionReportCodeComparisonKey(right)
   return a.length > 0 && a === b
 }
 

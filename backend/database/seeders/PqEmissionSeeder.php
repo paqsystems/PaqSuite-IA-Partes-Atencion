@@ -103,13 +103,16 @@ class PqEmissionSeeder extends Seeder
             ],
         ], JSON_UNESCAPED_UNICODE);
 
+        $standardReportCode = 'partes_consultaDetallada_principal';
+        $standardDisplayName = '<Original>';
+
         DB::table('pq_emission_reports')->updateOrInsert(
             [
                 'process_code' => self::PROCESS_CODE,
-                'report_code' => 'partes.consultaDetallada.principal',
+                'report_code' => $standardReportCode,
             ],
             [
-                'name' => 'Consulta detallada',
+                'name' => $standardDisplayName,
                 'is_standard' => true,
                 'is_principal' => true,
                 'visible_mobile' => true,
@@ -120,6 +123,21 @@ class PqEmissionSeeder extends Seeder
                 'updated_at' => now(),
             ]
         );
+
+        DB::table('pq_emission_reports')
+            ->where('report_code', 'partes.consultaDetallada.principal')
+            ->update([
+                'report_code' => $standardReportCode,
+                'name' => $standardDisplayName,
+                'updated_at' => $now,
+            ]);
+
+        DB::table('pq_emission_reports')
+            ->where('is_standard', true)
+            ->update([
+                'name' => $standardDisplayName,
+                'updated_at' => $now,
+            ]);
 
         DB::table('pq_emission_mail_templates')->updateOrInsert(
             [

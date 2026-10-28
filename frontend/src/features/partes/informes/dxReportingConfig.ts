@@ -2,7 +2,7 @@
 
 export const DEFAULT_DX_REPORTING_HOST = 'http://127.0.0.1:5055'
 export const DEFAULT_DX_GET_DESIGNER_MODEL_ACTION = 'DXXRD/GetDesignerModel'
-export const DEFAULT_DX_REPORT_URL = 'partes.consultaDetallada.principal'
+export const DEFAULT_DX_REPORT_URL = 'partes_consultaDetallada_principal'
 
 export type DxReportingConfig = {
   /** URI del servicio Reporting (proxy Vite o URL directa). */

@@ -130,6 +130,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Emisiones documentales GEN-15 — motor DevExpress (sidecar .NET)
+    |--------------------------------------------------------------------------
+    | mode: fake = MinimalDxReportingEngine (CI/tests); remote = sidecar /render
+    */
+    'emissions' => [
+        'dxReporting' => [
+            'mode' => env('PAQSUITE_EMISSION_DX_MODE', 'fake'),
+            'serviceUrl' => env(
+                'PAQSUITE_EMISSION_DX_SERVICE_URL',
+                env('PAQSUITE_DX_REPORTING_SIDECAR_URL', 'http://127.0.0.1:5055').'/api/v1/dx-reporting',
+            ),
+            'apiKey' => env('PAQSUITE_EMISSION_DX_API_KEY', ''),
+            'timeoutSeconds' => (int) env('PAQSUITE_EMISSION_DX_TIMEOUT', 60),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Allowlist de paths (multi) que no exigen X-Company-Id
     |--------------------------------------------------------------------------
     */

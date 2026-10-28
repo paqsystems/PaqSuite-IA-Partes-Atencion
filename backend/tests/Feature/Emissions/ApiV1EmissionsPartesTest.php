@@ -53,6 +53,44 @@ class ApiV1EmissionsPartesTest extends TestCase
         ];
     }
 
+    /** Crea un reporte emisible (no estándar) para tests GEN-15. */
+    private function seedEmittableReport(string $code = 'partes.consultaDetallada.emit.test', string $name = 'Reporte emisión test'): int
+    {
+        $processCode = 'partes.informes.consultaDetallada';
+        DB::table('pq_emission_reports')
+            ->where('process_code', $processCode)
+            ->where('is_standard', 1)
+            ->update(['is_principal' => 0]);
+
+        $existing = DB::table('pq_emission_reports')
+            ->where('process_code', $processCode)
+            ->where('report_code', $code)
+            ->first();
+        if ($existing !== null) {
+            DB::table('pq_emission_reports')->where('id', $existing->id)->update([
+                'is_standard' => 0,
+                'is_principal' => 1,
+                'is_active' => 1,
+            ]);
+
+            return (int) $existing->id;
+        }
+
+        return (int) DB::table('pq_emission_reports')->insertGetId([
+            'process_code' => $processCode,
+            'report_code' => $code,
+            'name' => $name,
+            'is_standard' => 0,
+            'is_principal' => 1,
+            'visible_mobile' => true,
+            'layout_definition' => '<XtraReportsLayoutSerializer/>',
+            'layout_mime' => 'application/xml',
+            'is_active' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
     public function test_get_process_seed_y_401_sin_token(): void
     {
         $this->getJson(
@@ -79,6 +117,13 @@ class ApiV1EmissionsPartesTest extends TestCase
         $this->assertEqualsCanonicalizing(['pdf', 'print', 'excel', 'csv', 'mail'], $channels);
         $this->assertNotContains('zip', $channels);
 
+        $reports = $this->getJson(
+            '/api/v1/emissions/processes/partes.informes.consultaDetallada',
+            $this->authHeaders($token)
+        )->json('resultado.item.reports');
+        $this->assertIsArray($reports);
+        $this->assertSame([], $reports);
+
         $menuType = (string) DB::table('pq_menus')->where('codigo', 'partes_disenador_emisiones')->value('process_type');
         $this->assertSame('A', $menuType);
         $this->assertNotSame('E', $menuType);
@@ -104,6 +149,7 @@ class ApiV1EmissionsPartesTest extends TestCase
     public function test_sin_puerto_4706(): void
     {
         $token = $this->login();
+        $this->seedEmittableReport();
         $this->app->singleton(EmissionDatasetPortRegistry::class, fn () => new EmissionDatasetPortRegistry());
 
         $this->postJson('/api/v1/emissions/jobs', [
@@ -203,6 +249,7 @@ class ApiV1EmissionsPartesTest extends TestCase
             ->assertJsonPath('error', 4709);
 
         $hoy = now()->toDateString();
+        $this->seedEmittableReport();
         $this->postJson('/api/v1/emissions/jobs', [
             'processCode' => 'partes.informes.consultaDetallada',
             'channel' => 'pdf',
@@ -262,6 +309,7 @@ class ApiV1EmissionsPartesTest extends TestCase
         $this->assertSame(55, (int) $paged->json('resultado.total'));
         $this->assertCount(50, $paged->json('resultado.items'));
 
+        $this->seedEmittableReport();
         $emit = $this->postJson('/api/v1/emissions/jobs', [
             'processCode' => 'partes.informes.consultaDetallada',
             'channel' => 'pdf',
@@ -379,6 +427,7 @@ class ApiV1EmissionsPartesTest extends TestCase
         ], $this->tenantHeaders())->json('resultado.token');
 
         $this->app['auth']->forgetGuards();
+        $this->seedEmittableReport();
         $this->postJson('/api/v1/emissions/jobs', [
             'processCode' => 'partes.informes.consultaDetallada',
             'channel' => 'pdf',
@@ -392,6 +441,7 @@ class ApiV1EmissionsPartesTest extends TestCase
     public function test_mail_sincrono_con_mail_to(): void
     {
         $token = $this->login();
+        $this->seedEmittableReport();
         $this->postJson('/api/v1/emissions/jobs', [
             'processCode' => 'partes.informes.consultaDetallada',
             'channel' => 'mail',
@@ -411,7 +461,41 @@ class ApiV1EmissionsPartesTest extends TestCase
             $this->authHeaders($token)
         )
             ->assertStatus(200)
-            ->assertJsonPath('resultado.designer', 'dx');
+            ->assertJsonPath('resultado.designer', 'stub')
+            ->assertJsonPath('resultado.items.0.name', '<Original>')
+            ->assertJsonPath('resultado.items.0.isStandard', true);
+    }
+
+    public function test_emit_sin_reporte_no_estandar_422(): void
+    {
+        $token = $this->login();
+        $this->postJson('/api/v1/emissions/jobs', [
+            'processCode' => 'partes.informes.consultaDetallada',
+            'channel' => 'pdf',
+            'mode' => 'consolidated',
+            'hostContext' => $this->hostContext(),
+        ], $this->authHeaders($token))
+            ->assertStatus(422)
+            ->assertJsonPath('error', 4701);
+    }
+
+    public function test_emit_rechaza_reporte_estandar(): void
+    {
+        $token = $this->login();
+        $standardId = (int) DB::table('pq_emission_reports')
+            ->where('report_code', 'partes_consultaDetallada_principal')
+            ->value('id');
+        $this->assertGreaterThan(0, $standardId);
+
+        $this->postJson('/api/v1/emissions/jobs', [
+            'processCode' => 'partes.informes.consultaDetallada',
+            'channel' => 'pdf',
+            'mode' => 'consolidated',
+            'reportId' => $standardId,
+            'hostContext' => $this->hostContext(),
+        ], $this->authHeaders($token))
+            ->assertStatus(422)
+            ->assertJsonPath('error', 4701);
     }
 
     public function test_design_save_as_crea_reporte_en_catalogo(): void
