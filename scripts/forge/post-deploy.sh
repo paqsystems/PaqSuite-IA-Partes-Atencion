@@ -2,7 +2,8 @@
 # GEN-34 fase 5 — Forge post-deploy (Q6-A). Ajustar DEPLOY_PATH al site.
 set -euo pipefail
 
-DEPLOY_PATH="${DEPLOY_PATH:-/home/forge/default/current/backend}"
+scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEPLOY_PATH="${DEPLOY_PATH:-$(cd "${scriptDir}/../../backend" && pwd)}"
 cd "${DEPLOY_PATH}"
 
 if [[ -z "${PAQSUITE_CLIENTE:-}" || -z "${PAQSUITE_PROYECTO:-}" ]]; then
