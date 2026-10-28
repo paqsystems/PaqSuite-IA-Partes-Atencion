@@ -22,7 +22,7 @@
 2. `php tools/build-installation-manifest.php --semver=<release>`.
 3. `php tools/validate-installation-manifest.php --semver=<release>`.
 4. PR con JSON actualizado + CI verde.
-5. Forge: `migrate --force` + `paqsuite:installation:update` (ver script post-deploy).
+5. Forge: `migrate --force` + `paqsuite:installation:update` si el pin de `laravel-core` exporta el comando (ver `post-deploy.sh`) + `deploy-sp.php`.
 6. Smoke AC-04 (preview): health → login → menú → API representativa.
 
 ## Smoke AC-04 (piloto MONO directo)

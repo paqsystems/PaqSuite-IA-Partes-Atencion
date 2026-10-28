@@ -39,10 +39,18 @@ fi
 
 php artisan migrate --force
 
-php artisan paqsuite:installation:update \
-  --cliente="${PAQSUITE_CLIENTE}" \
-  --proyecto="${PAQSUITE_PROYECTO}" \
-  --non-interactive
+run_installation_update_if_available() {
+  if ! php artisan list --raw 2>/dev/null | grep -q '^paqsuite:installation:update'; then
+    echo "paqsuite:installation:update no disponible en este pin de laravel-core; omito GEN-34 CLI."
+    return 0
+  fi
+  php artisan paqsuite:installation:update \
+    --cliente="${PAQSUITE_CLIENTE}" \
+    --proyecto="${PAQSUITE_PROYECTO}" \
+    --non-interactive
+}
+
+run_installation_update_if_available
 
 # GEN-13: SP host (override SDK) sobre la BD del tenant resuelto en runtime.
 php scripts/deploy-sp.php
