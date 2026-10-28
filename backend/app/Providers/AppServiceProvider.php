@@ -260,7 +260,7 @@ class AppServiceProvider extends ServiceProvider
         );
         $this->app->singleton(
             \PaqSuite\LaravelCore\Emissions\Contracts\DxReportingEngine::class,
-            \App\Services\Emissions\MinimalDxReportingEngine::class
+            fn ($app) => \App\Services\Emissions\EmissionDxReportingEngineFactory::make($app),
         );
         $this->app->singleton(
             \PaqSuite\LaravelCore\Emissions\Contracts\EmissionArtifactStorage::class,

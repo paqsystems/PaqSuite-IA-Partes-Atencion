@@ -34,6 +34,10 @@ export default defineConfig(({ mode }) => {
         ),
         devextreme: path.resolve(__dirname, 'node_modules/devextreme'),
         'devextreme-react': path.resolve(__dirname, 'node_modules/devextreme-react'),
+        [path.resolve(
+          __dirname,
+          'node_modules/@paqsuite/react-core/src/features/emissions/normalizeEmissionReportCode.ts',
+        )]: path.resolve(__dirname, 'src/features/partes/informes/emissionReportCatalog.ts'),
   }
 
   if (useRepoLabSdk) {
