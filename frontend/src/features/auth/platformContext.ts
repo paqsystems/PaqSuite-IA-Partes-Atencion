@@ -8,10 +8,27 @@ import {
 } from '@paqsuite/react-core'
 import { getAuthSession, invalidateSessionIfClienteMismatch } from './authSessionStore'
 import {
+  clienteCodeFromSearchParams,
   isVercelFrontDoorHostname,
   resolveLandingClienteCode,
   shouldHonorLandingCliente,
 } from './partesCanonicalCliente'
+
+/**
+ * En Vite/localhost el SDK fuerza DEMO. Si el host define
+ * `VITE_TENANT_DEFAULT_CLIENT`, ese valor (o `?cliente=`) gana.
+ */
+export function resolveLocalEnvClienteOverride(
+  envDefault: string,
+  queryCliente: string | null,
+): string | null {
+  const env = envDefault.trim()
+  if (env === '') {
+    return null
+  }
+  const query = queryCliente?.trim() ?? ''
+  return query !== '' ? query : env
+}
 
 const browserPersistence = {
   getCookie: (name: string) => {
@@ -88,6 +105,20 @@ export function resolvePlatformCliente(overrideTenant?: string): string {
     if (landingCliente && shouldHonorLandingCliente({ hostname, isDevBuild: isDev })) {
       persistClienteCode(landingCliente, browserPersistence)
     }
+  }
+
+  const localEnvCliente = resolveLocalEnvClienteOverride(
+    String(import.meta.env.VITE_TENANT_DEFAULT_CLIENT ?? ''),
+    clienteCodeFromSearchParams(search),
+  )
+  const host = hostname.trim().toLowerCase()
+  const isLocalHost =
+    host === 'localhost' ||
+    host === '127.0.0.1' ||
+    host === '0.0.0.0' ||
+    host.endsWith('.local')
+  if (localEnvCliente && !isNativeApp() && isLocalHost) {
+    return persistClienteCode(localEnvCliente, browserPersistence)
   }
 
   const vercelFrontDoor = isVercelFrontDoorHostname(hostname)

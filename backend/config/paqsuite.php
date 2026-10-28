@@ -201,6 +201,18 @@ return [
             'password' => env('DB_PASSWORD'),
             'dictionary_database' => env('DB_DATABASE'),
         ],
+        'DEV|partesatencion' => [
+            'activo' => true,
+            'nombre' => 'Partes Dev',
+            'connection' => env('DB_CONNECTION', 'sqlsrv'),
+            'singleCompanyId' => 1,
+            'host' => env('DB_HOST'),
+            'port' => (int) env('DB_PORT', 1433),
+            'database_name' => env('DB_COMPANY_DATABASE', env('DB_DATABASE')),
+            'username' => env('DB_USERNAME'),
+            'password' => env('DB_PASSWORD'),
+            'dictionary_database' => env('DB_COMPANY_DATABASE', env('DB_DATABASE')),
+        ],
     ],
 
     /*
