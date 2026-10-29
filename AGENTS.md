@@ -146,6 +146,11 @@ Cada cambio relevante debe dejar rastro:
 - Referenciar historia/ticket en commits (si se usa git con convención).
 - Actualizar el doc correspondiente en `/docs` cuando cambie el alcance o diseño.
 
+### 6.5 Pull requests a `develop` (Windows / agente)
+- Flujo git: regla BASE **18** — PR feature → `develop`; no push directo a `develop`/`main`.
+- En Cursor el comando `gh` puede **no** estar en PATH aunque funcione en tu terminal: usar **`powershell -NoProfile -File scripts/gh.ps1`** (resuelve `C:\Program Files\GitHub CLI\gh.exe`) o **`scripts/new-pr-to-develop.ps1`** con `-Title` (reutiliza PR abierto si ya existe).
+- Repo GitHub: `paqsystems/PaqSuite-IA-Partes-Atencion`. Auth: `gh auth login` en la PC (keyring); el agente reutiliza esa sesión vía el wrapper.
+
 ---
 
 ## 7) Integraciones / MCP / automatización (opcional)
