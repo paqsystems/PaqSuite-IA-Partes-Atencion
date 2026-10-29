@@ -95,6 +95,7 @@ final class PartesRemoteDxReportingEmitTest extends TestCase
                 'usuarioId' => null,
                 'tipoTareaId' => null,
                 'estadoCerrado' => 'todas',
+                'selectedTareaIds' => [1],
             ],
         ], $this->authHeaders($token))
             ->assertStatus(200)
@@ -166,6 +167,7 @@ final class PartesRemoteDxReportingEmitTest extends TestCase
                 'usuarioId' => null,
                 'tipoTareaId' => null,
                 'estadoCerrado' => 'todas',
+                'selectedTareaIds' => [1],
             ],
         ], $this->authHeaders($token))
             ->assertStatus(200)

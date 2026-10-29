@@ -1,4 +1,4 @@
-# TR-006 – Consultas, dashboard y navegación
+# TR-006 – Consultas, dashboard y navegación
 
 Jira: PIAPARTES-34
 
@@ -212,7 +212,7 @@ Errores: 422 fechas faltantes / eje inválido / granularidad faltante / `cliente
 
 ## 11) Informe C1
 
-# Revisión de ambigüedad - TR-006
+# Revisión de ambigüedad - TR-006
 
 Jira: PIAPARTES-34
 
@@ -252,6 +252,7 @@ Jira: PIAPARTES-34
 | 2026-08-01 | CC-PQ #2 (01/08/2026): detalle y agrupada incorporan `erpCliente`/`erpArticulo` en grilla y pivot (AC-17, RN-TR-11, T10/T11); [D-VERIFICACION-CC-PQ-02](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md). |
 | 2026-08-01 | Parte I: fusionados TR-006-update (CC-PQ #1, 31/07) y TR-006-update-01 (CC-PQ #2, 01/08) en esta TR; updates eliminados. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4: AC-U05…U07 tipo de cliente en Paquete de Horas; update eliminado. Estado → Finalizado. |
+| 2026-10-29 | CC ST #1: `Selection` en `ConsultaDetalladaPage`; ver TR-011 / D-VERIFICACION-CC-ST-01. |
 
 ---
 

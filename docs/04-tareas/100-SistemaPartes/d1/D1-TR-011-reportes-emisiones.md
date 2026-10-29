@@ -1,5 +1,7 @@
 # Plan de implementación - TR-011
 
+> Plan de la Parte D1 (2026-08-25). El runtime posterior está en [TR-011 §17](../TR-011-reportes-emisiones.md) y en [D-VERIFICACION-TR-011-2026-10-29](../../updates/100-SistemaPartes/D-VERIFICACION-TR-011-2026-10-29.md): el entorno desplegado emite con el sidecar (`PAQSUITE_EMISSION_DX_MODE=remote`). `fake` queda para local/CI y produce un PDF en blanco. La duración del dataset es minutos, sin conversión automática a `hh:mm`.
+
 ## Alcance entendido
 
 Adoptar **GEN-15 Reportes / emisiones** en Partes **solo** en **Consulta detallada** (web):

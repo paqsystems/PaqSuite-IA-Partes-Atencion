@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Column, Paging, Pager } from 'devextreme-react/data-grid'
+import { Column, Paging, Pager, Selection } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
 import SelectBox from 'devextreme-react/select-box'
@@ -85,6 +85,7 @@ export function ConsultaDetalladaPage() {
   const [asistentes, setAsistentes] = useState<Record<string, unknown>[]>([])
   const [tipos, setTipos] = useState<Record<string, unknown>[]>([])
   const [catalogosLoading, setCatalogosLoading] = useState(false)
+  const [selectedTareaIds, setSelectedTareaIds] = useState<number[]>([])
 
   const rows = useMemo(
     () => enrichRowsWithDuracionHoras(enrichRowsWithDiaSemana(rawRows, t, 'fecha')),
@@ -153,6 +154,7 @@ export function ConsultaDetalladaPage() {
         tipoTareaId: filtroTipoTareaId,
         estadoCerrado,
         esSupervisor,
+        selectedTareaIds,
       }),
     )
   }, [
@@ -163,6 +165,7 @@ export function ConsultaDetalladaPage() {
     filtroTipoTareaId,
     estadoCerrado,
     esSupervisor,
+    selectedTareaIds,
   ])
 
   useEffect(() => {
@@ -172,6 +175,7 @@ export function ConsultaDetalladaPage() {
   const load = useCallback(async () => {
     setLoading(true)
     setError(null)
+    setSelectedTareaIds([])
     try {
       await fetchDetalladaRows()
     } catch {
@@ -219,7 +223,14 @@ export function ConsultaDetalladaPage() {
   }, [esSupervisor, isCliente])
 
   const showEmit = shouldMountConsultaDetalladaEmit(native, emissionEnabled)
-  const emitDisabled = shouldDisableConsultaDetalladaEmit(loading, total)
+  const emitDisabled = shouldDisableConsultaDetalladaEmit(loading, total, selectedTareaIds.length)
+
+  const onConsultaDetalladaSelectionChanged = useCallback(
+    (e: { selectedRowKeys?: Array<string | number> }) => {
+      setSelectedTareaIds((e.selectedRowKeys ?? []).map((key) => Number(key)))
+    },
+    [],
+  )
 
   const openEmitDialog = useCallback(() => {
     syncHostContext()
@@ -275,7 +286,10 @@ export function ConsultaDetalladaPage() {
           platform={platform}
           defaultTotalItems={duracionSummaryItems}
           toolbarLeading={toolbarLeading}
+          selectedRowKeys={selectedTareaIds}
+          onSelectionChanged={onConsultaDetalladaSelectionChanged}
         >
+          <Selection mode="multiple" showCheckBoxesMode="always" selectAllMode="allPages" />
           <Paging defaultPageSize={20} />
           <Pager visible showPageSizeSelector />
           <Column dataField="fecha" caption={t('partes.informe.field.fecha')} dataType="date" />
@@ -315,7 +329,7 @@ export function ConsultaDetalladaPage() {
         </ProcessDataGrid>
       </div>
     ),
-    [accessToken, duracionSummaryItems, load, loading, platform, rows, t],
+    [accessToken, duracionSummaryItems, load, loading, onConsultaDetalladaSelectionChanged, platform, rows, selectedTareaIds, t],
   )
 
   return (

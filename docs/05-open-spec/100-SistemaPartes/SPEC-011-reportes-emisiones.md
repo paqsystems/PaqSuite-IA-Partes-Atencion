@@ -1,4 +1,4 @@
-# SPEC-011 – Reportes / emisiones — adopción GEN-15 en Partes
+# SPEC-011 – Reportes / emisiones — adopción GEN-15 en Partes
 
 Jira: PIAPARTES-11
 
@@ -10,8 +10,8 @@ Jira: PIAPARTES-11
 | ID | SPEC-011 |
 | Título | Reportes / emisiones — diseñar informes y emitir desde Consulta detallada (adopción GEN-15) |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Pendiente |
-| Última actualización | 2026-08-25 (CC Q13 selección proceso GEN) |
+| Estado | Finalizado |
+| Última actualización | 2026-10-29 (CC ST #1: emisión por filas tildadas) |
 | Revisión A1 | Apto con observaciones — ambigüedades críticas de universo/MONO cerradas (2026-08-25) |
 | HU relacionada(s) | [HU-011-reportes-emisiones](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) |
 | TR relacionada(s) | [TR-011-reportes-emisiones](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
@@ -34,7 +34,7 @@ Jira: PIAPARTES-11
 - Checklist de adopción GEN-15 §15 aplicado al host Partes (MONO / `tenancy=single`).
 - Seed/SQL del **único** proceso emisible Must: código **`partes.informes.consultaDetallada`**, vinculado al menú host **`partes_consulta_detallada`**.
 - Flags del proceso: `permiteConsolidado = sí`; `permiteSegmentado = no`; `requiereVistaPrevia = no`; canales §4.3.
-- Puerto **`resolveDataset`** Must: mismo universo que la grilla de Consulta detallada (SPEC-006 §4.2) en ese momento; duración técnica en **minutos**; presentación en reporte **`hh:mm`**.
+- Puerto **`resolveDataset`** Must: universo = filtros de pantalla + rol + **`selectedTareaIds`** (filas tildadas en grilla web; SPEC-006 CC ST #1); duración en **minutos**. El reporte muestra la expresión del diseño (sin conversión automática a `hh:mm`).
 - Seed de **un reporte DX principal** y **una plantilla mail principal** (canal mail activo).
 - Parámetros Programa `Emission`: adoptar diccionario GEN; al adoptar, el host deja **`EmissionEnabled = Sí`**. Umbrales async y retención = defaults GEN (sin override Partes).
 - Montar **`EmissionDialog`** en `/partes/informes/consulta-detallada` (toolbar / acción explícita). Emitir = permiso de **entrar** a esa opción de menú.
@@ -131,17 +131,17 @@ El dataset es el **universo de negocio** de Consulta detallada **en el momento d
 - solo `es_tarea = true`;
 - mismas restricciones por perfil (cliente / asistente / supervisor) — **siempre en servidor** (SP MUST); los filtros de UI **acotan**, nunca amplían;
 - mismos **filtros de pantalla** SPEC-006 §4.2: periodo, cliente, asistente (si aplica), tipo, cerrado (y los que esa pantalla ya exponga como filtro de consulta, no como recorte de grilla);
-- **todas** las filas que cumplen ese universo (no solo la página actual de la grilla);
+- **todas** las filas que cumplen ese universo **y** están tildadas en la grilla (`hostContext.selectedTareaIds`, lista no vacía);
 - mismos atributos de negocio: fecha, cliente (código + descripción/nombre), asistente (código + nombre), tipo (código + descripción), duración, sin cargo, presencial, cerrado, observación, Erp Cliente, Erp Articulo.
 
 **No** es el conjunto «lo visible en pantalla» (D-EM-09): filter-row, filtros de columna, agrupación, column chooser ni **vista pivot** **no** recortan el dataset de emisión. Eso sigue siendo Excel/CSV de **grilla** (GEN-11/12). Emitir usa el layout **declarado** del proceso sobre el universo de filtros de pantalla.
 
 | ID | Norma |
 |----|--------|
-| R-EM-05 | Duración en dataset técnico: **minutos**. Presentación en reporte: **`hh:mm`**. |
-| R-EM-06 | Si el universo consultado tiene **0 filas**, Emitir permanece **visible** y **deshabilitado**. |
+| R-EM-05 | Duración en dataset: **minutos enteros** (`duracionMinutos`). El reporte imprime la expresión que el diseño enlazó. El diseño en uso muestra ese número. No hay conversión automática a `hh:mm` en el puerto. |
+| R-EM-06 | Si el universo consultado tiene **0 filas**, o **ninguna fila tildada**, Emitir permanece **visible** y **deshabilitado**. |
 | R-EM-07 | El diseñador **no** agrega campos que el puerto no exponga (D-EM-02). |
-| R-EM-08 | El FE envía al job/preview el **snapshot de filtros de pantalla** vigentes (no el estado visual de la grilla/pivot). El BE **revalida** universo + filtros. Shape JSON del snapshot → TR. Si el contrato GEN de `POST /jobs` no trae aún un campo genérico de contexto, el host lo aporta por extensión documentada en TR (sin saltarse el motor; **no** persistir el último filtro en sesión como única fuente). |
+| R-EM-08 | El FE envía al job/preview el **snapshot de filtros de pantalla** y **`selectedTareaIds`** vigentes (no el estado visual filter-row/pivot). El BE **revalida** universo + filtros + ids. Shape JSON → TR. |
 
 ### 4.5 Ventana Emitir (Frente B)
 
@@ -178,6 +178,7 @@ No hardcodear umbrales en código de producto. Edición posterior = ABM de pará
 | R-EM-18 | Sin `emission.design` → no se abre el diseñador (GEN **4709**). |
 | R-EM-19 | El seed incluye layout DX inicial usable (tabular sobre el schema §4.4) y plantilla mail breve. El equipo con permiso ajusta layouts **sin** tocar código. |
 | R-EM-20 | El seed **no** otorga `emission.design` al rol **cliente** por defecto. Asignación a roles de administración/diseño = detalle TR (seguridad). |
+| R-EM-24 | La ventana Emitir lista solo reportes **no estándar**. La plantilla semilla estándar no se emite. El artefacto usa el diseño **guardado** de ese reporte. Un control en la banda de detalle sin vínculo a un campo se imprime en cada fila. |
 
 ### 4.8 Acceso al diseñador (cierre Parte A)
 
@@ -217,9 +218,9 @@ Una emisión corta GEN desde kardex, si se desea, es **otro** SPEC.
 | ID | Regla |
 |----|--------|
 | R-EM-01…04 | Adopción GEN; negocio en puerto; menú `C`; convive Excel grilla |
-| R-EM-05…08 | Dataset = consulta filtrada; hh:mm; vacío → Emitir disabled; snapshot filtros |
+| R-EM-05…08 | Dataset = consulta filtrada; minutos (sin `hh:mm` automático); vacío → Emitir disabled; snapshot filtros |
 | R-EM-09…14, 23 | Emitir embebido; authz = menú consulta; async/bitácora GEN; flag capacidad; MONO sin selector grupo |
-| R-EM-15…20 | Diseñar = `emission.design` + desktop; anclado a proceso; un principal; seed inicial |
+| R-EM-15…20, 24 | Diseñar = `emission.design` + desktop; anclado a proceso; un principal; seed inicial; emitir solo el diseño guardado |
 | R-EM-21 | Persistencia/catálogo/jobs vía **SP** (MUST BASE / GEN-15). Puerto dataset vía SP. |
 | R-EM-22 | Solo el proceso `partes.informes.consultaDetallada` es Must emisible. |
 
@@ -234,7 +235,8 @@ Una emisión corta GEN desde kardex, si se desea, es **otro** SPEC.
 - [ ] Sin filas: Emitir visible y **disabled**.
 - [ ] `EmissionEnabled = No`: no se monta Emitir; API de jobs no opera la capacidad.
 - [ ] Usuario con menú de la consulta y **sin** `emission.design` puede emitir (al menos PDF) y **no** abre el diseñador.
-- [ ] Dataset emitido respeta rol + filtros de **pantalla** + `es_tarea = true`; incluye **todas** las filas del universo (no solo la página); filter-row/pivot **no** recortan la emisión; duración en reporte en `hh:mm`.
+- [ ] Dataset emitido respeta rol + filtros de **pantalla** + `es_tarea = true`; incluye **todas** las filas del universo (no solo la página); filter-row/pivot **no** recortan la emisión; duración en minutos según el diseño (R-EM-05).
+- [ ] Emitir no ofrece la plantilla estándar; el artefacto corresponde al diseño guardado (R-EM-24).
 - [ ] Canales ZIP y modo segmentado **no** se ofrecen para este proceso.
 - [ ] Excel de **grilla** sigue disponible junto a Emitir.
 - [ ] Mail documental = cuerpo breve + PDF; destinatarios capturados en la ventana.
@@ -271,7 +273,7 @@ Authz diseñar: **`emission.design`** → **4709**.
 
 | Tema | Tratamiento |
 |------|-------------|
-| Motor GEN aún smoke (FakeDx / designer stub) | Supuesto: host consume paquetes versionados. TR declara gap si el runtime DX real no está en la versión pinneada y fija mínimo usable (PDF stub vs real). |
+| Motor `fake` vs sidecar | `PAQSUITE_EMISSION_DX_MODE=fake` (default local/CI) arma un PDF de una página en blanco. Un entorno que debe emitir el diseño real usa `remote` contra el sidecar DX. Ver plan de sidecar. |
 | `POST /jobs` GEN sin campo de filtros | R-EM-08: TR documenta extensión de contexto; el Must de negocio no se relaja. |
 | `EmissionEnabled` GEN insert-if-absent = No | Adopción Partes **enciende** a Sí (D-EM-06); no pisar umbrales numéricos ya editados en ABM. |
 | Confundir Excel grilla vs Excel emisión | R-EM-04; copy/toolbar distintos (`emission.*` vs export GEN-11). |
@@ -339,6 +341,8 @@ Ninguna bloqueante tras A1. Refinamientos → B/C / TR:
 | 2026-08-25 | Parte C1: TR-011 apta con observaciones. |
 | 2026-08-25 | Parte D1: plan [D1-TR-011](../../04-tareas/100-SistemaPartes/d1/D1-TR-011-reportes-emisiones.md). |
 | 2026-08-25 | Parte D1: plan de implementación listo. |
+| 2026-10-29 | Parte I: **Finalizado**. R-EM-05 = minutos sin `hh:mm` automático. R-EM-24 = Emitir solo el diseño guardado (no la plantilla estándar); un control suelto en el detalle se repite por fila. |
+| 2026-10-29 | CC ST #1: emisión recortada por `hostContext.selectedTareaIds`; Emitir deshabilitado sin tildes; Parte I desde SPEC-011-update. |
 
 ---
 
