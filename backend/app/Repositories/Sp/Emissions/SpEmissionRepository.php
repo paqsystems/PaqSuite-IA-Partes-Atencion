@@ -348,30 +348,81 @@ final class SpEmissionRepository implements EmissionRepository
     }
 
     /**
-     * Layout inline solo si es REPX/XML; JSON tabular se ignora (sidecar carga .repx por report_code).
+     * Layout REPX para el sidecar. Si el catálogo no tiene XML (JSON tabular o vacío),
+     * usa el layout Must de Consulta detallada para no caer en el auto-grilla.
      *
      * @return array{layoutDefinition: string, layoutMime: string}|null
      */
     public function findReportLayoutForRender(?int $reportId): ?array
     {
         if ($reportId === null || $reportId < 1) {
+            return $this->fallbackConsultaDetalladaLayout();
+        }
+
+        return $this->layoutFromRow(
+            DB::table('pq_emission_reports')->where('id', $reportId)->first()
+        );
+    }
+
+    /**
+     * Tras mapear el PK numérico a report_code, el motor remoto solo ve el código.
+     *
+     * @return array{layoutDefinition: string, layoutMime: string}|null
+     */
+    public function findReportLayoutForRenderByCode(?string $reportCode): ?array
+    {
+        $code = is_string($reportCode) ? trim($reportCode) : '';
+        if ($code === '') {
+            return $this->fallbackConsultaDetalladaLayout();
+        }
+
+        return $this->layoutFromRow(
+            DB::table('pq_emission_reports')->where('report_code', $code)->first()
+        );
+    }
+
+    /**
+     * @return array{layoutDefinition: string, layoutMime: string}|null
+     */
+    private function layoutFromRow(mixed $row): ?array
+    {
+        if (is_object($row)) {
+            $definition = $row->layout_definition ?? null;
+            if ($this->isRepxXml($definition)) {
+                return [
+                    'layoutDefinition' => (string) $definition,
+                    'layoutMime' => 'application/xml',
+                ];
+            }
+        }
+
+        return $this->fallbackConsultaDetalladaLayout();
+    }
+
+    private function isRepxXml(mixed $definition): bool
+    {
+        return is_string($definition)
+            && str_contains($definition, 'XtraReportsLayoutSerializer');
+    }
+
+    /**
+     * @return array{layoutDefinition: string, layoutMime: string}|null
+     */
+    private function fallbackConsultaDetalladaLayout(): ?array
+    {
+        $path = resource_path('emissions/partes_consultaDetallada_principal.repx');
+        if (! is_file($path)) {
             return null;
         }
 
-        $row = DB::table('pq_emission_reports')->where('id', $reportId)->first();
-        if ($row === null) {
-            return null;
-        }
-
-        $mime = (string) ($row->layout_mime ?? '');
-        $definition = $row->layout_definition;
-        if ($mime !== 'application/xml' || ! is_string($definition) || trim($definition) === '') {
+        $xml = file_get_contents($path);
+        if (! is_string($xml) || ! $this->isRepxXml($xml)) {
             return null;
         }
 
         return [
-            'layoutDefinition' => $definition,
-            'layoutMime' => $mime,
+            'layoutDefinition' => $xml,
+            'layoutMime' => 'application/xml',
         ];
     }
 
