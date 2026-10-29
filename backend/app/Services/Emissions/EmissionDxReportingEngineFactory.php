@@ -26,8 +26,13 @@ final class EmissionDxReportingEngineFactory
 
         $layoutResolver = static function (EmissionContext $context) use ($reports): ?array {
             $pk = PartesRemoteDxReportingEngine::parseReportPk($context->reportId);
+            if ($pk !== null) {
+                return $reports->findReportLayoutForRender($pk);
+            }
 
-            return $reports->findReportLayoutForRender($pk);
+            $code = is_string($context->reportId) ? $context->reportId : null;
+
+            return $reports->findReportLayoutForRenderByCode($code);
         };
 
         $remote = new RemoteDxReportingEngine(
