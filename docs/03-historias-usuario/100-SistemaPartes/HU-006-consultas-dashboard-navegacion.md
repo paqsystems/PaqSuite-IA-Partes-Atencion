@@ -1,4 +1,4 @@
-# HU-006 – Consultas, dashboard y navegación
+# HU-006 – Consultas, dashboard y navegación
 
 Jira: PIAPARTES-20
 
@@ -12,7 +12,7 @@ Jira: PIAPARTES-20
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
 | Estado | Finalizado |
-| Última actualización | 2026-10-11 |
+| Última actualización | 2026-10-29 (CC ST #1) |
 | SPEC origen | [SPEC-006-consultas-dashboard-navegacion](../../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) |
 | TR relacionada(s) | [TR-006-consultas-dashboard-navegacion](../../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) |
 
@@ -116,7 +116,8 @@ Visibilidad por rol en menú seed (orientativo): cliente sin Archivos ABM, sin c
 - [ ] **CA-01** Cliente solo ve tareas y métricas de su organización en consulta detallada, agrupadas y dashboard.
 - [ ] **CA-02** Asistente no supervisor solo ve su actividad en las mismas superficies.
 - [ ] **CA-03** Supervisor ve universo ampliado (sin filtro por propietario propio) en detalle, agrupadas y dashboard.
-- [ ] **CA-04** Consulta detallada muestra campos mínimos §4.2 y filtros de fecha (y filtros opcionales según rol).
+- [x] **CA-04** Consulta detallada muestra campos mínimos §4.2 y filtros de fecha (y filtros opcionales según rol).
+- [x] **CA-CC1-06-01** Consulta detallada (web): selector de filas con casillas y «seleccionar todas» (CC ST #1).
 - [ ] **CA-05** Existe **una** pantalla de consultas agrupadas con selector de eje (cliente, asistente, tipo, fecha) y métricas suma de duración + conteo; con eje fecha, selector de granularidad **día / mes**.
 - [ ] **CA-06** Consulta sin datos muestra empty state claro (no 500 ni mensaje genérico de falla).
 - [ ] **CA-07** Tras login OK web, el usuario aterriza en el Dashboard Partes (Inicio).
@@ -249,3 +250,4 @@ Feature: Consultas, dashboard y navegación Partes
 | 2026-08-01 | CC-PQ #2 (01/08/2026): consulta detallada y agrupada incorporan Erp Cliente / Erp Articulo en grilla y pivot (CA-17, R-CO-13). |
 | 2026-08-01 | Parte I: fusionados HU-006-update (CC-PQ #1, 31/07) y HU-006-update-01 (CC-PQ #2, 01/08) en esta HU; updates eliminados. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4: tipo de cliente en Paquete de Horas (CA-U05…U07); update eliminado. Estado → Finalizado. |
+| 2026-10-29 | CC ST #1: selector de filas Consulta detallada (CA-CC1-06-01); Parte I. |

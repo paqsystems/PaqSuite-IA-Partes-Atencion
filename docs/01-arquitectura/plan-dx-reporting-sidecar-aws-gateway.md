@@ -302,10 +302,12 @@ php artisan queue:restart
 
 Patrón de referencia: `PaqSuite-IA-FRAMEWORK/apps/smoke-backend/app/Providers/CapabilitiesServiceProvider.php`
 
-- `PAQSUITE_EMISSION_DX_MODE=remote` → `RemoteDxReportingEngine`
-- `fake` / ausente → stub local (CI y tests)
+- `PAQSUITE_EMISSION_DX_MODE=remote` → `RemoteDxReportingEngine` (sidecar `POST /render`).
+- `fake` / ausente → `MinimalDxReportingEngine`. El PDF es de una página y **no lleva el diseño ni las filas** (solo un comentario interno). Sirve para CI y tests. Un Forge que deba emitir el reporte real tiene que quedar en `remote`.
 
-**Gap Partes (2026-09-18):** `AppServiceProvider` registra `MinimalDxReportingEngine` fijo; hay que alinear al patrón condicional del smoke antes de producción remota.
+Partes resuelve el motor en `EmissionDxReportingEngineFactory` (`AppServiceProvider`). Tras cambiar el `.env` en Forge: `php artisan config:cache` (el deploy ya corre `optimize`) y recargar PHP-FPM si los workers siguen con el modo anterior.
+
+El sidecar desplegado renderiza el archivo `data/layouts/{reportCode}.repx` (espacios del código → guiones) cuando el id enviado coincide con ese código. Guardar en el diseñador escribe ese archivo. Un control en el detalle sin vínculo a un campo se imprime en cada fila.
 
 Config Framework (template): `config/paqsuiteCapabilities.php` → `emissions.dxReporting.*`
 

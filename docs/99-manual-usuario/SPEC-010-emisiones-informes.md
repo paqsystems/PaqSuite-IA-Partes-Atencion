@@ -3,7 +3,7 @@ specId: SPEC-010
 titulo: Emisión de reportes y diseñador
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-05
+ultimaActualizacion: 2026-10-29
 openSpec: docs/02-producto/Sistema-Partes-IA/15-reportes-emisiones.md
 ---
 
@@ -13,7 +13,7 @@ openSpec: docs/02-producto/Sistema-Partes-IA/15-reportes-emisiones.md
 
 ## Resumen
 
-En **Informes → Consulta detallada** (solo **web**) podés **Emitir** un reporte formal con el mismo universo de datos que la consulta filtrada (PDF, impresión, Excel, CSV o correo, según lo habilitado). Quienes tienen permiso de **diseño** acceden al **Diseñador de emisiones** desde **Soporte Técnico** para crear o ajustar diseños de reporte. **Emitir** no es lo mismo que **exportar la grilla** a Excel ni que la vista pivot.
+En **Informes → Consulta detallada** (solo **web**) podés **Emitir** un reporte formal con las **filas que tildes** en la grilla (PDF, impresión, Excel, CSV o correo, según lo habilitado). Quienes tienen permiso de **diseño** acceden al **Diseñador de emisiones** desde **Soporte Técnico** para crear o ajustar diseños de reporte. **Emitir** no es lo mismo que **exportar la grilla** a Excel ni que la vista pivot.
 
 ## Funcionamiento
 
@@ -21,19 +21,22 @@ En **Informes → Consulta detallada** (solo **web**) podés **Emitir** un repor
 
 1. Menú **Informes** → consulta detallada.
 2. Aplicá filtros (fechas, cliente, asistente si sos supervisor, tipo, estado cerrado).
-3. Ejecutá la búsqueda y verificá que hay datos (o que aceptás emitir vacío según el caso).
-4. Pulsá **Emitir**.
-5. Elegí diseño de reporte, canal de salida (PDF, correo, etc.) y confirmá.
-6. Según el canal, descargás el archivo, imprimís o completás el envío por correo.
+3. Ejecutá la búsqueda. Si no hay filas, **Emitir** queda visible y deshabilitado.
+4. **Tildá** en la grilla las filas que querés incluir (podés usar la casilla del encabezado para seleccionar todas). Sin filas tildadas, **Emitir** sigue deshabilitado.
+5. Pulsá **Emitir**.
+6. Elegí un **diseño guardado** (no aparece la plantilla original), el canal (PDF, correo, etc.) y confirmá.
+7. Según el canal, descargás el archivo, imprimís o completás el envío por correo.
 
-Los datos del reporte respetan los **filtros de pantalla**, no solo la página visible de la grilla.
+Si el combo de diseños está vacío, alguien con permiso de diseño tiene que guardar una copia desde el diseñador. El reporte usa ese diseño y **solo las filas tildadas**, respetando además los filtros de pantalla y tu perfil. La duración figura en **minutos**, salvo que el diseño la formatee de otra manera.
 
 ### Diseñar reportes (administración / soporte)
 
 1. Menú **Soporte Técnico** → **Diseñador de emisiones** (escritorio).
 2. Elegí el proceso de **consulta detallada** de Partes si el sistema lo pide.
-3. Editá el diseño en el editor visual (guardar desde la barra del diseñador).
+3. Editá el diseño en el editor visual y guardalo desde la barra del diseñador. Ese diseño es el que usa **Emitir**.
 4. Podés marcar un diseño como **principal** para ese proceso.
+
+En la banda de detalle, cada control tiene que estar vinculado a un campo. Un control suelto (por ejemplo un medidor sin dato) se repite en cada fila y alarga el PDF.
 
 Diseñar exige permiso específico; **emitir** solo requiere poder entrar a la consulta y tener la función habilitada.
 
@@ -63,6 +66,14 @@ No. Usa el conjunto de datos de la consulta detallada filtrada, independiente de
 ### ¿Puedo diseñar desde el celular?
 
 No. Solo en la versión web de escritorio.
+
+### ¿Por qué no veo diseños al emitir?
+
+La plantilla original no se emite. Tiene que existir un diseño guardado desde el diseñador.
+
+### ¿La duración sale en horas y minutos?
+
+Sale en minutos, como la cargó el parte, salvo que el diseño aplique otro formato.
 
 ### ¿Quién puede emitir?
 

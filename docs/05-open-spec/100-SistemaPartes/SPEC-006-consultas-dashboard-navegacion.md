@@ -1,4 +1,4 @@
-# SPEC-006 – Consultas, dashboard y navegación
+# SPEC-006 – Consultas, dashboard y navegación
 
 Jira: PIAPARTES-6
 
@@ -11,7 +11,7 @@ Jira: PIAPARTES-6
 | Título | Consultas, dashboard y navegación del módulo |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Finalizado |
-| Última actualización | 2026-10-11 |
+| Última actualización | 2026-10-29 (CC ST #1: selección grilla Consulta detallada) |
 | HU relacionada(s) | [HU-006-consultas-dashboard-navegacion](../../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) |
 | TR relacionada(s) | [TR-006-consultas-dashboard-navegacion](../../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md); menú seed alineado a SPEC-003/005 |
@@ -39,6 +39,7 @@ Jira: PIAPARTES-6
 - Dashboard de entrada analítica: indicadores mínimos, periodo inicial = mes calendario del sistema, refresco automático + manual.
 - Navegación del módulo vía `pq_menus` (seed); agrupación funcional sugerida §4.7 (no menú hardcodeado en FE).
 - Reutilizar patrones Framework: DataGrid, layouts persistentes cuando apliquen; **PivotGrid ofrecido en todos los procesos de tipo Informes web que muestran grilla** (consulta detallada y consultas agrupadas). Mobile: sin pivot (SPEC-007).
+- Consulta detallada (web): **selector de filas** (`Selection` DX) para acotar **Emitir** (SPEC-011); export grilla GEN-11 **no** usa la selección.
 - i18n + `data-testid`.
 
 ### 2.2 Fuera de alcance
@@ -294,6 +295,7 @@ Gráficos simples opcionales si no complican el MVP.
 | 2026-08-01 | CC-PQ #2 (01/08/2026): consulta detallada y agrupada incorporan `erpCliente` / `erpArticulo` en grilla y pivot (R-CO-13). |
 | 2026-08-01 | Parte I: fusionados SPEC-006-update (CC-PQ #1, 31/07) y SPEC-006-update-01 (CC-PQ #2, 01/08) en este original; updates eliminados. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4 (04/10/2026): filtro y columnas de tipo de cliente en Paquete de Horas (R-CO-14/15); update eliminado. Estado → Finalizado. |
+| 2026-10-29 | CC ST #1 (29/10/2026): selector de filas en Consulta detallada (web) para Emitir; select all allPages; export grilla independiente. Parte I desde SPEC-006-update. |
 
 ---
 
