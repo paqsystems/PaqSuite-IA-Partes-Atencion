@@ -3,6 +3,7 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$Title,
+    [string]$Body = 'Ver commits incluidos en la rama head.',
     [string]$BodyFile,
     [string]$Head,
     [string]$Base = 'develop',
@@ -40,6 +41,8 @@ if ($BodyFile) {
         exit 1
     }
     $createArgs += @('--body-file', (Resolve-Path $BodyFile).Path)
+} else {
+    $createArgs += @('--body', $Body)
 }
 
 & powershell -NoProfile -File $Gh @createArgs
