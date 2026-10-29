@@ -48,4 +48,21 @@ describe('parseDxReportSavedArgs', () => {
     })
     expect(withPeek.url).toBe('Copia 2')
   })
+
+  it('lee layoutDefinition directo y GetReport del sender', () => {
+    const parsed = parseDxReportSavedArgs({
+      Url: 'Desde xml',
+      layoutDefinition: '<XtraReportsLayoutSerializer/>',
+    })
+    expect(parsed.layoutDefinition).toBe('<XtraReportsLayoutSerializer/>')
+
+    const fromSender = parseDxReportSavedArgs({
+      sender: {
+        GetReport: () => ({ serialize: () => '<XtraReportsLayoutSerializer/>' }),
+      },
+      args: { Url: 'Via sender' },
+    })
+    expect(fromSender.url).toBe('Via sender')
+    expect(fromSender.layoutDefinition).toBe('<XtraReportsLayoutSerializer/>')
+  })
 })

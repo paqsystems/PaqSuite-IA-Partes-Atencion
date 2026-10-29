@@ -35,21 +35,81 @@ function readUrlFromObject(value: Record<string, unknown>): string {
   return ''
 }
 
-function readLayoutFromObject(value: Record<string, unknown>): string | undefined {
-  const report = unwrapDxValue(value.Report ?? value.report)
-  if (!report || typeof report !== 'object') {
-    return undefined
+function isLayoutXml(value: unknown): value is string {
+  if (typeof value !== 'string') {
+    return false
   }
-  const serialize = (report as { serialize?: () => string }).serialize
-  if (typeof serialize !== 'function') {
+  const trimmed = value.trim()
+  return trimmed.startsWith('<') && trimmed.length > 5
+}
+
+function tryCallSerializer(target: object, methodName: string): string | undefined {
+  const method = (target as Record<string, unknown>)[methodName]
+  if (typeof method !== 'function') {
     return undefined
   }
   try {
-    const xml = serialize()
-    return typeof xml === 'string' && xml.trim() !== '' ? xml : undefined
+    const xml = unwrapDxValue(method.call(target))
+    return isLayoutXml(xml) ? xml : undefined
   } catch {
     return undefined
   }
+}
+
+function serializeDxReport(report: unknown): string | undefined {
+  const resolved = unwrapDxValue(report)
+  if (isLayoutXml(resolved)) {
+    return resolved
+  }
+  if (!resolved || typeof resolved !== 'object') {
+    return undefined
+  }
+  const fromXmlProp = unwrapDxValue((resolved as { XML?: unknown; xml?: unknown }).XML
+    ?? (resolved as { xml?: unknown }).xml)
+  if (isLayoutXml(fromXmlProp)) {
+    return fromXmlProp
+  }
+  for (const methodName of ['serialize', 'serializeToXml', 'saveToStr', 'SaveToStr']) {
+    const xml = tryCallSerializer(resolved, methodName)
+    if (xml) {
+      return xml
+    }
+  }
+  return undefined
+}
+
+function readLayoutFromObject(value: Record<string, unknown>): string | undefined {
+  const direct = unwrapDxValue(value.layoutDefinition ?? value.LayoutDefinition)
+  if (isLayoutXml(direct)) {
+    return direct
+  }
+
+  const nestedReport = unwrapDxValue(value.Report ?? value.report)
+  const fromNested = serializeDxReport(nestedReport)
+  if (fromNested) {
+    return fromNested
+  }
+
+  const sender = asRecord(unwrapDxValue(value.sender ?? value.Sender ?? value.component))
+  if (sender) {
+    const fromSenderReport = serializeDxReport(sender.Report ?? sender.report)
+    if (fromSenderReport) {
+      return fromSenderReport
+    }
+    const getReport = sender.GetReport ?? sender.getReport
+    if (typeof getReport === 'function') {
+      try {
+        const fromGetter = serializeDxReport(getReport.call(sender))
+        if (fromGetter) {
+          return fromGetter
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+
+  return undefined
 }
 
 function asRecord(value: unknown): Record<string, unknown> | null {
