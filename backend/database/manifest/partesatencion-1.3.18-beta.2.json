@@ -435,6 +435,15 @@
             "dependsOn": []
         },
         {
+            "id": "partes-sp-pq_sp_admin_menu_list_enabled",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_admin_menu_list_enabled.sql",
+            "checksum": "71399df3cab3fdf573da5da120676f89e1070ea4c3786701e4c03442ce13660f",
+            "dependsOn": [],
+            "module": "GEN-07"
+        },
+        {
             "id": "partes-sp-pq_sp_user_menu",
             "kind": "sql",
             "target": "dictionary",

@@ -1,0 +1,35 @@
+name: Partes — menu i18n (FE parity)
+
+on:
+  pull_request:
+    paths:
+      - 'backend/database/**/PqMenu*.php'
+      - 'backend/database/**/pq_menus**'
+      - 'backend/database/seeders/**'
+      - 'backend/database/sp/**menu**'
+      - 'frontend/src/features/auth/productI18n.ts'
+      - '.github/workflows/menu-i18n-validate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  product-i18n-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: npm ci
+        run: npm ci
+
+      - name: Vitest menu i18n
+        run: npm run test -- --run src/features/partes/partesMenuI18n.test.ts

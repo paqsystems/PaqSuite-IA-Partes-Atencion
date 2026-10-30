@@ -112,7 +112,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(RolAdminRepository::class, SpRolAdminRepository::class);
         $this->app->singleton(RolAtributosRepository::class, SpRolAtributosRepository::class);
         $this->app->singleton(PermisoAdminRepository::class, SpPermisoAdminRepository::class);
-        $this->app->singleton(MenuQueryRepository::class, SpMenuQueryRepository::class);
+        $this->app->singleton(MenuQueryRepository::class, function ($app): SpMenuQueryRepository {
+            $connection = (string) config('database.default', 'sqlsrv');
+
+            return new SpMenuQueryRepository($connection);
+        });
         $this->app->singleton(UserEffectiveMenuPermissions::class, SpUserEffectiveMenuPermissions::class);
         $this->app->singleton(MenuAuthorizationService::class, function ($app) {
             return new MenuAuthorizationService(
