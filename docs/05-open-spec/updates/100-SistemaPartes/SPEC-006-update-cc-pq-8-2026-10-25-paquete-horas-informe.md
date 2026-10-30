@@ -7,7 +7,8 @@
 | **ID** | SPEC-006-update-cc-pq-8-2026-10-25-paquete-horas-informe |
 | **Título** | Informe Paquete de Horas — saldo por cliente/renglón y destaque de compras |
 | **Épica / carpeta** | `100-SistemaPartes` |
-| **Estado** | Pendiente (**Parte A** cerrada 2026-10-30; pendiente **A1**) |
+| **Estado** | Pendiente (**Parte A** + **A1** cerradas 2026-10-30) |
+| **A1** | [A1-ambiguity-review](./SPEC-006-update-cc-pq-8-2026-10-25-paquete-horas-informe-A1-ambiguity-review.md) — **Cerrado** |
 | **Última actualización** | 2026-10-30 |
 | **SPEC base** | [SPEC-006-consultas-dashboard-navegacion](../../100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) §4.3b |
 | **HU-update** | [HU-006-update-cc-pq-8-2026-10-25-paquete-horas-informe](../../../03-historias-usuario/updates/100-SistemaPartes/HU-006-update-cc-pq-8-2026-10-25-paquete-horas-informe.md) |
@@ -28,9 +29,10 @@
 ### 2.1 En alcance
 
 - Corrección del **cálculo de saldo** en `GET /api/v1/partes/informes/paquete-horas` (contrato TR-006 / envelope items + `saldoInicial`).
-- **Partición por cliente:** cada `cliente_id` tiene su propio saldo previo al periodo y su propia serie running balance (CC #8 CA-05…CA-07).
-- **Fila sintética «Saldo inicial»:** una por **cliente presente** en el resultado del informe (supervisor sin filtro cliente → N filas saldo inicial, una por cliente con movimientos en periodo o saldo previo ≠ 0); si el filtro fija un solo cliente → una fila saldo inicial (comportamiento actual simplificado).
-- **Orden de filas:** por `cliente_id` ASC (estable), dentro de cada cliente: fila saldo inicial, luego movimientos `fecha ASC`, `id ASC`.
+- **Cliente obligatorio (A1 Q1):** supervisor/asistente Must seleccionar **un** cliente antes de consultar; API **422** sin `clienteId`. Cliente funcional = cliente de sesión. FE: no auto-buscar al abrir sin cliente; selector sin vaciar cliente en consulta válida.
+- **Una consulta = un cliente:** saldo inicial S₀ y running balance **solo** para ese `cliente_id` (CA-05…CA-07).
+- **Fila sintética «Saldo inicial»:** **exactamente una** por respuesta.
+- **Orden de filas:** fila saldo inicial, luego movimientos `fecha ASC`, `id ASC`.
 - **Signo:** `es_tarea = true` → suma minutos al saldo; `es_tarea = false` → resta minutos (sin cambio normativo SPEC-006 §4.3b).
 - **Presentación FE web:** columna Duración — para `esTarea === false`, mostrar magnitud en **`hh:mm` con prefijo `-`** y clase CSS de destaque rojo (`data-testid` estable en celda opcional).
 - **Columna Saldo:** formato `hh:mm` con signo algebraico coherente (saldo negativo = deuda de horas).
@@ -42,7 +44,7 @@
 
 - Cambiar filtros obligatorios del informe (fecha desde/hasta; cliente según rol).
 - Mobile kardex paquete: saldo inicial en KPI puede mantenerse agregado simple salvo que TR-007 indique paridad (observación A1).
-- Migrar implementación PHP ad-hoc a SP en este delta **solo si** TR confirma deuda regla 74; el SPEC exige **comportamiento**, no obliga SP en v1 del fix si el host ya invoca `pq_sp_partes_informe_paquete_horas` como contrato documentado.
+- **Must (A1 Q3 — regla 74):** implementar **`pq_sp_partes_informe_paquete_horas`** en T-SQL (`backend/scripts/sql/partes/`); en **sqlsrv** el `SpCaller` Must **EXEC** el SP (sin `PartesInformeOperations::paqueteHoras` en producción). Referencia SQL opcional del responsable PQ puede adjuntarse en TR.
 
 ---
 
@@ -54,7 +56,7 @@
 | Asistente | Mismo patrón delimitado SPEC-002 |
 | Cliente funcional | Solo su organización |
 
-**Diagnóstico referencia (Parte A):** la implementación actual en `PartesInformeOperations::paqueteHoras` acumula saldo inicial **global** (suma todos los clientes) y emite **una** fila «Saldo inicial» — incumple CA-07 cuando hay más de un cliente en el resultado.
+**Diagnóstico referencia (Parte A):** hoy el cálculo vive en PHP y permite consulta sin `clienteId`, mezclando movimientos; se **reemplaza** por SP + validación cliente obligatorio.
 
 ---
 
@@ -122,7 +124,9 @@ Persistencia y API siguen en minutos **positivos** en `duracionMinutos`; el sign
 
 | Pieza | Acción |
 |-------|--------|
-| `PartesInformeOperations::paqueteHoras` o SP `pq_sp_partes_informe_paquete_horas` | Reimplementar partición por cliente + N filas saldo inicial |
+| **`pq_sp_partes_informe_paquete_horas`** (nuevo script SQL) | Saldo S₀ + running por `cliente_id` filtrado; JSON/items alineado al envelope actual |
+| `SpCaller` | Quitar dispatch PHP para este SP en sqlsrv |
+| `PartesInformeController` | Validar `clienteId` requerido (excepto actor cliente) |
 | `PartesInformeController` | Sin cambio de contrato query; validar shape JSON camelCase |
 | `PaqueteHorasPage.tsx` | `cellPrepared` / `customizeText` duración; opcional ocultar columna `esTarea` en producción |
 | `partesInformePivotCatalog` | Confirmar exclusión Saldo |
@@ -132,9 +136,8 @@ Persistencia y API siguen en minutos **positivos** en `duracionMinutos`; el sign
 
 ## 7. Riesgos y supuestos
 
-- **Supuesto:** supervisor puede consultar varios clientes en una sola grilla (sin filtro cliente); si producto exige cliente obligatorio en UI, CA-07 sigue aplicando en backend por integridad.
-- **Riesgo:** filas saldo inicial múltiples cambian densidad de grilla — aceptado por CC.
-- **Deuda:** TR-006 documenta SP; implementación actual usa PHP + Query Builder en excepción — A1/C1 deben fijar si el fix migra a SP único.
+- **Referencia opcional:** PQ puede entregar SELECT/SP referencial de saldo acumulado; TR lo adopta o valida paridad.
+- **Tests sqlite:** TR documenta si mantiene shim PHP **solo** en tests (no producción).
 
 ---
 
@@ -144,3 +147,4 @@ Persistencia y API siguen en minutos **positivos** en `duracionMinutos`; el sign
 |-------|--------|
 | 2026-10-30 | Parte G volcado |
 | 2026-10-30 | **Parte A** — SPEC-update completo (saldo + destaque) |
+| 2026-10-30 | **A1** — cliente obligatorio; SP T-SQL; destaque OK |

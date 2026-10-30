@@ -7,7 +7,8 @@
 | **ID** | SPEC-013-update-cc-pq-8-2026-10-25-duracion-paquetes |
 | **Título** | Carga de paquetes — ampliar rango de duración a 1–240 horas |
 | **Épica / carpeta** | `100-SistemaPartes` |
-| **Estado** | Pendiente (**Parte A** cerrada 2026-10-30; pendiente **A1**) |
+| **Estado** | Pendiente (**Parte A** + **A1** cerradas 2026-10-30) |
+| **A1** | [A1-ambiguity-review](./SPEC-013-update-cc-pq-8-2026-10-25-duracion-paquetes-A1-ambiguity-review.md) — **Cerrado** |
 | **Última actualización** | 2026-10-30 |
 | **SPEC base** | [SPEC-013-carga-paquetes-horas](../../100-SistemaPartes/SPEC-013-carga-paquetes-horas.md) |
 | **HU-update** | [HU-013-update-cc-pq-8-2026-10-25-duracion-paquetes](../../../03-historias-usuario/updates/100-SistemaPartes/HU-013-update-cc-pq-8-2026-10-25-duracion-paquetes.md) |
@@ -71,7 +72,7 @@
 
 ### 4.2 Validación por capa
 
-1. **Modal / SelectBox horas:** opciones generadas con `buildPaqueteDuracionOptions` desde **1** hasta **240**; valor por defecto en alta puede seguir siendo el mínimo (**1 h**) o el último usado — TR fija default si no hay preferencia producto.
+1. **Modal / SelectBox horas:** opciones generadas con `buildPaqueteDuracionOptions` desde **1** hasta **240**; **default en alta = 1 h** (A1 Q2).
 2. **API:** rechazo **422** con clave i18n si `duracionMinutos` ∉ [60, 14400] o no múltiplo de 60.
 3. **SP upsert:** misma regla (defensa en profundidad; regla 74).
 4. **Smart Capture:** si el turno propone horas fuera de rango, reply de error SC sin aplicar al draft.
@@ -127,3 +128,4 @@ No altera signos ni columnas del informe (SPEC-006 §4.3b). Paquetes de 1 h rest
 |-------|--------|
 | 2026-10-30 | Parte G volcado inicial |
 | 2026-10-30 | **Parte A** — SPEC-update completo (CC #8 ítem duración) |
+| 2026-10-30 | **A1** — rango 1–240; default 1 h; SP upsert |
