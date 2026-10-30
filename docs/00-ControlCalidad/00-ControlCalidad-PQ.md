@@ -53,7 +53,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 5 | 05/10/2026 | Especificado | Errores de validación en modal — **F1/F Aprobado 11/10/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/001-Generalidades/D-VERIFICACION-CC-PQ-05-2026-10-05.md)) |
 | 6 | 11/10/2026 | Especificado | Deuda cableado SDK — PA-01…14 **F+I** (PA-03/04/14: 12/10/2026, pin 2.4.25-beta.1) |
 | 7 | 19/10/2026 | Especificado | Mail acceso ABM Usuarios + informar clientes desde Proceso masivo (GEN Mail Engine; cola updates 002/005) |
-| 8 | 25/10/2026 | Pendiente | Carga de paquetes desde 1 hora + destaque de paquetes + cálculo de saldo por renglón |
+| 8 | 25/10/2026 | Especificado | Carga de paquetes desde 1 hora + destaque de paquetes + cálculo de saldo por renglón · [PIAPARTES-52](https://paqsystems.atlassian.net/browse/PIAPARTES-52) |
 | 9 | 30/10/2026 | Especificado | **Hito FRAMEWORK** — compatibilizar tablas de seguridad MONO vs MULTI (`users`, `pq_empresa`, roles, permisos) + GEN-34 |
 
 ---
@@ -156,7 +156,7 @@ Validación mínima post-cambio en Partes: conteo de filas estable, login con us
 |-------|--------|
 | **Fecha** | 25/10/2026 |
 | **Responsable** | Pablo Quarracino (PQ) |
-| **Estado** | Pendiente |
+| **Estado** | Especificado |
 | **Origen** | Prueba manual de Paquete de horas e indicación en [`18-obtencion-saldo-por-renglon.md`](../02-producto/Sistema-Partes-IA/18-obtencion-saldo-por-renglon.md) |
 | **Jira** | [PIAPARTES-52](https://paqsystems.atlassian.net/browse/PIAPARTES-52) |
 
@@ -172,16 +172,22 @@ En la prueba manual del informe **Paquete de horas** se detectaron tres ajustes:
 
 #### Carga de paquetes — duración de 1 a 240 horas
 
+*Procesado* (Parte G 30/10/2026) → [SPEC-013-update](../05-open-spec/updates/100-SistemaPartes/SPEC-013-update-cc-pq-8-2026-10-25-duracion-paquetes.md) · [HU-013-update](../03-historias-usuario/updates/100-SistemaPartes/HU-013-update-cc-pq-8-2026-10-25-duracion-paquetes.md) · [TR-013-update](../04-tareas/updates/100-SistemaPartes/TR-013-update-cc-pq-8-2026-10-25-duracion-paquetes.md)
+
 - Ajustar el rango permitido de duración para la carga de paquetes para aceptar horas enteras de **1 a 240**, inclusive.
 - Alinear validación frontend, backend/SP, Smart Capture, mensajes i18n y tests.
 
 #### Informe Paquete de horas — destaque de paquetes
+
+*Procesado* (Parte G 30/10/2026) → [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-update-cc-pq-8-2026-10-25-paquete-horas-informe.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-update-cc-pq-8-2026-10-25-paquete-horas-informe.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-update-cc-pq-8-2026-10-25-paquete-horas-informe.md)
 
 - Para cada fila con `es_tarea = 0`, destacar el valor de la columna **Duración**.
 - El resultado puede expresarse como duración negativa y/o color rojo, siempre que sea visible y consistente en grilla, exportación si corresponde e informe.
 - Las filas con `es_tarea = 1` deben conservar la presentación normal.
 
 #### Informe Paquete de horas — saldo por renglón
+
+*Procesado* (Parte G 30/10/2026) → mismo volcado SPEC/HU/TR-006-update (ítem saldo + orden fecha/id).
 
 - Calcular el saldo acumulado por cliente y mostrarlo en la columna **Saldo**.
 - Aplicar la convención indicada en [`18-obtencion-saldo-por-renglon.md`](../02-producto/Sistema-Partes-IA/18-obtencion-saldo-por-renglon.md): los registros con `es_tarea = 1` suman duración y los registros con `es_tarea = 0` restan duración.
@@ -200,7 +206,7 @@ En la prueba manual del informe **Paquete de horas** se detectaron tres ajustes:
 
 ### Derivación SDD
 
-Pendiente de Parte G: generar SPEC-update, HU-update y TR-update para los tres ajustes antes de implementar.
+Parte G **30/10/2026** — cola `updates/` lista para **D → E → F** (PIAPARTES-52).
 
 ---
 
