@@ -38,6 +38,16 @@ if [[ -z "${CLOUDSMITH_READ_TOKEN:-}" ]]; then
     exit 1
 fi
 
+# Secretos de GHA/Forge a veces traen CRLF o comillas; rompen entitlement URL (HTTP 400).
+CLOUDSMITH_READ_TOKEN="$(
+    php -r 'echo trim(getenv("CLOUDSMITH_READ_TOKEN"), " \t\n\r\0\x0B\"'\''");'
+)"
+export CLOUDSMITH_READ_TOKEN
+if [[ -z "${CLOUDSMITH_READ_TOKEN}" ]]; then
+    echo "ERROR: CLOUDSMITH_READ_TOKEN vacío tras normalizar." >&2
+    exit 1
+fi
+
 if [[ ! -f "$lockFile" ]]; then
     echo "ERROR: no existe backend/composer.lock; no se ejecuta Composer en Forge." >&2
     exit 1
@@ -93,7 +103,11 @@ if (( lockValidationStatus != 0 )); then
 fi
 
 php -r '
-$k = getenv("CLOUDSMITH_READ_TOKEN");
+$k = trim((string) getenv("CLOUDSMITH_READ_TOKEN"), " \t\n\r\0\x0B\"'\''");
+if ($k === "") {
+    fwrite(STDERR, "ERROR: CLOUDSMITH_READ_TOKEN vacío en PHP.\n");
+    exit(8);
+}
 file_put_contents("auth.json", json_encode([
     "bearer" => ["composer.cloudsmith.io" => $k],
     "http-basic" => [
@@ -125,26 +139,6 @@ if (!$rewritten) {
     exit(7);
 }
 file_put_contents("composer.json", json_encode($j, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)."\n");
-
-$lockPath = "composer.lock";
-$lock = json_decode(file_get_contents($lockPath), true, 512, JSON_THROW_ON_ERROR);
-$basicPrefix = "https://dl.cloudsmith.io/basic/";
-$entitlementPrefix = "https://dl.cloudsmith.io/".$k."/";
-foreach (["packages", "packages-dev"] as $section) {
-    if (! isset($lock[$section]) || ! is_array($lock[$section])) {
-        continue;
-    }
-    foreach ($lock[$section] as $index => $package) {
-        if (! is_array($package)) {
-            continue;
-        }
-        $distUrl = (string) ($package["dist"]["url"] ?? "");
-        if ($distUrl !== "" && str_starts_with($distUrl, $basicPrefix)) {
-            $lock[$section][$index]["dist"]["url"] = $entitlementPrefix.substr($distUrl, strlen($basicPrefix));
-        }
-    }
-}
-file_put_contents($lockPath, json_encode($lock, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)."\n");
 '
 
 composer install \
