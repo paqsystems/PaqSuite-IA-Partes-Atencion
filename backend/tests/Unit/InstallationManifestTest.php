@@ -32,6 +32,9 @@ final class InstallationManifestTest extends TestCase
             'fw-sp-pq_sp_admin_empresa_tango_dictionary',
             $data['omitFrameworkEntryIds'] ?? [],
         );
+
+        $entryIds = array_column($data['entries'] ?? [], 'id');
+        $this->assertContains('partes-sp-pq_sp_partes_informe_paquete_horas', $entryIds);
     }
 
     public function testValidateScriptWhenCoreSupportsGen34(): void

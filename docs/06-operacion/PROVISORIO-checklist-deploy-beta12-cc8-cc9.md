@@ -44,7 +44,7 @@
 
 | ☐ | Procedimiento | Origen | Acción |
 |---|---------------|--------|--------|
-| ☐ | `dbo.pq_sp_partes_informe_paquete_horas` | Partes CC #8 | Script: `backend/scripts/sql/partes/pq_sp_partes_informe_paquete_horas.sql` — **no** está en `deploy-sp.php`; aplicar en BD **manual** en cada entorno sqlsrv |
+| ☐ | `dbo.pq_sp_partes_informe_paquete_horas` | Partes CC #8 | Auto: manifiesto host `partes-sp-pq_sp_partes_informe_paquete_horas` + `deploy-sp` (`scripts/sql/partes/*.sql`, sin `*-REFERENCE*`) |
 
 Comportamiento: `@p_cliente_id` obligatorio; `saldo_inicial` + `items_json` + `total`; fila «Saldo inicial» (`id = -1`); running balance tarea **+** / paquete **−**; orden `fecha`, `id`.
 
@@ -101,7 +101,7 @@ UNION ALL SELECT 'pq_permisos', COUNT(*) FROM dbo.pq_permisos WITH (NOLOCK);
 -- C) Smoke CC #9
 EXEC dbo.pq_sp_admin_empresa_list;
 
--- D) SP informe CC #8 (tras script manual)
+-- D) SP informe CC #8 (post-deploy / installation:update)
 SELECT OBJECT_ID('dbo.pq_sp_partes_informe_paquete_horas', 'P') AS sp_informe_paquete;
 ```
 
@@ -115,7 +115,7 @@ SELECT OBJECT_ID('dbo.pq_sp_partes_informe_paquete_horas', 'P') AS sp_informe_pa
 | ☐ | Deploy Forge termina **sin error** |
 | ☐ | `installation:update` completa (sin `IDEmpresa`) |
 | ☐ | Inventario §1.2–1.6 en BD preview |
-| ☐ | Script manual `pq_sp_partes_informe_paquete_horas.sql` aplicado |
+| ☐ | Log Forge: bloque `=== Partes domain SP (scripts/sql/partes) ===` con OK `pq_sp_partes_informe_paquete_horas.sql` |
 | ☐ | Login usuario conocido |
 | ☐ | Menú equivalente al pre-deploy |
 | ☐ | ABM / listado empresas (SDK single) |

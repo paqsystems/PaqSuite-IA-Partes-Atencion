@@ -8,9 +8,29 @@ declare(strict_types=1);
 
 require __DIR__ . '/../../vendor/autoload.php';
 
+use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
+use Symfony\Component\Console\Output\BufferedOutput;
+
+/**
+ * @param  array<string, mixed>  $parameters
+ */
+function runArtisanLogged(ConsoleKernel $kernel, string $command, array $parameters = []): int
+{
+    $output = new BufferedOutput();
+    echo '>>> php artisan '.$command."\n";
+    $exitCode = $kernel->call($command, $parameters, $output);
+    $text = trim($output->fetch());
+    if ($text !== '') {
+        echo $text."\n";
+    }
+    echo '<<< php artisan '.$command.' exit='.$exitCode."\n";
+
+    return $exitCode;
+}
+
 $app = require __DIR__ . '/../../bootstrap/app.php';
-/** @var Illuminate\Contracts\Console\Kernel $kernel */
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+/** @var ConsoleKernel $kernel */
+$kernel = $app->make(ConsoleKernel::class);
 $kernel->bootstrap();
 
 require __DIR__ . '/bootstrap-tenant-sqlsrv.php';
@@ -26,14 +46,14 @@ $defaultConnection = (string) config('database.default');
 $databaseName = (string) config("database.connections.{$defaultConnection}.database");
 echo "Post-deploy tenant {$instalacion->cliente}/{$instalacion->proyecto} → {$databaseName}\n";
 
-$migrateExit = $kernel->call('migrate', ['--force' => true]);
+$migrateExit = runArtisanLogged($kernel, 'migrate', ['--force' => true]);
 if ($migrateExit !== 0) {
     exit($migrateExit);
 }
 
 $artisanCommands = $kernel->all();
 if (array_key_exists('paqsuite:installation:update', $artisanCommands)) {
-    $updateExit = $kernel->call('paqsuite:installation:update', [
+    $updateExit = runArtisanLogged($kernel, 'paqsuite:installation:update', [
         '--cliente' => $instalacion->cliente,
         '--proyecto' => $instalacion->proyecto,
         '--non-interactive' => true,
