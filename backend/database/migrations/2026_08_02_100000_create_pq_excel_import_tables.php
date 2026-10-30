@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * GEN-14 importaciones Excel (TR-009). Runtime MONO: Query Builder vía SpExcelImportRepository.
- * SQL Server: desplegar también backend/database/sp/pq_sp_excel_core.sql.
+ * SQL Server: SP vía paqsuite:installation:update (laravel-core pq_sp_excel_core.sql).
  */
 return new class extends Migration
 {
