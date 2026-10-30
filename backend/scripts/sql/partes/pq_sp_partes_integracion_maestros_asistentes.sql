@@ -59,10 +59,10 @@ BEGIN
     DECLARE @email NVARCHAR(255);
     DECLARE @supervisor BIT;
     DECLARE item_cursor CURSOR LOCAL FAST_FORWARD FOR
-        SELECT indice, code, nombre, usuarioCode, NULLIF(email, N''), ISNULL(supervisor, 0)
-        FROM @items
+        SELECT i.indice, i.code, i.nombre, i.usuarioCode, NULLIF(i.email, N''), ISNULL(i.supervisor, 0)
+        FROM @items i
         WHERE NOT EXISTS (
-            SELECT 1 FROM @resultado r WHERE r.tipoRegistro = 'ITEM' AND r.indice = @items.indice
+            SELECT 1 FROM @resultado r WHERE r.tipoRegistro = 'ITEM' AND r.indice = i.indice
         );
     OPEN item_cursor;
     FETCH NEXT FROM item_cursor INTO @indice, @code, @nombre, @usuarioCode, @email, @supervisor;
@@ -134,9 +134,11 @@ BEGIN
     DEALLOCATE item_cursor;
 
     DECLARE absent_cursor CURSOR LOCAL FAST_FORWARD FOR
-        SELECT code FROM dbo.PQ_PARTES_USUARIOS WITH (NOLOCK)
-        WHERE activo = 1 AND inhabilitado = 0
-          AND NOT EXISTS (SELECT 1 FROM @items i WHERE i.code = code);
+        SELECT u.code FROM dbo.PQ_PARTES_USUARIOS u WITH (NOLOCK)
+        WHERE u.activo = 1 AND u.inhabilitado = 0
+          AND NOT EXISTS (
+              SELECT 1 FROM @items i WHERE i.code = u.code COLLATE Latin1_General_100_BIN2
+          );
     OPEN absent_cursor;
     FETCH NEXT FROM absent_cursor INTO @code;
     WHILE @@FETCH_STATUS = 0

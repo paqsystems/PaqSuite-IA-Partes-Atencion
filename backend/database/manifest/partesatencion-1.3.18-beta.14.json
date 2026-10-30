@@ -434,7 +434,7 @@
             "kind": "sql",
             "target": "dictionary",
             "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_asistentes.sql",
-            "checksum": "000d396a8356a08f35abffd786c80969a6c60d2b3ee779362f307ee72d2d85ab",
+            "checksum": "60ff4e75e58ba5653103f322f6deea4d2bf39ccc1971c8fee5ea117a098c205c",
             "dependsOn": []
         },
         {
