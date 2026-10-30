@@ -35,7 +35,7 @@ Reglas:
 - NUNCA emitas asistente, tipoTarea, sinCargo ni presencial.
 - cliente: texto libre (código o descripción).
 - fecha: yyyy-MM-dd si se menciona.
-- duracionMinutos: para paquetes, convertir únicamente horas enteras de 8 a 240 a minutos (ej. 8 horas = 480). Rechazá horas decimales y duraciones con minutos.
+- duracionMinutos: para paquetes, convertir únicamente horas enteras de 1 a 240 a minutos (ej. 1 hora = 60). Rechazá horas decimales y duraciones con minutos.
 - Si la duración no es una cantidad entera de horas entre 8 y 240, dejá duracionMinutos null.
 - save=true SOLO si el usuario expresa intención clara de grabar el paquete.
 - No inventes ids numéricos de maestros.

@@ -7,7 +7,7 @@
 | **ID** | SPEC-006-update-cc-pq-8-2026-10-25-paquete-horas-informe |
 | **Título** | Informe Paquete de Horas — saldo por cliente/renglón y destaque de compras |
 | **Épica / carpeta** | `100-SistemaPartes` |
-| **Estado** | Pendiente (**Parte A** + **A1** cerradas 2026-10-30) |
+| **Estado** | Pendiente (**Parte C** TR **Especificado** 2026-10-30; pendiente **D**) |
 | **A1** | [A1-ambiguity-review](./SPEC-006-update-cc-pq-8-2026-10-25-paquete-horas-informe-A1-ambiguity-review.md) — **Cerrado** |
 | **Última actualización** | 2026-10-30 |
 | **SPEC base** | [SPEC-006-consultas-dashboard-navegacion](../../100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) §4.3b |
@@ -148,3 +148,5 @@ Persistencia y API siguen en minutos **positivos** en `duracionMinutos`; el sign
 | 2026-10-30 | Parte G volcado |
 | 2026-10-30 | **Parte A** — SPEC-update completo (saldo + destaque) |
 | 2026-10-30 | **A1** — cliente obligatorio; SP T-SQL; destaque OK |
+| 2026-10-30 | **Parte B + B1** — HU-006-update Especificado |
+| 2026-10-30 | **Parte C** — TR-006-update + referencia SQL PQ |

@@ -279,6 +279,7 @@
   "partes.informe.field.saldo": "Balance",
   "partes.informe.field.esTarea": "Is task",
   "partes.informe.saldoInicialLabel": "Opening balance:",
+  "partes.informe.clienteRequerido": "Select a client to run this report.",
   "partes.profile.title": "Partes profile",
   "partes.profile.tipoFuncional": "Functional type:",
   "partes.profile.codigo": "Code:",

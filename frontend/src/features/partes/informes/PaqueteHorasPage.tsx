@@ -16,6 +16,7 @@ import {
   dateSerializationFormat,
   enrichRowsWithDuracionHoras,
   formatMinutosAsHhMm,
+  formatMinutosAsHhMmSigned,
   isoDateFromDateBox,
 } from '../carga/partesTareaDuration'
 import { monthRange, currentMonthValue } from './PartesDashboardPage'
@@ -26,8 +27,42 @@ import { buildPartesPaqueteHorasPivotCatalog } from './partesInformePivotCatalog
 import { aggregatePaqueteHorasDesglose } from '../mobile/aggregatePaqueteHorasDesglose'
 import { mapDesgloseToKardexItem } from '../mobile/mapPartesTareaToKardexItem'
 
-function formatDuracionCell(cell: { value?: unknown }) {
-  return formatMinutosAsHhMm(Number(cell.value ?? 0))
+function formatDuracionCell(cell: { value?: unknown; data?: Record<string, unknown> }) {
+  const row = cell.data ?? {}
+  const mins = Number(cell.value ?? 0)
+  const base = formatMinutosAsHhMm(mins)
+  if (row.esSaldoInicial) {
+    return base
+  }
+  if (row.esTarea === false) {
+    return `-${base}`
+  }
+  return base
+}
+
+function formatSaldoCell(cell: { value?: unknown }) {
+  return formatMinutosAsHhMmSigned(Number(cell.value ?? 0))
+}
+
+function onPaqueteHorasCellPrepared(e: {
+  rowType?: string
+  column?: { dataField?: string }
+  cellElement?: HTMLElement
+  data?: Record<string, unknown>
+}) {
+  if (e.rowType !== 'data' || !e.column || !e.cellElement || !e.data) {
+    return
+  }
+  if (e.column.dataField === 'duracionMinutos') {
+    const text = formatDuracionCell({ value: e.data.duracionMinutos, data: e.data })
+    e.cellElement.textContent = text
+    if (!e.data.esSaldoInicial && e.data.esTarea === false) {
+      e.cellElement.classList.add('partes-paquete-horas-duration-credit')
+    }
+  }
+  if (e.column.dataField === 'saldo') {
+    e.cellElement.textContent = formatSaldoCell({ value: e.data.saldo })
+  }
 }
 
 const PAQUETE_HORAS_CONSULTA_ID = 'partes.informes.paqueteHoras'
@@ -51,7 +86,7 @@ export function PaqueteHorasPage() {
   const [tiposClienteLoading, setTiposClienteLoading] = useState(true)
   const [rawRows, setRawRows] = useState<Record<string, unknown>[]>([])
   const [saldoInicial, setSaldoInicial] = useState(0)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const [ejeChart, setEjeChart] = useState<'cliente' | 'tipo'>('cliente')
@@ -127,6 +162,12 @@ export function PaqueteHorasPage() {
   }, [])
 
   const load = useCallback(async () => {
+    if (!esCliente && (clienteId === null || clienteId <= 0)) {
+      setError(resolveAuthMessage('partes.informe.clienteRequerido'))
+      setRawRows([])
+      setSaldoInicial(0)
+      return
+    }
     setLoading(true)
     setError(null)
     try {
@@ -136,14 +177,14 @@ export function PaqueteHorasPage() {
     } finally {
       setLoading(false)
     }
-  }, [fetchPaqueteHorasRows])
+  }, [clienteId, esCliente, fetchPaqueteHorasRows])
 
-  // Carga inicial únicamente; cambios de filtro se aplican con «Buscar»
-  // (evitar overlay a mitad de edición del DateBox).
   useEffect(() => {
-    void load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo mount
-  }, [])
+    if (esCliente) {
+      void load()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo mount cliente funcional
+  }, [esCliente])
 
   const renderPaqueteGridView = useCallback(
     (toolbarLeading: ReactNode) => (
@@ -154,6 +195,7 @@ export function PaqueteHorasPage() {
           showBorders
           loading={loading}
           onRefresh={() => void load()}
+          onCellPrepared={onPaqueteHorasCellPrepared}
           proceso="partes.informes.paqueteHoras"
           gridId="paqueteHorasDetalle"
           accessToken={getAuthToken()}
@@ -190,7 +232,7 @@ export function PaqueteHorasPage() {
             dataField="saldo"
             caption={t('partes.informe.field.saldo')}
             dataType="number"
-            customizeText={formatDuracionCell}
+            customizeText={formatSaldoCell}
           />
           <Column dataField="esTarea" caption={t('partes.informe.field.esTarea')} dataType="boolean" />
           <Column
@@ -403,7 +445,7 @@ export function PaqueteHorasPage() {
         <Button
           text={t('partes.common.buscar')}
           onClick={() => void load()}
-          disabled={loading}
+          disabled={loading || (!esCliente && clienteId == null)}
           elementAttr={{ 'data-testid': 'partesPaqueteBuscar' }}
         />
       </div>

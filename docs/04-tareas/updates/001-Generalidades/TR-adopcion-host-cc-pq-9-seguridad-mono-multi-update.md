@@ -3,7 +3,7 @@
 | Campo | Valor |
 |-------|--------|
 | **ID** | TR-adopcion-host-cc-pq-9-seguridad-mono-multi-update |
-| **Estado** | Pendiente |
+| **Estado** | **Especificado** (Parte C host 2026-10-30) |
 | **Repo** | **PaqSuite-IA-Partes-Atencion** (host MONO) |
 | **Framework** | [SPEC-001-06-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/05-open-spec/updates/001-Generalidades/SPEC-001-06-update-cc-pq-9-2026-10-30-seguridad-mono-multi.md) · [SPEC-001-34-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/05-open-spec/updates/001-Generalidades/SPEC-001-34-update-cc-pq-9-2026-10-30-install-single-tenancy.md) |
 | **Origen** | `00-ControlCalidad-PQ` · CC **#9** · 30/10/2026 |
@@ -31,7 +31,7 @@ Prohibido: `migrate:fresh`, truncates seguridad en preview/prod.
 | ID | Tarea |
 |----|--------|
 | T1 | Pin laravel-core + react-core según nota release Framework |
-| T2 | Actualizar `RELEASE-PARTES.md` / manifiesto host: exclusiones `single` |
+| T2 | Manifiesto host: `omitFrameworkEntryIds` (ej. core admin Tango) + entradas `tenancyTarget: single` propias |
 | T3 | Retirar SP/manifest duplicados cuando core unifique familia `pq_sp_admin_empresas_*` |
 | T4 | Pipeline Forge: orden migrate → `deploy-sp` (host) → `installation:update` |
 | T5 | Smoke CA-FW-05/07: login, menú, empresas SDK `tenancyMode=single` |

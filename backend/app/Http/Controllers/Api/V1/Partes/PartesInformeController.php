@@ -111,7 +111,13 @@ final class PartesInformeController extends Controller
     {
         try {
             [$fechaDesde, $fechaHasta] = $this->resolvePeriodo($request);
-            $row = $this->spCaller->call('pq_sp_partes_informe_paquete_horas', array_merge($this->actorParams($request), [
+            $actor = $this->actorParams($request);
+            $clienteQuery = $request->query('clienteId');
+            if (($actor['p_actor_tipo_funcional'] ?? '') !== 'cliente'
+                && ($clienteQuery === null || $clienteQuery === '')) {
+                throw new PartesTareaException('partes.informe.clienteRequerido');
+            }
+            $row = $this->spCaller->call('pq_sp_partes_informe_paquete_horas', array_merge($actor, [
                 'p_fecha_desde' => $fechaDesde,
                 'p_fecha_hasta' => $fechaHasta,
                 'p_cliente_id' => $request->query('clienteId'),

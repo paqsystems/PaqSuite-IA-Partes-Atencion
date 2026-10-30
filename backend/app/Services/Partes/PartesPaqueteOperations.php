@@ -224,7 +224,7 @@ final class PartesPaqueteOperations
 
     private static function assertDuracion(int $duracion): void
     {
-        if ($duracion < 480 || $duracion > 14400 || ($duracion % 60) !== 0) {
+        if ($duracion < 60 || $duracion > 14400 || ($duracion % 60) !== 0) {
             self::fail('partes.paquete.duracionInvalida');
         }
     }

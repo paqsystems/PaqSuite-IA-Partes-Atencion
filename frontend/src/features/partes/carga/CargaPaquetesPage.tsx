@@ -55,7 +55,7 @@ type PaqueteGridRow = PartesPaqueteItem & {
 const emptyForm = (): PaqueteFormState => ({
   clienteId: null,
   fecha: todayIsoDate(),
-  duracionMinutos: 8 * 60,
+  duracionMinutos: 60,
   observacion: '',
 })
 

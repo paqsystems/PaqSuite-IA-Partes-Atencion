@@ -6,14 +6,14 @@ function form(partial: Partial<PaqueteFormState> = {}): PaqueteFormState {
   return {
     clienteId: 1,
     fecha: '2026-10-21',
-    duracionMinutos: 8 * 60,
+    duracionMinutos: 60,
     observacion: 'Compra',
     ...partial,
   }
 }
 
 describe('cargaPaquetesPersistErrorKey', () => {
-  it('exige cliente, fecha, observación y horas enteras entre 8 y 240', () => {
+  it('exige cliente, fecha, observación y horas enteras entre 1 y 240', () => {
     expect(cargaPaquetesPersistErrorKey(form({ clienteId: null }))).toBe(
       'partes.paquete.camposObligatorios'
     )
@@ -23,10 +23,10 @@ describe('cargaPaquetesPersistErrorKey', () => {
     expect(cargaPaquetesPersistErrorKey(form({ observacion: '  ' }))).toBe(
       'partes.paquete.observacionRequerida'
     )
-    expect(cargaPaquetesPersistErrorKey(form({ duracionMinutos: 7 * 60 }))).toBe(
+    expect(cargaPaquetesPersistErrorKey(form({ duracionMinutos: 30 }))).toBe(
       'partes.paquete.duracionInvalida'
     )
-    expect(cargaPaquetesPersistErrorKey(form({ duracionMinutos: 8 * 60 + 30 }))).toBe(
+    expect(cargaPaquetesPersistErrorKey(form({ duracionMinutos: 60 + 30 }))).toBe(
       'partes.paquete.duracionInvalida'
     )
     expect(cargaPaquetesPersistErrorKey(form({ duracionMinutos: 241 * 60 }))).toBe(

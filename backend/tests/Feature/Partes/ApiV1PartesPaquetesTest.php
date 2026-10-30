@@ -208,6 +208,22 @@ class ApiV1PartesPaquetesTest extends TestCase
         $this->assertNull(DB::table('PQ_PARTES_REGISTRO_TAREA')->where('id', $id)->first());
     }
 
+    public function test_alta_paquete_1_hora_ok(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $hoy = now()->toDateString();
+
+        $this->postJson('/api/v1/partes/paquetes', [
+            'clienteId' => $cat['clienteId'],
+            'fecha' => $hoy,
+            'duracionMinutos' => 60,
+            'observacion' => 'Compra 1 hora',
+        ], $this->authHeaders($token))
+            ->assertStatus(201)
+            ->assertJsonPath('resultado.item.duracionMinutos', 60);
+    }
+
     public function test_fecha_futura_requiere_confirmacion(): void
     {
         $token = $this->login();

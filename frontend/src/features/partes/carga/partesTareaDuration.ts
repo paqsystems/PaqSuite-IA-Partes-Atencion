@@ -24,6 +24,15 @@ export function formatMinutosAsHhMm(minutos: number): string {
   return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`
 }
 
+/** Minutos con signo algebraico (informe paquete horas — columna Saldo). */
+export function formatMinutosAsHhMmSigned(minutos: number): string {
+  if (!Number.isFinite(minutos)) {
+    return '00:00'
+  }
+  const sign = minutos < 0 ? '-' : ''
+  return `${sign}${formatMinutosAsHhMm(Math.abs(minutos))}`
+}
+
 /** Formato DX de horas decimales con 2 decimales (1:15 → 1,25). */
 export const DURACION_HORAS_NUMBER_FORMAT = '#0.00'
 

@@ -7,7 +7,7 @@
 | **ID** | SPEC-013-update-cc-pq-8-2026-10-25-duracion-paquetes |
 | **Título** | Carga de paquetes — ampliar rango de duración a 1–240 horas |
 | **Épica / carpeta** | `100-SistemaPartes` |
-| **Estado** | Pendiente (**Parte A** + **A1** cerradas 2026-10-30) |
+| **Estado** | Pendiente (**Parte C** TR **Especificado** 2026-10-30; pendiente **D**) |
 | **A1** | [A1-ambiguity-review](./SPEC-013-update-cc-pq-8-2026-10-25-duracion-paquetes-A1-ambiguity-review.md) — **Cerrado** |
 | **Última actualización** | 2026-10-30 |
 | **SPEC base** | [SPEC-013-carga-paquetes-horas](../../100-SistemaPartes/SPEC-013-carga-paquetes-horas.md) |
@@ -129,3 +129,5 @@ No altera signos ni columnas del informe (SPEC-006 §4.3b). Paquetes de 1 h rest
 | 2026-10-30 | Parte G volcado inicial |
 | 2026-10-30 | **Parte A** — SPEC-update completo (CC #8 ítem duración) |
 | 2026-10-30 | **A1** — rango 1–240; default 1 h; SP upsert |
+| 2026-10-30 | **Parte B + B1** — HU-013-update Especificado |
+| 2026-10-30 | **Parte C** — TR-013-update Especificado |
