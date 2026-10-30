@@ -223,8 +223,20 @@ return [
     'installation' => [
         'hostManifestPath' => env(
             'PAQSUITE_HOST_MANIFEST',
-            database_path('manifest/partesatencion-1.3.17-beta.1.json')
+            database_path('manifest/partesatencion-1.3.18-beta.2.json')
         ),
         'frameworkPackageRoot' => base_path('vendor/paqsuite/laravel-core'),
+    ],
+
+    'menuI18n' => [
+        'enabled' => filter_var(env('PAQSUITE_MENU_I18N_ENABLED', true), FILTER_VALIDATE_BOOLEAN),
+        'installGate' => filter_var(env('PAQSUITE_MENU_I18N_INSTALL_GATE', false), FILTER_VALIDATE_BOOLEAN),
+        'driver' => env('PAQSUITE_MENU_I18N_DRIVER', 'productI18nTs'),
+        'repoRoot' => env('PAQSUITE_MENU_I18N_REPO_ROOT', dirname(base_path())),
+        'productI18nTsPath' => env(
+            'PAQSUITE_MENU_I18N_TS_PATH',
+            'frontend/src/features/auth/productI18n.ts'
+        ),
+        'jsonLocales' => [],
     ],
 ];

@@ -78,6 +78,10 @@ El diseñador opera **sobre el dataset del proceso elegido**: no se agregan camp
 
 **D-EM-03.** Un solo reporte **principal** y una sola plantilla mail **principal** por proceso.
 
+**D-EM-11.** La ventana Emitir lista solo diseños guardados (reporte no estándar). La plantilla semilla marcada como estándar no se ofrece para emitir. Si el combo está vacío, hay que guardar una copia desde el diseñador.
+
+**D-EM-12.** Al emitir, sale el diseño guardado para ese reporte. Un control puesto en el detalle del diseño sin vincularlo a un campo del dataset se imprime en cada fila.
+
 ### 3.3 Definir salidas disponibles por proceso
 
 Las salidas de **presentación** que el Framework ofrece (MVP GEN):
@@ -132,7 +136,9 @@ El dataset es el **mismo universo** que la grilla de Consulta detallada en ese m
 - mismos filtros aplicados (periodo, cliente, asistente si aplica, tipo, cerrado, etc.);
 - mismos atributos de negocio (fecha, cliente, asistente, tipo, duración, marcas, observación, Erp Cliente, Erp Articulo).
 
-Duración en el dataset técnico: **minutos**. Presentación en reporte: **`hh:mm`**, coherente con la consulta.
+Duración en el dataset: **minutos enteros**. El reporte muestra el valor que el diseño enlazó. El diseño en uso de Consulta detallada imprime esos minutos como número. No hay conversión automática a `hh:mm`; si se quiere reloj, se formatea en el diseñador.
+
+**D-EM-13.** La duración no se reformatea sola al emitir.
 
 **D-EM-08.** La emisión **no** inventa filas ni ignora el filtro de rol. Si la consulta está vacía, Emitir permanece **visible** y **deshabilitado** (mismo criterio que exportar sin datos).
 
@@ -216,6 +222,9 @@ Una emisión corta GEN desde kardex, si se desea, es **evolución** (otro proces
 | D-EM-08 | Dataset = consulta filtrada; vacío → Emitir deshabilitado |
 | D-EM-09 | Excel de grilla y Excel de emisión conviven |
 | D-EM-10 | Canales v1: PDF, impresión, Excel de reporte, mail+PDF |
+| D-EM-11 | Emitir solo diseños guardados (no la plantilla estándar) |
+| D-EM-12 | El PDF usa el diseño guardado; un control suelto en el detalle se repite por fila |
+| D-EM-13 | Duración en minutos; el diseño decide cómo se ve (no hay `hh:mm` automático) |
 
 ---
 
@@ -223,7 +232,7 @@ Una emisión corta GEN desde kardex, si se desea, es **evolución** (otro proces
 
 Tras esta base, el flujo A→C baja a SPEC/HU/TR de **adopción Partes** (puerto dataset, seed, montaje Emitir + diseñador), reutilizando GEN-15 sin duplicar el motor.
 
-- **A → D1 (2026-08-25):** [SPEC-011](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) · [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) · [TR-011](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) · [D1](../../04-tareas/100-SistemaPartes/d1/D1-TR-011-reportes-emisiones.md). Siguiente: **D**.
+- **A → I (2026-10-29):** [SPEC-011](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) · [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) · [TR-011](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md). Cierre F1/F/I: [D-VERIFICACION-TR-011](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-011-2026-10-29.md). Estado **Finalizado**.
 
 Trazas Framework a no reabrir:
 

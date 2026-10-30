@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import './dxReportingRuntimeSetup'
 import ReportDesigner, { Callbacks, RequestOptions } from 'devexpress-reporting-react/dx-report-designer'
 import 'devextreme/dist/css/dx.light.css'
@@ -29,18 +30,28 @@ export default function DxReportDesignerApp({
   knownReportCodes = [],
   onDxReportSaved,
 }: DxReportDesignerAppProps) {
+  const pendingLayoutRef = useRef<string | undefined>(undefined)
+
   return (
     <ReportDesigner reportUrl={reportUrl} height="100%" width="100%" developmentMode>
       <RequestOptions host={host} getDesignerModelAction={getDesignerModelAction} />
       <Callbacks
+        ReportSaving={(...callbackArgs: unknown[]) => {
+          const parsed = parseDxReportSavedArgs(callbackArgs)
+          if (parsed.layoutDefinition) {
+            pendingLayoutRef.current = parsed.layoutDefinition
+          }
+        }}
         ReportSaved={(...callbackArgs: unknown[]) => {
           if (!onDxReportSaved) {
             return
           }
           const parsed = parseDxReportSavedArgs(callbackArgs)
+          const layoutDefinition = parsed.layoutDefinition ?? pendingLayoutRef.current
+          pendingLayoutRef.current = undefined
           void onDxReportSaved({
             url: parsed.url,
-            layoutDefinition: parsed.layoutDefinition,
+            layoutDefinition,
             isNew: parsed.url !== '' && isUnknownEmissionReportCode(parsed.url, knownReportCodes),
           })
         }}

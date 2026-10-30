@@ -39,7 +39,7 @@ class ApiV1EmissionsPartesTest extends TestCase
     }
 
     /** @return array<string, mixed> */
-    private function hostContext(?string $hoy = null): array
+    private function hostContext(?string $hoy = null, array $selectedTareaIds = [1]): array
     {
         $hoy ??= now()->toDateString();
 
@@ -50,7 +50,23 @@ class ApiV1EmissionsPartesTest extends TestCase
             'usuarioId' => null,
             'tipoTareaId' => null,
             'estadoCerrado' => 'todas',
+            'selectedTareaIds' => $selectedTareaIds,
         ];
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function listTareaIds(string $token, string $fechaDesde, string $fechaHasta): array
+    {
+        $response = $this->getJson(
+            '/api/v1/partes/informes/tareas?fechaDesde='.$fechaDesde.'&fechaHasta='.$fechaHasta.'&pageSize=0',
+            $this->authHeaders($token)
+        );
+        $response->assertStatus(200);
+        $items = $response->json('resultado.items') ?? [];
+
+        return array_values(array_map(static fn (array $row): int => (int) $row['id'], $items));
     }
 
     /** Crea un reporte emisible (no estándar) para tests GEN-15. */
@@ -176,6 +192,7 @@ class ApiV1EmissionsPartesTest extends TestCase
                 'usuarioId' => null,
                 'tipoTareaId' => null,
                 'estadoCerrado' => 'todas',
+                'selectedTareaIds' => [1],
             ],
         ], $this->authHeaders($token))
             ->assertStatus(422)
@@ -249,12 +266,25 @@ class ApiV1EmissionsPartesTest extends TestCase
             ->assertJsonPath('error', 4709);
 
         $hoy = now()->toDateString();
+        $tipoId = (int) DB::table('PQ_PARTES_TIPOS_TAREA')->where('code', 'GEN')->value('id');
+        $clienteId = (int) DB::table('PQ_PARTES_CLIENTES')->value('id');
+        $this->postJson('/api/v1/partes/tareas', [
+            'usuarioId' => $asstId,
+            'clienteId' => $clienteId,
+            'tipoTareaId' => $tipoId,
+            'fecha' => $hoy,
+            'duracionMinutos' => 15,
+            'observacion' => 'emi asst',
+        ], $this->authHeaders($asstToken))->assertStatus(201);
+        $tareaIds = $this->listTareaIds($asstToken, $hoy, $hoy);
+        $this->assertNotEmpty($tareaIds);
+
         $this->seedEmittableReport();
         $this->postJson('/api/v1/emissions/jobs', [
             'processCode' => 'partes.informes.consultaDetallada',
             'channel' => 'pdf',
             'mode' => 'consolidated',
-            'hostContext' => $this->hostContext($hoy),
+            'hostContext' => $this->hostContext($hoy, $tareaIds),
         ], $this->authHeaders($asstToken))
             ->assertStatus(200)
             ->assertJsonPath('resultado.item.status', 'done');
@@ -309,16 +339,20 @@ class ApiV1EmissionsPartesTest extends TestCase
         $this->assertSame(55, (int) $paged->json('resultado.total'));
         $this->assertCount(50, $paged->json('resultado.items'));
 
+        $allIds = $this->listTareaIds($token, $hoy, $hoy);
+        $this->assertCount(55, $allIds);
+        $subsetIds = array_slice($allIds, 0, 3);
+
         $this->seedEmittableReport();
         $emit = $this->postJson('/api/v1/emissions/jobs', [
             'processCode' => 'partes.informes.consultaDetallada',
             'channel' => 'pdf',
             'mode' => 'consolidated',
-            'hostContext' => $this->hostContext($hoy),
+            'hostContext' => $this->hostContext($hoy, $subsetIds),
         ], $this->authHeaders($token));
         $emit->assertStatus(200)
             ->assertJsonPath('resultado.item.status', 'done')
-            ->assertJsonPath('resultado.item.datasetRowCount', 55);
+            ->assertJsonPath('resultado.item.datasetRowCount', 3);
 
         $jobId = (string) $emit->json('resultado.item.jobId');
         $this->get('/api/v1/emissions/jobs/'.$jobId.'/download', $this->authHeaders($token))
@@ -341,7 +375,7 @@ class ApiV1EmissionsPartesTest extends TestCase
             'pdf',
             jobId: $jobId,
         ));
-        $this->assertSame(55, $dataset->rowCount());
+        $this->assertSame(3, $dataset->rowCount());
         $this->assertArrayHasKey('clienteCode', $dataset->rows[0]);
         $this->assertArrayNotHasKey('diaSemana', $dataset->rows[0]);
     }
@@ -427,12 +461,14 @@ class ApiV1EmissionsPartesTest extends TestCase
         ], $this->tenantHeaders())->json('resultado.token');
 
         $this->app['auth']->forgetGuards();
+        $cliTareaIds = $this->listTareaIds($cliToken, $hoy, $hoy);
+        $this->assertCount(1, $cliTareaIds);
         $this->seedEmittableReport();
         $this->postJson('/api/v1/emissions/jobs', [
             'processCode' => 'partes.informes.consultaDetallada',
             'channel' => 'pdf',
             'mode' => 'consolidated',
-            'hostContext' => $this->hostContext($hoy),
+            'hostContext' => $this->hostContext($hoy, $cliTareaIds),
         ], $this->authHeaders($cliToken))
             ->assertStatus(200)
             ->assertJsonPath('resultado.item.datasetRowCount', 1);
@@ -474,6 +510,20 @@ class ApiV1EmissionsPartesTest extends TestCase
             'channel' => 'pdf',
             'mode' => 'consolidated',
             'hostContext' => $this->hostContext(),
+        ], $this->authHeaders($token))
+            ->assertStatus(422)
+            ->assertJsonPath('error', 4701);
+    }
+
+    public function test_emit_rechaza_sin_filas_tildadas(): void
+    {
+        $token = $this->login();
+        $this->seedEmittableReport();
+        $this->postJson('/api/v1/emissions/jobs', [
+            'processCode' => 'partes.informes.consultaDetallada',
+            'channel' => 'pdf',
+            'mode' => 'consolidated',
+            'hostContext' => $this->hostContext(null, []),
         ], $this->authHeaders($token))
             ->assertStatus(422)
             ->assertJsonPath('error', 4701);

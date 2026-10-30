@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="26.1.4.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v26.1, Version=26.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="partes_consultaDetallada_principal" DisplayName="Prueba PQ" PageWidthF="850" PageHeightF="1100" Version="26.1" DataSource="#Ref-0">
+  <Bands>
+    <Item1 Ref="2" ControlType="TopMarginBand" Name="TopMargin1" />
+    <Item2 Ref="3" ControlType="DetailBand" Name="Detail1" HeightF="23">
+      <Controls>
+        <Item1 Ref="4" ControlType="XRLabel" Name="label4" Multiline="true" Text="label4" SizeF="45.833332,23" LocationFloat="581.25,0" Padding="2,2,0,0,100">
+          <ExpressionBindings>
+            <Item1 Ref="5" EventName="BeforePrint" PropertyName="Text" Expression="[duracionMinutos]" />
+          </ExpressionBindings>
+        </Item1>
+        <Item2 Ref="6" ControlType="XRLabel" Name="label3" Multiline="true" Text="label3" SizeF="100,23" LocationFloat="463.54166,0" Padding="2,2,0,0,100">
+          <ExpressionBindings>
+            <Item1 Ref="7" EventName="BeforePrint" PropertyName="Text" Expression="[fecha]" />
+          </ExpressionBindings>
+        </Item2>
+        <Item3 Ref="8" ControlType="XRLabel" Name="label2" Multiline="true" Text="label2" SizeF="308.33334,23" LocationFloat="138.54167,0" Padding="2,2,0,0,100">
+          <ExpressionBindings>
+            <Item1 Ref="9" EventName="BeforePrint" PropertyName="Text" Expression="[clienteNombre]" />
+          </ExpressionBindings>
+        </Item3>
+        <Item4 Ref="10" ControlType="XRLabel" Name="label1" Multiline="true" Text="label1" SizeF="100,23" LocationFloat="0,0" Padding="2,2,0,0,100">
+          <ExpressionBindings>
+            <Item1 Ref="11" EventName="BeforePrint" PropertyName="Text" Expression="[clienteCode]" />
+          </ExpressionBindings>
+        </Item4>
+      </Controls>
+    </Item2>
+    <Item3 Ref="12" ControlType="BottomMarginBand" Name="BottomMargin1">
+      <Controls>
+        <Item1 Ref="13" ControlType="XRLabel" Name="label5" Multiline="true" Text="label4" SizeF="45.833332,23" LocationFloat="578.125,13.541666" Padding="2,2,0,0,100">
+          <ExpressionBindings>
+            <Item1 Ref="14" EventName="BeforePrint" PropertyName="Text" Expression="[duracionMinutos]" />
+          </ExpressionBindings>
+        </Item1>
+      </Controls>
+    </Item3>
+  </Bands>
+  <ComponentStorage>
+    <Item1 Ref="0" ObjectType="DevExpress.DataAccess.Json.JsonDataSource,DevExpress.DataAccess.v26.1" Name="Consulta detallada" Base64="PEpzb25EYXRhU291cmNlIE5hbWU9IkNvbnN1bHRhIGRldGFsbGFkYSI+PFNvdXJjZSBTb3VyY2VUeXBlPSJEZXZFeHByZXNzLkRhdGFBY2Nlc3MuSnNvbi5DdXN0b21Kc29uU291cmNlIiBKc29uPSJbeyZxdW90O2ZlY2hhJnF1b3Q7OiZxdW90OzIwMjYtMDEtMDEmcXVvdDssJnF1b3Q7Y2xpZW50ZUNvZGUmcXVvdDs6JnF1b3Q7Y2xpZW50ZUNvZGUmcXVvdDssJnF1b3Q7Y2xpZW50ZU5vbWJyZSZxdW90OzomcXVvdDtjbGllbnRlTm9tYnJlJnF1b3Q7LCZxdW90O3VzdWFyaW9Db2RlJnF1b3Q7OiZxdW90O3VzdWFyaW9Db2RlJnF1b3Q7LCZxdW90O3VzdWFyaW9Ob21icmUmcXVvdDs6JnF1b3Q7dXN1YXJpb05vbWJyZSZxdW90OywmcXVvdDt0aXBvVGFyZWFDb2RlJnF1b3Q7OiZxdW90O3RpcG9UYXJlYUNvZGUmcXVvdDssJnF1b3Q7dGlwb1RhcmVhRGVzY3JpcGNpb24mcXVvdDs6JnF1b3Q7dGlwb1RhcmVhRGVzY3JpcGNpb24mcXVvdDssJnF1b3Q7ZHVyYWNpb25NaW51dG9zJnF1b3Q7OjAsJnF1b3Q7c2luQ2FyZ28mcXVvdDs6ZmFsc2UsJnF1b3Q7cHJlc2VuY2lhbCZxdW90OzpmYWxzZSwmcXVvdDtjZXJyYWRvJnF1b3Q7OmZhbHNlLCZxdW90O29ic2VydmFjaW9uJnF1b3Q7OiZxdW90O29ic2VydmFjaW9uJnF1b3Q7LCZxdW90O2VycENsaWVudGUmcXVvdDs6JnF1b3Q7ZXJwQ2xpZW50ZSZxdW90OywmcXVvdDtlcnBBcnRpY3VsbyZxdW90OzomcXVvdDtlcnBBcnRpY3VsbyZxdW90O31dIiAvPjxTY2hlbWE+PE5vZGUgTmFtZT0icm9vdCIgU2VsZWN0ZWQ9InRydWUiIE5vZGVUeXBlPSJBcnJheSI+PE5vZGUgTmFtZT0iZmVjaGEiIFR5cGU9IlN5c3RlbS5OdWxsYWJsZWAxW1N5c3RlbS5EYXRlT25seV0iIFNlbGVjdGVkPSJ0cnVlIiBOb2RlVHlwZT0iUHJvcGVydHkiIC8+PE5vZGUgTmFtZT0iY2xpZW50ZUNvZGUiIFR5cGU9IlN5c3RlbS5TdHJpbmciIFNlbGVjdGVkPSJ0cnVlIiBOb2RlVHlwZT0iUHJvcGVydHkiIC8+PE5vZGUgTmFtZT0iY2xpZW50ZU5vbWJyZSIgVHlwZT0iU3lzdGVtLlN0cmluZyIgU2VsZWN0ZWQ9InRydWUiIE5vZGVUeXBlPSJQcm9wZXJ0eSIgLz48Tm9kZSBOYW1lPSJ1c3VhcmlvQ29kZSIgVHlwZT0iU3lzdGVtLlN0cmluZyIgU2VsZWN0ZWQ9InRydWUiIE5vZGVUeXBlPSJQcm9wZXJ0eSIgLz48Tm9kZSBOYW1lPSJ1c3VhcmlvTm9tYnJlIiBUeXBlPSJTeXN0ZW0uU3RyaW5nIiBTZWxlY3RlZD0idHJ1ZSIgTm9kZVR5cGU9IlByb3BlcnR5IiAvPjxOb2RlIE5hbWU9InRpcG9UYXJlYUNvZGUiIFR5cGU9IlN5c3RlbS5TdHJpbmciIFNlbGVjdGVkPSJ0cnVlIiBOb2RlVHlwZT0iUHJvcGVydHkiIC8+PE5vZGUgTmFtZT0idGlwb1RhcmVhRGVzY3JpcGNpb24iIFR5cGU9IlN5c3RlbS5TdHJpbmciIFNlbGVjdGVkPSJ0cnVlIiBOb2RlVHlwZT0iUHJvcGVydHkiIC8+PE5vZGUgTmFtZT0iZHVyYWNpb25NaW51dG9zIiBUeXBlPSJTeXN0ZW0uTnVsbGFibGVgMVtTeXN0ZW0uSW50NjRdIiBTZWxlY3RlZD0idHJ1ZSIgTm9kZVR5cGU9IlByb3BlcnR5IiAvPjxOb2RlIE5hbWU9InNpbkNhcmdvIiBUeXBlPSJTeXN0ZW0uTnVsbGFibGVgMVtTeXN0ZW0uQm9vbGVhbl0iIFNlbGVjdGVkPSJ0cnVlIiBOb2RlVHlwZT0iUHJvcGVydHkiIC8+PE5vZGUgTmFtZT0icHJlc2VuY2lhbCIgVHlwZT0iU3lzdGVtLk51bGxhYmxlYDFbU3lzdGVtLkJvb2xlYW5dIiBTZWxlY3RlZD0idHJ1ZSIgTm9kZVR5cGU9IlByb3BlcnR5IiAvPjxOb2RlIE5hbWU9ImNlcnJhZG8iIFR5cGU9IlN5c3RlbS5OdWxsYWJsZWAxW1N5c3RlbS5Cb29sZWFuXSIgU2VsZWN0ZWQ9InRydWUiIE5vZGVUeXBlPSJQcm9wZXJ0eSIgLz48Tm9kZSBOYW1lPSJvYnNlcnZhY2lvbiIgVHlwZT0iU3lzdGVtLlN0cmluZyIgU2VsZWN0ZWQ9InRydWUiIE5vZGVUeXBlPSJQcm9wZXJ0eSIgLz48Tm9kZSBOYW1lPSJlcnBDbGllbnRlIiBUeXBlPSJTeXN0ZW0uU3RyaW5nIiBTZWxlY3RlZD0idHJ1ZSIgTm9kZVR5cGU9IlByb3BlcnR5IiAvPjxOb2RlIE5hbWU9ImVycEFydGljdWxvIiBUeXBlPSJTeXN0ZW0uU3RyaW5nIiBTZWxlY3RlZD0idHJ1ZSIgTm9kZVR5cGU9IlByb3BlcnR5IiAvPjwvTm9kZT48L1NjaGVtYT48L0pzb25EYXRhU291cmNlPg==" />
+  </ComponentStorage>
+</XtraReportsLayoutSerializer>

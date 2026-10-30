@@ -59,6 +59,8 @@ final class PartesConsultaDetalladaEmissionPort implements EmissionDatasetPort
         $esSupervisor = (bool) ($partes['esSupervisor'] ?? false);
         $usuarioId = $esSupervisor ? $this->nullableInt($hostContext['usuarioId'] ?? null) : null;
 
+        $selectedTareaIds = $this->resolveSelectedTareaIds($hostContext);
+
         try {
             $rows = $this->spCaller->call('pq_sp_partes_tarea_list', [
                 'p_actor_tipo_funcional' => $partes['tipoFuncional'] ?? null,
@@ -78,10 +80,15 @@ final class PartesConsultaDetalladaEmissionPort implements EmissionDatasetPort
             throw EmissionException::fromCode(4701);
         }
 
+        $selectedSet = array_fill_keys($selectedTareaIds, true);
         $datasetRows = [];
         foreach ($rows as $row) {
             $camel = $this->toCamel((array) $row);
             unset($camel['_total']);
+            $rowId = isset($camel['id']) ? (int) $camel['id'] : 0;
+            if ($rowId === 0 || ! isset($selectedSet[$rowId])) {
+                continue;
+            }
             $datasetRows[] = $this->pickColumns($camel);
         }
 
@@ -122,6 +129,39 @@ final class PartesConsultaDetalladaEmissionPort implements EmissionDatasetPort
         }
 
         return (int) $value;
+    }
+
+    /**
+     * @param  array<string, mixed>  $hostContext
+     * @return list<int>
+     */
+    private function resolveSelectedTareaIds(array $hostContext): array
+    {
+        if (! array_key_exists('selectedTareaIds', $hostContext)) {
+            throw EmissionException::fromCode(4701);
+        }
+
+        $raw = $hostContext['selectedTareaIds'];
+        if (! is_array($raw) || $raw === []) {
+            throw EmissionException::fromCode(4701);
+        }
+
+        $ids = [];
+        foreach ($raw as $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+            $id = (int) $value;
+            if ($id > 0) {
+                $ids[$id] = $id;
+            }
+        }
+
+        if ($ids === []) {
+            throw EmissionException::fromCode(4701);
+        }
+
+        return array_values($ids);
     }
 
     /**

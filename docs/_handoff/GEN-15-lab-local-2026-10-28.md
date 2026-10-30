@@ -1,5 +1,7 @@
 # Handoff GEN-15 — lab local 2026-10-28
 
+> Cierre 2026-10-29 (F1/F/I): el GEN quedó **Finalizado**. El PDF en blanco del DEV desplegado era `PAQSUITE_EMISSION_DX_MODE=fake`. Con `remote`, el sidecar imprime el archivo `data/layouts/{código}.repx` del reporte elegido. La duración sale en minutos. Ver [D-VERIFICACION-TR-011-2026-10-29](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-011-2026-10-29.md).
+
 Continuar acá: el PDF **trae datos** pero **no el diseño**; el diseñador **no muestra** los layouts bien.
 
 ## Qué ya quedó

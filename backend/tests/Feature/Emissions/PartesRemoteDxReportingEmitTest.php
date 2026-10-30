@@ -45,10 +45,12 @@ final class PartesRemoteDxReportingEmitTest extends TestCase
         ]);
 
         $seenReportId = null;
+        $seenLayout = null;
         Http::fake([
-            'http://127.0.0.1:5055/api/v1/dx-reporting/render' => function ($request) use (&$seenReportId) {
+            'http://127.0.0.1:5055/api/v1/dx-reporting/render' => function ($request) use (&$seenReportId, &$seenLayout) {
                 $payload = $request->data();
                 $seenReportId = $payload['reportId'] ?? null;
+                $seenLayout = $payload['layoutDefinition'] ?? null;
 
                 return Http::response([
                     'fileName' => 'partes.pdf',
@@ -93,12 +95,87 @@ final class PartesRemoteDxReportingEmitTest extends TestCase
                 'usuarioId' => null,
                 'tipoTareaId' => null,
                 'estadoCerrado' => 'todas',
+                'selectedTareaIds' => [1],
             ],
         ], $this->authHeaders($token))
             ->assertStatus(200)
             ->assertJsonPath('resultado.item.status', 'done');
 
         $this->assertSame('partes.consultaDetallada.sidecar', $seenReportId);
+        $this->assertIsString($seenLayout);
+        $this->assertStringContainsString('XtraReportsLayoutSerializer', $seenLayout);
         Http::assertSentCount(1);
+    }
+
+    public function test_emit_remote_sin_xml_en_catalogo_envia_layout_must(): void
+    {
+        config([
+            'paqsuite.emissions.dxReporting.mode' => 'remote',
+            'paqsuite.emissions.dxReporting.serviceUrl' => 'http://127.0.0.1:5055/api/v1/dx-reporting',
+            'paqsuite.emissions.dxReporting.apiKey' => '',
+            'paqsuite.emissions.dxReporting.timeoutSeconds' => 5,
+        ]);
+
+        $seenLayout = null;
+        $seenMime = null;
+        Http::fake([
+            'http://127.0.0.1:5055/api/v1/dx-reporting/render' => function ($request) use (&$seenLayout, &$seenMime) {
+                $payload = $request->data();
+                $seenLayout = $payload['layoutDefinition'] ?? null;
+                $seenMime = $payload['layoutMime'] ?? null;
+
+                return Http::response([
+                    'fileName' => 'partes.pdf',
+                    'mimeType' => 'application/pdf',
+                    'contentBase64' => base64_encode('%PDF-1.4 remote'),
+                ], 200);
+            },
+        ]);
+
+        $token = $this->login();
+        $this->app->forgetInstance(\PaqSuite\LaravelCore\Emissions\Contracts\DxReportingEngine::class);
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\Emissions\Contracts\DxReportingEngine::class,
+            fn ($app) => \App\Services\Emissions\EmissionDxReportingEngineFactory::make($app),
+        );
+        $this->app->forgetInstance(\PaqSuite\LaravelCore\Emissions\EmissionOrchestrator::class);
+
+        $reportId = (int) DB::table('pq_emission_reports')->insertGetId([
+            'process_code' => 'partes.informes.consultaDetallada',
+            'report_code' => 'partes_consultaDetallada_copia_vacia',
+            'name' => 'partes consultaDetallada principal',
+            'is_standard' => 0,
+            'is_principal' => 1,
+            'visible_mobile' => true,
+            'layout_definition' => null,
+            'layout_mime' => null,
+            'is_active' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $hoy = now()->toDateString();
+        $this->postJson('/api/v1/emissions/jobs', [
+            'processCode' => 'partes.informes.consultaDetallada',
+            'channel' => 'pdf',
+            'mode' => 'consolidated',
+            'reportId' => $reportId,
+            'hostContext' => [
+                'fechaDesde' => $hoy,
+                'fechaHasta' => $hoy,
+                'clienteId' => null,
+                'usuarioId' => null,
+                'tipoTareaId' => null,
+                'estadoCerrado' => 'todas',
+                'selectedTareaIds' => [1],
+            ],
+        ], $this->authHeaders($token))
+            ->assertStatus(200)
+            ->assertJsonPath('resultado.item.status', 'done');
+
+        $this->assertSame('application/xml', $seenMime);
+        $this->assertIsString($seenLayout);
+        $this->assertStringContainsString('Consulta detallada', $seenLayout);
+        $this->assertStringContainsString('[clienteNombre]', $seenLayout);
     }
 }

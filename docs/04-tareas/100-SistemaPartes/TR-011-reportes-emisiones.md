@@ -12,9 +12,9 @@ Jira: PIAPARTES-39
 | **Roles** | Cliente / asistente / supervisor (emitir según menú); diseñar = `emission.design` + desktop |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md); [TR-006](./TR-006-consultas-dashboard-navegacion.md) (`GET /partes/informes/tareas`, `pq_sp_partes_tarea_list`); [TR-007](./TR-007-mobile-capacitor.md) (policy native); paquetes `@paqsuite/react-core` + `paqsuite/laravel-core`; GEN-15 (SPEC-001-15 / TR-GEN-15-*) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Pendiente de Revisión |
+| **Estado** | Finalizado |
 | **Revisión C1** | Apto con observaciones (ver §11) |
-| **Última actualización** | 2026-10-16 (Parte E tests) |
+| **Última actualización** | 2026-10-29 (Parte I) |
 
 **Origen:** [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md)  
 **Referencia SPEC:** [SPEC-011](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md)  
@@ -41,7 +41,7 @@ Como usuario con acceso a Consulta detallada quiero emitir PDF / impresión / Ex
 
 - Adoptar motor GEN-15 (DDL/SP/params `Emission*` si el host aún no los tiene; rutas `/api/v1/emissions/*`; UI `EmissionDialog` + `EmissionReportDesignerPage`).
 - Seed proceso **`partes.informes.consultaDetallada`**, `menu_process_code=partes_consulta_detallada`, canales Must, flags A1, reporte + plantilla principales.
-- Puerto `PartesConsultaDetalladaEmissionPort::resolveDataset` → **`pq_sp_partes_tarea_list`** (todas las filas).
+- Puerto `PartesConsultaDetalladaEmissionPort::resolveDataset` → **`pq_sp_partes_tarea_list`** + filtro por **`selectedTareaIds`**.
 - `hostContext` en preview/job; FE snapshot de filtros de pantalla.
 - `EmissionDialog` en Consulta detallada (grilla y pivot); `EmissionEnabled=S` al adoptar.
 - Menú diseñador `partes_disenador_emisiones` → `/emisiones/disenador`.
@@ -83,7 +83,7 @@ Mapear HU CA-01…21:
 | CA-04 | `disabled` si `loading` o **`total===0`** del último Buscar (universo API, no filter-row ni página vacía con total>0); visible |
 | CA-05 | `EmissionEnabled=N` → no montar diálogo ni página diseñador; API → **4704** (`emission.capabilityDisabled`) |
 | CA-06 | Usuario menú consulta sin `emission.design` emite PDF; design → **4709** |
-| CA-07 | Dataset = SP list + `hostContext`; todas las filas; rol en servidor; columnas §1; duración `hh:mm` en layout DX (campo minutos + formato) |
+| CA-07 | Dataset = SP list + `hostContext` (incl. `selectedTareaIds`); rol en servidor; columnas §1; duración en minutos |
 | CA-08 | Canales seed; UI no ofrece zip ni segmented |
 | CA-09 | `permiteConsolidado={false}` en el dialog (sin selector grupo) |
 | CA-10 | Export grilla/pivot GEN-11/12 intacto |
@@ -115,7 +115,7 @@ Los 6 de HU-011 (PDF universo, vacío/capacidad off, pivot no recorta, permisos,
 | RN-TR-04 | `EmissionEnabled=S` en seeder de **adopción Partes** (update de esa clave). Numéricos: solo insert-if-absent. |
 | RN-TR-05 | `AppServiceProvider`: `EmissionDatasetPortRegistry::register('partes.informes.consultaDetallada', PartesConsultaDetalladaEmissionPort)`. |
 | RN-TR-06 | Puerto: `resolveDataset` obtiene `hostContext` (§1 persistencia jobId), aplica actor `EnsurePartesFunctionalProfile`, llama `pq_sp_partes_tarea_list` vía SpCaller / **`PartesTareaOperations`** (mismo contrato que `PartesInformeController::listTareas`), camelCase, **sin** paginar. No implementa `SegmentedEmissionDatasetPort` ni `MailRecipientsEmissionDatasetPort`. |
-| RN-TR-07 | `hostContext` Must: `{ fechaDesde, fechaHasta, clienteId, usuarioId, tipoTareaId, estadoCerrado }`. Fechas ISO `yyyy-MM-dd` **requeridas**; faltantes/inválidas → **4701**. Ids `number \| null`. `estadoCerrado`: `'todas' \| 'abiertas' \| 'cerradas'` (default `'todas'`). `usuarioId` ignorado si `!esSupervisor`. Filtros **no amplían** el universo de rol (misma `filteredQuery` que el informe). Snapshot al confirmar Emitir = **controles de pantalla actuales**, no el último Buscar ni el estado visual de grilla/pivot. |
+| RN-TR-07 | `hostContext` Must: `{ fechaDesde, fechaHasta, clienteId, usuarioId, tipoTareaId, estadoCerrado, selectedTareaIds }`. Fechas ISO `yyyy-MM-dd` **requeridas**; faltantes/inválidas → **4701**. `selectedTareaIds`: array no vacío de enteros > 0; ausente o vacío → **4701**. Ids `number \| null` en filtros. `estadoCerrado`: `'todas' \| 'abiertas' \| 'cerradas'` (default `'todas'`). `usuarioId` ignorado si `!esSupervisor`. Snapshot al confirmar Emitir = filtros + **selección grilla** actuales. |
 | RN-TR-08 | Rutas `/api/v1/emissions/*` como template GEN (`EmissionsController` thin del host o del paquete) + `auth:sanctum` + `paqsuite.instalacion` + `partes.profile`. Emitir: gate permiso **`partes_consulta_detallada`**. Design: **`emission.design`**. |
 | RN-TR-09 | FE `ConsultaDetalladaPage`: filtros de pantalla (DateBox existentes + SelectBox cliente / tipo / cerrado; asistente solo supervisor). `Buscar` → `fetchInformeTareas` con esos query params (ya soportados por TR-006). |
 | RN-TR-10 | Botón **Emitir** en `toolbarLeading` de `ProcessDataGrid` **y** en `leadingSlot` de `PivotLayoutsBar` (Must visible en ambos modos). `disabled={loading \|\| total===0}` (`total` del envelope del último Buscar). No montar si `isNativeApp()` o `EmissionEnabled=No`. |
@@ -166,6 +166,7 @@ type ConsultaDetalladaHostContext = {
   usuarioId: number | null
   tipoTareaId: number | null
   estadoCerrado: 'todas' | 'abiertas' | 'cerradas'
+  selectedTareaIds: number[]
 }
 ```
 
@@ -320,6 +321,8 @@ Ninguna bloqueante.
 | 2026-08-25 | CC Q13: RN-TR-12 / CA-15 → `EmissionReportDesignerPage` sin hardcode; listado processes Must; T6/E2E con lista+confirmación (código FE pendiente de bump `react-core`). |
 | 2026-10-15 | Adopción FE GEN-15: `EmissionDialog` + `EmissionReportDesignerPage` desde `@paqsuite/react-core` 2.4.25-beta.1; se retiran forks host (`PartesEmissionDialog`, diseñador local). i18n `emission.*` alineado al SDK. |
 | 2026-10-16 | Parte E: Playwright `partes-emisiones.spec.ts` (Emitir + diseñador llega a DX `GetDesignerModel` sin error). |
+| 2026-10-29 | Parte F1+F+I: [D-VERIFICACION-TR-011](../updates/100-SistemaPartes/D-VERIFICACION-TR-011-2026-10-29.md). Runtime desplegado = sidecar `remote`. Emitir usa el diseño guardado (no la plantilla estándar). Duración = minutos. |
+| 2026-10-29 | CC ST #1: `selectedTareaIds`; puerto filtra ids; Emitir disabled sin tildes. Ver [D-VERIFICACION-CC-ST-01](../updates/100-SistemaPartes/D-VERIFICACION-CC-ST-01-2026-10-29.md). |
 
 ---
 
@@ -367,7 +370,7 @@ Ninguna bloqueante.
 - Persistencia `hostContext`: Laravel Cache `paq.emission.hostContext.{jobId}`. Preview síncrono lee `request()->input('hostContext')`.
 - Authz emitir: `MenuProcedimientoChecker` (menú `partes_consulta_detallada` → 4703). Authz diseñar: `AccesoTotal` (SUPERVISOR demo) → 4709 si no.
 - `EmissionEnabled` se seed/actualiza a **`S`** como tipo **S** (string `'S'`/`'N'`). GEN documenta tipo L; `ParametroValorCodec` 1.3.3 solo S/T/I/D/B/F.
-- Runtime DX: `MinimalDxReportingEngine` (PDF mínimo). Diseñador: `ReportDesignerHost` placeholder.
+- Runtime DX al cierre de Parte D (2026-08-25): `MinimalDxReportingEngine` (PDF mínimo) y diseñador placeholder. **Supersedido** el 2026-10-29: ver §17. El modo `fake` sigue existiendo para local/CI y produce un PDF de una página en blanco.
 - Dispatcher async: `SyncNoopEmissionTaskDispatcher` (Must bajo umbral, igual TR-009).
 - FE `hostContext`: interceptor `fetch` (no se clona `EmissionDialog`).
 - Toolbar: **Emitir a la izquierda del botón Pivot**.
@@ -379,7 +382,26 @@ Ninguna bloqueante.
 ## 16) Pendientes (hacia F)
 
 - Parte E **2026-10-16:** ver `docs/04-tareas/updates/100-SistemaPartes/E-TR-011-reportes-emisiones-2026-10-16.md`.
-- Smoke manual F1: PDF/mail real si hay SMTP.
 - SQL Server: desplegar `pq_sp_emission_core.sql` (runtime tests = Query Builder MONO / sqlite).
 - E2E `partes-emisiones.spec.ts` endurecido: catálogo GEN antes de `GetDesignerModel`; retry login. Aislado y mix 5 workers **pass**. Suite repo 8 workers sigue saturando `php -S` (fuera de GEN-15).
+
+Cerrados en F1 2026-10-29 (ver §17): emisión real en DEV vía sidecar `remote`; el PDF en blanco era `PAQSUITE_EMISSION_DX_MODE=fake`. Smoke SMTP de mail real sigue fuera de esta verificación.
+
+---
+
+## 17) Cierre F1 / F / I (2026-10-29)
+
+Verificación: [D-VERIFICACION-TR-011-2026-10-29](../updates/100-SistemaPartes/D-VERIFICACION-TR-011-2026-10-29.md).
+
+Contrato que queda alineado al código:
+
+| Tema | Comportamiento |
+|------|----------------|
+| Motor desplegado | `EmissionDxReportingEngineFactory`: `PAQSUITE_EMISSION_DX_MODE=remote` llama al sidecar `POST /render`. `fake` (default de `.env.example`, CI) usa `MinimalDxReportingEngine` y devuelve un PDF de una página **en blanco**. |
+| Qué se emite | `reportsForEmissionDialog` / `isEmitReportAllowed` solo aceptan `is_standard = 0`. La plantilla semilla no aparece en Emitir. |
+| Qué diseño se imprime | El REPX guardado para el `report_code` de ese reporte. En el sidecar desplegado el archivo `data/layouts/{código}.repx` (espacios → guiones) es el que renderiza cuando el id del reporte coincide. |
+| Controles sueltos | Un control en la banda de detalle sin expresión (p. ej. un gauge) se dibuja en cada fila y alarga el PDF. |
+| Duración | El puerto entrega `duracionMinutos` (entero). El diseño en uso enlaza ese campo como número. |
+
+Forge que deba emitir el diseño real: `PAQSUITE_EMISSION_DX_MODE=remote`, `PAQSUITE_EMISSION_DX_SERVICE_URL=http://127.0.0.1:5055/api/v1/dx-reporting`, y `php artisan config:cache` (o `optimize`) más recarga de PHP-FPM. Detalle: [plan sidecar](../../../01-arquitectura/plan-dx-reporting-sidecar-aws-gateway.md) §4.
 

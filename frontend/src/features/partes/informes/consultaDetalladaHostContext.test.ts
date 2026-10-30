@@ -15,6 +15,7 @@ describe('consultaDetalladaHostContext', () => {
       tipoTareaId: 2,
       estadoCerrado: 'abiertas',
       esSupervisor: false,
+      selectedTareaIds: [10, 11],
     })
     expect(ctx).toEqual({
       fechaDesde: '2026-08-01',
@@ -23,6 +24,7 @@ describe('consultaDetalladaHostContext', () => {
       usuarioId: null,
       tipoTareaId: 2,
       estadoCerrado: 'abiertas',
+      selectedTareaIds: [10, 11],
     })
   })
 
@@ -35,14 +37,17 @@ describe('consultaDetalladaHostContext', () => {
       tipoTareaId: null,
       estadoCerrado: 'todas',
       esSupervisor: true,
+      selectedTareaIds: [3],
     })
     expect(ctx.usuarioId).toBe(9)
+    expect(ctx.selectedTareaIds).toEqual([3])
   })
 
-  it('deshabilita Emitir si loading o total 0 del último Buscar', () => {
-    expect(shouldDisableConsultaDetalladaEmit(true, 10)).toBe(true)
-    expect(shouldDisableConsultaDetalladaEmit(false, 0)).toBe(true)
-    expect(shouldDisableConsultaDetalladaEmit(false, 3)).toBe(false)
+  it('deshabilita Emitir si loading, total 0 o sin filas tildadas', () => {
+    expect(shouldDisableConsultaDetalladaEmit(true, 10, 2)).toBe(true)
+    expect(shouldDisableConsultaDetalladaEmit(false, 0, 2)).toBe(true)
+    expect(shouldDisableConsultaDetalladaEmit(false, 3, 0)).toBe(true)
+    expect(shouldDisableConsultaDetalladaEmit(false, 3, 1)).toBe(false)
   })
 
   it('no monta Emitir en native ni con capacidad off', () => {

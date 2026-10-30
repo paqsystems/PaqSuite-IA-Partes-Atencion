@@ -11,8 +11,8 @@ Jira: PIAPARTES-25
 | Título | Diseñar informes y emitir salidas documentales de Consulta detallada (adopción GEN-15) |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente |
-| Última actualización | 2026-08-25 (CC Q13 CA-15) |
+| Estado | Finalizado |
+| Última actualización | 2026-10-29 (CC ST #1 + Parte I) |
 | SPEC origen | [SPEC-011-reportes-emisiones](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) |
 | TR relacionada(s) | [TR-011-reportes-emisiones](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
 
@@ -27,7 +27,7 @@ Jira: PIAPARTES-25
 | Authz emitir = menú `partes_consulta_detallada` (R-EM-10, D-EM-01) | Actores; CA-06; R-EM-10 |
 | Flags consolidado sí / segmentado no / preview no obligatoria (D-EM-04/05, R-EM-23) | Alcance; CA-01, CA-03, CA-09; R-EM-23 |
 | Canales PDF, impresión, Excel/CSV de reporte, mail+PDF; sin ZIP (D-EM-10) | Alcance; CA-08, CA-11; R-EM-04 |
-| Dataset = filtros de pantalla + rol + `es_tarea`; todas las filas; no grilla/pivot/chooser/agrupación (R-EM-05…08, A1 Q1–Q2) | CA-07; R-EM-05…08 |
+| Dataset = filtros de pantalla + rol + `es_tarea` + **filas tildadas** (`selectedTareaIds`); no filter-row/pivot/chooser (R-EM-05…08, A1 Q1–Q2) | CA-07; R-EM-05…08 |
 | Atributos de negocio §4.4 (fecha, cliente, asistente, tipo, duración, marcas, cerrado, observación, ERP) | CA-07 |
 | Servidor revalida; filtros no amplían; snapshot no es sesión (R-EM-08) | CA-07; R-EM-08 |
 | Impresión = mismo PDF + diálogo FE (§4.3) | CA-08 |
@@ -36,8 +36,8 @@ Jira: PIAPARTES-25
 | Tests Feature + unit FE + E2E humo (§5) | CA-21 |
 | Controles DX / i18n-testid GEN (§4.5, A1) | CA-03; Alcance |
 | Usuario sin identidad Partes usable (§3) | Actores |
-| Duración minutos → `hh:mm` en reporte (R-EM-05) | CA-07 |
-| Vacío → Emitir visible y disabled (R-EM-06, D-EM-08) | CA-04 |
+| Duración en minutos; el diseño decide la presentación (R-EM-05, sin `hh:mm` automático) | CA-07 |
+| Vacío o sin tildes → Emitir visible y disabled (R-EM-06, D-EM-08; CC ST #1) | CA-04 |
 | Emitir embebido en Consulta detallada; no menú aparte (R-EM-09) | Alcance; CA-03; R-EM-09 |
 | Convive Excel de grilla (R-EM-04, D-EM-09) | CA-10 |
 | `EmissionEnabled` Sí al adoptar; No → no monta Emitir ni diseñador (R-EM-14, D-EM-06) | Precondiciones; CA-05 |
@@ -71,7 +71,7 @@ para cambiar la presentación sin pedir un desarrollo.
 
 Tras registrar tareas, Consulta detallada permite leer la dedicación. Esta historia **adopta** el motor GEN de reportes/emisiones: Partes declara **qué** proceso emite, **qué datos** manda y **qué canales** habilita; el Framework resuelve **cómo** se diseña el layout y **cómo** se genera la salida. El primer y único proceso Must es Consulta detallada. Diseñar y emitir son permisos distintos: emitir no exige diseñar.
 
-El dataset **no** es «lo visible en pantalla»: es el universo de **filtros de pantalla** (periodo, cliente, asistente si el perfil lo permite, tipo, cerrado) más el recorte de rol y solo tareas. La paginación, el filter-row, la agrupación, el column chooser y el pivot **no** recortan el documento.
+El dataset **no** es «lo visible en pantalla» (filter-row, pivot, etc.): parte de los **filtros de pantalla** y del recorte de rol, pero **Emitir** incluye solo las filas **tildadas** en la grilla web (`selectedTareaIds`). La exportación Excel de grilla sigue siendo independiente.
 
 ### Precondiciones (SPEC §3)
 
@@ -99,7 +99,8 @@ El dataset **no** es «lo visible en pantalla»: es el universo de **filtros de 
 - Al adoptar: dejar `EmissionEnabled = Sí`. Umbrales GEN sin override Partes: `EmissionAsyncMaxMB = 5`, `EmissionAsyncMaxRows = 2000`, `EmissionArtifactRetentionDays = 30`. No hardcodear umbrales; no pisar valores numéricos ya editados en ABM. Edición posterior = parámetros Programa `Emission`.
 - Reuso GEN de async, bitácora `source=emission`, bandeja y purga de artefactos. Sin historial propio de Partes.
 - En Consulta detallada **web**: acción **Emitir** en la toolbar de la pantalla (visible en grilla y en vista pivot) que abre la ventana GEN de emisión (controles DevExtreme). No es un ítem de menú aparte. Colocación exacta → TR.
-- Dataset = filtros **de pantalla** + perfil + `es_tarea`; **todas** las filas; duración técnica en minutos y **`hh:mm`** en el documento. Atributos: fecha, cliente (código + nombre), asistente (código + nombre), tipo (código + descripción), duración, sin cargo, presencial, cerrado, observación, Erp Cliente, Erp Articulo. Filter-row, filtros de columna, agrupación, column chooser, pivot y página **no** recortan. El servidor revalida; los filtros no amplían el universo. El snapshot viaja con preview/job (no solo «último filtro en sesión»).
+- Dataset = filtros **de pantalla** + perfil + `es_tarea`; **todas** las filas; duración en **minutos**. El documento muestra la expresión del diseño guardado (no hay `hh:mm` automático). Atributos: fecha, cliente (código + nombre), asistente (código + nombre), tipo (código + descripción), duración, sin cargo, presencial, cerrado, observación, Erp Cliente, Erp Articulo. Filter-row, filtros de columna, agrupación, column chooser, pivot y página **no** recortan. El servidor revalida; los filtros no amplían el universo. El snapshot viaja con preview/job (no solo «último filtro en sesión»).
+- Emitir ofrece solo diseños guardados (no la plantilla estándar). Un control del detalle sin campo vinculado se imprime en cada fila (R-EM-24).
 - Canales: PDF, impresión (mismo PDF + diálogo de impresión), Excel de reporte, CSV de reporte, mail con cuerpo **breve** + PDF (sin tabla enorme en el correo). Destinatarios: el usuario los indica en la ventana.
 - Convive con exportar Excel/CSV de **grilla**.
 - Diseñador desktop: ítem **Soporte Técnico** `partes_disenador_emisiones` → `/emisiones/disenador` (`tipo_proceso = C`), anclado al único proceso Must; exige `emission.design`. Sin ese permiso, no abre (autorización GEN). El menú se asigna a roles que deban diseñar; el seed no lo da al cliente por defecto.
@@ -135,7 +136,7 @@ El dataset **no** es «lo visible en pantalla»: es el universo de **filtros de 
 | R-EM-02 | El universo (rol, tareas, filtros de pantalla) lo resuelve Partes; el motor solo orquesta salidas. |
 | R-EM-03 | Informes y diseñador usan tipo de menú consulta (`C`); no se usa `E`. |
 | R-EM-04 | Exportar la grilla ≠ Emitir; conviven en Consulta detallada. |
-| R-EM-05 | Dataset técnico de duración: **minutos**. En el documento: **`hh:mm`**. |
+| R-EM-05 | Dataset de duración: **minutos**. El documento imprime lo que el diseño enlazó (sin `hh:mm` automático). |
 | R-EM-06 | Sin filas en el universo consultado, Emitir se ve y queda deshabilitado. |
 | R-EM-07 | No se diseñan campos que el proceso no exponga. |
 | R-EM-08 | Snapshot de filtros de pantalla al previsualizar o emitir; el servidor **revalida**; los filtros **no amplían** el universo; no usar «último filtro en sesión» como única fuente. |
@@ -165,7 +166,7 @@ El dataset **no** es «lo visible en pantalla»: es el universo de **filtros de 
 - [ ] **CA-04** Con 0 filas en el universo consultado, Emitir sigue visible y está deshabilitado.
 - [ ] **CA-05** Con `EmissionEnabled = No` no se monta Emitir ni el diseñador; no se puede operar la capacidad.
 - [ ] **CA-06** Un usuario con menú de la consulta y **sin** permiso de diseño puede emitir al menos un PDF y **no** abre el diseñador.
-- [ ] **CA-07** El documento respeta perfil (cliente = su org; asistente no supervisor = sus tareas; supervisor = universo supervisor) + filtros de pantalla (periodo, cliente, asistente si aplica, tipo, cerrado) + solo tareas; incluye **todas** las filas (no la página); filter-row, columna, agrupación, column chooser y pivot **no** reducen el documento; campos §4.4 presentes; duración en `hh:mm`. Ampliar filtros en cliente **no** trae filas de otro universo (el servidor revalida).
+- [ ] **CA-07** El documento respeta perfil (cliente = su org; asistente no supervisor = sus tareas; supervisor = universo supervisor) + filtros de pantalla (periodo, cliente, asistente si aplica, tipo, cerrado) + solo tareas; incluye **todas** las filas (no la página); filter-row, columna, agrupación, column chooser y pivot **no** reducen el documento; campos §4.4 presentes; duración en minutos según el diseño. Ampliar filtros en cliente **no** trae filas de otro universo (el servidor revalida). El diseño elegido es uno guardado, no la plantilla estándar.
 - [ ] **CA-08** El usuario puede elegir PDF, impresión (mismo PDF + diálogo de impresión), Excel de reporte, CSV de reporte y mail+PDF. No se ofrecen ZIP ni modo segmentado.
 - [ ] **CA-09** No aparece selector de grupo de empresas. La salida es un único documento del universo filtrado.
 - [ ] **CA-10** El export Excel/CSV de **grilla** sigue disponible junto a Emitir.
@@ -194,7 +195,7 @@ Feature: Emisión documental en Consulta detallada
     And filtros de pantalla que devuelven varias tareas (más de una página de grilla)
     When abre Emitir y elige PDF
     Then obtiene un documento con todas esas tareas (no solo la página)
-    And figuran fecha, cliente, asistente, tipo, duración en hh:mm, marcas, cerrado, observación y referencias ERP si existen
+    And figuran fecha, cliente, asistente, tipo, duración en minutos, marcas, cerrado, observación y referencias ERP si existen
     And queda un evento en la bitácora general de emisiones
     And puede emitir sin haber usado vista previa
 
@@ -298,3 +299,5 @@ Ninguna bloquea Parte C.
 | 2026-08-25 | Parte C: enlazada TR-011; preguntas abiertas cerradas en la TR. |
 | 2026-08-25 | Parte C1: TR-011 apta con observaciones (hostContext/jobId, pageSize 0, 4704). |
 | 2026-10-16 | Parte E: evidencia tests en `docs/04-tareas/updates/100-SistemaPartes/E-TR-011-reportes-emisiones-2026-10-16.md`. |
+| 2026-10-29 | Parte I: **Finalizado**. Duración en minutos (sin `hh:mm` automático). Emitir usa el diseño guardado. |
+| 2026-10-29 | CC ST #1: emisión acotada a filas tildadas; `selectedTareaIds` en hostContext; CA-CC1-11-01…04. |

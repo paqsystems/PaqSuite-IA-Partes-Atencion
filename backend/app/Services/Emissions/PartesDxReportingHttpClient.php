@@ -21,8 +21,11 @@ final class PartesDxReportingHttpClient
             $timeout = 30;
         }
 
+        $payload = self::ensureRepxLayout($payload);
+
         $response = Http::timeout($timeout)
             ->withHeaders($headers)
+            ->asJson()
             ->post($url, $payload);
 
         $body = $response->json();
@@ -34,5 +37,36 @@ final class PartesDxReportingHttpClient
             'status' => $response->status(),
             'body' => $body,
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    public static function ensureRepxLayout(array $payload): array
+    {
+        $layout = $payload['layoutDefinition'] ?? null;
+        if (is_string($layout) && str_contains($layout, 'XtraReportsLayoutSerializer')) {
+            $payload['layoutMime'] = is_string($payload['layoutMime'] ?? null) && $payload['layoutMime'] !== ''
+                ? $payload['layoutMime']
+                : 'application/xml';
+
+            return $payload;
+        }
+
+        $path = resource_path('emissions/partes_consultaDetallada_principal.repx');
+        if (! is_file($path)) {
+            return $payload;
+        }
+
+        $xml = file_get_contents($path);
+        if (! is_string($xml) || ! str_contains($xml, 'XtraReportsLayoutSerializer')) {
+            return $payload;
+        }
+
+        $payload['layoutDefinition'] = $xml;
+        $payload['layoutMime'] = 'application/xml';
+
+        return $payload;
     }
 }
