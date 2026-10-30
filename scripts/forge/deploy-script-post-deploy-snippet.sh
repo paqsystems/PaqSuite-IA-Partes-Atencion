@@ -1,4 +1,5 @@
-# Snippet estándar Forge (zero-downtime) — insertar después de migrate y antes de $ACTIVATE_RELEASE().
+# Snippet estándar Forge (zero-downtime) — NO correr migrate aquí; post-deploy aplica tenant + migrate + GEN-34.
+# SoT completo: scripts/forge/forge-zero-downtime-backend.deploy.sh
 # SoT: docs/_base/00-deploy-github-vercel-route53-forge.md · skill vercel-github-deployment-standard.
 if [ -f "$FORGE_RELEASE_DIRECTORY/scripts/forge/post-deploy.sh" ]; then
   bash "$FORGE_RELEASE_DIRECTORY/scripts/forge/post-deploy.sh"
