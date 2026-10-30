@@ -2,9 +2,12 @@
 
 namespace App\Tasks;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use Illuminate\Support\Facades\DB;
 use PaqSuite\LaravelCore\Tasks\Repositories\TaskExecutionRepository;
 use PaqSuite\LaravelCore\Tasks\StoredProcedureTaskExecutionRepository;
+use PaqSuite\LaravelCore\Tasks\TaskExecutionStatuses;
 use PDO;
 
 /**
@@ -49,6 +52,8 @@ final class PartesTaskExecutionRepository implements TaskExecutionRepository
 
     public function hasRunningOverlap(int $definitionId, int $companyId): bool
     {
+        $this->closeStaleExecutionsBlockingOverlap($definitionId, $companyId);
+
         return $this->inner->hasRunningOverlap($definitionId, $companyId);
     }
 
@@ -141,5 +146,81 @@ final class PartesTaskExecutionRepository implements TaskExecutionRepository
         }
 
         return $out;
+    }
+
+    /**
+     * Ejecuciones EN_EJECUCION zombie bloquean manual y automático (OMITIDA en cadena).
+     */
+    private function closeStaleExecutionsBlockingOverlap(int $definitionId, int $companyId): void
+    {
+        $maxAgeSeconds = $this->overlapRecoveryMaxAgeSeconds();
+        $cutoff = new DateTimeImmutable('-'.$maxAgeSeconds.' seconds');
+        $pageResult = $this->listExecutions(
+            [
+                'definitionId' => $definitionId,
+                'companyId' => $companyId,
+                'statusCode' => TaskExecutionStatuses::EN_EJECUCION,
+            ],
+            1,
+            20,
+        );
+
+        foreach ($pageResult['items'] ?? [] as $row) {
+            $executionId = (int) ($row['id'] ?? $row['executionId'] ?? 0);
+            if ($executionId <= 0) {
+                continue;
+            }
+
+            $startedAt = $this->asDateTime($row['startedAt'] ?? null);
+            if ($startedAt === null || $startedAt > $cutoff) {
+                continue;
+            }
+
+            $message = StaleTaskExecutionRecovery::recoveryMessage();
+            try {
+                $this->appendLog($executionId, 'warning', $message, [
+                    'startedAt' => $startedAt->format(DATE_ATOM),
+                ]);
+            } catch (\Throwable) {
+                // best-effort
+            }
+
+            $this->updateExecutionStatus(
+                $executionId,
+                TaskExecutionStatuses::FALLIDA,
+                new DateTimeImmutable('now'),
+                $message,
+            );
+        }
+    }
+
+    private function overlapRecoveryMaxAgeSeconds(): int
+    {
+        $configured = (int) config('paqsuite.tasks.execution.overlapRecoveryMaxAgeSeconds', 0);
+        if ($configured > 0) {
+            return max(60, $configured);
+        }
+
+        $lockLease = max(60, (int) config('paqsuite.tasks.backup.lockLeaseSeconds', 900));
+
+        return max(300, (int) floor($lockLease / 2));
+    }
+
+    private function asDateTime(mixed $value): ?DateTimeImmutable
+    {
+        if ($value instanceof DateTimeImmutable) {
+            return $value;
+        }
+        if ($value instanceof DateTimeInterface) {
+            return DateTimeImmutable::createFromInterface($value);
+        }
+        if (! is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        $parsed = DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', $value)
+            ?: DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $value);
+
+        return $parsed !== false ? $parsed : null;
     }
 }

@@ -47,9 +47,9 @@ final class PartesTasksRunDueCommand extends Command
         ));
 
         if (! $this->option('skip-recover')) {
-            $recovered = $staleRecovery->recover();
+            $recovered = $staleRecovery->recoverOverlaps();
             if ($recovered > 0) {
-                $this->warn("Recuperadas {$recovered} ejecución(es) EN_EJECUCION expirada(s).");
+                $this->warn("Recuperadas {$recovered} ejecución(es) EN_EJECUCION expirada(s) (overlap).");
             }
         }
 

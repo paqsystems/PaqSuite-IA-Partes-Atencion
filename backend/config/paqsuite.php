@@ -109,6 +109,13 @@ return [
             'auth:sanctum',
         ],
         'scheduleTimezone' => env('PAQSUITE_TASKS_SCHEDULE_TIMEZONE', 'America/Argentina/Buenos_Aires'),
+        'execution' => [
+            // Cierra EN_EJECUCION huérfanas antes de overlap / scheduler (CC PQ #10).
+            'overlapRecoveryMaxAgeSeconds' => (int) env(
+                'PAQSUITE_TASKS_OVERLAP_RECOVERY_MAX_AGE_SECONDS',
+                0,
+            ),
+        ],
         'backup' => [
             'backend' => env('PAQSUITE_TASKS_BACKUP_BACKEND', 'rds'),
             's3ArnPrefix' => env('TASKS_BACKUP_S3_ARN_PREFIX', ''),

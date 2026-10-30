@@ -16,11 +16,29 @@ final class StaleTaskExecutionRecovery
 {
     private const RECOVERY_MESSAGE = 'Recuperación automática: ejecución EN_EJECUCION expirada';
 
+    public static function recoveryMessage(): string
+    {
+        return self::RECOVERY_MESSAGE;
+    }
+
     public function __construct(
         private readonly TaskExecutionRepository $executionRepository,
         private readonly RdsBackupLock $backupLock,
         private readonly BackupInstallationProfileResolver $profileResolver,
     ) {
+    }
+
+    /**
+     * Recuperación agresiva para overlap / scheduler (no esperar timeout RDS completo).
+     */
+    public function recoverOverlaps(): int
+    {
+        $configured = (int) config('paqsuite.tasks.execution.overlapRecoveryMaxAgeSeconds', 0);
+        if ($configured > 0) {
+            return $this->recover($configured);
+        }
+
+        return $this->recover($this->defaultOverlapRecoveryMaxAgeSeconds());
     }
 
     public function recover(?int $maxAgeSeconds = null): int
@@ -109,6 +127,13 @@ final class StaleTaskExecutionRecovery
         $rdsTimeoutMinutes = max(1, (int) config('paqsuite.tasks.backup.rdsTimeoutMinutes', 120));
 
         return max($lockLease, ($rdsTimeoutMinutes * 60) + 300);
+    }
+
+    private function defaultOverlapRecoveryMaxAgeSeconds(): int
+    {
+        $lockLease = max(60, (int) config('paqsuite.tasks.backup.lockLeaseSeconds', 900));
+
+        return max(300, (int) floor($lockLease / 2));
     }
 
     private function asDateTime(mixed $value): ?DateTimeImmutable
