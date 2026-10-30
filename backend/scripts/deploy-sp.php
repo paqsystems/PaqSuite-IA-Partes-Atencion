@@ -47,10 +47,10 @@ function deploySpRunSqlFile(string $connection, string $path): void
 
 function deployHostStoredProcedures(): void
 {
+    // SP GEN (tasks, emission, excel, …) se despliegan vía paqsuite:installation:update (manifiesto Framework).
     $hostSpFiles = glob(__DIR__ . '/../database/sp/*.sql') ?: [];
-    $vendorTaskSpFiles = glob(__DIR__ . '/../vendor/paqsuite/laravel-core/database/sp/pq_sp_task_*.sql') ?: [];
-    $companyFiles = array_merge($vendorTaskSpFiles, $hostSpFiles);
-    sort($companyFiles);
+    sort($hostSpFiles);
+    $companyFiles = $hostSpFiles;
 
     $seenBasenames = [];
     echo '=== Company DB (' . config('database.default') . ") ===\n";

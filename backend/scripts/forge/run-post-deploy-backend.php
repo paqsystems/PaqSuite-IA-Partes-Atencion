@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Forge GEN-34 — un solo proceso PHP: tenant DB + migrate + deploy-sp + installation:update.
+ * Forge GEN-34 — tenant DB + migrate + installation:update (Framework GEN) + deploy-sp (solo host).
  */
 
 require __DIR__ . '/../../vendor/autoload.php';
@@ -31,10 +31,6 @@ if ($migrateExit !== 0) {
     exit($migrateExit);
 }
 
-define('PAQSUITE_DEPLOY_SP_NO_AUTO_RUN', true);
-require __DIR__ . '/../deploy-sp.php';
-deployHostStoredProcedures();
-
 $artisanCommands = $kernel->all();
 if (array_key_exists('paqsuite:installation:update', $artisanCommands)) {
     $updateExit = $kernel->call('paqsuite:installation:update', [
@@ -48,5 +44,9 @@ if (array_key_exists('paqsuite:installation:update', $artisanCommands)) {
 } else {
     echo "paqsuite:installation:update no disponible; omito GEN-34 CLI.\n";
 }
+
+define('PAQSUITE_DEPLOY_SP_NO_AUTO_RUN', true);
+require __DIR__ . '/../deploy-sp.php';
+deployHostStoredProcedures();
 
 exit(0);

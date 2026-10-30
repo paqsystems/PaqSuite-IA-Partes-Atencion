@@ -144,6 +144,7 @@ return new class extends Migration
             $table->unsignedBigInteger('execution_id');
             $table->string('parameter_code', 64);
             $table->text('value_json')->nullable();
+            $table->text('parameters_json')->nullable();
             $table->timestamps();
 
             $table->foreign('execution_id')->references('execution_id')->on('pq_task_execution')->cascadeOnDelete();
