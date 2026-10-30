@@ -113,8 +113,11 @@ export function PaqueteHorasPage() {
       const items = result.envelope.resultado.items ?? []
       setRawRows(items)
       setSaldoInicial(result.envelope.resultado.saldoInicial ?? 0)
-      if ((result.envelope.resultado.total ?? 0) <= 1) {
+      const movimientos = items.filter((row) => !row.esSaldoInicial)
+      if (movimientos.length === 0) {
         setError(resolveAuthMessage('partes.consulta.empty'))
+      } else {
+        setError(null)
       }
       const enriched = enrichRowsWithDuracionHoras(enrichRowsWithDiaSemana(items, t, 'fecha'))
       return enriched.filter((row) => !row.esSaldoInicial)
@@ -185,6 +188,22 @@ export function PaqueteHorasPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- solo mount cliente funcional
   }, [esCliente])
+
+  useEffect(() => {
+    if (esCliente) {
+      return
+    }
+    if (clienteId == null || clienteId <= 0) {
+      setRawRows([])
+      setSaldoInicial(0)
+      setError(null)
+      return
+    }
+    void load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recarga al elegir cliente, no al cambiar fechas
+  }, [clienteId, esCliente])
+
+  const needsClienteSelection = !esCliente && (clienteId == null || clienteId <= 0)
 
   const renderPaqueteGridView = useCallback(
     (toolbarLeading: ReactNode) => (
@@ -319,6 +338,11 @@ export function PaqueteHorasPage() {
         <div className="pqProcessStats partesMobileKpiBlock">
           <strong>{t('partes.mobile.saldoInicial')}:</strong> {formatMinutosAsHhMm(saldoInicial)}
         </div>
+        {needsClienteSelection ? (
+          <div role="status" data-testid="partesPaqueteClienteHint">
+            {t('partes.informe.clienteRequerido')}
+          </div>
+        ) : null}
         {error ? <div role="alert">{error}</div> : null}
         <div className="partesMobileChartToggle">
           <Button
@@ -452,6 +476,11 @@ export function PaqueteHorasPage() {
       <div style={{ marginBottom: 12 }}>
         <strong>{t('partes.informe.saldoInicialLabel')}</strong> {formatMinutosAsHhMm(saldoInicial)}
       </div>
+      {needsClienteSelection ? (
+        <div role="status" data-testid="partesPaqueteClienteHint" style={{ marginBottom: 12 }}>
+          {t('partes.informe.clienteRequerido')}
+        </div>
+      ) : null}
       {error ? <div role="alert">{error}</div> : null}
       <PartesInformeGrillaPivotSection
         consultaId={PAQUETE_HORAS_CONSULTA_ID}
