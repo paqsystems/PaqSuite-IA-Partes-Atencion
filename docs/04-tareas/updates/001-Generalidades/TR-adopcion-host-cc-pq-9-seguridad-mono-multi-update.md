@@ -3,7 +3,7 @@
 | Campo | Valor |
 |-------|--------|
 | **ID** | TR-adopcion-host-cc-pq-9-seguridad-mono-multi-update |
-| **Estado** | **Especificado** (Parte C host 2026-10-30) |
+| **Estado** | **En control calidad** (pin beta.12 + omit manifiesto host 2026-10-30) |
 | **Repo** | **PaqSuite-IA-Partes-Atencion** (host MONO) |
 | **Framework** | [SPEC-001-06-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/05-open-spec/updates/001-Generalidades/SPEC-001-06-update-cc-pq-9-2026-10-30-seguridad-mono-multi.md) · [SPEC-001-34-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/05-open-spec/updates/001-Generalidades/SPEC-001-34-update-cc-pq-9-2026-10-30-install-single-tenancy.md) |
 | **Origen** | `00-ControlCalidad-PQ` · CC **#9** · 30/10/2026 |
