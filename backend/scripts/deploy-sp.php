@@ -47,6 +47,8 @@ function deploySpRunSqlFile(string $connection, string $path): void
 
 function deployHostStoredProcedures(): void
 {
+    require_once __DIR__ . '/partesDomainSpFiles.php';
+
     // SP GEN (tasks, emission, excel, …) se despliegan vía paqsuite:installation:update (manifiesto Framework).
     $hostSpFiles = glob(__DIR__ . '/../database/sp/*.sql') ?: [];
     sort($hostSpFiles);
@@ -64,6 +66,14 @@ function deployHostStoredProcedures(): void
             continue;
         }
         deploySpRunSqlFile(config('database.default'), $file);
+    }
+
+    $partesDomainFiles = partesDomainSpAbsolutePaths(dirname(__DIR__));
+    if ($partesDomainFiles !== []) {
+        echo "=== Partes domain SP (scripts/sql/partes) ===\n";
+        foreach ($partesDomainFiles as $file) {
+            deploySpRunSqlFile(config('database.default'), $file);
+        }
     }
 
     echo "=== Central PAQSYSTEMS ===\n";

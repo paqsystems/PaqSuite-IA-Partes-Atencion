@@ -223,7 +223,7 @@ return [
     'installation' => [
         'hostManifestPath' => env(
             'PAQSUITE_HOST_MANIFEST',
-            database_path('manifest/partesatencion-1.3.18-beta.13.json')
+            database_path('manifest/partesatencion-1.3.18-beta.14.json')
         ),
         'frameworkPackageRoot' => base_path('vendor/paqsuite/laravel-core'),
     ],

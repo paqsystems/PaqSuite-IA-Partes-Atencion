@@ -80,8 +80,11 @@ function hashFile(string $absolute): string
     return hash('sha256', str_replace(["\r\n", "\r"], "\n", $content));
 }
 
+require_once $backendRoot.'/scripts/partesDomainSpFiles.php';
+
 $migrationPaths = scanPublishable($backendRoot, 'database/migrations/*.php');
 $spPaths = scanPublishable($backendRoot, 'database/sp/*.sql');
+$partesDomainSpPaths = partesDomainSpRelativePaths($backendRoot);
 
 $entries = [];
 
@@ -99,7 +102,7 @@ foreach ($migrationPaths as $path) {
     ];
 }
 
-foreach ($spPaths as $path) {
+foreach (array_merge($spPaths, $partesDomainSpPaths) as $path) {
     $basename = basename($path);
     if (isset($coreSpBasenames[$basename]) || in_array($basename, $excludeSpBasenames, true)) {
         continue;
