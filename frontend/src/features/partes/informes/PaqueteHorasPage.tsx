@@ -88,6 +88,8 @@ export function PaqueteHorasPage() {
   const [saldoInicial, setSaldoInicial] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  /** Remonta la grilla tras búsqueda OK (plantilla DX / filter row no debe dejar filas ocultas). */
+  const [gridResetKey, setGridResetKey] = useState(0)
 
   const [ejeChart, setEjeChart] = useState<'cliente' | 'tipo'>('cliente')
 
@@ -130,7 +132,12 @@ export function PaqueteHorasPage() {
     return []
   }, [clienteId, esCliente, fechaDesde, fechaHasta, t, tipoClienteId])
 
-  const loadPivotDataset = useCallback(async () => fetchPaqueteHorasRows(), [fetchPaqueteHorasRows])
+  const loadPivotDataset = useCallback(async () => {
+    if (!esCliente && (clienteId === null || clienteId <= 0)) {
+      return []
+    }
+    return fetchPaqueteHorasRows()
+  }, [clienteId, esCliente, fetchPaqueteHorasRows])
 
   const desgloseCliente = useMemo(
     () => aggregatePaqueteHorasDesglose(rawRows, 'cliente'),
@@ -175,6 +182,7 @@ export function PaqueteHorasPage() {
     setError(null)
     try {
       await fetchPaqueteHorasRows()
+      setGridResetKey((revision) => revision + 1)
     } catch {
       // envelopeError ya setea error
     } finally {
@@ -209,6 +217,7 @@ export function PaqueteHorasPage() {
     (toolbarLeading: ReactNode) => (
       <div data-testid="partesPaqueteHorasGrid">
         <ProcessDataGrid
+          key={`paqueteHorasGrid-${clienteId ?? 'none'}-${fechaDesde}-${fechaHasta}-${tipoClienteId ?? 'all'}-${gridResetKey}`}
           dataSource={rows}
           keyExpr="id"
           showBorders
@@ -267,7 +276,7 @@ export function PaqueteHorasPage() {
         </ProcessDataGrid>
       </div>
     ),
-    [load, loading, rows, t],
+    [clienteId, fechaDesde, fechaHasta, gridResetKey, load, loading, rows, t, tipoClienteId],
   )
 
   if (native) {
@@ -318,9 +327,6 @@ export function PaqueteHorasPage() {
               disabled={tiposClienteLoading}
               width={240}
               onValueChanged={(e) => {
-                if (!e.event) {
-                  return
-                }
                 setTipoClienteId((e.value as number | null) ?? null)
               }}
               elementAttr={{ 'data-testid': 'partesPaqueteTipoCliente' }}
@@ -435,9 +441,6 @@ export function PaqueteHorasPage() {
             placeholder={t('partes.informe.filtro.cliente')}
             width={280}
             onValueChanged={(e) => {
-              if (!e.event) {
-                return
-              }
               setClienteId((e.value as number | null) ?? null)
             }}
             elementAttr={{ 'data-testid': 'partesPaqueteCliente' }}
@@ -459,9 +462,6 @@ export function PaqueteHorasPage() {
           disabled={tiposClienteLoading}
           width={240}
           onValueChanged={(e) => {
-            if (!e.event) {
-              return
-            }
             setTipoClienteId((e.value as number | null) ?? null)
           }}
           elementAttr={{ 'data-testid': 'partesPaqueteTipoCliente' }}
