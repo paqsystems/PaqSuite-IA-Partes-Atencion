@@ -55,6 +55,62 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 7 | 19/10/2026 | Especificado | Mail acceso ABM Usuarios + informar clientes desde Proceso masivo (GEN Mail Engine; cola updates 002/005) |
 | 8 | 25/10/2026 | Especificado | Carga de paquetes desde 1 hora + destaque de paquetes + cálculo de saldo por renglón · [PIAPARTES-52](https://paqsystems.atlassian.net/browse/PIAPARTES-52) |
 | 9 | 30/10/2026 | Especificado | **Hito FRAMEWORK** — compatibilizar tablas de seguridad MONO vs MULTI (`users`, `pq_empresa`, roles, permisos) + GEN-34 |
+| 10 | 30/10/2026 | Especificado | Tareas programadas (historial / próxima ejecución) + saldo informe Paquete de horas — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
+
+---
+
+## Control de Calidad #10
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 30/10/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado |
+| **Origen** | Verificación post-deploy **beta.14** (`laravel-core` 1.3.18-beta.14, Forge **81700511**, PR #98–#102): el usuario reporta dos síntomas que **persisten** y **no** se explican por el alcance del release. |
+| **Conclusión de triage (30/10/2026)** | **No causados por esta actualización** — ver §Hallazgos. |
+| **F1/F** | Aprobado con observaciones → [D-VERIFICACION-CC-PQ-10](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
+
+### Hallazgos
+
+#### 1) Tareas programadas — historial y columna «Próxima ejecución» vacíos o ausentes
+
+**Alcance del deploy beta.14 (Partes):** manifiesto/post-deploy, SP integración maestros (collation/cursor), pin `laravel-core`, fix CI Cloudsmith. **Sin cambios** en `frontend/src/features/tareasProgramadas/**` ni en `@paqsuite/react-core` (sigue **2.4.30-beta.1**).
+
+**Alcance `laravel-core` beta.14 vs beta.13:** un único commit — `StoredProcedureTaskExecutionRepository`: SP **sin result set** (`save_snapshot`, `append_log`) vía `statement` (fix sqlsrv IMSSP). **No** altera `listExecutions` ni APIs de definiciones / `nextRunAt`.
+
+**UI:** historial = `TaskExecutionsPage`; próxima ejecución = columna `nextRunAt` en `TaskDefinitionsPage` (SDK). Revisar después: datos en `pq_task_execution`, respuesta `GET /api/v1/task-executions`, cálculo `nextRunAt` en definiciones, scheduler/cron Forge (GEN-13), permisos menú.
+
+#### 2) Informe **Paquete de horas** — saldo incorrecto
+
+**Alcance del deploy:** se reaplicó el mismo `pq_sp_partes_informe_paquete_horas.sql` (checksum sin cambio desde commit **f66a3a6**, CC #8). PR #98–#101 **no** modificaron ese SP ni `PaqueteHorasPage.tsx`.
+
+**Trazabilidad:** ítem original **CC #8** (PIAPARTES-52) — saldo por renglón; updates **TR-006-update** pendientes de cierre **F** (CA-05…CA-07 del CC #8 siguen abiertos en checklist deploy).
+
+### Mejoras solicitadas / seguimiento
+
+#### Tareas programadas — historial y próxima ejecución
+
+*Procesado* (Parte G 30/10/2026) → [SPEC-001-13-update](../05-open-spec/updates/001-Generalidades/SPEC-001-13-update-cc-pq-10-2026-10-30-tareas-programadas.md) · [HU-GEN-13-update](../03-historias-usuario/updates/001-Generalidades/HU-GEN-13-update-cc-pq-10-2026-10-30-tareas-programadas.md) · [TR-GEN-13-update](../04-tareas/updates/001-Generalidades/TR-GEN-13-update-cc-pq-10-2026-10-30-tareas-programadas.md)
+
+- Adapter host sqlsrv: drenado de rowsets en listados de definiciones y ejecuciones.
+- Comando `partes:tasks-backfill-next-run-at` para definiciones legacy sin `next_run_at`.
+
+#### Informe Paquete de horas — saldo
+
+*Procesado* (Parte G 30/10/2026) → cola **TR-006-update** CC #8 · SP `pq_sp_partes_informe_paquete_horas` (window `PARTITION BY cliente_id`); ver [D-VERIFICACION-CC-PQ-10](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md).
+
+### Criterios de aceptación preliminares
+
+- [ ] **CA-10-01** Tras fix, historial lista ejecuciones cuando existen filas en BD; sin error silencioso en red.
+- [ ] **CA-10-02** Definiciones activas muestran `nextRunAt` coherente con cron/schedule (o mensaje explícito si no aplica).
+- [ ] **CA-10-03** Informe Paquete de horas: saldo inicial + running por cliente cumple CC #8 / doc 18.
+- [ ] **CA-10-04** Evidencia en D-VERIFICACION de que el síntoma **no** era regresión de beta.14 (referencia a este triage).
+
+### Derivación SDD
+
+Parte G **30/10/2026** — cola `updates/` (GEN-13 CC #10 + TR-006-update saldo). Implementación host en `develop`; smoke sqlsrv Forge post-deploy.
 
 ---
 

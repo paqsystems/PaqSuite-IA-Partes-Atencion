@@ -34,6 +34,10 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
   `is_active = 1`, `next_run_at IS NOT NULL` y `next_run_at <= @as_of`. El
   host completa `nextRunAt` al crear/editar vía
   `App\Tasks\SchedulingTaskDefinitionRepository`.
+- Definiciones **legacy** (alta previa al wrapper) pueden tener
+  `next_run_at` NULL: tras deploy ejecutar
+  `php artisan partes:tasks-backfill-next-run-at` (opción `--dry-run` primero).
+  CC PQ **#10** (30/10/2026).
 - El snapshot de parámetros vive en
   `backend/database/sp/pq_sp_task_execution_save_snapshot.sql`: expande el
   JSON del SDK a filas con `parameter_code` NOT NULL.

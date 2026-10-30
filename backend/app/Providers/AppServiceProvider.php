@@ -83,6 +83,8 @@ use PaqSuite\LaravelCore\Tasks\TaskProcessRegistry;
 use PaqSuite\LaravelCore\Tenancy\MenuProcedimientoChecker;
 use App\Tasks\Backup\RdsSqlServerBackupGateway;
 use App\Tasks\Backup\RdsBackupCacheLock;
+use App\Tasks\PartesTaskDefinitionRepository;
+use App\Tasks\PartesTaskExecutionRepository;
 use App\Tasks\SchedulingTaskDefinitionRepository;
 use App\Tasks\StaleTaskExecutionRecovery;
 use App\Tenancy\CliInstalacionContext;
@@ -139,12 +141,16 @@ class AppServiceProvider extends ServiceProvider
             $timeZone = new DateTimeZone($tzName !== '' ? $tzName : 'UTC');
             $calculator = new TaskScheduleCalculator($timeZone);
 
-            return new SchedulingTaskDefinitionRepository(
+            $scheduling = new SchedulingTaskDefinitionRepository(
                 new StoredProcedureTaskDefinitionRepository(),
                 static fn (array $schedule, ?DateTimeInterface $after = null) => $calculator->calculateNextRunAt($schedule, $after),
             );
+
+            return new PartesTaskDefinitionRepository($scheduling);
         });
-        $this->app->singleton(TaskExecutionRepository::class, static fn () => new StoredProcedureTaskExecutionRepository());
+        $this->app->singleton(TaskExecutionRepository::class, static fn () => new PartesTaskExecutionRepository(
+            new StoredProcedureTaskExecutionRepository(),
+        ));
         $this->app->singleton(TaskProcessRegistry::class, TaskProcessRegistry::class);
         $this->app->singleton(MonoRdsBackupGateway::class, RdsSqlServerBackupGateway::class);
         $this->app->singleton(BackupInstallationProfileResolver::class, static function () {
