@@ -1,4 +1,4 @@
-export const PAQUETE_MIN_HORAS = 8
+export const PAQUETE_MIN_HORAS = 1
 export const PAQUETE_MAX_HORAS = 240
 export const PAQUETE_MIN_MINUTOS = PAQUETE_MIN_HORAS * 60
 export const PAQUETE_MAX_MINUTOS = PAQUETE_MAX_HORAS * 60

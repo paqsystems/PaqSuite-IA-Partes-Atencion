@@ -71,7 +71,8 @@ const authMessageMap: Record<string, string> = {
   'partes.paquete.camposObligatorios': 'Complete los campos obligatorios.',
   'partes.paquete.observacionRequerida': 'La observación es obligatoria.',
   'partes.paquete.duracionInvalida':
-    'La duración debe ser una cantidad entera de horas entre 8 y 240.',
+    'La duración debe ser una cantidad entera de horas entre 1 y 240.',
+  'partes.informe.clienteRequerido': 'Debe seleccionar un cliente para consultar el informe.',
   'partes.paquete.fechaFuturaConfirmacion': 'Confirme para registrar una fecha futura.',
   'partes.paquete.fechaInvalida': 'La fecha no es válida.',
   'partes.paquete.conflictoVersion':

@@ -34,15 +34,18 @@ final class SpCaller
             return PartesPaqueteOperations::dispatch($procedure, $params);
         }
 
+        $driver = DB::connection()->getDriverName();
+
         if ($this->isPartesInformeProcedure($procedure)) {
-            return PartesInformeOperations::dispatch($procedure, $params);
+            $phpInforme = $driver === 'sqlite' || $procedure !== 'pq_sp_partes_informe_paquete_horas';
+            if ($phpInforme) {
+                return PartesInformeOperations::dispatch($procedure, $params);
+            }
         }
 
         if ($this->isPartesMaestrosProcedure($procedure)) {
             return PartesMaestrosOperations::dispatch($procedure, $params);
         }
-
-        $driver = DB::connection()->getDriverName();
 
         if ($driver === 'sqlite') {
             return $this->callSqliteFallback($procedure, $params);
