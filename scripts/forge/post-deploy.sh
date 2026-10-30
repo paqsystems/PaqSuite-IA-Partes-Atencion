@@ -39,6 +39,9 @@ fi
 
 php artisan migrate --force
 
+# SP host (y task SP del SDK) antes de installation:update — el orquestador no debe depender de SP aún no desplegados.
+php scripts/deploy-sp.php
+
 run_installation_update_if_available() {
   if ! php artisan list --raw 2>/dev/null | grep -q '^paqsuite:installation:update'; then
     echo "paqsuite:installation:update no disponible en este pin de laravel-core; omito GEN-34 CLI."
@@ -51,6 +54,3 @@ run_installation_update_if_available() {
 }
 
 run_installation_update_if_available
-
-# GEN-13: SP host (override SDK) sobre la BD del tenant resuelto en runtime.
-php scripts/deploy-sp.php
