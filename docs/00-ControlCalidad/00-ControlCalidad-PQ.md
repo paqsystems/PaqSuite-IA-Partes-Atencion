@@ -54,7 +54,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 6 | 11/10/2026 | Especificado | Deuda cableado SDK — PA-01…14 **F+I** (PA-03/04/14: 12/10/2026, pin 2.4.25-beta.1) |
 | 7 | 19/10/2026 | Especificado | Mail acceso ABM Usuarios + informar clientes desde Proceso masivo (GEN Mail Engine; cola updates 002/005) |
 | 8 | 25/10/2026 | Pendiente | Carga de paquetes desde 1 hora + destaque de paquetes + cálculo de saldo por renglón |
-| 9 | 30/10/2026 | Pendiente | **Hito FRAMEWORK** — compatibilizar tablas de seguridad MONO vs MULTI (`users`, `pq_empresa`, roles, permisos) + GEN-34 |
+| 9 | 30/10/2026 | Especificado | **Hito FRAMEWORK** — compatibilizar tablas de seguridad MONO vs MULTI (`users`, `pq_empresa`, roles, permisos) + GEN-34 |
 
 ---
 
@@ -66,7 +66,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 |-------|--------|
 | **Fecha** | 30/10/2026 |
 | **Responsable** | Pablo Quarracino (PQ) |
-| **Estado** | Pendiente |
+| **Estado** | Especificado |
 | **Proyecto de ejecución** | **FRAMEWORK** (`PaqSuite-IA-FRAMEWORK` / `paqsuite/laravel-core`) — hosts MONO (Partes) consumen el contrato unificado |
 | **Origen** | Deploy Forge 30/10/2026: `paqsuite:installation:update` falla en `pq_sp_admin_empresa_list` (`Invalid column name 'IDEmpresa'`) por desalineación dictionary TANGO vs esquema MONO del host |
 | **Referencias host** | [`integracion-framework-sdk.md`](../01-arquitectura/integracion-framework-sdk.md) § huecos · [`mono-abm-empresas-gen06.md`](../01-arquitectura/mono-abm-empresas-gen06.md) · [`md-seguridad.md`](../modelo-datos/md-seguridad.md) (MONO vs legado MULTI) · GEN-34 [`RELEASE-PARTES.md`](../06-operacion/RELEASE-PARTES.md) |
@@ -142,7 +142,7 @@ Validación mínima post-cambio en Partes: conteo de filas estable, login con us
 
 ### Derivación SDD
 
-Pendiente de ejecución PQ (**31/10/2026** objetivo): levantar **SPEC-update / HU-update / TR-update en repo FRAMEWORK** (y TR host Partes solo para adopción del pin). Comando Parte G sugerido: *«Procesa el hito FRAMEWORK del CC #9 PQ (30/10/2026)»*.
+*Procesado* (Parte G 30/10/2026) → Framework ([repo `PaqSuite-IA-FRAMEWORK`](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK)): [SPEC-001-06-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/05-open-spec/updates/001-Generalidades/SPEC-001-06-update-cc-pq-9-2026-10-30-seguridad-mono-multi.md) · [SPEC-001-34-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/05-open-spec/updates/001-Generalidades/SPEC-001-34-update-cc-pq-9-2026-10-30-install-single-tenancy.md) · [HU-GEN-06-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/03-historias-usuario/updates/001-Generalidades/HU-GEN-06-seguridad-mono-multi-update.md) · [HU-GEN-34-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/03-historias-usuario/updates/001-Generalidades/HU-GEN-34-install-single-tenancy-update.md) · [TR-GEN-06-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/04-tareas/updates/001-Generalidades/TR-GEN-06-seguridad-mono-multi-update.md) · [TR-GEN-34-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/04-tareas/updates/001-Generalidades/TR-GEN-34-install-single-tenancy-update.md) · Partes host: [TR-adopcion-host-cc-pq-9](../04-tareas/updates/001-Generalidades/TR-adopcion-host-cc-pq-9-seguridad-mono-multi-update.md)
 
 *Sugerencia:* ítem Jira / epic Framework «Seguridad MONO-MULTI unificación» enlazado desde Partes tras crear ticket.
 
