@@ -10,7 +10,28 @@ declare(strict_types=1);
 
 $backendRoot = dirname(__DIR__);
 
-$semver = '1.3.18-beta.2';
+/** @var list<string> */
+$omitFrameworkEntryIds = [
+    'fw-sp-pq_sp_admin_empresa_tango_dictionary',
+];
+
+function resolveLaravelCoreSemver(string $backendRoot): string
+{
+    $composerPath = $backendRoot.'/composer.json';
+    $json = file_get_contents($composerPath);
+    if ($json === false) {
+        throw new RuntimeException('Cannot read composer.json');
+    }
+    $data = json_decode($json, true);
+    $semver = is_array($data) ? (string) ($data['require']['paqsuite/laravel-core'] ?? '') : '';
+    if ($semver === '') {
+        throw new RuntimeException('composer.json require paqsuite/laravel-core missing');
+    }
+
+    return $semver;
+}
+
+$semver = resolveLaravelCoreSemver($backendRoot);
 foreach ($argv as $arg) {
     if (str_starts_with($arg, '--semver=')) {
         $semver = substr($arg, strlen('--semver='));
@@ -101,6 +122,7 @@ usort($entries, static fn (array $a, array $b) => strcmp($a['id'], $b['id']));
 $document = [
     'manifestId' => 'partesatencion-'.$semver,
     'semver' => $semver,
+    'omitFrameworkEntryIds' => $omitFrameworkEntryIds,
     'entries' => $entries,
 ];
 

@@ -1,6 +1,6 @@
 {
-    "manifestId": "partesatencion-1.3.18-beta.2",
-    "semver": "1.3.18-beta.2",
+    "manifestId": "partesatencion-1.3.18-beta.12",
+    "semver": "1.3.18-beta.12",
     "omitFrameworkEntryIds": [
         "fw-sp-pq_sp_admin_empresa_tango_dictionary"
     ],
@@ -210,7 +210,7 @@
             "kind": "migration",
             "target": "dictionary",
             "path": "database/migrations/2026_08_02_100000_create_pq_excel_import_tables.php",
-            "checksum": "c8c920ed94b024b28667e2c9e4e29b098e9158be9989f4d1c20c28d292618401",
+            "checksum": "b465e650026858f946c67bee9f8f79384a44aa47c0e8cb96b29430a660cd4584",
             "dependsOn": []
         },
         {
@@ -226,7 +226,7 @@
             "kind": "migration",
             "target": "dictionary",
             "path": "database/migrations/2026_08_25_100000_create_pq_emission_tables.php",
-            "checksum": "7a86808f8ce245ec7a59e6044eff807089b32b1049a4823d7acb86418bc98c24",
+            "checksum": "9eadb80ac66095a7b8243e6db2d00ca804a201e0c7fcea6e4c712adf5e9c1610",
             "dependsOn": []
         },
         {
@@ -286,6 +286,30 @@
             "dependsOn": []
         },
         {
+            "id": "partes-migration-2026_10_30_140000_align_pq_emission_jobs_for_framework_gen15",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_30_140000_align_pq_emission_jobs_for_framework_gen15.php",
+            "checksum": "041eccae041ae608c2296a1ce807aa20ac0b7f4b1f9dd75afe5354fd98566f5f",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_30_140001_add_pq_parametros_gral_sp_compat_columns",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_30_140001_add_pq_parametros_gral_sp_compat_columns.php",
+            "checksum": "45bede0b04511dad7334324b2c6cf90ac6ca76f13e0d90fbe101f7d3aba6d24d",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_30_140002_backfill_pq_menus_label_key_columns",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_30_140002_backfill_pq_menus_label_key_columns.php",
+            "checksum": "0e54bb36ca11476023a3efd45d254a7076e50f927234e94782b0df8c518ba952",
+            "dependsOn": []
+        },
+        {
             "id": "partes-sp-ddl_2026_07_31_theme_y_pq_rol_atributos",
             "kind": "sql",
             "target": "dictionary",
@@ -302,6 +326,14 @@
             "dependsOn": []
         },
         {
+            "id": "partes-sp-pq_sp_admin_menu_list_enabled",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_admin_menu_list_enabled.sql",
+            "checksum": "71399df3cab3fdf573da5da120676f89e1070ea4c3786701e4c03442ce13660f",
+            "dependsOn": []
+        },
+        {
             "id": "partes-sp-pq_sp_admin_roles_atributos",
             "kind": "sql",
             "target": "dictionary",
@@ -315,22 +347,6 @@
             "target": "dictionary",
             "path": "database/sp/pq_sp_admin_seguridad_core.sql",
             "checksum": "eeee06147e126b4df59475c9920099023e83f554a68b3938e7006fd907c7fef9",
-            "dependsOn": []
-        },
-        {
-            "id": "partes-sp-pq_sp_emission_core",
-            "kind": "sql",
-            "target": "dictionary",
-            "path": "database/sp/pq_sp_emission_core.sql",
-            "checksum": "98cc63d6907180a48be67ea12e295f6bdd091df71972adf68d0ee8eabc26ff22",
-            "dependsOn": []
-        },
-        {
-            "id": "partes-sp-pq_sp_excel_core",
-            "kind": "sql",
-            "target": "dictionary",
-            "path": "database/sp/pq_sp_excel_core.sql",
-            "checksum": "4fbe5b2b256054846dddf55ea1e693c2cfe8e61f081db8acbe9bfda467ebc0d9",
             "dependsOn": []
         },
         {
@@ -436,15 +452,6 @@
             "path": "database/sp/pq_sp_user_empresas_list.sql",
             "checksum": "5ec61e683f30802d32a285450d8385e2998c7e701becac10f741d85251376fcf",
             "dependsOn": []
-        },
-        {
-            "id": "partes-sp-pq_sp_admin_menu_list_enabled",
-            "kind": "sql",
-            "target": "dictionary",
-            "path": "database/sp/pq_sp_admin_menu_list_enabled.sql",
-            "checksum": "71399df3cab3fdf573da5da120676f89e1070ea4c3786701e4c03442ce13660f",
-            "dependsOn": [],
-            "module": "GEN-07"
         },
         {
             "id": "partes-sp-pq_sp_user_menu",
