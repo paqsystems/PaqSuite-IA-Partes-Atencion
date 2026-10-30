@@ -39,6 +39,15 @@ fi
 
 php artisan migrate --force
 
+bootstrap_installation_control_tables() {
+  local controlMigration="vendor/paqsuite/laravel-core/database/migrations/2026_10_27_000037_create_pq_installation_control_tables.php"
+  if [[ -f "${controlMigration}" ]]; then
+    php artisan migrate --force --path="${controlMigration}"
+  fi
+}
+
+bootstrap_installation_control_tables
+
 run_installation_update_if_available() {
   if ! php artisan list --raw 2>/dev/null | grep -q '^paqsuite:installation:update'; then
     echo "paqsuite:installation:update no disponible en este pin de laravel-core; omito GEN-34 CLI."
