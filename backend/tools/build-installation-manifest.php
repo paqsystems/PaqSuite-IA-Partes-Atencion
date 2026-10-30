@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 $backendRoot = dirname(__DIR__);
 
-$semver = '1.3.17-beta.1';
+$semver = '1.3.18-beta.2';
 foreach ($argv as $arg) {
     if (str_starts_with($arg, '--semver=')) {
         $semver = substr($arg, strlen('--semver='));
@@ -56,7 +56,7 @@ function hashFile(string $absolute): string
         throw new RuntimeException('Cannot read: '.$absolute);
     }
 
-    return hash('sha256', $content);
+    return hash('sha256', str_replace(["\r\n", "\r"], "\n", $content));
 }
 
 $migrationPaths = scanPublishable($backendRoot, 'database/migrations/*.php');
