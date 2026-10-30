@@ -127,7 +127,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT e.id, e.nombre, e.activo, e.theme
+    SELECT e.id, e.nombre, e.activo, e.theme, e.nombre_bd
     FROM dbo.pq_empresa e WITH (NOLOCK)
     ORDER BY e.nombre;
 END;
@@ -139,7 +139,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT e.id, e.nombre, e.activo, e.theme
+    SELECT e.id, e.nombre, e.activo, e.theme, e.nombre_bd
     FROM dbo.pq_empresa e WITH (NOLOCK)
     WHERE e.id = @id;
 END;
@@ -149,7 +149,8 @@ CREATE OR ALTER PROCEDURE dbo.pq_sp_admin_empresas_update
     @id INT,
     @nombre NVARCHAR(255) = NULL,
     @activo BIT = NULL,
-    @theme NVARCHAR(64) = NULL
+    @theme NVARCHAR(64) = NULL,
+    @nombre_bd NVARCHAR(255) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -159,10 +160,11 @@ BEGIN
         nombre = COALESCE(@nombre, nombre),
         activo = COALESCE(@activo, activo),
         theme = COALESCE(@theme, theme),
+        nombre_bd = COALESCE(@nombre_bd, nombre_bd),
         updated_at = SYSUTCDATETIME()
     WHERE id = @id;
 
-    SELECT e.id, e.nombre, e.activo, e.theme
+    SELECT e.id, e.nombre, e.activo, e.theme, e.nombre_bd
     FROM dbo.pq_empresa e WITH (NOLOCK)
     WHERE e.id = @id;
 END;
