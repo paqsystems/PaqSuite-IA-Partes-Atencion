@@ -39,6 +39,8 @@ La carpeta no reemplaza al contexto comun del framework en `docs/00-contexto/_mo
 15. `15-reportes-emisiones.md` — Adopción GEN-15: diseñar informes / salidas por proceso; emisor en Consulta detallada
 16. `16-carga-paquetes-horas.md` — ABM de compras de horas (`es_tarea = false`) + Smart Capture en el modal
 17. `17-APis-importar-datos-maestros.md` — APIs de integración (upsert) de maestros; no Excel; no crea `users`
+18. `18-obtencion-saldo-por-renglon.md` — Obtención de saldo por renglón (dominio Partes)
+19. `19-ia-diseno-informes.md` — Piloto/adopción Partes: IA en diseñador GEN-15 (Consulta detallada); SoT GEN = Framework update-4
 
 ## Relacion con otras carpetas
 

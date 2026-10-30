@@ -3,7 +3,7 @@ specId: SPEC-010
 titulo: Emisión de reportes y diseñador
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-29
+ultimaActualizacion: 2026-10-30
 openSpec: docs/02-producto/Sistema-Partes-IA/15-reportes-emisiones.md
 ---
 
@@ -35,6 +35,15 @@ Si el combo de diseños está vacío, alguien con permiso de diseño tiene que g
 2. Elegí el proceso de **consulta detallada** de Partes si el sistema lo pide.
 3. Editá el diseño en el editor visual y guardalo desde la barra del diseñador. Ese diseño es el que usa **Emitir**.
 4. Podés marcar un diseño como **principal** para ese proceso.
+
+### Asistencia IA en el diseñador (piloto)
+
+En instalaciones donde el administrador habilitó el **servicio de reportes** con asistencia por inteligencia artificial, el diseñador puede ofrecer un asistente para **generar o ajustar** el diseño a partir de instrucciones en **español** (por ejemplo: listar partes por fecha, agrupar por cliente o totalizar horas).
+
+- La IA solo puede usar **campos previstos** para la consulta detallada (fecha, cliente, asistente, duración, etc.); no inventa datos de negocio que no existan en el sistema.
+- Todo cambio propuesto se **revisa en pantalla**; el diseño **no se guarda solo**: tenés que usar **Guardar** o **Guardar como** en la barra del diseñador, igual que sin IA.
+- Las credenciales del proveedor de IA las configura **soporte** en el servidor del servicio de reportes, no en tu usuario ni en Preferencias del portal.
+- Si no ves el asistente, el diseñador clásico sigue disponible; contactá soporte si necesitás el piloto.
 
 En la banda de detalle, cada control tiene que estar vinculado a un campo. Un control suelto (por ejemplo un medidor sin dato) se repite en cada fila y alarga el PDF.
 
