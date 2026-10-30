@@ -125,6 +125,26 @@ if (!$rewritten) {
     exit(7);
 }
 file_put_contents("composer.json", json_encode($j, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)."\n");
+
+$lockPath = "composer.lock";
+$lock = json_decode(file_get_contents($lockPath), true, 512, JSON_THROW_ON_ERROR);
+$basicPrefix = "https://dl.cloudsmith.io/basic/";
+$entitlementPrefix = "https://dl.cloudsmith.io/".$k."/";
+foreach (["packages", "packages-dev"] as $section) {
+    if (! isset($lock[$section]) || ! is_array($lock[$section])) {
+        continue;
+    }
+    foreach ($lock[$section] as $index => $package) {
+        if (! is_array($package)) {
+            continue;
+        }
+        $distUrl = (string) ($package["dist"]["url"] ?? "");
+        if ($distUrl !== "" && str_starts_with($distUrl, $basicPrefix)) {
+            $lock[$section][$index]["dist"]["url"] = $entitlementPrefix.substr($distUrl, strlen($basicPrefix));
+        }
+    }
+}
+file_put_contents($lockPath, json_encode($lock, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)."\n");
 '
 
 composer install \
