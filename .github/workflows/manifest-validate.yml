@@ -36,16 +36,9 @@ jobs:
             echo "Falta secret CLOUDSMITH_READ_TOKEN en GitHub Actions (Settings → Secrets)." >&2
             exit 1
           fi
-          node -e "
-            const fs=require('fs');
-            const j=JSON.parse(fs.readFileSync('composer.json','utf8'));
-            const r=j.repositories;
-            const list=Array.isArray(r)?r:Object.values(r);
-            if (!list.length) { throw new Error('composer.repositories vacío'); }
-            list[0].options={http:{header:['X-API-KEY: '+process.env.CLOUDSMITH_READ_TOKEN]}};
-            fs.writeFileSync('composer.json', JSON.stringify(j,null,2));
-          "
-          composer install --no-interaction --prefer-dist
+          echo "::add-mask::${CLOUDSMITH_READ_TOKEN}"
+          # Mismo contrato que Forge: auth.json http-basic (dl.cloudsmith.io) + repo entitlement efímero.
+          bash scripts/forge-composer-install.sh
 
       - name: Regenerate host manifest (check drift)
         run: php tools/build-installation-manifest.php
