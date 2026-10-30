@@ -54,6 +54,97 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 6 | 11/10/2026 | Especificado | Deuda cableado SDK — PA-01…14 **F+I** (PA-03/04/14: 12/10/2026, pin 2.4.25-beta.1) |
 | 7 | 19/10/2026 | Especificado | Mail acceso ABM Usuarios + informar clientes desde Proceso masivo (GEN Mail Engine; cola updates 002/005) |
 | 8 | 25/10/2026 | Pendiente | Carga de paquetes desde 1 hora + destaque de paquetes + cálculo de saldo por renglón |
+| 9 | 30/10/2026 | Pendiente | **Hito FRAMEWORK** — compatibilizar tablas de seguridad MONO vs MULTI (`users`, `pq_empresa`, roles, permisos) + GEN-34 |
+
+---
+
+## Control de Calidad #9
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 30/10/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Pendiente |
+| **Proyecto de ejecución** | **FRAMEWORK** (`PaqSuite-IA-FRAMEWORK` / `paqsuite/laravel-core`) — hosts MONO (Partes) consumen el contrato unificado |
+| **Origen** | Deploy Forge 30/10/2026: `paqsuite:installation:update` falla en `pq_sp_admin_empresa_list` (`Invalid column name 'IDEmpresa'`) por desalineación dictionary TANGO vs esquema MONO del host |
+| **Referencias host** | [`integracion-framework-sdk.md`](../01-arquitectura/integracion-framework-sdk.md) § huecos · [`mono-abm-empresas-gen06.md`](../01-arquitectura/mono-abm-empresas-gen06.md) · [`md-seguridad.md`](../modelo-datos/md-seguridad.md) (MONO vs legado MULTI) · GEN-34 [`RELEASE-PARTES.md`](../06-operacion/RELEASE-PARTES.md) |
+
+### Hallazgos
+
+Existen **dos contratos físicos** para el mismo dominio de seguridad bajo nombres parecidos:
+
+| Ámbito | MULTI / dictionary (Framework, Tango) | MONO / host Partes (unified DB) |
+|--------|----------------------------------------|----------------------------------|
+| Empresa | `pq_empresa`: `IDEmpresa`, `NombreEmpresa`, `Habilita`, `NombreBD`, ERP… | `pq_empresa`: `id`, `nombre`, `activo`, `theme` |
+| SP admin empresas | `pq_sp_admin_empresa_*` (singular) en manifiesto Framework | `pq_sp_admin_empresas_*` (plural) en host |
+| Usuarios / roles / permisos | Legado `Pq_Rol`, `Pq_Permiso`, casing ERP | Laravel: `users`, `pq_roles`, `pq_permisos`, `pq_rol_atributos` |
+
+El pipeline **GEN-34** ejecuta SQL del Framework **sin bifurcar** por `PAQSUITE_TENANCY=single`, lo que **rompe deploy** (y puede **eliminar** SP del host antes del error).
+
+### Hito solicitado (FRAMEWORK)
+
+**Compatibilizar estructuras de tablas de seguridad entre MULTI y MONO** con contrato explícito, versionado y aplicable en `installation:update` / manifiesto merge.
+
+Entidades en alcance (nombres lógicos; unificar DDL + SP + DTO API):
+
+| Entidad | Notas |
+|---------|--------|
+| **`users`** | Campos auth, locale, flags operativos; alinear naming MULTI/MONO donde el SDK expone admin |
+| **`pq_empresa`** | Superset documentado o perfiles `single` / `multi`; columnas ERP/BD opcionales en MONO |
+| **`pq_rol`** | En host físico `pq_roles`; roles, `acceso_total`, códigos |
+| **`pq_rolatributo`** | En host físico `pq_rol_atributos`; atributos de menú/proceso por rol |
+| **`pq_permiso`** | En host físico `pq_permisos`; usuario ↔ rol (y empresa solo donde aplique MULTI) |
+
+**Entregables esperados del hito (Framework):**
+
+1. **Decisión de arquitectura** publicada (SPEC Framework): modelo canónico, columnas obligatorias/opcionales por tenancy, mapeo Tango ↔ Laravel.
+2. **Scripts SP únicos o ramificados** (`PAQSUITE_TENANCY` / target manifiesto) — **no** desplegar `pq_sp_admin_empresa_*` dictionary sobre BD MONO incompatible.
+3. **Manifiesto GEN-34**: exclusión, reemplazo host, o paso condicionado para hosts `single` (merge no solo “append”).
+4. **Migraciones / DDL idempotente** dictionary y guía de adopción para hosts existentes (Partes).
+5. Pin SDK release + nota en `RELEASE-FRAMEWORK-MANIFEST` y checklist host.
+
+**Fuera de alcance inmediato:** pantallas de dominio Partes; ABM empresas MONO (alta ERP) ya prohibido en producto.
+
+### Reparto Framework vs Partes
+
+| Responsable | Qué corresponde | Por qué |
+|-------------|----------------|---------|
+| **FRAMEWORK** (principal) | Contrato canónico MONO/MULTI; SP y manifiesto GEN-34; `installation:update` condicionado a `PAQSUITE_TENANCY`; adapters SDK; release `laravel-core` | El fallo de deploy nace en SQL/manifiesto **del core**, no en reglas de negocio Partes |
+| **Partes** (adopción) | Pin del SDK; manifiesto host; migraciones/SP **solo si** el SPEC Framework lo exige para alinear columnas; smoke Forge; retirar parches duplicados cuando el core unifique | El host **consume** el contrato; no redefine el modelo de plataforma en silencio |
+
+Regla práctica: si la pregunta es *«¿qué DDL/SP debe existir para todos los hosts?»* → **Framework**. Si es *«¿cómo aplicamos el release en esta BD ya poblada?»* → **Partes** (TR de adopción, sin cambiar semántica de datos).
+
+### Partes — preservación de datos en cambios de esquema
+
+Cualquier migración o script SQL en **Partes-Atención** que toque tablas de seguridad debe ser **evolutivo e idempotente** y **no alterar valores existentes** salvo corrección documentada en TR.
+
+| Restricción | Detalle |
+|-------------|---------|
+| **Identidad** | No reasignar ni regenerar **`id`** (PK/FK): `users.id`, `pq_empresa.id`, `pq_roles.id`, filas de `pq_permisos` / `pq_rol_atributos` |
+| **Login** | **`users.codigo`** (código de usuario) y **`password` / `password_hash`**: sin reset masivo, sin rehash salvo migración explícita acordada; credenciales vigentes siguen válidas post-deploy |
+| **Denominación** | **`nombre`** (y equivalentes visibles: `name_user`, `pq_empresa.nombre`, nombres de rol): solo cambios de **columna** (rename/add), con **copia 1:1** del valor, nunca sustitución por defaults |
+| **Permisos** | Matriz usuario–rol–empresa: mismos vínculos lógicos tras el cambio (mismos `user_id` / `rol_id` / `empresa_id` o mapeo 1:1 documentado) |
+| **Prohibido** | `migrate:fresh`, truncates, seeds destructivos sobre seguridad en **preview/producción**; renumeración masiva de IDs |
+
+Validación mínima post-cambio en Partes: conteo de filas estable, login con usuario conocido, menú y permisos equivalentes al pre-deploy.
+
+### Criterios de aceptación preliminares
+
+- [ ] **CA-FW-01** Documento SPEC (Framework) fija contrato único o dual explícito (`single` / `multi`) para las cinco entidades.
+- [ ] **CA-FW-02** `paqsuite:installation:update` en instalación **MONO** de Partes **no falla** por columnas Tango inexistentes.
+- [ ] **CA-FW-03** SP de admin empresas/seguridad invocados por SDK y host comparten **misma familia de nombres** o adapter documentado sin `DROP` cruzado.
+- [ ] **CA-FW-04** Manifiesto permite al host **omitir o sustituir** pasos Framework incompatibles con `single`.
+- [ ] **CA-FW-05** Smoke post-deploy: migrate + installation update + `deploy-sp` + login + menú + ABM empresas (MONO).
+- [ ] **CA-FW-06** Host Partes actualizado (migración/SP/manifiesto) según guía del release Framework.
+- [ ] **CA-FW-07** En Partes, migraciones de adopción **preservan** `id`, `codigo`, `nombre` y hashes de contraseña; smoke de login y permisos sin pérdida de accesos.
+
+### Derivación SDD
+
+Pendiente de ejecución PQ (**31/10/2026** objetivo): levantar **SPEC-update / HU-update / TR-update en repo FRAMEWORK** (y TR host Partes solo para adopción del pin). Comando Parte G sugerido: *«Procesa el hito FRAMEWORK del CC #9 PQ (30/10/2026)»*.
+
+*Sugerencia:* ítem Jira / epic Framework «Seguridad MONO-MULTI unificación» enlazado desde Partes tras crear ticket.
 
 ---
 
