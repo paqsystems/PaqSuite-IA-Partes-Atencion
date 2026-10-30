@@ -13,6 +13,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // BD ya provisionadas vía GEN-34 / scripts previos: no recrear (evita 42S01 en migrate Forge).
+        if (Schema::hasTable('pq_task_process')) {
+            return;
+        }
+
         Schema::create('pq_task_process', function (Blueprint $table) {
             $table->id('process_id');
             $table->string('process_code', 64)->unique();

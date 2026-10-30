@@ -66,7 +66,7 @@
             "kind": "migration",
             "target": "dictionary",
             "path": "database/migrations/2026_07_25_000006_create_pq_task_tables.php",
-            "checksum": "18af5bbfe6a2d17abf3f9a434ecf22f51294aac0cf7be66d295804a058d2cf00",
+            "checksum": "f64358a8ea1dd612fc83eeb0fce82bfd490488aa86018c8fbab2cbdd16ddd10d",
             "dependsOn": []
         },
         {
@@ -290,7 +290,7 @@
             "kind": "migration",
             "target": "dictionary",
             "path": "database/migrations/2026_10_30_140000_align_pq_emission_jobs_for_framework_gen15.php",
-            "checksum": "041eccae041ae608c2296a1ce807aa20ac0b7f4b1f9dd75afe5354fd98566f5f",
+            "checksum": "de22d6d613684a9bd8b9c22abdb644bf7505832de12796740c70adba4f2289a0",
             "dependsOn": []
         },
         {

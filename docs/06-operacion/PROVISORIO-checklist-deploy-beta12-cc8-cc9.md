@@ -8,7 +8,8 @@
 | **PR** | [#93](https://github.com/paqsystems/PaqSuite-IA-Partes-Atencion/pull/93) → `develop` |
 | **Rama origen** | `v1.3.0-CLOUDSMITH` |
 | **Pin** | `paqsuite/laravel-core` **1.3.18-beta.12** |
-| **Pipeline Forge** | `migrate --force` → `php scripts/deploy-sp.php` → `paqsuite:installation:update` |
+| **Pipeline Forge** | `post-deploy.sh` → `run-post-deploy-backend.php` (tenant `EMPRESAS_CONEXION` + migrate + SP + `installation:update`) |
+| **BD tenant DEV** | `paqsystems_partesatencion_dev` (RDS; SoT `EMPRESAS_CONEXION` cliente **DEV** — no confundir con `DB_DATABASE` plantilla del `.env`) |
 | **Creado** | 2026-10-30 |
 
 ---
