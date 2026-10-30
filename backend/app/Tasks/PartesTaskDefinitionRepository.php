@@ -62,12 +62,51 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
 
     public function updateNextRunAt(int $definitionId, \DateTimeInterface $nextRunAt): bool
     {
-        return $this->inner->updateNextRunAt($definitionId, $nextRunAt);
+        try {
+            return $this->inner->updateNextRunAt($definitionId, $nextRunAt);
+        } catch (\Throwable $exception) {
+            if (! $this->shouldTryLegacyScheduleProcedure($exception)) {
+                throw $exception;
+            }
+
+            return $this->updateScheduleLegacy(
+                $definitionId,
+                $nextRunAt->format('Y-m-d H:i:s'),
+                null,
+                null,
+            );
+        }
+    }
+
+    public function clearNextRunAt(int $definitionId): bool
+    {
+        try {
+            return $this->inner->clearNextRunAt($definitionId);
+        } catch (\Throwable $exception) {
+            if (! $this->shouldTryLegacyScheduleProcedure($exception)) {
+                throw $exception;
+            }
+
+            return $this->updateScheduleLegacy($definitionId, null, null, null);
+        }
     }
 
     public function updateLastRun(int $definitionId, \DateTimeInterface $lastRunAt, string $lastStatusCode): bool
     {
-        return $this->inner->updateLastRun($definitionId, $lastRunAt, $lastStatusCode);
+        try {
+            return $this->inner->updateLastRun($definitionId, $lastRunAt, $lastStatusCode);
+        } catch (\Throwable $exception) {
+            if (! $this->shouldTryLegacyScheduleProcedure($exception)) {
+                throw $exception;
+            }
+
+            return $this->updateScheduleLegacy(
+                $definitionId,
+                null,
+                $lastRunAt->format('Y-m-d H:i:s'),
+                $lastStatusCode,
+            );
+        }
     }
 
     /**
@@ -130,5 +169,41 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
         }
 
         return $out;
+    }
+
+    private function shouldTryLegacyScheduleProcedure(\Throwable $exception): bool
+    {
+        if (DB::connection()->getDriverName() !== 'sqlsrv') {
+            return false;
+        }
+
+        $message = strtolower($exception->getMessage());
+
+        return str_contains($message, 'too many arguments')
+            || str_contains($message, 'demasiados argumentos');
+    }
+
+    private function updateScheduleLegacy(
+        int $definitionId,
+        ?string $nextRunAt,
+        ?string $lastRunAt,
+        ?string $lastStatusCode,
+    ): bool {
+        $pdo = DB::connection()->getPdo();
+        $stmt = $pdo->prepare(
+            'EXEC dbo.pq_sp_task_definition_update_schedule @task_definition_id = ?, @next_run_at = ?, @last_run_at = ?, @last_status_code = ?'
+        );
+        $stmt->execute([$definitionId, $nextRunAt, $lastRunAt, $lastStatusCode]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($rows === []) {
+            while ($stmt->nextRowset()) {
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                if ($rows !== []) {
+                    break;
+                }
+            }
+        }
+
+        return $rows !== [] && (int) ($rows[0]['affected'] ?? 0) > 0;
     }
 }

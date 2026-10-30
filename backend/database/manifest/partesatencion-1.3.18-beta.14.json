@@ -346,7 +346,7 @@
             "kind": "sql",
             "target": "dictionary",
             "path": "database/sp/pq_sp_admin_seguridad_core.sql",
-            "checksum": "eeee06147e126b4df59475c9920099023e83f554a68b3938e7006fd907c7fef9",
+            "checksum": "9a6f9bac3ffaa6239dafa65e389038bc7530efe08c076afe49babe967887f4e7",
             "dependsOn": []
         },
         {

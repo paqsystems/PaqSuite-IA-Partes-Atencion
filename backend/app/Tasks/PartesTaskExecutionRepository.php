@@ -11,7 +11,7 @@ use PaqSuite\LaravelCore\Tasks\TaskExecutionStatuses;
 use PDO;
 
 /**
- * Host PARTES: listado de ejecuciones GEN-13 con drenado robusto de rowsets sqlsrv (CC PQ #10).
+ * Host PARTES: listado GEN-13 con drenado rowsets sqlsrv + SP de escritura compatibles sqlsrv (CC PQ #10).
  */
 final class PartesTaskExecutionRepository implements TaskExecutionRepository
 {
@@ -32,11 +32,31 @@ final class PartesTaskExecutionRepository implements TaskExecutionRepository
 
     public function saveParameterSnapshot(int $executionId, array $parameters): void
     {
+        if ($this->isSqlsrv()) {
+            $this->execVoidProcedure('pq_sp_task_execution_save_snapshot', [
+                'execution_id' => $executionId,
+                'parameters_json' => json_encode($parameters, JSON_UNESCAPED_UNICODE),
+            ]);
+
+            return;
+        }
+
         $this->inner->saveParameterSnapshot($executionId, $parameters);
     }
 
     public function appendLog(int $executionId, string $level, string $message, array $context = []): void
     {
+        if ($this->isSqlsrv()) {
+            $this->execVoidProcedure('pq_sp_task_execution_append_log', [
+                'execution_id' => $executionId,
+                'level' => $level,
+                'message' => $message,
+                'context_json' => $context === [] ? null : json_encode($context, JSON_UNESCAPED_UNICODE),
+            ]);
+
+            return;
+        }
+
         $this->inner->appendLog($executionId, $level, $message, $context);
     }
 
@@ -47,7 +67,22 @@ final class PartesTaskExecutionRepository implements TaskExecutionRepository
         ?string $message = null,
         bool $isOverlappedSkip = false,
     ): bool {
-        return $this->inner->updateExecutionStatus($executionId, $statusCode, $finishedAt, $message, $isOverlappedSkip);
+        if ($this->isSqlsrv()) {
+            return $this->updateExecutionStatusSqlsrv(
+                $executionId,
+                $statusCode,
+                $message,
+                $isOverlappedSkip,
+            );
+        }
+
+        return $this->inner->updateExecutionStatus(
+            $executionId,
+            $statusCode,
+            $finishedAt,
+            $message,
+            $isOverlappedSkip,
+        );
     }
 
     public function hasRunningOverlap(int $definitionId, int $companyId): bool
@@ -59,16 +94,26 @@ final class PartesTaskExecutionRepository implements TaskExecutionRepository
 
     public function listExecutions(array $filters = [], int $page = 1, int $pageSize = 25): array
     {
-        if (DB::connection()->getDriverName() !== 'sqlsrv') {
+        if (! $this->isSqlsrv()) {
             return $this->inner->listExecutions($filters, $page, $pageSize);
         }
 
-        return $this->listExecutionsSqlsrv($filters, $page, $pageSize);
+        $result = $this->listExecutionsSqlsrv($filters, $page, $pageSize);
+        $result['items'] = $this->hydrateMissingMessages($result['items'] ?? []);
+
+        return $result;
     }
 
     public function findExecutionById(int $executionId): ?array
     {
-        return $this->inner->findExecutionById($executionId);
+        $row = $this->inner->findExecutionById($executionId);
+        if ($row === null) {
+            return null;
+        }
+
+        $hydrated = $this->hydrateMissingMessages([$row]);
+
+        return $hydrated[0] ?? $row;
     }
 
     public function listLogs(int $executionId): array
@@ -129,6 +174,117 @@ final class PartesTaskExecutionRepository implements TaskExecutionRepository
         }
 
         return ['items' => $items, 'total' => $total];
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $items
+     * @return list<array<string, mixed>>
+     */
+    private function hydrateMissingMessages(array $items): array
+    {
+        if ($items === [] || ! $this->isSqlsrv()) {
+            return $items;
+        }
+
+        $needsHydration = [];
+        foreach ($items as $index => $row) {
+            if ($this->rowMessage($row) !== '') {
+                continue;
+            }
+            $executionId = (int) ($row['id'] ?? $row['executionId'] ?? 0);
+            if ($executionId > 0) {
+                $needsHydration[$index] = $executionId;
+            }
+        }
+
+        if ($needsHydration === []) {
+            return $items;
+        }
+
+        foreach ($needsHydration as $index => $executionId) {
+            $message = $this->resolveExecutionMessage($executionId);
+            if ($message !== '') {
+                $items[$index]['message'] = $message;
+            }
+        }
+
+        return $items;
+    }
+
+    private function resolveExecutionMessage(int $executionId): string
+    {
+        $detail = $this->inner->findExecutionById($executionId);
+        $fromDetail = trim((string) ($detail['message'] ?? ''));
+        if ($fromDetail !== '') {
+            return $fromDetail;
+        }
+
+        foreach ($this->inner->listLogs($executionId) as $log) {
+            $logMessage = trim((string) ($log['message'] ?? ''));
+            if ($logMessage !== '') {
+                return $logMessage;
+            }
+        }
+
+        return '';
+    }
+
+    private function updateExecutionStatusSqlsrv(
+        int $executionId,
+        string $statusCode,
+        ?string $message,
+        bool $isOverlappedSkip,
+    ): bool {
+        $pdo = DB::connection()->getPdo();
+        $stmt = $pdo->prepare(
+            'EXEC dbo.pq_sp_task_execution_update_status @execution_id = ?, @status_code = ?, @message = ?, @is_overlapped_skip = ?'
+        );
+        $stmt->execute([
+            $executionId,
+            $statusCode,
+            $message,
+            $isOverlappedSkip ? 1 : 0,
+        ]);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($rows !== []) {
+            return (int) ($rows[0]['affected'] ?? 0) > 0;
+        }
+
+        while ($stmt->nextRowset()) {
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($rows !== [] && array_key_exists('affected', $rows[0])) {
+                return (int) $rows[0]['affected'] > 0;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  array<string, mixed>  $bindings
+     */
+    private function execVoidProcedure(string $procedure, array $bindings): void
+    {
+        $parts = [];
+        foreach (array_keys($bindings) as $name) {
+            $parts[] = '@'.$name.' = ?';
+        }
+        $sql = 'EXEC dbo.'.$procedure.' '.implode(', ', $parts);
+        DB::connection()->statement($sql, array_values($bindings));
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     */
+    private function rowMessage(array $row): string
+    {
+        return trim((string) ($row['message'] ?? ''));
+    }
+
+    private function isSqlsrv(): bool
+    {
+        return DB::connection()->getDriverName() === 'sqlsrv';
     }
 
     /**

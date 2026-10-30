@@ -70,6 +70,7 @@ use PaqSuite\LaravelCore\Tasks\Backup\MonoRdsBackupService;
 use PaqSuite\LaravelCore\Tasks\Backup\BackupCompanyTargetResolver;
 use PaqSuite\LaravelCore\Tasks\Backup\BackupInstallationProfileResolver;
 use PaqSuite\LaravelCore\Tasks\Backup\ConfigBackupInstallationProfileResolver;
+use App\Tasks\Backup\PartesMonoBackupCompanyTargetResolver;
 use PaqSuite\LaravelCore\Tasks\Backup\EmpresaAdminBackupCompanyTargetResolver;
 use PaqSuite\LaravelCore\Tasks\Backup\RdsBackupLock;
 use PaqSuite\LaravelCore\Tasks\Processes\BackupDatabaseProcess;
@@ -168,8 +169,8 @@ class AppServiceProvider extends ServiceProvider
                 return trim((string) config('paqsuite.clienteCodigo', ''));
             });
         });
-        $this->app->singleton(BackupCompanyTargetResolver::class, static fn ($app) => new EmpresaAdminBackupCompanyTargetResolver(
-            $app->make(EmpresaAdminRepository::class),
+        $this->app->singleton(BackupCompanyTargetResolver::class, static fn ($app) => new PartesMonoBackupCompanyTargetResolver(
+            new EmpresaAdminBackupCompanyTargetResolver($app->make(EmpresaAdminRepository::class)),
         ));
         $this->app->singleton(RdsBackupLock::class, RdsBackupCacheLock::class);
         $this->app->singleton(MonoRdsBackupService::class, static fn ($app) => new MonoRdsBackupService(

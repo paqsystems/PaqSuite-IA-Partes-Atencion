@@ -100,6 +100,10 @@ final class SpCaller
             return false;
         }
 
+        if ($this->isPartesInformeProcedure($procedure)) {
+            return false;
+        }
+
         return ! in_array($procedure, [
             'pq_sp_partes_identidad_resolver',
             'pq_sp_partes_assert_user_id_exclusividad',
@@ -271,10 +275,10 @@ final class SpCaller
             'pq_sp_admin_usuarios_update' => $this->sqliteAdminUsuariosUpdate($params),
             'pq_sp_admin_usuarios_soft_delete' => $this->sqliteAdminUsuariosSoftDelete($params),
             'pq_sp_admin_empresas_list' => DB::select(
-                'SELECT id, nombre, activo, theme FROM pq_empresa ORDER BY nombre'
+                'SELECT id, nombre, activo, theme, nombre_bd FROM pq_empresa ORDER BY nombre'
             ),
             'pq_sp_admin_empresas_get' => DB::select(
-                'SELECT id, nombre, activo, theme FROM pq_empresa WHERE id = ?',
+                'SELECT id, nombre, activo, theme, nombre_bd FROM pq_empresa WHERE id = ?',
                 [(int) $params['id']]
             ),
             'pq_sp_admin_empresas_update' => $this->sqliteAdminEmpresasUpdate($params),
@@ -588,10 +592,13 @@ final class SpCaller
         if (array_key_exists('theme', $params) && $params['theme'] !== null) {
             $patch['theme'] = (string) $params['theme'];
         }
+        if (array_key_exists('nombre_bd', $params) && $params['nombre_bd'] !== null) {
+            $patch['nombre_bd'] = (string) $params['nombre_bd'];
+        }
 
         DB::table('pq_empresa')->where('id', $id)->update($patch);
 
-        return DB::select('SELECT id, nombre, activo, theme FROM pq_empresa WHERE id = ?', [$id]);
+        return DB::select('SELECT id, nombre, activo, theme, nombre_bd FROM pq_empresa WHERE id = ?', [$id]);
     }
 
     /**

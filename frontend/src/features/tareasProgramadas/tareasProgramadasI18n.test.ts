@@ -28,4 +28,17 @@ describe('tareasProgramadasI18n', () => {
       'Impossibile salvare la definizione.'
     )
   })
+
+  it('traduce monitoreo e historial según locale (no inglés por defecto)', () => {
+    const translateIt = createTaskTranslator('it')
+    expect(translateIt('tareasProgramadas.monitoreo.title')).toBe(
+      'Monitoraggio automatizzazioni'
+    )
+    expect(translateIt('tareasProgramadas.ejecuciones.message')).toBe('Motivo / messaggio')
+
+    const translateFr = createTaskTranslator('fr')
+    expect(translateFr('tareasProgramadas.monitoreo.emptyList')).toBe(
+      'Aucune automatisation à afficher.'
+    )
+  })
 })
