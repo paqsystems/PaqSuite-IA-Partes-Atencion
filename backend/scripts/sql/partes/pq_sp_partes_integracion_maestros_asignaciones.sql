@@ -107,7 +107,8 @@ BEGIN
         WHERE a.activo = 1 AND a.inhabilitado = 0
           AND NOT EXISTS (
               SELECT 1 FROM @items i
-              WHERE i.clienteCode = c.code AND i.tipoTareaCode = t.code
+              WHERE i.clienteCode = c.code COLLATE Latin1_General_100_BIN2
+                AND i.tipoTareaCode = t.code COLLATE Latin1_General_100_BIN2
           );
     DECLARE @assignmentId BIGINT;
     OPEN absent_cursor;

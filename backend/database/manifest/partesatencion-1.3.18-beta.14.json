@@ -426,7 +426,7 @@
             "kind": "sql",
             "target": "dictionary",
             "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_asignaciones.sql",
-            "checksum": "09570c7e169e628d71b31d5759c30c25f3c7ee8f9d0e69ce8930f5bca7526c33",
+            "checksum": "ba43b9962e03030540f4f2a098c52f4bab35a03c4c8f04e84e5273b4dae22da8",
             "dependsOn": []
         },
         {
