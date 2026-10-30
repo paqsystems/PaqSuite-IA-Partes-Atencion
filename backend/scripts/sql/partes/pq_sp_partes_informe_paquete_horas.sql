@@ -157,6 +157,7 @@ BEGIN
         SELECT
             m.*,
             SUM(m.delta_minutos) OVER (
+                PARTITION BY m.cliente_id
                 ORDER BY m.fecha, m.id
                 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
             ) AS saldo_running

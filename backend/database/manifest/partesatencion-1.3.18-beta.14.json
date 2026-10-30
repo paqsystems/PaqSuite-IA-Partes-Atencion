@@ -418,7 +418,7 @@
             "kind": "sql",
             "target": "dictionary",
             "path": "scripts/sql/partes/pq_sp_partes_informe_paquete_horas.sql",
-            "checksum": "7e7309cfbd576dd5797f0198037df12efd707da2b82db3fabfcf90f1e234cccc",
+            "checksum": "e07c9bc7f2d541feed49f432e41e3e21024559aa056b7ac35465e37a2a0d22d0",
             "dependsOn": []
         },
         {
