@@ -56,13 +56,13 @@ BEGIN
     DECLARE @isGenerico BIT;
     DECLARE @isDefault BIT;
     DECLARE item_cursor CURSOR LOCAL FAST_FORWARD FOR
-        SELECT indice, code, descripcion,
-               CASE WHEN indice = @lastDefault OR isDefault = 1 THEN 1 ELSE ISNULL(isGenerico, 1) END,
-               CASE WHEN indice = @lastDefault THEN 1 ELSE ISNULL(isDefault, 0) END
-        FROM @items
+        SELECT i.indice, i.code, i.descripcion,
+               CASE WHEN i.indice = @lastDefault OR i.isDefault = 1 THEN 1 ELSE ISNULL(i.isGenerico, 1) END,
+               CASE WHEN i.indice = @lastDefault THEN 1 ELSE ISNULL(i.isDefault, 0) END
+        FROM @items i
         WHERE NOT EXISTS (
             SELECT 1 FROM @resultado r
-            WHERE r.tipoRegistro = 'ITEM' AND r.indice = @items.indice
+            WHERE r.tipoRegistro = 'ITEM' AND r.indice = i.indice
         );
 
     OPEN item_cursor;
@@ -117,11 +117,13 @@ BEGIN
     DEALLOCATE item_cursor;
 
     DECLARE absent_cursor CURSOR LOCAL FAST_FORWARD FOR
-        SELECT code
-        FROM dbo.PQ_PARTES_TIPOS_TAREA WITH (NOLOCK)
-        WHERE activo = 1 AND inhabilitado = 0
-          AND is_default = 0
-          AND NOT EXISTS (SELECT 1 FROM @items i WHERE i.code = code);
+        SELECT t.code
+        FROM dbo.PQ_PARTES_TIPOS_TAREA t WITH (NOLOCK)
+        WHERE t.activo = 1 AND t.inhabilitado = 0
+          AND t.is_default = 0
+          AND NOT EXISTS (
+              SELECT 1 FROM @items i WHERE i.code = t.code COLLATE Latin1_General_100_BIN2
+          );
     OPEN absent_cursor;
     FETCH NEXT FROM absent_cursor INTO @code;
     WHILE @@FETCH_STATUS = 0
