@@ -32,8 +32,15 @@ export default function DxReportDesignerApp({
 }: DxReportDesignerAppProps) {
   const pendingLayoutRef = useRef<string | undefined>(undefined)
 
+  const useDevMode = import.meta.env.DEV
+
   return (
-    <ReportDesigner reportUrl={reportUrl} height="100%" width="100%" developmentMode>
+    <ReportDesigner
+      reportUrl={reportUrl}
+      height="100%"
+      width="100%"
+      {...(useDevMode ? { developmentMode: true } : {})}
+    >
       <RequestOptions host={host} getDesignerModelAction={getDesignerModelAction} />
       <Callbacks
         ReportSaving={(...callbackArgs: unknown[]) => {

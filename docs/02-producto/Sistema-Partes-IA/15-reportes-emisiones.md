@@ -11,6 +11,8 @@ Hay **dos frentes** que el módulo debe cubrir:
 1. **Diseño:** procesos para diseñar informes (layouts DX) y declarar **qué salidas** tiene cada proceso emisible.
 2. **Emisión operativa:** montar el **emisor** (ventana Emitir) en **Consulta detallada**, usando el mismo universo de datos que esa consulta.
 
+**Extensión transversal (IA en el diseñador):** no forma parte de este `15`; norma GEN en Framework [`15-reportes-emisiones-update-4-ia-diseno.md`](../../../PaqSuite-IA-FRAMEWORK/docs/02-producto/15-reportes-emisiones-update-4-ia-diseno.md). Adopción piloto Partes: [`19-ia-diseno-informes.md`](./19-ia-diseno-informes.md) · SPEC-015.
+
 ---
 
 ## 1. Qué se reutiliza y qué define Partes
