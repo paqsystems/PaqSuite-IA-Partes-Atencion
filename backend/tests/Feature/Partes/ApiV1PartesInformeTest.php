@@ -369,6 +369,19 @@ class ApiV1PartesInformeTest extends TestCase
         $this->assertSame('Tipo P', (string) $movs[0]['tipoClienteDescripcion']);
     }
 
+    public function test_paquete_horas_supervisor_requiere_cliente(): void
+    {
+        $token = $this->loginAdmin();
+        $hoy = now()->toDateString();
+
+        $this->getJson(
+            '/api/v1/partes/informes/paquete-horas?fechaDesde='.$hoy.'&fechaHasta='.$hoy,
+            $this->authHeaders($token)
+        )
+            ->assertStatus(422)
+            ->assertJsonPath('respuesta', 'partes.informe.clienteRequerido');
+    }
+
     public function test_paquete_horas_filtra_por_tipo_cliente(): void
     {
         $token = $this->loginAdmin();

@@ -33,6 +33,29 @@ class StaleTaskExecutionRecoveryTest extends TestCase
         $this->assertSame('tasks:backup:rds:dev', $lock->releasedKey);
     }
 
+    public function test_recover_overlaps_usa_umbral_corto(): void
+    {
+        $repo = new FakeTaskExecutionRepositoryForRecovery([
+            [
+                'id' => 11,
+                'startedAt' => new DateTimeImmutable('-20 minutes'),
+            ],
+        ]);
+        $lock = new FakeRdsBackupLock();
+        config([
+            'paqsuite.tasks.backup.backend' => 'rds',
+            'paqsuite.tenancy' => 'single',
+            'paqsuite.tasks.backup.lockLeaseSeconds' => 900,
+            'paqsuite.tasks.execution.overlapRecoveryMaxAgeSeconds' => 0,
+        ]);
+        $profileResolver = new ConfigBackupInstallationProfileResolver(static fn (): string => 'dev');
+
+        $service = new StaleTaskExecutionRecovery($repo, $lock, $profileResolver);
+        $count = $service->recoverOverlaps();
+
+        $this->assertSame(1, $count);
+    }
+
     public function test_no_toca_ejecucion_reciente(): void
     {
         $repo = new FakeTaskExecutionRepositoryForRecovery([

@@ -95,10 +95,12 @@ BEGIN
     DEALLOCATE item_cursor;
 
     DECLARE absent_cursor CURSOR LOCAL FAST_FORWARD FOR
-        SELECT code
-        FROM dbo.PQ_PARTES_TIPOS_CLIENTE WITH (NOLOCK)
-        WHERE activo = 1 AND inhabilitado = 0
-          AND NOT EXISTS (SELECT 1 FROM @items i WHERE i.code = code);
+        SELECT tc.code
+        FROM dbo.PQ_PARTES_TIPOS_CLIENTE tc WITH (NOLOCK)
+        WHERE tc.activo = 1 AND tc.inhabilitado = 0
+          AND NOT EXISTS (
+              SELECT 1 FROM @items i WHERE i.code = tc.code COLLATE Latin1_General_100_BIN2
+          );
     OPEN absent_cursor;
     FETCH NEXT FROM absent_cursor INTO @code;
     WHILE @@FETCH_STATUS = 0

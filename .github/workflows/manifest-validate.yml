@@ -6,6 +6,8 @@ on:
       - 'backend/database/**'
       - 'backend/tools/build-installation-manifest.php'
       - 'backend/tools/validate-installation-manifest.php'
+      - 'backend/composer.json'
+      - 'backend/composer.lock'
       - '.github/workflows/manifest-validate.yml'
 
 permissions:
@@ -26,16 +28,23 @@ jobs:
           php-version: '8.2'
           coverage: none
 
-      - name: Composer install
+      - name: Composer install (Cloudsmith)
         env:
-          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
-        run: composer install --no-interaction --prefer-dist
+          CLOUDSMITH_READ_TOKEN: ${{ secrets.CLOUDSMITH_READ_TOKEN }}
+        run: |
+          if [ -z "${CLOUDSMITH_READ_TOKEN:-}" ]; then
+            echo "Falta secret CLOUDSMITH_READ_TOKEN en GitHub Actions (Settings → Secrets)." >&2
+            exit 1
+          fi
+          echo "::add-mask::${CLOUDSMITH_READ_TOKEN}"
+          # Mismo contrato que Forge: auth.json http-basic (dl.cloudsmith.io) + repo entitlement efímero.
+          bash scripts/forge-composer-install.sh
 
       - name: Regenerate host manifest (check drift)
-        run: php tools/build-installation-manifest.php --semver=1.3.17-beta.1
+        run: php tools/build-installation-manifest.php
 
       - name: Assert manifest committed
         run: git diff --exit-code database/manifest/
 
       - name: Validate merge Framework + host
-        run: php tools/validate-installation-manifest.php --semver=1.3.17-beta.1
+        run: php tools/validate-installation-manifest.php

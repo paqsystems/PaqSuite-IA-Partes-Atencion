@@ -43,6 +43,12 @@ final class SpEmpresaAdminRepository implements EmpresaAdminRepository
         if (array_key_exists('theme', $data)) {
             $params['theme'] = $data['theme'] !== null ? (string) $data['theme'] : 'generic.light';
         }
+        if (array_key_exists('nombreBd', $data) || array_key_exists('nombre_bd', $data)) {
+            $nombreBd = $data['nombreBd'] ?? $data['nombre_bd'];
+            $params['nombre_bd'] = $nombreBd !== null && trim((string) $nombreBd) !== ''
+                ? trim((string) $nombreBd)
+                : null;
+        }
 
         $row = $this->spCaller->callFirst('pq_sp_admin_empresas_update', $params);
 
@@ -64,11 +70,19 @@ final class SpEmpresaAdminRepository implements EmpresaAdminRepository
 
     private function mapRow(object $row): array
     {
+        $nombreBd = null;
+        if (isset($row->nombre_bd) && $row->nombre_bd !== null && trim((string) $row->nombre_bd) !== '') {
+            $nombreBd = trim((string) $row->nombre_bd);
+        } elseif (isset($row->nombreBd) && $row->nombreBd !== null && trim((string) $row->nombreBd) !== '') {
+            $nombreBd = trim((string) $row->nombreBd);
+        }
+
         return [
             'id' => (int) $row->id,
             'nombreEmpresa' => (string) $row->nombre,
             'habilitada' => (bool) $row->activo,
             'theme' => $row->theme !== null ? (string) $row->theme : 'generic.light',
+            'nombreBd' => $nombreBd,
         ];
     }
 }

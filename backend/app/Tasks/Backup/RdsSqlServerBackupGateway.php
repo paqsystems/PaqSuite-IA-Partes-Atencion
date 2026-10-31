@@ -4,6 +4,7 @@ namespace App\Tasks\Backup;
 
 use Illuminate\Support\Facades\DB;
 use PaqSuite\LaravelCore\Tasks\Backup\MonoRdsBackupGateway;
+use PaqSuite\LaravelCore\Tasks\Backup\RdsBackupS3Arn;
 
 final class RdsSqlServerBackupGateway implements MonoRdsBackupGateway
 {
@@ -14,7 +15,7 @@ final class RdsSqlServerBackupGateway implements MonoRdsBackupGateway
         bool $overwrite = true,
     ): array
     {
-        $destinationArn = rtrim($s3Arn, '/').'/'.$this->normalizeFileName($filePrefix);
+        $destinationArn = RdsBackupS3Arn::composeExportDestination($s3Arn, $filePrefix);
         $rows = DB::connection()->select(
             'EXEC msdb.dbo.rds_backup_database
                 @source_db_name = ?,
@@ -53,15 +54,4 @@ final class RdsSqlServerBackupGateway implements MonoRdsBackupGateway
         ];
     }
 
-    private function normalizeFileName(string $filePrefix): string
-    {
-        $fileName = trim($filePrefix);
-        if ($fileName === '') {
-            $fileName = 'backup';
-        }
-
-        return str_ends_with(strtolower($fileName), '.bak')
-            ? $fileName
-            : $fileName.'.bak';
-    }
 }

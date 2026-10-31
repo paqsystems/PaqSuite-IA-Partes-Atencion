@@ -38,6 +38,16 @@ if [[ -z "${CLOUDSMITH_READ_TOKEN:-}" ]]; then
     exit 1
 fi
 
+# Secretos de GHA/Forge a veces traen CRLF o comillas; rompen entitlement URL (HTTP 400).
+CLOUDSMITH_READ_TOKEN="$(
+    php -r 'echo trim(getenv("CLOUDSMITH_READ_TOKEN"), " \t\n\r\0\x0B\"'\''");'
+)"
+export CLOUDSMITH_READ_TOKEN
+if [[ -z "${CLOUDSMITH_READ_TOKEN}" ]]; then
+    echo "ERROR: CLOUDSMITH_READ_TOKEN vacío tras normalizar." >&2
+    exit 1
+fi
+
 if [[ ! -f "$lockFile" ]]; then
     echo "ERROR: no existe backend/composer.lock; no se ejecuta Composer en Forge." >&2
     exit 1
@@ -93,7 +103,11 @@ if (( lockValidationStatus != 0 )); then
 fi
 
 php -r '
-$k = getenv("CLOUDSMITH_READ_TOKEN");
+$k = trim((string) getenv("CLOUDSMITH_READ_TOKEN"), " \t\n\r\0\x0B\"'\''");
+if ($k === "") {
+    fwrite(STDERR, "ERROR: CLOUDSMITH_READ_TOKEN vacío en PHP.\n");
+    exit(8);
+}
 file_put_contents("auth.json", json_encode([
     "bearer" => ["composer.cloudsmith.io" => $k],
     "http-basic" => [

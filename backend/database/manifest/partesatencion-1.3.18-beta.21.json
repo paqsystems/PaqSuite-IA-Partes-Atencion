@@ -1,6 +1,9 @@
 {
-    "manifestId": "partesatencion-1.3.18-beta.2",
-    "semver": "1.3.18-beta.2",
+    "manifestId": "partesatencion-1.3.18-beta.21",
+    "semver": "1.3.18-beta.21",
+    "omitFrameworkEntryIds": [
+        "fw-sp-pq_sp_admin_empresa_tango_dictionary"
+    ],
     "entries": [
         {
             "id": "partes-migration-2014_10_12_000000_create_users_table",
@@ -63,7 +66,7 @@
             "kind": "migration",
             "target": "dictionary",
             "path": "database/migrations/2026_07_25_000006_create_pq_task_tables.php",
-            "checksum": "18af5bbfe6a2d17abf3f9a434ecf22f51294aac0cf7be66d295804a058d2cf00",
+            "checksum": "f21fc3e7731a1940d878437be52401372c76a8f317508dc298e2386bc090245f",
             "dependsOn": []
         },
         {
@@ -207,7 +210,7 @@
             "kind": "migration",
             "target": "dictionary",
             "path": "database/migrations/2026_08_02_100000_create_pq_excel_import_tables.php",
-            "checksum": "c8c920ed94b024b28667e2c9e4e29b098e9158be9989f4d1c20c28d292618401",
+            "checksum": "b465e650026858f946c67bee9f8f79384a44aa47c0e8cb96b29430a660cd4584",
             "dependsOn": []
         },
         {
@@ -223,7 +226,7 @@
             "kind": "migration",
             "target": "dictionary",
             "path": "database/migrations/2026_08_25_100000_create_pq_emission_tables.php",
-            "checksum": "7a86808f8ce245ec7a59e6044eff807089b32b1049a4823d7acb86418bc98c24",
+            "checksum": "9eadb80ac66095a7b8243e6db2d00ca804a201e0c7fcea6e4c712adf5e9c1610",
             "dependsOn": []
         },
         {
@@ -283,6 +286,30 @@
             "dependsOn": []
         },
         {
+            "id": "partes-migration-2026_10_30_140000_align_pq_emission_jobs_for_framework_gen15",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_30_140000_align_pq_emission_jobs_for_framework_gen15.php",
+            "checksum": "de22d6d613684a9bd8b9c22abdb644bf7505832de12796740c70adba4f2289a0",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_30_140001_add_pq_parametros_gral_sp_compat_columns",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_30_140001_add_pq_parametros_gral_sp_compat_columns.php",
+            "checksum": "45bede0b04511dad7334324b2c6cf90ac6ca76f13e0d90fbe101f7d3aba6d24d",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_30_140002_backfill_pq_menus_label_key_columns",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_30_140002_backfill_pq_menus_label_key_columns.php",
+            "checksum": "0e54bb36ca11476023a3efd45d254a7076e50f927234e94782b0df8c518ba952",
+            "dependsOn": []
+        },
+        {
             "id": "partes-sp-ddl_2026_07_31_theme_y_pq_rol_atributos",
             "kind": "sql",
             "target": "dictionary",
@@ -299,6 +326,14 @@
             "dependsOn": []
         },
         {
+            "id": "partes-sp-pq_sp_admin_menu_list_enabled",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_admin_menu_list_enabled.sql",
+            "checksum": "71399df3cab3fdf573da5da120676f89e1070ea4c3786701e4c03442ce13660f",
+            "dependsOn": []
+        },
+        {
             "id": "partes-sp-pq_sp_admin_roles_atributos",
             "kind": "sql",
             "target": "dictionary",
@@ -311,23 +346,7 @@
             "kind": "sql",
             "target": "dictionary",
             "path": "database/sp/pq_sp_admin_seguridad_core.sql",
-            "checksum": "eeee06147e126b4df59475c9920099023e83f554a68b3938e7006fd907c7fef9",
-            "dependsOn": []
-        },
-        {
-            "id": "partes-sp-pq_sp_emission_core",
-            "kind": "sql",
-            "target": "dictionary",
-            "path": "database/sp/pq_sp_emission_core.sql",
-            "checksum": "98cc63d6907180a48be67ea12e295f6bdd091df71972adf68d0ee8eabc26ff22",
-            "dependsOn": []
-        },
-        {
-            "id": "partes-sp-pq_sp_excel_core",
-            "kind": "sql",
-            "target": "dictionary",
-            "path": "database/sp/pq_sp_excel_core.sql",
-            "checksum": "4fbe5b2b256054846dddf55ea1e693c2cfe8e61f081db8acbe9bfda467ebc0d9",
+            "checksum": "9a6f9bac3ffaa6239dafa65e389038bc7530efe08c076afe49babe967887f4e7",
             "dependsOn": []
         },
         {
@@ -395,19 +414,91 @@
             "dependsOn": []
         },
         {
-            "id": "partes-sp-pq_sp_task_execution_append_log",
+            "id": "partes-sp-pq_sp_partes_informe_paquete_horas",
             "kind": "sql",
-            "target": "both",
-            "path": "database/sp/pq_sp_task_execution_append_log.sql",
-            "checksum": "d62343e5fdda1d2b176973d04df9d5cc5d6219ca3a6f5951f9eb9d2782451587",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_informe_paquete_horas.sql",
+            "checksum": "e07c9bc7f2d541feed49f432e41e3e21024559aa056b7ac35465e37a2a0d22d0",
             "dependsOn": []
         },
         {
-            "id": "partes-sp-pq_sp_task_execution_save_snapshot",
+            "id": "partes-sp-pq_sp_partes_integracion_maestros_asignaciones",
             "kind": "sql",
-            "target": "both",
-            "path": "database/sp/pq_sp_task_execution_save_snapshot.sql",
-            "checksum": "8cd27da8c11b66abef7bd0dfd6c34b4e188bba4dfa8e7ce8215a4f66bffd8796",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_asignaciones.sql",
+            "checksum": "ba43b9962e03030540f4f2a098c52f4bab35a03c4c8f04e84e5273b4dae22da8",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_integracion_maestros_asistentes",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_asistentes.sql",
+            "checksum": "60ff4e75e58ba5653103f322f6deea4d2bf39ccc1971c8fee5ea117a098c205c",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_integracion_maestros_clientes",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_clientes.sql",
+            "checksum": "bae5bc5cf8cc8e8a5e82cd8dcf7e3e6520f237dd11b7b96bc0b9411b343d8a05",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_integracion_maestros_tipos_cliente",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_tipos_cliente.sql",
+            "checksum": "e7e9a9546bd0c0f3e3c635a57c8a49b1e806b2c3198ab9c86f528aa62134eecf",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_integracion_maestros_tipos_tarea",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_tipos_tarea.sql",
+            "checksum": "3614f25b22a23c8558177a5a3d853720bc754f716a771d70aa45599716c53e89",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_paquete_delete",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_paquete_delete.sql",
+            "checksum": "d47dfc77a77d6ea774121176f2ac1d24bc3e881612db396d6ef521f40d654190",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_paquete_get",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_paquete_get.sql",
+            "checksum": "01bb8c3d56df32619cdfc10267161807a1d101fc9d9eb96bba7dce04966cceec",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_paquete_list",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_paquete_list.sql",
+            "checksum": "aab62c7e9389fc5f108e880383cb01d8e2c5cafb306dfe594cded1214ce01b94",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_paquete_upsert",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_paquete_upsert.sql",
+            "checksum": "1732e11bd8776f9fc06ad8d1d140f782e89f19547579d992998f2678a155ab34",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_task_definition_parameter_set",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_task_definition_parameter_set.sql",
+            "checksum": "54ee84fdde2e5cc8461bf5a3d278687b0439e067cfa4a739cd8c7c1546a42ca3",
             "dependsOn": []
         },
         {
@@ -433,15 +524,6 @@
             "path": "database/sp/pq_sp_user_empresas_list.sql",
             "checksum": "5ec61e683f30802d32a285450d8385e2998c7e701becac10f741d85251376fcf",
             "dependsOn": []
-        },
-        {
-            "id": "partes-sp-pq_sp_admin_menu_list_enabled",
-            "kind": "sql",
-            "target": "dictionary",
-            "path": "database/sp/pq_sp_admin_menu_list_enabled.sql",
-            "checksum": "71399df3cab3fdf573da5da120676f89e1070ea4c3786701e4c03442ce13660f",
-            "dependsOn": [],
-            "module": "GEN-07"
         },
         {
             "id": "partes-sp-pq_sp_user_menu",

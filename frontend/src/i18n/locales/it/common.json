@@ -262,6 +262,7 @@
   "partes.informe.field.saldo": "Saldo",
   "partes.informe.field.esTarea": "È attività",
   "partes.informe.saldoInicialLabel": "Saldo iniziale:",
+  "partes.informe.clienteRequerido": "Selezionare un cliente per consultare il report.",
   "partes.profile.title": "Profilo Partes",
   "partes.profile.tipoFuncional": "Tipo funzionale:",
   "partes.profile.codigo": "Codice:",

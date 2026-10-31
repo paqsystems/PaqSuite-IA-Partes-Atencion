@@ -26,7 +26,7 @@ BEGIN
         RETURN;
     END
     IF @p_duracion_minutos IS NULL
-        OR @p_duracion_minutos < 480
+        OR @p_duracion_minutos < 60
         OR @p_duracion_minutos > 14400
         OR @p_duracion_minutos % 60 <> 0
     BEGIN

@@ -32,25 +32,12 @@ if [[ -z "${PAQSUITE_PROYECTO:-}" ]]; then
   PAQSUITE_PROYECTO="$(read_dotenv_var PAQSUITE_PROYECTO || true)"
 fi
 
+export PAQSUITE_CLIENTE PAQSUITE_PROYECTO
+
 if [[ -z "${PAQSUITE_CLIENTE:-}" || -z "${PAQSUITE_PROYECTO:-}" ]]; then
   echo "PAQSUITE_CLIENTE y PAQSUITE_PROYECTO deben estar en el .env del sitio Forge o exportados en el deploy." >&2
   exit 1
 fi
 
-php artisan migrate --force
-
-# SP host (y task SP del SDK) antes de installation:update — el orquestador no debe depender de SP aún no desplegados.
-php scripts/deploy-sp.php
-
-run_installation_update_if_available() {
-  if ! php artisan list --raw 2>/dev/null | grep -q '^paqsuite:installation:update'; then
-    echo "paqsuite:installation:update no disponible en este pin de laravel-core; omito GEN-34 CLI."
-    return 0
-  fi
-  php artisan paqsuite:installation:update \
-    --cliente="${PAQSUITE_CLIENTE}" \
-    --proyecto="${PAQSUITE_PROYECTO}" \
-    --non-interactive
-}
-
-run_installation_update_if_available
+# Un solo proceso PHP: tenant EMPRESAS_CONEXION + migrate + deploy-sp + installation:update
+php scripts/forge/run-post-deploy-backend.php

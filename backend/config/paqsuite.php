@@ -1,5 +1,17 @@
 <?php
 
+$partesComposerPath = dirname(__DIR__).'/composer.json';
+$partesComposer = is_readable($partesComposerPath)
+    ? json_decode((string) file_get_contents($partesComposerPath), true)
+    : null;
+$partesLaravelCoreSemver = is_array($partesComposer)
+    ? trim((string) ($partesComposer['require']['paqsuite/laravel-core'] ?? ''))
+    : '';
+if ($partesLaravelCoreSemver === '') {
+    $partesLaravelCoreSemver = '1.3.18-beta.18';
+}
+$partesDefaultHostManifest = dirname(__DIR__).'/database/manifest/partesatencion-'.$partesLaravelCoreSemver.'.json';
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -109,6 +121,13 @@ return [
             'auth:sanctum',
         ],
         'scheduleTimezone' => env('PAQSUITE_TASKS_SCHEDULE_TIMEZONE', 'America/Argentina/Buenos_Aires'),
+        'execution' => [
+            // Cierra EN_EJECUCION huérfanas antes de overlap / scheduler (CC PQ #10).
+            'overlapRecoveryMaxAgeSeconds' => (int) env(
+                'PAQSUITE_TASKS_OVERLAP_RECOVERY_MAX_AGE_SECONDS',
+                0,
+            ),
+        ],
         'backup' => [
             'backend' => env('PAQSUITE_TASKS_BACKUP_BACKEND', 'rds'),
             's3ArnPrefix' => env('TASKS_BACKUP_S3_ARN_PREFIX', ''),
@@ -223,7 +242,7 @@ return [
     'installation' => [
         'hostManifestPath' => env(
             'PAQSUITE_HOST_MANIFEST',
-            database_path('manifest/partesatencion-1.3.18-beta.2.json')
+            $partesDefaultHostManifest
         ),
         'frameworkPackageRoot' => base_path('vendor/paqsuite/laravel-core'),
     ],

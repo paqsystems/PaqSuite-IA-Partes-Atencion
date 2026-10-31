@@ -70,6 +70,7 @@ use PaqSuite\LaravelCore\Tasks\Backup\MonoRdsBackupService;
 use PaqSuite\LaravelCore\Tasks\Backup\BackupCompanyTargetResolver;
 use PaqSuite\LaravelCore\Tasks\Backup\BackupInstallationProfileResolver;
 use PaqSuite\LaravelCore\Tasks\Backup\ConfigBackupInstallationProfileResolver;
+use App\Tasks\Backup\PartesMonoBackupCompanyTargetResolver;
 use PaqSuite\LaravelCore\Tasks\Backup\EmpresaAdminBackupCompanyTargetResolver;
 use PaqSuite\LaravelCore\Tasks\Backup\RdsBackupLock;
 use PaqSuite\LaravelCore\Tasks\Processes\BackupDatabaseProcess;
@@ -83,12 +84,15 @@ use PaqSuite\LaravelCore\Tasks\TaskProcessRegistry;
 use PaqSuite\LaravelCore\Tenancy\MenuProcedimientoChecker;
 use App\Tasks\Backup\RdsSqlServerBackupGateway;
 use App\Tasks\Backup\RdsBackupCacheLock;
+use App\Tasks\PartesTaskDefinitionRepository;
+use App\Tasks\PartesTaskExecutionRepository;
 use App\Tasks\SchedulingTaskDefinitionRepository;
 use App\Tasks\StaleTaskExecutionRecovery;
 use App\Tenancy\CliInstalacionContext;
 use App\Tenancy\InstalacionConnectionConfigurator;
 use DateTimeInterface;
 use DateTimeZone;
+use PaqSuite\LaravelCore\Tasks\TaskExecutionService;
 use PaqSuite\LaravelCore\Tasks\TaskScheduleCalculator;
 
 class AppServiceProvider extends ServiceProvider
@@ -134,17 +138,33 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(InstalacionConnectionConfigurator::class);
         $this->app->singleton(CliInstalacionContext::class);
         $this->app->singleton(StaleTaskExecutionRecovery::class);
-        $this->app->singleton(TaskDefinitionRepository::class, static function () {
+        $this->app->singleton(TaskScheduleCalculator::class, static function () {
             $tzName = (string) config('paqsuite.tasks.scheduleTimezone', config('app.timezone', 'UTC'));
-            $timeZone = new DateTimeZone($tzName !== '' ? $tzName : 'UTC');
-            $calculator = new TaskScheduleCalculator($timeZone);
 
-            return new SchedulingTaskDefinitionRepository(
+            return new TaskScheduleCalculator(new DateTimeZone($tzName !== '' ? $tzName : 'UTC'));
+        });
+        $this->app->singleton(TaskDefinitionRepository::class, static function ($app) {
+            $calculator = $app->make(TaskScheduleCalculator::class);
+
+            $scheduling = new SchedulingTaskDefinitionRepository(
                 new StoredProcedureTaskDefinitionRepository(),
                 static fn (array $schedule, ?DateTimeInterface $after = null) => $calculator->calculateNextRunAt($schedule, $after),
             );
+
+            return new PartesTaskDefinitionRepository($scheduling);
         });
-        $this->app->singleton(TaskExecutionRepository::class, static fn () => new StoredProcedureTaskExecutionRepository());
+        $this->app->singleton(TaskExecutionService::class, static function ($app) {
+            return new TaskExecutionService(
+                $app->make(TaskProcessRegistry::class),
+                $app->make(TaskProcessRepository::class),
+                $app->make(TaskDefinitionRepository::class),
+                $app->make(TaskExecutionRepository::class),
+                scheduleCalculator: $app->make(TaskScheduleCalculator::class),
+            );
+        });
+        $this->app->singleton(TaskExecutionRepository::class, static fn () => new PartesTaskExecutionRepository(
+            new StoredProcedureTaskExecutionRepository(),
+        ));
         $this->app->singleton(TaskProcessRegistry::class, TaskProcessRegistry::class);
         $this->app->singleton(MonoRdsBackupGateway::class, RdsSqlServerBackupGateway::class);
         $this->app->singleton(BackupInstallationProfileResolver::class, static function () {
@@ -162,8 +182,8 @@ class AppServiceProvider extends ServiceProvider
                 return trim((string) config('paqsuite.clienteCodigo', ''));
             });
         });
-        $this->app->singleton(BackupCompanyTargetResolver::class, static fn ($app) => new EmpresaAdminBackupCompanyTargetResolver(
-            $app->make(EmpresaAdminRepository::class),
+        $this->app->singleton(BackupCompanyTargetResolver::class, static fn ($app) => new PartesMonoBackupCompanyTargetResolver(
+            new EmpresaAdminBackupCompanyTargetResolver($app->make(EmpresaAdminRepository::class)),
         ));
         $this->app->singleton(RdsBackupLock::class, RdsBackupCacheLock::class);
         $this->app->singleton(MonoRdsBackupService::class, static fn ($app) => new MonoRdsBackupService(

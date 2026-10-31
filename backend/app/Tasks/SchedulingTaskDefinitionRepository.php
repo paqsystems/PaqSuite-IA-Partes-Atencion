@@ -70,6 +70,19 @@ final class SchedulingTaskDefinitionRepository implements TaskDefinitionReposito
         return $this->inner->updateNextRunAt($definitionId, $nextRunAt);
     }
 
+    public function claimNextRunAt(
+        int $definitionId,
+        \DateTimeInterface $dueSlot,
+        \DateTimeInterface $nextRunAt,
+    ): bool {
+        return $this->inner->claimNextRunAt($definitionId, $dueSlot, $nextRunAt);
+    }
+
+    public function clearNextRunAt(int $definitionId): bool
+    {
+        return $this->inner->clearNextRunAt($definitionId);
+    }
+
     public function updateLastRun(int $definitionId, \DateTimeInterface $lastRunAt, string $lastStatusCode): bool
     {
         return $this->inner->updateLastRun($definitionId, $lastRunAt, $lastStatusCode);

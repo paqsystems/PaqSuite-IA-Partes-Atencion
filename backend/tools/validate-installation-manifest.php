@@ -14,7 +14,14 @@ require $backendRoot.'/vendor/autoload.php';
 use PaqSuite\LaravelCore\Installation\Manifest\ManifestValidationException;
 use PaqSuite\LaravelCore\Installation\Manifest\ManifestValidationService;
 
-$semver = '1.3.17-beta.1';
+$composerJson = json_decode((string) file_get_contents($backendRoot.'/composer.json'), true);
+$semver = is_array($composerJson)
+    ? (string) ($composerJson['require']['paqsuite/laravel-core'] ?? '')
+    : '';
+if ($semver === '') {
+    fwrite(STDERR, "Missing require paqsuite/laravel-core in composer.json\n");
+    exit(1);
+}
 foreach ($argv as $arg) {
     if (str_starts_with($arg, '--semver=')) {
         $semver = substr($arg, strlen('--semver='));

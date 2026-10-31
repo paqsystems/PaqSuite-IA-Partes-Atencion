@@ -47,13 +47,15 @@ final class PartesTasksRunDueCommand extends Command
         ));
 
         if (! $this->option('skip-recover')) {
-            $recovered = $staleRecovery->recover();
+            $recovered = $staleRecovery->recoverOverlaps();
             if ($recovered > 0) {
-                $this->warn("Recuperadas {$recovered} ejecución(es) EN_EJECUCION expirada(s).");
+                $this->warn("Recuperadas {$recovered} ejecución(es) EN_EJECUCION expirada(s) (overlap).");
             }
         }
 
-        $asOf = new \DateTimeImmutable('now');
+        $tzName = (string) config('paqsuite.tasks.scheduleTimezone', config('app.timezone', 'UTC'));
+        $scheduleTz = new \DateTimeZone($tzName !== '' ? $tzName : 'UTC');
+        $asOf = new \DateTimeImmutable('now', $scheduleTz);
 
         if ($this->option('dry-run')) {
             $due = $definitionRepository->listDueDefinitions($asOf);

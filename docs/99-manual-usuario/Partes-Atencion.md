@@ -47,6 +47,8 @@ Detalle de cada objeto y campo: [SPEC-001](./SPEC-001-objetos-datos-y-glosario.m
 | **Seguridad** | Usuarios, roles, permisos | Administradores |
 | **Parámetros** | Auth, Partes, importación, emisiones | Administradores / supervisor |
 | **Soporte Técnico** | Diseñador de emisiones | Quien tenga permiso de diseño |
+
+En el diseñador (piloto), puede haber **asistencia IA** para armar diseños en lenguaje natural; siempre hay que **guardar** desde el diseñador y la clave la administra soporte en el servicio de reportes. Detalle: [SPEC-010 § Asistencia IA](./SPEC-010-emisiones-informes.md).
 | **Avatar** | Perfil Partes (solo lectura), **Asistente IA**, Preferencias de modelo, idioma, apariencia, salir | Todos |
 
 **Cliente:** Inicio + Informes (+ perfil en el avatar). Sin Archivos, Partes, Seguridad ni Parámetros de administración.

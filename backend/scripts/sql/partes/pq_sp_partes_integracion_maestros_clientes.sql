@@ -68,10 +68,10 @@ BEGIN
     DECLARE @erpCliente NVARCHAR(15);
     DECLARE @erpArticulo NVARCHAR(15);
     DECLARE item_cursor CURSOR LOCAL FAST_FORWARD FOR
-        SELECT indice, code, nombre, tipoClienteCode, NULLIF(email, N''), NULLIF(erpCliente, N''), NULLIF(erpArticulo, N'')
-        FROM @items
+        SELECT i.indice, i.code, i.nombre, i.tipoClienteCode, NULLIF(i.email, N''), NULLIF(i.erpCliente, N''), NULLIF(i.erpArticulo, N'')
+        FROM @items i
         WHERE NOT EXISTS (
-            SELECT 1 FROM @resultado r WHERE r.tipoRegistro = 'ITEM' AND r.indice = @items.indice
+            SELECT 1 FROM @resultado r WHERE r.tipoRegistro = 'ITEM' AND r.indice = i.indice
         );
 
     OPEN item_cursor;
@@ -131,9 +131,11 @@ BEGIN
     DEALLOCATE item_cursor;
 
     DECLARE absent_cursor CURSOR LOCAL FAST_FORWARD FOR
-        SELECT code FROM dbo.PQ_PARTES_CLIENTES WITH (NOLOCK)
-        WHERE activo = 1 AND inhabilitado = 0
-          AND NOT EXISTS (SELECT 1 FROM @items i WHERE i.code = code);
+        SELECT c.code FROM dbo.PQ_PARTES_CLIENTES c WITH (NOLOCK)
+        WHERE c.activo = 1 AND c.inhabilitado = 0
+          AND NOT EXISTS (
+              SELECT 1 FROM @items i WHERE i.code = c.code COLLATE Latin1_General_100_BIN2
+          );
     OPEN absent_cursor;
     FETCH NEXT FROM absent_cursor INTO @code;
     WHILE @@FETCH_STATUS = 0

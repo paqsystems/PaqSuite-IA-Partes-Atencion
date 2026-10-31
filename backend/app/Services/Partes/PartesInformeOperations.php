@@ -181,6 +181,16 @@ final class PartesInformeOperations
             self::fail('partes.tarea.fechasRequeridas');
         }
 
+        $tipoActor = (string) ($params['p_actor_tipo_funcional'] ?? '');
+        $clienteId = (int) ($params['p_cliente_id'] ?? 0);
+        if ($tipoActor === 'cliente') {
+            $clienteId = (int) ($params['p_actor_cliente_id'] ?? 0);
+        }
+        if ($clienteId <= 0) {
+            self::fail('partes.informe.clienteRequerido');
+        }
+        $params['p_cliente_id'] = $clienteId;
+
         $prevRows = self::paqueteScoped($params, self::baseScoped($params, soloTareas: false))
             ->whereDate('r.fecha', '<', $fechaDesde)
             ->get(['r.es_tarea', 'r.duracion_minutos']);

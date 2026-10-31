@@ -16,6 +16,7 @@ import {
   dateSerializationFormat,
   enrichRowsWithDuracionHoras,
   formatMinutosAsHhMm,
+  formatMinutosAsHhMmSigned,
   isoDateFromDateBox,
 } from '../carga/partesTareaDuration'
 import { monthRange, currentMonthValue } from './PartesDashboardPage'
@@ -26,8 +27,42 @@ import { buildPartesPaqueteHorasPivotCatalog } from './partesInformePivotCatalog
 import { aggregatePaqueteHorasDesglose } from '../mobile/aggregatePaqueteHorasDesglose'
 import { mapDesgloseToKardexItem } from '../mobile/mapPartesTareaToKardexItem'
 
-function formatDuracionCell(cell: { value?: unknown }) {
-  return formatMinutosAsHhMm(Number(cell.value ?? 0))
+function formatDuracionCell(cell: { value?: unknown; data?: Record<string, unknown> }) {
+  const row = cell.data ?? {}
+  const mins = Number(cell.value ?? 0)
+  const base = formatMinutosAsHhMm(mins)
+  if (row.esSaldoInicial) {
+    return base
+  }
+  if (row.esTarea === false) {
+    return `-${base}`
+  }
+  return base
+}
+
+function formatSaldoCell(cell: { value?: unknown }) {
+  return formatMinutosAsHhMmSigned(Number(cell.value ?? 0))
+}
+
+function onPaqueteHorasCellPrepared(e: {
+  rowType?: string
+  column?: { dataField?: string }
+  cellElement?: HTMLElement
+  data?: Record<string, unknown>
+}) {
+  if (e.rowType !== 'data' || !e.column || !e.cellElement || !e.data) {
+    return
+  }
+  if (e.column.dataField === 'duracionMinutos') {
+    const text = formatDuracionCell({ value: e.data.duracionMinutos, data: e.data })
+    e.cellElement.textContent = text
+    if (!e.data.esSaldoInicial && e.data.esTarea === false) {
+      e.cellElement.classList.add('partes-paquete-horas-duration-credit')
+    }
+  }
+  if (e.column.dataField === 'saldo') {
+    e.cellElement.textContent = formatSaldoCell({ value: e.data.saldo })
+  }
 }
 
 const PAQUETE_HORAS_CONSULTA_ID = 'partes.informes.paqueteHoras'
@@ -51,8 +86,10 @@ export function PaqueteHorasPage() {
   const [tiposClienteLoading, setTiposClienteLoading] = useState(true)
   const [rawRows, setRawRows] = useState<Record<string, unknown>[]>([])
   const [saldoInicial, setSaldoInicial] = useState(0)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  /** Remonta la grilla tras búsqueda OK (plantilla DX / filter row no debe dejar filas ocultas). */
+  const [gridResetKey, setGridResetKey] = useState(0)
 
   const [ejeChart, setEjeChart] = useState<'cliente' | 'tipo'>('cliente')
 
@@ -78,8 +115,11 @@ export function PaqueteHorasPage() {
       const items = result.envelope.resultado.items ?? []
       setRawRows(items)
       setSaldoInicial(result.envelope.resultado.saldoInicial ?? 0)
-      if ((result.envelope.resultado.total ?? 0) <= 1) {
+      const movimientos = items.filter((row) => !row.esSaldoInicial)
+      if (movimientos.length === 0) {
         setError(resolveAuthMessage('partes.consulta.empty'))
+      } else {
+        setError(null)
       }
       const enriched = enrichRowsWithDuracionHoras(enrichRowsWithDiaSemana(items, t, 'fecha'))
       return enriched.filter((row) => !row.esSaldoInicial)
@@ -92,7 +132,12 @@ export function PaqueteHorasPage() {
     return []
   }, [clienteId, esCliente, fechaDesde, fechaHasta, t, tipoClienteId])
 
-  const loadPivotDataset = useCallback(async () => fetchPaqueteHorasRows(), [fetchPaqueteHorasRows])
+  const loadPivotDataset = useCallback(async () => {
+    if (!esCliente && (clienteId === null || clienteId <= 0)) {
+      return []
+    }
+    return fetchPaqueteHorasRows()
+  }, [clienteId, esCliente, fetchPaqueteHorasRows])
 
   const desgloseCliente = useMemo(
     () => aggregatePaqueteHorasDesglose(rawRows, 'cliente'),
@@ -127,33 +172,58 @@ export function PaqueteHorasPage() {
   }, [])
 
   const load = useCallback(async () => {
+    if (!esCliente && (clienteId === null || clienteId <= 0)) {
+      setError(resolveAuthMessage('partes.informe.clienteRequerido'))
+      setRawRows([])
+      setSaldoInicial(0)
+      return
+    }
     setLoading(true)
     setError(null)
     try {
       await fetchPaqueteHorasRows()
+      setGridResetKey((revision) => revision + 1)
     } catch {
       // envelopeError ya setea error
     } finally {
       setLoading(false)
     }
-  }, [fetchPaqueteHorasRows])
+  }, [clienteId, esCliente, fetchPaqueteHorasRows])
 
-  // Carga inicial únicamente; cambios de filtro se aplican con «Buscar»
-  // (evitar overlay a mitad de edición del DateBox).
   useEffect(() => {
+    if (esCliente) {
+      void load()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo mount cliente funcional
+  }, [esCliente])
+
+  useEffect(() => {
+    if (esCliente) {
+      return
+    }
+    if (clienteId == null || clienteId <= 0) {
+      setRawRows([])
+      setSaldoInicial(0)
+      setError(null)
+      return
+    }
     void load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo mount
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recarga al elegir cliente, no al cambiar fechas
+  }, [clienteId, esCliente])
+
+  const needsClienteSelection = !esCliente && (clienteId == null || clienteId <= 0)
 
   const renderPaqueteGridView = useCallback(
     (toolbarLeading: ReactNode) => (
       <div data-testid="partesPaqueteHorasGrid">
         <ProcessDataGrid
+          key={`paqueteHorasGrid-${clienteId ?? 'none'}-${fechaDesde}-${fechaHasta}-${tipoClienteId ?? 'all'}-${gridResetKey}`}
           dataSource={rows}
           keyExpr="id"
           showBorders
           loading={loading}
           onRefresh={() => void load()}
+          onCellPrepared={onPaqueteHorasCellPrepared}
           proceso="partes.informes.paqueteHoras"
           gridId="paqueteHorasDetalle"
           accessToken={getAuthToken()}
@@ -190,7 +260,7 @@ export function PaqueteHorasPage() {
             dataField="saldo"
             caption={t('partes.informe.field.saldo')}
             dataType="number"
-            customizeText={formatDuracionCell}
+            customizeText={formatSaldoCell}
           />
           <Column dataField="esTarea" caption={t('partes.informe.field.esTarea')} dataType="boolean" />
           <Column
@@ -206,7 +276,7 @@ export function PaqueteHorasPage() {
         </ProcessDataGrid>
       </div>
     ),
-    [load, loading, rows, t],
+    [clienteId, fechaDesde, fechaHasta, gridResetKey, load, loading, rows, t, tipoClienteId],
   )
 
   if (native) {
@@ -257,9 +327,6 @@ export function PaqueteHorasPage() {
               disabled={tiposClienteLoading}
               width={240}
               onValueChanged={(e) => {
-                if (!e.event) {
-                  return
-                }
                 setTipoClienteId((e.value as number | null) ?? null)
               }}
               elementAttr={{ 'data-testid': 'partesPaqueteTipoCliente' }}
@@ -277,6 +344,11 @@ export function PaqueteHorasPage() {
         <div className="pqProcessStats partesMobileKpiBlock">
           <strong>{t('partes.mobile.saldoInicial')}:</strong> {formatMinutosAsHhMm(saldoInicial)}
         </div>
+        {needsClienteSelection ? (
+          <div role="status" data-testid="partesPaqueteClienteHint">
+            {t('partes.informe.clienteRequerido')}
+          </div>
+        ) : null}
         {error ? <div role="alert">{error}</div> : null}
         <div className="partesMobileChartToggle">
           <Button
@@ -369,9 +441,6 @@ export function PaqueteHorasPage() {
             placeholder={t('partes.informe.filtro.cliente')}
             width={280}
             onValueChanged={(e) => {
-              if (!e.event) {
-                return
-              }
               setClienteId((e.value as number | null) ?? null)
             }}
             elementAttr={{ 'data-testid': 'partesPaqueteCliente' }}
@@ -393,9 +462,6 @@ export function PaqueteHorasPage() {
           disabled={tiposClienteLoading}
           width={240}
           onValueChanged={(e) => {
-            if (!e.event) {
-              return
-            }
             setTipoClienteId((e.value as number | null) ?? null)
           }}
           elementAttr={{ 'data-testid': 'partesPaqueteTipoCliente' }}
@@ -403,13 +469,18 @@ export function PaqueteHorasPage() {
         <Button
           text={t('partes.common.buscar')}
           onClick={() => void load()}
-          disabled={loading}
+          disabled={loading || (!esCliente && clienteId == null)}
           elementAttr={{ 'data-testid': 'partesPaqueteBuscar' }}
         />
       </div>
       <div style={{ marginBottom: 12 }}>
         <strong>{t('partes.informe.saldoInicialLabel')}</strong> {formatMinutosAsHhMm(saldoInicial)}
       </div>
+      {needsClienteSelection ? (
+        <div role="status" data-testid="partesPaqueteClienteHint" style={{ marginBottom: 12 }}>
+          {t('partes.informe.clienteRequerido')}
+        </div>
+      ) : null}
       {error ? <div role="alert">{error}</div> : null}
       <PartesInformeGrillaPivotSection
         consultaId={PAQUETE_HORAS_CONSULTA_ID}

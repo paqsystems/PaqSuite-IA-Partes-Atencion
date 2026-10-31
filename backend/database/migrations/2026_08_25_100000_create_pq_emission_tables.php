@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * GEN-15 emisiones (TR-011). Runtime MONO: Query Builder vía SpEmissionRepository.
- * SQL Server: desplegar también backend/database/sp/pq_sp_emission_core.sql.
+ * SQL Server: SP GEN-15 vía paqsuite:installation:update (laravel-core pq_sp_emission_core.sql).
  */
 return new class extends Migration
 {
