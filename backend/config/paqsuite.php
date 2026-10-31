@@ -1,5 +1,17 @@
 <?php
 
+$partesComposerPath = dirname(__DIR__).'/composer.json';
+$partesComposer = is_readable($partesComposerPath)
+    ? json_decode((string) file_get_contents($partesComposerPath), true)
+    : null;
+$partesLaravelCoreSemver = is_array($partesComposer)
+    ? trim((string) ($partesComposer['require']['paqsuite/laravel-core'] ?? ''))
+    : '';
+if ($partesLaravelCoreSemver === '') {
+    $partesLaravelCoreSemver = '1.3.18-beta.18';
+}
+$partesDefaultHostManifest = dirname(__DIR__).'/database/manifest/partesatencion-'.$partesLaravelCoreSemver.'.json';
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -230,7 +242,7 @@ return [
     'installation' => [
         'hostManifestPath' => env(
             'PAQSUITE_HOST_MANIFEST',
-            database_path('manifest/partesatencion-1.3.18-beta.14.json')
+            $partesDefaultHostManifest
         ),
         'frameworkPackageRoot' => base_path('vendor/paqsuite/laravel-core'),
     ],

@@ -78,6 +78,22 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
         }
     }
 
+    public function claimNextRunAt(
+        int $definitionId,
+        \DateTimeInterface $dueSlot,
+        \DateTimeInterface $nextRunAt,
+    ): bool {
+        try {
+            return $this->inner->claimNextRunAt($definitionId, $dueSlot, $nextRunAt);
+        } catch (\Throwable $exception) {
+            if (! $this->shouldTryClaimNextRunFallback($exception)) {
+                throw $exception;
+            }
+
+            return $this->claimNextRunAtFallback($definitionId, $dueSlot, $nextRunAt);
+        }
+    }
+
     public function clearNextRunAt(int $definitionId): bool
     {
         try {
@@ -181,6 +197,43 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
 
         return str_contains($message, 'too many arguments')
             || str_contains($message, 'demasiados argumentos');
+    }
+
+    private function shouldTryClaimNextRunFallback(\Throwable $exception): bool
+    {
+        if (DB::connection()->getDriverName() !== 'sqlsrv') {
+            return false;
+        }
+
+        $message = strtolower($exception->getMessage());
+
+        return str_contains($message, 'pq_sp_task_definition_claim_next_run')
+            || str_contains($message, 'could not find stored procedure')
+            || str_contains($message, 'no se encontr')
+            || str_contains($message, '2812');
+    }
+
+    private function claimNextRunAtFallback(
+        int $definitionId,
+        \DateTimeInterface $dueSlot,
+        \DateTimeInterface $nextRunAt,
+    ): bool {
+        $pdo = DB::connection()->getPdo();
+        $stmt = $pdo->prepare(
+            'UPDATE pq_task_definition
+                SET next_run_at = ?, updated_at = SYSUTCDATETIME()
+                WHERE task_definition_id = ?
+                  AND is_active = 1
+                  AND next_run_at IS NOT NULL
+                  AND next_run_at <= ?'
+        );
+        $stmt->execute([
+            $nextRunAt->format('Y-m-d H:i:s'),
+            $definitionId,
+            $dueSlot->format('Y-m-d H:i:s'),
+        ]);
+
+        return $stmt->rowCount() > 0;
     }
 
     private function updateScheduleLegacy(

@@ -6,7 +6,7 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 |---|---|
 | HU | [HU-GEN-13 adopción](../../../03-historias-usuario/updates/001-Generalidades/HU-GEN-13-adopcion-tareas-programadas.md) |
 | SPEC | [SPEC-001-13 host](../../../05-open-spec/updates/001-Generalidades/SPEC-001-13-host-adopcion-tareas-programadas.md) |
-| SoT Framework | `TR-GEN-13-backup-windows-rds-update` |
+| SoT Framework | `TR-GEN-13-backup-windows-rds-update` · cableado Must: `PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-gen-13-tareas-programadas-host.md` |
 | Estado | A0 — Backlog (código parcialmente cableado; D/E/F pendientes) |
 | Prioridad | MUST |
 
@@ -26,6 +26,11 @@ motor y la UI pertenecen a los paquetes SDK.
   `config('paqsuite.clienteCodigo')` para `tasks:run-due`.
 - Agenda: al crear/editar definición el host completa `nextRunAt` si falta
   (`SchedulingTaskDefinitionRepository`). El SP due exige `next_run_at`.
+- Repositorios: Must implementar **todos** los métodos de
+  `TaskDefinitionRepository` en cada wrapper (p. ej. `claimNextRunAt` desde
+  laravel-core 1.3.18-beta.18). Ver Framework adopcion-gen-13-tareas-programadas-host §3.
+- SQL: `installation:update` antes de `deploy-sp.php`; overrides en
+  `backend/database/sp/` (p. ej. `pq_sp_task_definition_parameter_set.sql`).
 - Snapshot: SP host `pq_sp_task_execution_save_snapshot` expande JSON a
   `parameter_code` + `value_json`.
 - Polling: intervalo configurado y estados `running|success|error`.

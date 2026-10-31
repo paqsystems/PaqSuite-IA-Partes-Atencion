@@ -20,8 +20,9 @@ Corregir listados GEN-13 en sqlsrv (definiciones + ejecuciones) y comando de bac
 | `PartesTaskExecutionRepository` | Drena rowsets en listado; `statement` en escrituras; hidrata `message` |
 | `PartesTaskDefinitionRepository` | `clearNextRunAt`; fallback SP schedule 4 params si RDS sin `@reset_next_run_at` |
 | `PartesMonoBackupCompanyTargetResolver` | Fallback BD tenant MONO |
-| `RdsSqlServerBackupGateway` | `resolveDestinationArn` (sin duplicar prefijo S3) |
+| `RdsSqlServerBackupGateway` | `RdsBackupS3Arn::composeExportDestination` (SoT SDK; sin concat manual) |
 | `partes:tasks-backfill-next-run-at` | Recalcula `nextRunAt` vía `SchedulingTaskDefinitionRepository` |
+| Doc cableado Must (2026-10-31) | Framework `adopcion-gen-13-tareas-programadas-host.md`; Partes adopcion § Inventario + override `pq_sp_task_definition_parameter_set.sql` |
 | `AppServiceProvider` | Bindings resolver backup + gateway RDS |
 | `frontend` | i18n motivo ejecución; pin `@paqsuite/react-core` 2.4.30-beta.2 |
 
