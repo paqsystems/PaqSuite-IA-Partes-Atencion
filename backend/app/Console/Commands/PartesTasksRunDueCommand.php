@@ -53,7 +53,9 @@ final class PartesTasksRunDueCommand extends Command
             }
         }
 
-        $asOf = new \DateTimeImmutable('now');
+        $tzName = (string) config('paqsuite.tasks.scheduleTimezone', config('app.timezone', 'UTC'));
+        $scheduleTz = new \DateTimeZone($tzName !== '' ? $tzName : 'UTC');
+        $asOf = new \DateTimeImmutable('now', $scheduleTz);
 
         if ($this->option('dry-run')) {
             $due = $definitionRepository->listDueDefinitions($asOf);

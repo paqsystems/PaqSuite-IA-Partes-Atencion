@@ -232,6 +232,11 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
             $definitionId,
             $dueSlot->format('Y-m-d H:i:s'),
         ]);
+        $affectedRow = $pdo->query('SELECT @@ROWCOUNT AS affected')->fetch(PDO::FETCH_ASSOC);
+        $affected = (int) ($affectedRow['affected'] ?? 0);
+        if ($affected > 0) {
+            return true;
+        }
 
         return $stmt->rowCount() > 0;
     }
