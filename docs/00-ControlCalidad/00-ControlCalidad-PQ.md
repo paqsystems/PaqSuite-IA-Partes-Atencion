@@ -96,6 +96,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 
 - Adapter host sqlsrv: drenado de rowsets en listados de definiciones y ejecuciones.
 - Comando `partes:tasks-backfill-next-run-at` para definiciones legacy sin `next_run_at`.
+- Repositorio ejecuciones: escrituras sqlsrv + mensaje en historial; resolver backup MONO; gateway S3 sin ARN duplicado; runbook `TASKS_BACKUP_S3_ARN_PREFIX` (adopción GEN-13).
 
 #### Informe Paquete de horas — saldo
 

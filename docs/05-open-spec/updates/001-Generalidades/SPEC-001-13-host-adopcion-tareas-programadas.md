@@ -32,6 +32,7 @@ lock global por instalación y logs trazables.
 - Exponer la opción de menú de configuración de tareas programadas.
 - Gobernar el acceso exclusivamente por el permiso de esa opción de menú.
 - Operar `TASKS_BACKUP_S3_ARN_PREFIX`, `PAQSUITE_CLIENTE`, timeout, polling y lock según el SoT.
+  Formato del prefijo S3 y errores RDS: [adopcion-gen-13-tareas-programadas.md](../../../06-operacion/adopcion-gen-13-tareas-programadas.md) § «Backup RDS → S3».
 - Completar `next_run_at` en definiciones activas (el SP due no lista `NULL`).
 
 ## 3. Fuera de alcance

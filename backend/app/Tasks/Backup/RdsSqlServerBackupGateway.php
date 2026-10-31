@@ -14,7 +14,7 @@ final class RdsSqlServerBackupGateway implements MonoRdsBackupGateway
         bool $overwrite = true,
     ): array
     {
-        $destinationArn = rtrim($s3Arn, '/').'/'.$this->normalizeFileName($filePrefix);
+        $destinationArn = $this->resolveDestinationArn($s3Arn, $filePrefix);
         $rows = DB::connection()->select(
             'EXEC msdb.dbo.rds_backup_database
                 @source_db_name = ?,
@@ -51,6 +51,20 @@ final class RdsSqlServerBackupGateway implements MonoRdsBackupGateway
             'percent' => isset($row['% complete']) ? (int) $row['% complete'] : null,
             'message' => $row['task_info'] ?? null,
         ];
+    }
+
+    /**
+     * @internal Contrato RDS: @s3_arn_to_backup_to = prefijo S3 + nombre .bak.
+     * El SDK puede pasar en filePrefix el s3Key completo (prefijo + nombre); no volver a anteponer s3Arn.
+     */
+    private function resolveDestinationArn(string $s3Arn, string $filePrefix): string
+    {
+        $trimmed = trim($filePrefix);
+        if ($trimmed !== '' && str_starts_with(strtolower($trimmed), 'arn:aws:s3:')) {
+            return $this->normalizeFileName($trimmed);
+        }
+
+        return rtrim($s3Arn, '/').'/'.$this->normalizeFileName($filePrefix);
     }
 
     private function normalizeFileName(string $filePrefix): string

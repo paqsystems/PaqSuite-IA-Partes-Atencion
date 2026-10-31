@@ -17,8 +17,11 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 - `PAQSUITE_TASKS_BACKUP_BACKEND=rds`
 - `PAQSUITE_CLIENTE` es el código de `EMPRESAS_CONEXION` (el mismo que
   `X-Paq-Cliente`). Obligatorio en Forge para `tasks:run-due`, porque el CLI
-  no envía header HTTP. En este host de demo: `DEMO`.
-- `TASKS_BACKUP_S3_ARN_PREFIX` debe existir en el entorno del host.
+  no envía header HTTP. En **Forge dev** del producto: `DEV` (preview Vercel
+  suele usar el mismo código en query `?cliente=`). En plantilla local:
+  `DEMO`.
+- `TASKS_BACKUP_S3_ARN_PREFIX` — prefijo S3 autorizado para backups RDS (ver
+  § «Backup RDS → S3»). Obligatorio cuando `PAQSUITE_TASKS_BACKUP_BACKEND=rds`.
 - `TASKS_BACKUP_POLL_SECONDS` controla el intervalo de consulta al estado RDS.
 - `TASKS_BACKUP_LOCK_LEASE_SECONDS` documenta el lease del lock de instalación.
 - `TASKS_BACKUP_WINDOWS_SERVICE` queda reservado para el perfil Windows y no se
@@ -47,6 +50,66 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 - El objeto S3 se nombra con la base de la empresa (`BackupObjectName`) y,
   si `includeDateTimeInName=true`, un sufijo de fecha. No reutiliza el slug
   del producto.
+
+## Backup RDS → S3 (`TASKS_BACKUP_S3_ARN_PREFIX`)
+
+### Formato del valor
+
+| Regla | Detalle |
+|-------|---------|
+| Qué es | Prefijo **bucket + carpeta** en notación ARN S3. **Sin** nombre de archivo `.bak`. |
+| Ejemplo DEV (Forge) | `arn:aws:s3:::sql-amazon-basico/backups` o `arn:aws:s3:::sql-amazon-basico/backups/` |
+| Destino efectivo | `{prefijo}/{nombreBd}.bak` (p. ej. `…/backups/paqsystems_partesatencion_dev.bak`) |
+| Con fecha en nombre | Si el parámetro `includeDateTimeInName=true`, el SDK añade sufijo antes de `.bak` |
+| IAM | El rol de la instancia RDS debe poder escribir en ese bucket/prefijo (`rds_backup_database`) |
+| Secretos | No commitear bucket ni claves; solo documentar el **nombre** de la variable en Forge |
+
+El proceso `BACKUP_DATABASE` (SDK) resuelve el prefijo desde `env('TASKS_BACKUP_S3_ARN_PREFIX')`
+y construye la clave con `BackupObjectName::s3Key($prefix, $databaseName, …)`.
+
+### Gateway host (`App\Tasks\Backup\RdsSqlServerBackupGateway`)
+
+RDS recibe un único parámetro `@s3_arn_to_backup_to` (ARN completo del objeto).
+
+| Entrada | Rol |
+|---------|-----|
+| `s3Arn` | Mismo valor que `TASKS_BACKUP_S3_ARN_PREFIX` |
+| `filePrefix` | Nombre `.bak` **o** (compat SDK) clave S3 ya prefijada con ARN |
+
+El adapter del host concatena `s3Arn` + nombre de archivo cuando `filePrefix` no
+empieza por `arn:aws:s3:`. Si el SDK pasa la clave completa (prefijo + `.bak`),
+el gateway **no** vuelve a anteponer el prefijo (evita ARN duplicado del tipo
+`…/backups/arn:aws:s3:…/backups/db.bak`).
+
+### Resolución de empresa (MONO)
+
+Si el catálogo no trae `nombre_bd`, el host usa
+`PartesMonoBackupCompanyTargetResolver`: fallback a la BD operativa del tenant
+(`DB_DATABASE` / conexión resuelta por `PAQSUITE_CLIENTE`). Sin esto, backup
+manual o programado puede fallar con **Backup company target not found**.
+
+### Errores frecuentes (operación)
+
+| Síntoma / mensaje | Causa probable | Acción |
+|-------------------|----------------|--------|
+| Historial vacío en UI con filas en BD | Adapter sqlsrv no drena segundo rowset del SP list | Deploy host CC #10; `@paqsuite/react-core` ≥ `2.4.30-beta.2` para columna motivo |
+| `next_run_at` NULL → ejecución cada minuto en FALLIDA | Definición legacy sin próxima corrida | `php artisan partes:tasks-backfill-next-run-at` |
+| **Backup company target not found** | Empresa sin `nombre_bd` en MONO | Resolver host + verificar tenant |
+| SP schedule *too many arguments* | `pq_sp_task_definition_update_schedule` viejo (sin `@reset_next_run_at`) | `paqsuite:installation:update` + SP del pin `laravel-core` |
+| *Could not parse the amazon resource name* con ARN repetido | Destino S3 mal formado (doble prefijo) | Verificar `TASKS_BACKUP_S3_ARN_PREFIX` (solo carpeta) y gateway host actualizado |
+| Backup omitido / ventana RDS | Mantenimiento o backup concurrente en RDS | Reintentar fuera de ventana; revisar `TASKS_BACKUP_LOCK_LEASE_SECONDS` |
+| Ejecución FALLIDA sin texto en UI | Snapshot/log sqlsrv o mensaje no hidratado | Deploy repositorio ejecuciones CC #10; SP `append_log` / `get` en tenant |
+
+### CC PQ #10 — seguimiento deploy (30/10/2026)
+
+Además del drenado de listados y backfill:
+
+- `PartesTaskExecutionRepository`: `statement` en escrituras sin rowset; hidratación de `message` en listado.
+- `PartesTaskDefinitionRepository`: `clearNextRunAt` y fallback SP schedule de 4 parámetros si el SP en RDS aún no tiene `@reset_next_run_at`.
+- Frontend: i18n columna **Motivo / mensaje** (`ejecuciones.message`).
+- Pin UI recomendado post-fix: `@paqsuite/react-core` **2.4.30-beta.2** o superior en el deploy Vercel.
+
+Tras merge a `develop`: Forge `installation:update`, redeploy SP tenant, backfill opcional, smoke backup manual una vez.
 
 ## Disparador del scheduler
 
@@ -131,10 +194,11 @@ de reintentar el seed.
 La implementación de código no forma parte de esta definición; el host adopta
 los exports y contratos del SDK.
 
-## Estado de adopción 2026-10-27
+## Estado de adopción 2026-10-27 (actualizado 2026-10-30)
 
-El host queda cableado con `@paqsuite/react-core` `2.4.29-beta.1` y
-`paqsuite/laravel-core` `1.3.17-beta.1` desde Cloudsmith. Esta versión incluye
+El host queda cableado con `@paqsuite/react-core` **`2.4.30-beta.2`** (UI tareas +
+columna motivo) y `paqsuite/laravel-core` **`1.3.18-beta.14`** desde Cloudsmith.
+La línea beta.1 incluía
 `BackupInstallationProfile`, `BackupCompanyTargetResolver` y `RdsBackupLock`.
 El SDK publica `RdsBackupLock` como contrato; el host aporta el adapter
 `App\Tasks\Backup\RdsBackupCacheLock` sobre el cache configurado de Laravel.

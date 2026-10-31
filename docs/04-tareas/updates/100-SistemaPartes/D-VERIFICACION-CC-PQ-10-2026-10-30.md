@@ -21,8 +21,13 @@ Los síntomas se registraron post **beta.14**; el diff del release no tocó UI d
 
 ## Observaciones
 
-- Smoke **sqlsrv** en Forge (historial con filas reales) pendiente de ejecutar por operador tras deploy.
-- Tras deploy: backfill + comprobar columna Próxima ejecución en UI.
+- Deploy **develop** (PR #108, SHA `3e3c16d`): Forge + Vercel aplicados; `installation:update` 10/10.
+- Backfill en Forge: 0 definiciones pendientes (OK).
+- Backup manual post-fix: revisar ejecución más reciente — destino S3 debe ser
+  `{TASKS_BACKUP_S3_ARN_PREFIX}/{nombreBd}.bak` (gateway host corrige doble ARN).
+- Smoke UI: historial con **Motivo / mensaje** requiere preview con
+  `@paqsuite/react-core` ≥ `2.4.30-beta.2`.
+- Runbook S3: [adopcion-gen-13-tareas-programadas.md](../../../06-operacion/adopcion-gen-13-tareas-programadas.md) § «Backup RDS → S3».
 
 ## Deploy
 

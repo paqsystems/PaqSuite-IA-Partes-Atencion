@@ -45,9 +45,14 @@
 
 | Variable | Ejemplo preview |
 |----------|-----------------|
-| `PAQSUITE_CLIENTE` | `dev` (preview; mismo código que `EMPRESAS_CONEXION` / `X-Paq-Cliente`) |
+| `PAQSUITE_CLIENTE` | `DEV` (Forge dev; mismo código que `EMPRESAS_CONEXION` / `X-Paq-Cliente`) |
 | `PAQSUITE_PROYECTO` | `partesatencion` |
 | `PAQSUITE_INSTALACION_RESOLVER` | `sql` |
 | `PAQSUITE_HOST_MANIFEST` | (opcional) ruta absoluta al JSON si no usa default en config |
+| `PAQSUITE_TASKS_BACKUP_BACKEND` | `rds` |
+| `TASKS_BACKUP_S3_ARN_PREFIX` | `arn:aws:s3:::…/backups` (solo prefijo; ver adopción GEN-13) |
+| `TASKS_BACKUP_POLL_SECONDS` | `5` |
+| `TASKS_BACKUP_LOCK_LEASE_SECONDS` | `900` |
+| `PAQSUITE_TASKS_SCHEDULE_TIMEZONE` | `America/Argentina/Buenos_Aires` |
 
 Referencia Framework (repo PaqSuite-IA-FRAMEWORK): `docs/06-operacion/RELEASE-FRAMEWORK-MANIFEST.md`, `docs/06-operacion/runbook-ciclo-vida-instalacion.md`.
