@@ -57,7 +57,11 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
 
     public function listDueDefinitions(\DateTimeInterface $asOf): array
     {
-        return $this->inner->listDueDefinitions($asOf);
+        if (DB::connection()->getDriverName() !== 'sqlsrv') {
+            return $this->inner->listDueDefinitions($asOf);
+        }
+
+        return $this->listDueDefinitionsSqlsrv($asOf);
     }
 
     public function updateNextRunAt(int $definitionId, \DateTimeInterface $nextRunAt): bool
@@ -83,15 +87,11 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
         \DateTimeInterface $dueSlot,
         \DateTimeInterface $nextRunAt,
     ): bool {
-        try {
-            return $this->inner->claimNextRunAt($definitionId, $dueSlot, $nextRunAt);
-        } catch (\Throwable $exception) {
-            if (! $this->shouldTryClaimNextRunFallback($exception)) {
-                throw $exception;
-            }
-
-            return $this->claimNextRunAtFallback($definitionId, $dueSlot, $nextRunAt);
+        if (DB::connection()->getDriverName() === 'sqlsrv') {
+            return $this->claimNextRunAtSqlsrv($definitionId, $dueSlot, $nextRunAt);
         }
+
+        return $this->inner->claimNextRunAt($definitionId, $dueSlot, $nextRunAt);
     }
 
     public function clearNextRunAt(int $definitionId): bool
@@ -129,6 +129,31 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
      * @param  array<string, mixed>  $filters
      * @return array{items: list<array<string, mixed>>, total: int}
      */
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function listDueDefinitionsSqlsrv(\DateTimeInterface $asOf): array
+    {
+        $pdo = DB::connection()->getPdo();
+        $stmt = $pdo->prepare('EXEC dbo.pq_sp_task_definition_list_due @as_of = ?');
+        $stmt->execute([$this->formatInstantAsUtc($asOf)]);
+        $items = [];
+        do {
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($rows === []) {
+                continue;
+            }
+            $first = $rows[0];
+            if (array_key_exists('id', $first) || array_key_exists('taskDefinitionId', $first)) {
+                foreach ($rows as $row) {
+                    $items[] = $this->camelRow($row);
+                }
+            }
+        } while ($stmt->nextRowset());
+
+        return $items;
+    }
+
     private function listDefinitionsSqlsrv(array $filters, int $page, int $pageSize): array
     {
         $pdo = DB::connection()->getPdo();
@@ -199,21 +224,7 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
             || str_contains($message, 'demasiados argumentos');
     }
 
-    private function shouldTryClaimNextRunFallback(\Throwable $exception): bool
-    {
-        if (DB::connection()->getDriverName() !== 'sqlsrv') {
-            return false;
-        }
-
-        $message = strtolower($exception->getMessage());
-
-        return str_contains($message, 'pq_sp_task_definition_claim_next_run')
-            || str_contains($message, 'could not find stored procedure')
-            || str_contains($message, 'no se encontr')
-            || str_contains($message, '2812');
-    }
-
-    private function claimNextRunAtFallback(
+    private function claimNextRunAtSqlsrv(
         int $definitionId,
         \DateTimeInterface $dueSlot,
         \DateTimeInterface $nextRunAt,
@@ -222,23 +233,35 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
         $stmt = $pdo->prepare(
             'UPDATE pq_task_definition
                 SET next_run_at = ?, updated_at = SYSUTCDATETIME()
-                WHERE task_definition_id = ?
-                  AND is_active = 1
-                  AND next_run_at IS NOT NULL
-                  AND next_run_at <= ?'
+             OUTPUT INSERTED.task_definition_id AS id
+             WHERE task_definition_id = ?
+               AND is_active = 1
+               AND next_run_at IS NOT NULL
+               AND next_run_at <= ?'
         );
         $stmt->execute([
-            $nextRunAt->format('Y-m-d H:i:s'),
+            $this->formatScheduleWallClock($nextRunAt),
             $definitionId,
-            $dueSlot->format('Y-m-d H:i:s'),
+            $this->formatScheduleWallClock($dueSlot),
         ]);
-        $affectedRow = $pdo->query('SELECT @@ROWCOUNT AS affected')->fetch(PDO::FETCH_ASSOC);
-        $affected = (int) ($affectedRow['affected'] ?? 0);
-        if ($affected > 0) {
-            return true;
+
+        return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
+    }
+
+    private function formatScheduleWallClock(\DateTimeInterface $instant): string
+    {
+        return $this->formatInstantAsUtc($instant);
+    }
+
+    private function formatInstantAsUtc(\DateTimeInterface $instant): string
+    {
+        if ($instant instanceof \DateTimeImmutable) {
+            return $instant->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
         }
 
-        return $stmt->rowCount() > 0;
+        return \DateTimeImmutable::createFromInterface($instant)
+            ->setTimezone(new \DateTimeZone('UTC'))
+            ->format('Y-m-d H:i:s');
     }
 
     private function updateScheduleLegacy(
