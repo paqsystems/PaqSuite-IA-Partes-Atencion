@@ -125,6 +125,14 @@ final class InMemoryTaskDefinitionRepository implements TaskDefinitionRepository
         return true;
     }
 
+    public function claimNextRunAt(
+        int $definitionId,
+        DateTimeInterface $dueSlot,
+        DateTimeInterface $nextRunAt,
+    ): bool {
+        return true;
+    }
+
     public function clearNextRunAt(int $definitionId): bool
     {
         return true;

@@ -10,7 +10,7 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 | Estado | A0 — Backlog (código parcialmente cableado; D/E/F pendientes) |
 | HU | [HU-GEN-13-adopcion-tareas-programadas](../../../03-historias-usuario/updates/001-Generalidades/HU-GEN-13-adopcion-tareas-programadas.md) |
 | TR | [TR-GEN-13-adopcion-tareas-programadas](../../../04-tareas/updates/001-Generalidades/TR-GEN-13-adopcion-tareas-programadas.md) |
-| SoT Framework | `SPEC-001-13` + `TR-GEN-13-backup-windows-rds-update` |
+| SoT Framework | `SPEC-001-13` + `TR-GEN-13-backup-windows-rds-update` + **`docs/06-operacion/adopcion-gen-13-tareas-programadas-host.md`** (cableado Must) |
 
 ## 1. Propósito
 
@@ -32,6 +32,7 @@ lock global por instalación y logs trazables.
 - Exponer la opción de menú de configuración de tareas programadas.
 - Gobernar el acceso exclusivamente por el permiso de esa opción de menú.
 - Operar `TASKS_BACKUP_S3_ARN_PREFIX`, `PAQSUITE_CLIENTE`, timeout, polling y lock según el SoT.
+  Formato del prefijo S3 y errores RDS: [adopcion-gen-13-tareas-programadas.md](../../../06-operacion/adopcion-gen-13-tareas-programadas.md) § «Backup RDS → S3».
 - Completar `next_run_at` en definiciones activas (el SP due no lista `NULL`).
 
 ## 3. Fuera de alcance

@@ -1,0 +1,545 @@
+{
+    "manifestId": "partesatencion-1.3.18-beta.18",
+    "semver": "1.3.18-beta.18",
+    "omitFrameworkEntryIds": [
+        "fw-sp-pq_sp_admin_empresa_tango_dictionary"
+    ],
+    "entries": [
+        {
+            "id": "partes-migration-2014_10_12_000000_create_users_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2014_10_12_000000_create_users_table.php",
+            "checksum": "ffaf0383f453b6c992323ded92af428084ccab431fda2a61ed4478b8da626ccb",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2014_10_12_100000_create_password_reset_tokens_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2014_10_12_100000_create_password_reset_tokens_table.php",
+            "checksum": "529bdc12798e545e67071d8ff2a51eac25baea12238731a687e26af946ce10e5",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2019_08_19_000000_create_failed_jobs_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2019_08_19_000000_create_failed_jobs_table.php",
+            "checksum": "dc93bf68cdaf80495f198748ea7a98335ec2c875ccfcfe80e6dbdebf19a26f13",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2019_12_14_000001_create_personal_access_tokens_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2019_12_14_000001_create_personal_access_tokens_table.php",
+            "checksum": "860222f20af01a4bf469f88fbfc5e5807f6bae3a02575da86cc9987c3a3ff1ed",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_25_000001_add_auth_fields_to_users_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_25_000001_add_auth_fields_to_users_table.php",
+            "checksum": "31193922e6fec45891bad4318314a53b1b868a708d401a793fdc4b40cdd7168b",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_25_000002_create_seguridad_tables",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_25_000002_create_seguridad_tables.php",
+            "checksum": "8f8c03623d6fbe13fec56f4903b47efeac859b2c616f84f96d5868cdffa472bc",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_25_000003_add_open_in_new_tab_to_users_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_25_000003_add_open_in_new_tab_to_users_table.php",
+            "checksum": "6d2491ce24f177c6b2acdfdaf8cf86f881050ee995cef15f7f8ccca096b63be2",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_25_000006_create_pq_task_tables",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_25_000006_create_pq_task_tables.php",
+            "checksum": "f21fc3e7731a1940d878437be52401372c76a8f317508dc298e2386bc090245f",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_26_000012_create_pq_parametros_gral_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_26_000012_create_pq_parametros_gral_table.php",
+            "checksum": "03c0fd4ecd63d9082c64a004ff840b7307b08a14b7fe1dd4c89ccdc47d223021",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_30_100001_create_pq_partes_tipos_cliente_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_30_100001_create_pq_partes_tipos_cliente_table.php",
+            "checksum": "b996f1220fccfabc6dfa78e2572fe838044b20ead252ff8d3fe442cc69da6982",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_30_100002_create_pq_partes_tipos_tarea_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_30_100002_create_pq_partes_tipos_tarea_table.php",
+            "checksum": "d01dc30abb5c15a7e68516ecb10c813c00b818829571d1daac1a5dc86815bc15",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_30_100003_create_pq_partes_usuarios_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_30_100003_create_pq_partes_usuarios_table.php",
+            "checksum": "028b54443ed0c1bfcf4f563650545c73eb3f08a270a650c05e32c264e39dbe89",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_30_100004_create_pq_partes_clientes_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_30_100004_create_pq_partes_clientes_table.php",
+            "checksum": "e4625d369a6aeb62d4fdc7028f497bab8f81806677b2cc4ff2cc7e1455f0d735",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_30_100005_create_pq_partes_cliente_tipo_tarea_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_30_100005_create_pq_partes_cliente_tipo_tarea_table.php",
+            "checksum": "edd6df0bbed9759c6e76651bf08962bc9ff5ee186d31a167464808e3534a060d",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_30_100006_create_pq_partes_registro_tarea_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_30_100006_create_pq_partes_registro_tarea_table.php",
+            "checksum": "9988b5d299308f433d81fa3d1f882d071f51c0f0c8aaf1a8d8d68880378e8268",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_30_100007_create_pq_partes_integrity_objects",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_30_100007_create_pq_partes_integrity_objects.php",
+            "checksum": "73a1d448b9b023674294282f1a46d5579b721796574feb1529cfdb8b59b92e85",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_30_100010_create_pq_sp_partes_identidad_resolver",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_30_100010_create_pq_sp_partes_identidad_resolver.php",
+            "checksum": "1fd14b2465cefa3b02fc69c40388ded21aca0ff1dd376cd69c4bb246eba3bfc4",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_31_100000_add_theme_to_pq_empresa_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_31_100000_add_theme_to_pq_empresa_table.php",
+            "checksum": "bcce163c6dbcb640c13e0ef92305a11506223246472e52cc06485582c64ac7c2",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_31_100001_create_pq_rol_atributos_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_31_100001_create_pq_rol_atributos_table.php",
+            "checksum": "b64316265401c3a1fc5eafc97c3e2b6f64a0f647487e0d5d0143800d26092c82",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_31_100002_create_grid_layouts_tables",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_31_100002_create_grid_layouts_tables.php",
+            "checksum": "3aebbb1d160a77a667278b6f9c7dfeb54b126bcbd68424babdb950cc54e5d221",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_31_100003_align_pq_grid_layouts_gen11_columns",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_31_100003_align_pq_grid_layouts_gen11_columns.php",
+            "checksum": "765f97109c2ffba354981503b9bf3533a3b18603d720badad725fae30acc68f0",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_07_31_100004_create_pq_pivots_config_tables",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_07_31_100004_create_pq_pivots_config_tables.php",
+            "checksum": "9c762cf35eff156cfefa2777e9f9b19f9ef6974fd974cf21e80ae7b23d9fba23",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_08_01_100000_add_es_tarea_to_pq_partes_registro_tarea",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_08_01_100000_add_es_tarea_to_pq_partes_registro_tarea.php",
+            "checksum": "c7e077617eff1b8ee9a1d6b8f400d9edde70ef8214ecfebdf58270d4830b444d",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_08_01_100100_add_erp_fields_to_pq_partes_clientes",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_08_01_100100_add_erp_fields_to_pq_partes_clientes.php",
+            "checksum": "57ad0a2ce29956f3ed317756abd166e06bb02c080a69c2afe9b43addaf6b43cd",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_08_01_200100_create_pq_llm_credentials_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_08_01_200100_create_pq_llm_credentials_table.php",
+            "checksum": "fd4b68a96e24c9073897be6cf1567d5229930f0a6971b0ea34d0f3d22af45bce",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_08_02_100000_create_pq_excel_import_tables",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_08_02_100000_create_pq_excel_import_tables.php",
+            "checksum": "b465e650026858f946c67bee9f8f79384a44aa47c0e8cb96b29430a660cd4584",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_08_02_180000_excel_import_template_metadata",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_08_02_180000_excel_import_template_metadata.php",
+            "checksum": "15b6ea7518789efaaff27ed264434825acf59fb534001dc31534242ea2d7295e",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_08_25_100000_create_pq_emission_tables",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_08_25_100000_create_pq_emission_tables.php",
+            "checksum": "9eadb80ac66095a7b8243e6db2d00ca804a201e0c7fcea6e4c712adf5e9c1610",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_08_26_000100_add_descripcion_to_pq_roles_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_08_26_000100_add_descripcion_to_pq_roles_table.php",
+            "checksum": "da92d8a9811c02f21e704ad41ff2e39364c0b3d00113faa87929c4935a14eaf6",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_09_23_120000_add_label_key_to_pq_menus",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_09_23_120000_add_label_key_to_pq_menus.php",
+            "checksum": "8ebbc37c59ad314528cb2a8f8f292761fa65d53a58c3c9f9f3dc416193679de6",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_24_100001_add_integration_status_columns",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_24_100001_add_integration_status_columns.php",
+            "checksum": "2a8a9660bfd949cb4d4cdd073f0a2bf25da68a97d74d9c6b996beb1a3e1a3380",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_24_100002_add_permission_slugs_to_users_table",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_24_100002_add_permission_slugs_to_users_table.php",
+            "checksum": "b96aa3a505bf38bfed17021d1a7ffb300260c8220358ad7249e726250b874333",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_24_100003_add_partes_paquetes_menu",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_24_100003_add_partes_paquetes_menu.php",
+            "checksum": "76842e953fa638a160664a4dccf460ad0e965f438c54c8ccdf64a567922fbca1",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_25_110000_reorganize_support_menu_under_parameters",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_25_110000_reorganize_support_menu_under_parameters.php",
+            "checksum": "f01aa9cfbc76b7b0b1c90a131a5fbb98a4519c0efef70b8fc23ed47d246c4930",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_25_110001_ensure_scheduled_tasks_support_menu",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_25_110001_ensure_scheduled_tasks_support_menu.php",
+            "checksum": "79b131e92a32c88064a8b750279f078df3db15804f34a08fb0a5dc4fa324fb3c",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_30_140000_align_pq_emission_jobs_for_framework_gen15",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_30_140000_align_pq_emission_jobs_for_framework_gen15.php",
+            "checksum": "de22d6d613684a9bd8b9c22abdb644bf7505832de12796740c70adba4f2289a0",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_30_140001_add_pq_parametros_gral_sp_compat_columns",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_30_140001_add_pq_parametros_gral_sp_compat_columns.php",
+            "checksum": "45bede0b04511dad7334324b2c6cf90ac6ca76f13e0d90fbe101f7d3aba6d24d",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-migration-2026_10_30_140002_backfill_pq_menus_label_key_columns",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_10_30_140002_backfill_pq_menus_label_key_columns.php",
+            "checksum": "0e54bb36ca11476023a3efd45d254a7076e50f927234e94782b0df8c518ba952",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-ddl_2026_07_31_theme_y_pq_rol_atributos",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/ddl_2026_07_31_theme_y_pq_rol_atributos.sql",
+            "checksum": "00d1b24e8416f0e8d855448502350bdf65a70e053b86a236c269d78d1a66ec11",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_menu_insert_admin_empresas",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_menu_insert_admin_empresas.sql",
+            "checksum": "e5fcc5b6112157c9c9a71c96f7b575b5ba63dc1163580b49b3ea2f81683876e7",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_admin_menu_list_enabled",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_admin_menu_list_enabled.sql",
+            "checksum": "71399df3cab3fdf573da5da120676f89e1070ea4c3786701e4c03442ce13660f",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_admin_roles_atributos",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_admin_roles_atributos.sql",
+            "checksum": "81595c76c3d4f4157b01126d6ed08910930f9fac25db7f7644c2f2f53fceb521",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_admin_seguridad_core",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_admin_seguridad_core.sql",
+            "checksum": "9a6f9bac3ffaa6239dafa65e389038bc7530efe08c076afe49babe967887f4e7",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_llm_active_preference_get",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_llm_active_preference_get.sql",
+            "checksum": "414ed4cdbb15a36167b755469f399713f4746b65ee484864f39bd25d41a5f619",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_llm_active_preference_set",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_llm_active_preference_set.sql",
+            "checksum": "dc42e7819889e2129d57969054f4018b6f9cac6033273fdc1636533d40536143",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_llm_credentials_delete",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_llm_credentials_delete.sql",
+            "checksum": "12d5f3d751b7edd1a7922fd80ae57984a2596aca48d650326e7214d29edeadea",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_llm_credentials_get",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_llm_credentials_get.sql",
+            "checksum": "7008808a413ac2ebe1d422fe4befcab93af14ac424ec119b73f2a6dfb0a4f915",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_llm_credentials_insert",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_llm_credentials_insert.sql",
+            "checksum": "eb19507264675ace5a12d45d3fe8cd5220457d671d312b324b4d583d8beebca2",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_llm_credentials_list",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_llm_credentials_list.sql",
+            "checksum": "7b5895ecc454cff1ad000e392d124de9694a29ae73ea3248f56df350434c9843",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_llm_credentials_update",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_llm_credentials_update.sql",
+            "checksum": "acb49b23dbf3f890bc41dc4bab7277533cb804e002d4cfef76341ff4a13a6830",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_parametros_core",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_parametros_core.sql",
+            "checksum": "e28923199fdb688dea92dc9ee198b78ea24416436bc6d8890510f8b2a7a9c207",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_informe_paquete_horas",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_informe_paquete_horas.sql",
+            "checksum": "e07c9bc7f2d541feed49f432e41e3e21024559aa056b7ac35465e37a2a0d22d0",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_integracion_maestros_asignaciones",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_asignaciones.sql",
+            "checksum": "ba43b9962e03030540f4f2a098c52f4bab35a03c4c8f04e84e5273b4dae22da8",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_integracion_maestros_asistentes",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_asistentes.sql",
+            "checksum": "60ff4e75e58ba5653103f322f6deea4d2bf39ccc1971c8fee5ea117a098c205c",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_integracion_maestros_clientes",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_clientes.sql",
+            "checksum": "bae5bc5cf8cc8e8a5e82cd8dcf7e3e6520f237dd11b7b96bc0b9411b343d8a05",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_integracion_maestros_tipos_cliente",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_tipos_cliente.sql",
+            "checksum": "e7e9a9546bd0c0f3e3c635a57c8a49b1e806b2c3198ab9c86f528aa62134eecf",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_integracion_maestros_tipos_tarea",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_integracion_maestros_tipos_tarea.sql",
+            "checksum": "3614f25b22a23c8558177a5a3d853720bc754f716a771d70aa45599716c53e89",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_paquete_delete",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_paquete_delete.sql",
+            "checksum": "d47dfc77a77d6ea774121176f2ac1d24bc3e881612db396d6ef521f40d654190",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_paquete_get",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_paquete_get.sql",
+            "checksum": "01bb8c3d56df32619cdfc10267161807a1d101fc9d9eb96bba7dce04966cceec",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_paquete_list",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_paquete_list.sql",
+            "checksum": "aab62c7e9389fc5f108e880383cb01d8e2c5cafb306dfe594cded1214ce01b94",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_partes_paquete_upsert",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_paquete_upsert.sql",
+            "checksum": "1732e11bd8776f9fc06ad8d1d140f782e89f19547579d992998f2678a155ab34",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_user_acceso_total",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_user_acceso_total.sql",
+            "checksum": "8a99299394cd481e5f335f0111635e34f2e7dc66c5a944de56d5b4819279498d",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_user_empresa_allowed",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_user_empresa_allowed.sql",
+            "checksum": "2f9129fbfa02a4b019822ea3b7cde4489657f45bd99d9a0fe73e0eac5660b7b3",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_user_empresas_list",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_user_empresas_list.sql",
+            "checksum": "5ec61e683f30802d32a285450d8385e2998c7e701becac10f741d85251376fcf",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_user_menu",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_user_menu.sql",
+            "checksum": "2f7a2b85d9826510a9d10005f405c8de08de45bac4bff1eef554079ae986378f",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_user_menu_permisos_efectivos",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_user_menu_permisos_efectivos.sql",
+            "checksum": "b1469384c9376320d54a9ea0a45f8ac57699f344cc4861066ba828c89c646223",
+            "dependsOn": []
+        },
+        {
+            "id": "partes-sp-pq_sp_user_preferences",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "database/sp/pq_sp_user_preferences.sql",
+            "checksum": "5d8afb6c86beaa48480fa27a92d30f0774091a7e11520908a528bcc86b4412bc",
+            "dependsOn": []
+        }
+    ]
+}

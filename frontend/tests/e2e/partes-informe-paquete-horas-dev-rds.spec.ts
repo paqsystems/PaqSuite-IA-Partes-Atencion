@@ -1,6 +1,4 @@
 import { expect, test } from '@playwright/test'
-import { selectDevExtremeSelectByText } from './helpers/partesPaqueteHorasE2e'
-
 /**
  * Smoke contra backend real (sqlsrv / RDS dev): `VITE_API_PROXY_TARGET=http://127.0.0.1:8088`
  * y backend con `.env` DEV (sin APP_ENV=e2e).
@@ -15,7 +13,7 @@ const fechaHasta = process.env.PW_DEV_FECHA_HASTA ?? '2026-10-31'
 test('RDS dev: supervisor 4D oct-2026 muestra saldo y filas en grilla', async ({ page, request }) => {
   test.setTimeout(120_000)
 
-  const tenant = process.env.PW_TENANT ?? 'PAQ'
+  const tenant = process.env.PW_TENANT ?? 'DEV'
   const usuario = process.env.PW_LOGIN_USER ?? 'PQ'
   const password = process.env.PW_LOGIN_PASSWORD ?? 'Paqsystems26*'
 
@@ -44,25 +42,22 @@ test('RDS dev: supervisor 4D oct-2026 muestra saldo y filas en grilla', async ({
   expect(rowCount).toBeGreaterThan(0)
   expect(saldo).not.toBe(0)
 
-  await page.goto('/login')
+  await page.goto(`/login?cliente=${tenant}`)
   await page.getByTestId('loginUsuario').locator('input').fill(usuario)
   await page.getByTestId('loginPassword').locator('input').fill(password)
   await page.getByTestId('loginSubmit').click()
   await expect(page).toHaveURL(/\/partes\/?(?:\?|$)/, { timeout: 45_000 })
   await expect(page.getByTestId('partesDashboardRoot')).toBeVisible({ timeout: 45_000 })
 
-  const paqueteLink = page.getByTestId('partesDashboardLinkPaquete')
-  if (await paqueteLink.isVisible().catch(() => false)) {
-    await paqueteLink.click()
-  } else {
-    await page.goto('/partes/informes/paquete-horas')
-  }
+  await page.locator('.dx-loadpanel-wrapper').waitFor({ state: 'hidden', timeout: 60_000 }).catch(() => undefined)
+  await page.goto('/partes/informes/paquete-horas')
   await expect(page.getByTestId('partesPaqueteHorasPage')).toBeVisible({ timeout: 30_000 })
 
   await page.getByTestId('partesPaqueteFechaDesde').getByRole('combobox').fill(fechaDesde)
   await page.getByTestId('partesPaqueteFechaHasta').getByRole('combobox').fill(fechaHasta)
 
-  await selectDevExtremeSelectByText(page, 'partesPaqueteCliente', `${client!.code} — ${client!.nombre}`)
+  await page.getByTestId('partesPaqueteCliente').click()
+  await page.getByRole('option', { name: new RegExp(client!.code) }).first().click()
 
   await page.getByTestId('partesPaqueteBuscar').click()
 

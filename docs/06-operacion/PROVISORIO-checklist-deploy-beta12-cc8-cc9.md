@@ -189,9 +189,22 @@ Ticket / CC cerrado:
 
 ---
 
+## Anexo — CC PQ #10 (GEN-13, post PR #108)
+
+| ☐ | Paso |
+|---|------|
+| ☐ | Forge: `PAQSUITE_CLIENTE=DEV`, `TASKS_BACKUP_S3_ARN_PREFIX` = prefijo S3 (sin `.bak`) |
+| ☐ | `php artisan partes:tasks-backfill-next-run-at --dry-run` → luego sin dry-run si aplica |
+| ☐ | Vercel preview: `@paqsuite/react-core` ≥ `2.4.30-beta.2` |
+| ☐ | Smoke: historial con filas + columna motivo; backup manual SUCCESS en S3 |
+| ☐ | Runbook: [adopcion-gen-13-tareas-programadas.md](./adopcion-gen-13-tareas-programadas.md) |
+
+---
+
 ## Referencias
 
 - [TR-adopcion-host-cc-pq-9](../04-tareas/updates/001-Generalidades/TR-adopcion-host-cc-pq-9-seguridad-mono-multi-update.md)
+- [TR-GEN-13-update CC #10](../04-tareas/updates/001-Generalidades/TR-GEN-13-update-cc-pq-10-2026-10-30-tareas-programadas.md)
 - [TR-006-update CC #8](../04-tareas/updates/100-SistemaPartes/TR-006-update-cc-pq-8-2026-10-25-paquete-horas-informe.md)
 - [TR-013-update CC #8](../04-tareas/updates/100-SistemaPartes/TR-013-update-cc-pq-8-2026-10-25-duracion-paquetes.md)
 - `scripts/forge/post-deploy.sh`

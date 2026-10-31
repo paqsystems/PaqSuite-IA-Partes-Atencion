@@ -33,7 +33,7 @@ $app = require __DIR__ . '/../../bootstrap/app.php';
 $kernel = $app->make(ConsoleKernel::class);
 $kernel->bootstrap();
 
-require __DIR__ . '/bootstrap-tenant-sqlsrv.php';
+require_once __DIR__ . '/bootstrap-tenant-sqlsrv.php';
 
 try {
     $instalacion = bootstrapTenantSqlsrvFromEnv();

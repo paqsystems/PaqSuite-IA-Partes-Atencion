@@ -57,7 +57,11 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
 
     public function listDueDefinitions(\DateTimeInterface $asOf): array
     {
-        return $this->inner->listDueDefinitions($asOf);
+        if (DB::connection()->getDriverName() !== 'sqlsrv') {
+            return $this->inner->listDueDefinitions($asOf);
+        }
+
+        return $this->listDueDefinitionsSqlsrv($asOf);
     }
 
     public function updateNextRunAt(int $definitionId, \DateTimeInterface $nextRunAt): bool
@@ -76,6 +80,18 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
                 null,
             );
         }
+    }
+
+    public function claimNextRunAt(
+        int $definitionId,
+        \DateTimeInterface $dueSlot,
+        \DateTimeInterface $nextRunAt,
+    ): bool {
+        if (DB::connection()->getDriverName() === 'sqlsrv') {
+            return $this->claimNextRunAtSqlsrv($definitionId, $dueSlot, $nextRunAt);
+        }
+
+        return $this->inner->claimNextRunAt($definitionId, $dueSlot, $nextRunAt);
     }
 
     public function clearNextRunAt(int $definitionId): bool
@@ -113,6 +129,31 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
      * @param  array<string, mixed>  $filters
      * @return array{items: list<array<string, mixed>>, total: int}
      */
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function listDueDefinitionsSqlsrv(\DateTimeInterface $asOf): array
+    {
+        $pdo = DB::connection()->getPdo();
+        $stmt = $pdo->prepare('EXEC dbo.pq_sp_task_definition_list_due @as_of = ?');
+        $stmt->execute([$this->formatInstantAsUtc($asOf)]);
+        $items = [];
+        do {
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($rows === []) {
+                continue;
+            }
+            $first = $rows[0];
+            if (array_key_exists('id', $first) || array_key_exists('taskDefinitionId', $first)) {
+                foreach ($rows as $row) {
+                    $items[] = $this->camelRow($row);
+                }
+            }
+        } while ($stmt->nextRowset());
+
+        return $items;
+    }
+
     private function listDefinitionsSqlsrv(array $filters, int $page, int $pageSize): array
     {
         $pdo = DB::connection()->getPdo();
@@ -181,6 +222,46 @@ final class PartesTaskDefinitionRepository implements TaskDefinitionRepository
 
         return str_contains($message, 'too many arguments')
             || str_contains($message, 'demasiados argumentos');
+    }
+
+    private function claimNextRunAtSqlsrv(
+        int $definitionId,
+        \DateTimeInterface $dueSlot,
+        \DateTimeInterface $nextRunAt,
+    ): bool {
+        $pdo = DB::connection()->getPdo();
+        $stmt = $pdo->prepare(
+            'UPDATE pq_task_definition
+                SET next_run_at = ?, updated_at = SYSUTCDATETIME()
+             OUTPUT INSERTED.task_definition_id AS id
+             WHERE task_definition_id = ?
+               AND is_active = 1
+               AND next_run_at IS NOT NULL
+               AND next_run_at <= ?'
+        );
+        $stmt->execute([
+            $this->formatScheduleWallClock($nextRunAt),
+            $definitionId,
+            $this->formatScheduleWallClock($dueSlot),
+        ]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
+    }
+
+    private function formatScheduleWallClock(\DateTimeInterface $instant): string
+    {
+        return $this->formatInstantAsUtc($instant);
+    }
+
+    private function formatInstantAsUtc(\DateTimeInterface $instant): string
+    {
+        if ($instant instanceof \DateTimeImmutable) {
+            return $instant->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+        }
+
+        return \DateTimeImmutable::createFromInterface($instant)
+            ->setTimezone(new \DateTimeZone('UTC'))
+            ->format('Y-m-d H:i:s');
     }
 
     private function updateScheduleLegacy(

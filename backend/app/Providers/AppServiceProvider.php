@@ -92,6 +92,7 @@ use App\Tenancy\CliInstalacionContext;
 use App\Tenancy\InstalacionConnectionConfigurator;
 use DateTimeInterface;
 use DateTimeZone;
+use PaqSuite\LaravelCore\Tasks\TaskExecutionService;
 use PaqSuite\LaravelCore\Tasks\TaskScheduleCalculator;
 
 class AppServiceProvider extends ServiceProvider
@@ -137,10 +138,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(InstalacionConnectionConfigurator::class);
         $this->app->singleton(CliInstalacionContext::class);
         $this->app->singleton(StaleTaskExecutionRecovery::class);
-        $this->app->singleton(TaskDefinitionRepository::class, static function () {
+        $this->app->singleton(TaskScheduleCalculator::class, static function () {
             $tzName = (string) config('paqsuite.tasks.scheduleTimezone', config('app.timezone', 'UTC'));
-            $timeZone = new DateTimeZone($tzName !== '' ? $tzName : 'UTC');
-            $calculator = new TaskScheduleCalculator($timeZone);
+
+            return new TaskScheduleCalculator(new DateTimeZone($tzName !== '' ? $tzName : 'UTC'));
+        });
+        $this->app->singleton(TaskDefinitionRepository::class, static function ($app) {
+            $calculator = $app->make(TaskScheduleCalculator::class);
 
             $scheduling = new SchedulingTaskDefinitionRepository(
                 new StoredProcedureTaskDefinitionRepository(),
@@ -148,6 +152,15 @@ class AppServiceProvider extends ServiceProvider
             );
 
             return new PartesTaskDefinitionRepository($scheduling);
+        });
+        $this->app->singleton(TaskExecutionService::class, static function ($app) {
+            return new TaskExecutionService(
+                $app->make(TaskProcessRegistry::class),
+                $app->make(TaskProcessRepository::class),
+                $app->make(TaskDefinitionRepository::class),
+                $app->make(TaskExecutionRepository::class),
+                scheduleCalculator: $app->make(TaskScheduleCalculator::class),
+            );
         });
         $this->app->singleton(TaskExecutionRepository::class, static fn () => new PartesTaskExecutionRepository(
             new StoredProcedureTaskExecutionRepository(),

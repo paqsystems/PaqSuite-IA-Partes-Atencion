@@ -7,7 +7,9 @@
 diaria, maestros, informes) y gaps de producto no ofrecidos en esa fecha
 (GEN-13, GEN-17, GEN-23, GEN-32). GEN-13 fue adoptado posteriormente de forma
 parcial; su estado operativo vigente está documentado en
-`docs/06-operacion/adopcion-gen-13-tareas-programadas.md`.
+`docs/06-operacion/adopcion-gen-13-tareas-programadas.md` y la norma transversal
+Framework `docs/06-operacion/adopcion-gen-13-tareas-programadas-host.md`
+(repo PaqSuite-IA-FRAMEWORK).
 
 **Qué ya está bien (no pedir trabajo):** `registerGridI18nResources`; `MenuSidebar` con `t`/`locale`/`labels`/`openInNewTab`/`onItemsLoaded`; `UserAvatarMenu`; `DashboardContainer`; `EmpresaSelectorPage`; `ParametrosGeneralesPage`; `ProcessDataGrid` (salvo permisos); `ConsultaGrillaPivotShell`; `ExcelImportToolbar`; `SmartCapturePanel`; `ChatAssistantPage`; `LlmPreferencesPanel`; `ShellLayout` + CSS SDK; `EmpresasAdminPage` con `tenancyMode="single"` y preview sin reload.
 
