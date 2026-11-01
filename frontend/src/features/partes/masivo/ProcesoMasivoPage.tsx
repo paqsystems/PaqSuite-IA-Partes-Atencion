@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Column, Paging, Pager, Selection } from 'devextreme-react/data-grid'
+import CustomStore from 'devextreme/data/custom_store'
+import DataSource from 'devextreme/data/data_source'
+import type { LoadOptions } from 'devextreme/data'
+import { Column, Paging, Pager, Selection, type DataGridRef } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
 import CheckBox from 'devextreme-react/check-box'
 import DateBox from 'devextreme-react/date-box'
@@ -9,7 +12,7 @@ import { confirm } from 'devextreme/ui/dialog'
 import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
-import { LoadingOverlay, ProcessDataGrid, ProcessPageLayout } from '@paqsuite/react-core'
+import { ProcessDataGrid, ProcessPageLayout } from '@paqsuite/react-core'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
@@ -17,7 +20,6 @@ import { listCatalogo, listPartesResource } from '../maestros/partesMaestrosApi'
 import {
   listTareas,
   type PartesTareaItem,
-  type TareaListQuery,
 } from '../carga/partesTareaApi'
 import {
   dateDisplayFormat,
@@ -47,6 +49,7 @@ import { usePartesTareaGridCaptions } from '../partesTareaGridI18n'
 import {
   usePartesDuracionHorasSummaryItems,
 } from '../partesGridSummary'
+import { masivoGridLoadOptionsToQuery } from './masivoTareasPaging'
 
 const PAGE_SIZE = 20
 
@@ -77,9 +80,24 @@ function ProcesoMasivoView() {
   const [filtroClienteId, setFiltroClienteId] = useState<number | null>(null)
   const [filtroUsuarioId, setFiltroUsuarioId] = useState<number | null>(null)
   const [estadoCerrado, setEstadoCerrado] = useState<'todas' | 'abiertas' | 'cerradas'>('todas')
-  const [rows, setRows] = useState<MasivoGridRow[]>([])
-  const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState(0)
+  const gridRef = useRef<DataGridRef>(null)
+  const currentPageIdsRef = useRef<number[]>([])
+  const skipFilterRefreshRef = useRef(true)
+  const listFiltersRef = useRef({
+    fechaDesde,
+    fechaHasta,
+    clienteId: filtroClienteId,
+    usuarioId: filtroUsuarioId,
+    estadoCerrado,
+  })
+  listFiltersRef.current = {
+    fechaDesde,
+    fechaHasta,
+    clienteId: filtroClienteId,
+    usuarioId: filtroUsuarioId,
+    estadoCerrado,
+  }
   const [error, setError] = useState<string | null>(null)
   const [clientes, setClientes] = useState<Record<string, unknown>[]>([])
   const [asistentes, setAsistentes] = useState<Record<string, unknown>[]>([])
@@ -110,50 +128,79 @@ function ProcesoMasivoView() {
     items: TareaIdItem[]
   } | null>(null)
 
-  const filters: TareaListQuery = useMemo(
-    () => ({
-      fechaDesde,
-      fechaHasta,
-      clienteId: filtroClienteId,
-      usuarioId: filtroUsuarioId,
-      estadoCerrado,
-      page: 1,
-      pageSize: PAGE_SIZE,
-    }),
-    [fechaDesde, fechaHasta, filtroClienteId, filtroUsuarioId, estadoCerrado]
-  )
-
   const duracionSummaryItems = usePartesDuracionHorasSummaryItems()
 
-  const load = useCallback(async () => {
-    if (!fechaDesde || !fechaHasta) {
+  const refreshGrid = useCallback(() => {
+    gridRef.current?.instance()?.refresh()
+  }, [])
+
+  const loadMasivoStore = useRef(async (loadOptions: LoadOptions) => {
+    const { fechaDesde: desde, fechaHasta: hasta, clienteId, usuarioId, estadoCerrado: estado } =
+      listFiltersRef.current
+    if (!desde || !hasta) {
       setError(resolveAuthMessage('partes.tarea.fechasRequeridas'))
-      setLoading(false)
-      return
+      currentPageIdsRef.current = []
+      return { data: [] as MasivoGridRow[], totalCount: 0 }
     }
-    setSelectedKeys([])
-    setSelectedMap({})
-    selectionRef.current = { keys: [], map: {} }
-    setLoading(true)
     setError(null)
     try {
-      const result = await listTareas(filters)
+      const { page, pageSize } = masivoGridLoadOptionsToQuery({
+        skip: loadOptions.skip,
+        take: loadOptions.take,
+      })
+      const result = await listTareas({
+        fechaDesde: desde,
+        fechaHasta: hasta,
+        clienteId,
+        usuarioId,
+        estadoCerrado: estado,
+        page,
+        pageSize,
+      })
       if (result.kind === 'ok') {
         const items = result.envelope.resultado.items ?? []
-        setRows(
-          items.map((item) => ({
-            ...item,
-            duracionHoras: minutosToHorasDecimal(item.duracionMinutos),
-          }))
-        )
-        setTotal(result.envelope.resultado.total ?? 0)
-      } else if (result.kind === 'envelopeError') {
+        const totalCount = result.envelope.resultado.total ?? 0
+        const mapped = items.map((item) => ({
+          ...item,
+          duracionHoras: minutosToHorasDecimal(item.duracionMinutos),
+        }))
+        currentPageIdsRef.current = mapped.map((row) => row.id)
+        setTotal((prev) => (prev === totalCount ? prev : totalCount))
+        return { data: mapped, totalCount }
+      }
+      if (result.kind === 'envelopeError') {
         setError(resolveAuthMessage(result.envelope.respuesta))
       }
-    } finally {
-      setLoading(false)
+      currentPageIdsRef.current = []
+      return { data: [] as MasivoGridRow[], totalCount: 0 }
+    } catch {
+      currentPageIdsRef.current = []
+      return { data: [] as MasivoGridRow[], totalCount: 0 }
     }
-  }, [fechaDesde, fechaHasta, filters])
+  })
+
+  const masivoDataSource = useMemo(
+    () =>
+      new DataSource({
+        paginate: true,
+        pageSize: PAGE_SIZE,
+        requireTotalCount: true,
+        store: new CustomStore({
+          key: 'id',
+          load: (loadOptions) => loadMasivoStore.current(loadOptions),
+        }),
+      }),
+    []
+  )
+
+  useEffect(() => {
+    if (skipFilterRefreshRef.current) {
+      skipFilterRefreshRef.current = false
+      return
+    }
+    clearSelection()
+    refreshGrid()
+  }, [fechaDesde, fechaHasta, filtroClienteId, filtroUsuarioId, estadoCerrado, refreshGrid])
 
   useEffect(() => {
     void listCatalogo('clientes').then((result) => {
@@ -172,10 +219,6 @@ function ProcesoMasivoView() {
       }
     })
   }, [])
-
-  useEffect(() => {
-    void load()
-  }, [load])
 
   useEffect(() => {
     const root = gridHostRef.current
@@ -242,10 +285,9 @@ function ProcesoMasivoView() {
     selectionRef.current = { keys, map }
   }
 
-  const pageIds = useMemo(() => rows.map((row) => row.id), [rows])
-
   const onSelectionChanged = useCallback(
     (e: MasivoSelectionEvent) => {
+      const pageIds = currentPageIdsRef.current
       const userIntent = userSelectionIntentRef.current
       userSelectionIntentRef.current = false
       const prev = selectionRef.current
@@ -272,7 +314,7 @@ function ProcesoMasivoView() {
       setSelectedKeys(next.keys)
       setSelectedMap(next.map)
     },
-    [pageIds]
+    []
   )
 
   async function runAccion(accion: 'cerrar' | 'reabrir') {
@@ -305,7 +347,7 @@ function ProcesoMasivoView() {
     )
     if (result.kind === 'ok') {
       clearSelection()
-      void load()
+      refreshGrid()
       return
     }
     if (result.kind === 'envelopeError') {
@@ -405,7 +447,7 @@ function ProcesoMasivoView() {
         closeApplyConfirm()
         clearSelection()
         resetApplyCampos()
-        void load()
+        refreshGrid()
         return
       }
       if (result.kind === 'envelopeError') {
@@ -423,7 +465,6 @@ function ProcesoMasivoView() {
   return (
     <ProcessPageLayout title={pageTitle}>
     <div data-testid="partesMasivoPage" style={{ padding: 16 }}>
-      <LoadingOverlay visible={loading} />
       <div
         data-testid="partesMasivoFiltros"
         style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 12, alignItems: 'end' }}
@@ -496,7 +537,10 @@ function ProcesoMasivoView() {
         </div>
         <Button
           text={t('partes.common.buscar')}
-          onClick={() => void load()}
+          onClick={() => {
+            clearSelection()
+            refreshGrid()
+          }}
           elementAttr={{ 'data-testid': 'partesMasivoSearch' }}
         />
       </div>
@@ -738,10 +782,12 @@ function ProcesoMasivoView() {
 
       <div data-testid="partesMasivoGrid" ref={gridHostRef}>
         <ProcessDataGrid
-          dataSource={rows}
+          ref={gridRef}
+          dataSource={masivoDataSource}
           keyExpr="id"
-          loading={loading}
-          onRefresh={() => void load()}
+          remoteOperations
+          layoutsEnabled={false}
+          onRefresh={() => refreshGrid()}
           proceso="partes.masivo"
           gridId="procesoMasivo"
           accessToken={getAuthToken()}
@@ -752,7 +798,7 @@ function ProcesoMasivoView() {
         >
           <Selection mode="multiple" showCheckBoxesMode="always" />
           <Paging defaultPageSize={PAGE_SIZE} />
-          <Pager visible showPageSizeSelector />
+          <Pager visible showPageSizeSelector displayMode="full" showNavigationButtons showInfo />
           <Column dataField="fecha" caption={gridCaptions.fecha} dataType="date" />
           <Column dataField="usuarioCode" caption={gridCaptions.asistente} />
           <Column dataField="clienteNombre" caption={gridCaptions.cliente} />

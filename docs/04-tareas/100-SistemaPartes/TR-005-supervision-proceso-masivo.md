@@ -12,8 +12,8 @@ Jira: PIAPARTES-33
 | **Roles** | Solo `resultado.partes.esSupervisor = true` |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-004](./TR-004-operacion-carga-diaria.md) (listado/tareas/`rowVersion`/tipos), GEN layouts/export grilla |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | En Control Calidad |
-| **Última actualización** | 2026-10-20 |
+| **Estado** | Finalizado |
+| **Última actualización** | 01/11/2026 |
 
 **Origen:** [HU-005](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md)  
 **Referencia SPEC:** [SPEC-005](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md)  
@@ -33,6 +33,7 @@ Jira: PIAPARTES-33
 - Tope `PartesMasivoMaxIds`; i18n `partes.masivo.*` + testids.
 - **(CC-PQ #1, 31/07)** Listado/`list_ids` y lotes (`masivo_set_cerrado`, `masivo_actualizar`) operan solo sobre `es_tarea = 1`; id con `es_tarea = 0` en un lote → 422 atómico (`partes.masivo.noEsTarea`).
 - **(CC-PQ #3, 09/08)** Selección estable: `reduceMasivoSelection` + `isSpuriousMasivoClear`; conservar tildes ante re-render / `dataSource` / layout GEN.
+- **(CC-PQ #11, 01/11/2026)** Paginación **remota** en grilla masivo: `CustomStore` + `remoteOperations.paging` ↔ `GET /partes/tareas` (`page`, `pageSize`, `total`); helper `masivoTareasPaging.ts`.
 
 ### Out of scope
 - Atributos: cliente, duración/minutos, descripción.
@@ -54,6 +55,11 @@ Jira: PIAPARTES-33
 | AC-21 | Lote (`set_cerrado` o `actualizar`) con algún id `es_tarea = 0` → 422 `partes.masivo.noEsTarea`; cero cambios |
 | AC-CC3-05 | Vitest del handler: click fila no termina en `selectedKeys=[]`. E2E o smoke: tildar 1 fila → check sigue. |
 | AC-CC3-06 | Cabecera / select-all no se auto-limpia. |
+| AC-CC11-01 | Pager >1 cuando `total > pageSize`; ids distintos por página (E2E + manual PQ 01/11/2026). |
+| AC-CC11-02 | Leyenda total filtro = `total` envelope (manual PQ). |
+| AC-CC11-03 | Requests con `pageSize` 10/20/40 (manual PQ). |
+| AC-CC11-04 | Group panel sin error silencioso (manual PQ). |
+| AC-CC11-05 | Selección + masivo API sin regresión (E2E + manual PQ). |
 
 ---
 
@@ -79,6 +85,11 @@ R-SU-01…10 (SPEC/HU).
 | RN-TR-CC3-10 | `onSelectionChanged`: ignorar vaciado espurio (`isSpuriousMasivoClear`); `reduceMasivoSelection` conserva claves off-page. |
 | RN-TR-CC3-11 | Estabilizar referencia de `dataSource` (`rows`) si no cambió el listado. |
 | RN-TR-CC3-12 | Vitest `masivoSelection.test.ts`; E2E humo tilde (opcional). |
+| RN-TR-CC11-01 | `ProcesoMasivoPage.tsx`: `DataSource` + `CustomStore.load` → `listTareas`. |
+| RN-TR-CC11-02 | `masivoGridLoadOptionsToQuery` (`masivoTareasPaging.ts`): `page = floor(skip/take)+1`. |
+| RN-TR-CC11-03 | `ProcessDataGrid` `remoteOperations`; `Pager` full; `ref` + `refresh()` tras filtros/acciones. |
+| RN-TR-CC11-04 | Cambio filtros pantalla: `clearSelection()` + `refreshGrid()`. |
+| RN-TR-CC11-05 | Mantener `listTareaIds` para select-all universo (sin cambio). |
 
 ---
 
@@ -135,7 +146,7 @@ Errores: 403 `partes.masivo.forbidden`; 422 empty/tope/inválido/`partes.masivo.
 | Ruta | `/partes/proceso-masivo` |
 | Atajo carga | Link → misma ruta, sin search params |
 | Filtros | Fechas obligatorias; cliente/asistente/estado opcionales |
-| Grid | **`ProcessDataGrid`** (reemplazar `DataGrid` crudo): selection, filterRow, summary duración, columnChooser, templates GEN, export Excel |
+| Grid | **`ProcessDataGrid`**: selection, filterRow, summary duración, columnChooser, templates GEN, export Excel; **paginación remota** (CC-PQ #11) vía `CustomStore` |
 | Select all | `/tareas/ids` + modal N |
 | Acciones Must | Cerrar / Reabrir (existente); **Actualizar tipo de tarea**; **Actualizar sin cargo** (puede unificarse en un panel «Aplicar cambios» con campos opcionales) |
 | Acciones Should | Presencial / Asistente / Fecha en el mismo panel cuando T7 |
@@ -164,8 +175,10 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 | T9 | Tests | Feature: masivo no lista compras; lote con compra → 422 | AC-20/21 | S |
 | T10 | FE | Estabilizar Selection vs re-render (`masivoSelection.ts`) | AC-CC3-05/06 | M |
 | T11 | Tests | Vitest handler + E2E humo tilde | T10 | M |
+| T12 | FE | `CustomStore` + paging remoto masivo | AC-CC11-01…04 | M |
+| T13 | Tests | Vitest `masivoTareasPaging`; E2E `partes-masivo-paging` + regresión selection | AC-CC11-01/05 | M |
 
-**Orden sugerido ampliación:** T7a → T7b → T7c → T7d → T7e → T7f; T7g en cuanto Must esté estable; T8/T9 CC-PQ #1; T10/T11 CC-PQ #3.
+**Orden sugerido ampliación:** T7a → T7b → T7c → T7d → T7e → T7f; T7g en cuanto Must esté estable; T8/T9 CC-PQ #1; T10/T11 CC-PQ #3; T12/T13 CC-PQ #11.
 
 ---
 
@@ -173,7 +186,8 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 
 **Regresión:** Feature cerrar/reabrir / 403 / tope / 409 / idempotencia.  
 **Nuevos:** actualizar `sinCargo`; actualizar `tipoTareaId` OK; tipo inválido multi-cliente → 422 y 0 cambios; actualizar sobre fila cerrada; (Should) presencial/fecha/asistente.  
-**E2E:** supervisor aplica sin cargo a 2 filas; smoke ProcessDataGrid export/chooser si el harness lo permite.
+**E2E:** supervisor aplica sin cargo a 2 filas; smoke ProcessDataGrid export/chooser si el harness lo permite.  
+**CC-PQ #11 (01/11/2026):** Vitest `masivoTareasPaging.test.ts`; E2E `partes-masivo-paging.spec.ts`, `partes-masivo-selection.spec.ts`; helper `partesMasivoE2e.ts`. Manual PQ preview develop OK — [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md).
 
 ---
 
@@ -196,6 +210,7 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 - [x] AC-20/21 (`es_tarea` en masivo, CC-PQ #1)
 - [x] SP actualizar + API + FE ProcessDataGrid
 - [x] Tests Feature + unit FE; OpenAPI/manual pendientes menores
+- [x] AC-CC11-01…05 (CC-PQ #11, paginación remota; F1/F 01/11/2026)
 
 ---
 
@@ -223,6 +238,7 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 | 2026-08-01 | Parte I: fusionado TR-005-update (CC-PQ #1, 31/07) en esta TR; update eliminado. Estado → Finalizado. |
 | 2026-09-15 | Parte D CC-PQ #3: `reduceMasivoSelection` ignora vaciado espurio y conserva claves off-page. |
 | 2026-09-16 | Parte I: fusionado TR-005-update (CC-PQ #3, 09/08) en esta TR; update eliminado. Estado → Finalizado. |
+| 01/11/2026 | CC-PQ #11: paginación remota grilla masivo (T12/T13, AC-CC11-01…05). Parte I fusionó TR-005-update-cc-pq-11. [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |
 
 ---
 

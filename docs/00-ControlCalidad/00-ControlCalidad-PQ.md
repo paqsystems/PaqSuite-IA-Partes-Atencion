@@ -56,6 +56,71 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 8 | 25/10/2026 | Especificado | Carga de paquetes desde 1 hora + destaque de paquetes + cálculo de saldo por renglón · [PIAPARTES-52](https://paqsystems.atlassian.net/browse/PIAPARTES-52) |
 | 9 | 30/10/2026 | Especificado | **Hito FRAMEWORK** — compatibilizar tablas de seguridad MONO vs MULTI (`users`, `pq_empresa`, roles, permisos) + GEN-34 |
 | 10 | 30/10/2026 | Especificado | Tareas programadas (historial / próxima ejecución) + saldo informe Paquete de horas — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
+| 11 | 01/11/2026 | Especificado | Proceso masivo paginación grilla — **F1/F Aprobado** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md)) |
+
+---
+
+## Control de Calidad #11
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 01/11/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado |
+| **Origen** | Prueba manual en entorno **v1.1.0** (UI en italiano): la grilla muestra **Totale filtro: 418** pero el paginador DevExtreme solo ofrece la página **1**, aun con tamaño de página **40**. |
+| **Parte G** | 01/11/2026 — volcado SPEC/HU/TR-update CC #11 |
+| **Parte E** | 01/11/2026 — Vitest 191 OK; E2E `partes-masivo-paging` + `partes-masivo-selection` OK |
+| **F1/F** | Aprobado 01/11/2026 — prueba manual PQ en preview develop; ver [D-VERIFICACION-CC-PQ-11](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md) |
+| **Parte I** | 01/11/2026 — fusionado en SPEC/HU/TR-005 base; updates CC #11 eliminados |
+| **Proceso (probable)** | **Proceso masivo** — `partes.masivo` · ruta host `/partes/masivo` · componente `ProcesoMasivoPage.tsx` |
+| **Evidencia** | Captura CC #11 (01/11/2026): agrupación por tipo de actividad, selector de filas, leyenda «Totale filtro: 418», pager con único botón «1». |
+
+### Hallazgos
+
+1. El usuario interpreta que existen **418 filas** en el universo del filtro (coherente con el texto **Totale filtro**).
+2. No puede avanzar a páginas 2…N desde la grilla; el paginador no refleja el total declarado.
+3. Comportamiento observado con filtros de fecha que incluyen fin de octubre 2026 y agrupación por columna de tipo de actividad (persistida vía preferencias de grilla / `ProcessDataGrid`).
+
+**Triage preliminar (código host, sin cerrar causa raíz):**
+
+| Capa | Observación |
+|------|-------------|
+| **API** | `listTareas` se invoca con `page: 1` y `pageSize` fijo (20 en código); la respuesta expone `total` global (p. ej. 418) e `items` de **una sola página**. |
+| **UI** | `dataSource={rows}` alimenta la grilla con **solo esa página**; `<Paging>` / `<Pager>` paginan **en cliente** sobre ese subconjunto → una sola página visible aunque `total` sea mayor. |
+| **Leyenda** | «Totale filtro» usa `total` del envelope (**418**), no `rows.length` → **desalineación** entre mensaje y paginador. |
+| **Selección masiva** | Existe flujo aparte (`listTareaIds`) para «seleccionar todo el universo»; no sustituye navegar página a página en la grilla. |
+
+**Pantallas a descartar en la investigación:** Consulta detallada carga con `pageSize: '0'` (un solo fetch del universo) y **no** muestra «Totale filtro» en el host; si el síntoma se reproduce fuera de Proceso masivo, ampliar alcance del hito.
+
+### Hito solicitado
+
+*Procesado* (Parte G 01/11/2026) → unificado Parte I en [SPEC-005](../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) · [HU-005](../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) · [TR-005](../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md)
+
+**Revisar y corregir la paginación del universo filtrado** en Proceso masivo (y, si aplica el mismo patrón, otras grillas Partes con total server-side + `ProcessDataGrid`):
+
+1. **Diagnóstico formal** — confirmar en red (DevTools) que `GET` listado devuelve `total` ≫ `items.length` mientras la grilla no dispara requests al cambiar de página.
+2. **Decisión de diseño** — una de:
+   - **Paginación remota** DevExtreme (`CustomStore` / `remoteOperations`) alineada a `page` + `pageSize` del API y `total` del envelope; o
+   - **Carga completa** del universo filtrado cuando el volumen esté acotado por producto (documentar límite); o
+   - **Coherencia UX**: si solo se muestra la primera página en grilla, no mostrar un total que implique páginas navegables (solo si el producto acepta ese recorte).
+3. **Implementación** — respetar selección múltiple, agrupación, preferencias de grilla GEN, i18n (`partes.common.totalFiltro`) y `data-testid` existentes.
+4. **Regresión** — escenario E2E o integración: filtro con **> pageSize** filas → paginador con **> 1** página y datos distintos al cambiar página; total coherente con API.
+
+Decisión documentada en SPEC-update: **paginación remota** DevExtreme ↔ `GET /api/v1/partes/tareas` (`page`, `pageSize`, `total`).
+
+### Criterios de aceptación preliminares
+
+- [x] **CA-11-01** Con un filtro que devuelva **418** (o cualquier total > tamaño de página), el paginador permite ir a la **última página** y los renglones cambian respecto de la primera.
+- [x] **CA-11-02** «Totale filtro» (o texto acordado) es **coherente** con lo que la grilla puede navegar o se documenta explícitamente el alcance (p. ej. solo página actual).
+- [x] **CA-11-03** Cambiar tamaño de página (10 / 20 / 40) recalcula páginas y mantiene alineación con el API.
+- [x] **CA-11-04** Agrupación por columnas (tipo actividad, etc.) no rompe paginación ni vacía filas de datos sin error en UI/red.
+- [x] **CA-11-05** Selección por fila y flujos de cierre/aplicar campos siguen operativos en páginas distintas de la primera.
+
+### Derivación SDD
+
+Parte G **01/11/2026** — volcado updates CC #11. Implementación en `ProcesoMasivoPage` (`CustomStore`, `remoteOperations`). Parte E/F **01/11/2026** — tests + manual PQ. Parte I **01/11/2026** — SPEC/HU/TR-005 base **Finalizado**.
 
 ---
 
