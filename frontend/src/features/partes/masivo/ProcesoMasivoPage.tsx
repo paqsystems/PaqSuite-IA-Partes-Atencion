@@ -2,7 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import CustomStore from 'devextreme/data/custom_store'
 import DataSource from 'devextreme/data/data_source'
 import type { LoadOptions } from 'devextreme/data'
-import { Column, Paging, Pager, Selection, type DataGridRef } from 'devextreme-react/data-grid'
+import {
+  Column,
+  Paging,
+  Pager,
+  RemoteOperations,
+  Selection,
+  type DataGridRef,
+} from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
 import CheckBox from 'devextreme-react/check-box'
 import DateBox from 'devextreme-react/date-box'
@@ -160,7 +167,7 @@ function ProcesoMasivoView() {
       if (result.kind === 'ok') {
         const items = result.envelope.resultado.items ?? []
         const totalCount = result.envelope.resultado.total ?? 0
-        const mapped = items.map((item) => ({
+        const mapped = items.slice(0, pageSize).map((item) => ({
           ...item,
           duracionHoras: minutosToHorasDecimal(item.duracionMinutos),
         }))
@@ -786,6 +793,11 @@ function ProcesoMasivoView() {
           dataSource={masivoDataSource}
           keyExpr="id"
           remoteOperations
+          pageSizes={{
+            GridPageSize1: PAGE_SIZE,
+            GridPageSize2: 40,
+            GridPageSize3: 80,
+          }}
           layoutsEnabled={false}
           onRefresh={() => refreshGrid()}
           proceso="partes.masivo"
@@ -796,9 +808,22 @@ function ProcesoMasivoView() {
           onSelectionChanged={onSelectionChanged}
           defaultTotalItems={duracionSummaryItems}
         >
+          <RemoteOperations
+            paging
+            filtering={false}
+            sorting={false}
+            grouping={false}
+            summary={false}
+          />
           <Selection mode="multiple" showCheckBoxesMode="always" />
           <Paging defaultPageSize={PAGE_SIZE} />
-          <Pager visible showPageSizeSelector displayMode="full" showNavigationButtons showInfo />
+          <Pager
+            visible
+            showPageSizeSelector
+            displayMode="full"
+            showNavigationButtons
+            showInfo
+          />
           <Column dataField="fecha" caption={gridCaptions.fecha} dataType="date" />
           <Column dataField="usuarioCode" caption={gridCaptions.asistente} />
           <Column dataField="clienteNombre" caption={gridCaptions.cliente} />
