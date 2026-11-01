@@ -1,12 +1,5 @@
-import { expect, test, type Page } from '@playwright/test'
-
-async function loginAsAdmin(page: Page): Promise<void> {
-  await page.goto('/login')
-  await page.getByTestId('loginUsuario').locator('input').fill('admin')
-  await page.getByTestId('loginPassword').locator('input').fill('Paqsystems')
-  await page.getByTestId('loginSubmit').click()
-  await expect(page).toHaveURL(/\/partes\/?$/, { timeout: 45_000 })
-}
+import { expect, test } from '@playwright/test'
+import { loginAsSupervisor, mockMasivoSupervisorApis } from './helpers/partesMasivoE2e'
 
 function tareaItem(id: number): Record<string, unknown> {
   return {
@@ -29,28 +22,18 @@ function tareaItem(id: number): Record<string, unknown> {
 
 test('tilde de fila en proceso masivo permanece', async ({ page }) => {
   test.setTimeout(60_000)
-  await page.route('**/api/v1/partes/tareas**', async (route) => {
-    if (route.request().method() !== 'GET') {
-      await route.continue()
-      return
-    }
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        error: 0,
-        respuesta: 'ok',
-        resultado: { items: [tareaItem(11), tareaItem(12)], total: 2 },
-      }),
-    })
-  })
-  await loginAsAdmin(page)
+  await mockMasivoSupervisorApis(page, () => ({
+    items: [tareaItem(11), tareaItem(12)],
+    total: 2,
+  }))
+  await loginAsSupervisor(page)
   await page.goto('/partes/proceso-masivo')
   await expect(page.getByTestId('partesMasivoPage')).toBeVisible({ timeout: 20_000 })
   await expect(page.getByTestId('partesMasivoGrid')).toBeVisible()
-  const rowChecks = page.getByTestId('partesMasivoGrid').locator('.dx-checkbox-icon')
-  await expect(rowChecks.nth(1)).toBeVisible({ timeout: 15_000 })
-  await rowChecks.nth(1).click()
+  const grid = page.getByTestId('partesMasivoGrid')
+  const dataRows = grid.locator('.dx-data-row')
+  await expect(dataRows.first()).toBeVisible({ timeout: 15_000 })
+  await grid.getByRole('row', { name: /obs-11/ }).getByLabel('Seleccionar fila').click()
   await expect(page.getByTestId('partesMasivoSelectionCount')).toContainText('1', { timeout: 5_000 })
   await page.waitForTimeout(400)
   await expect(page.getByTestId('partesMasivoSelectionCount')).toContainText('1')
