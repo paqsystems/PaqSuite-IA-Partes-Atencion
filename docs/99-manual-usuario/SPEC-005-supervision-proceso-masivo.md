@@ -3,7 +3,7 @@ specId: SPEC-005
 titulo: Supervisión y proceso masivo
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-05
+ultimaActualizacion: 2026-11-01
 procesoErrores: P06
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md
 ---
@@ -22,7 +22,7 @@ El **proceso masivo** permite a un **supervisor** localizar tareas (por periodo 
 
 1. Menú **Partes** → **Proceso masivo** (un atajo desde carga **no** arrastra los filtros previos).
 2. Aplicá filtros: fechas obligatorias; cliente, asistente y estado opcionales.
-3. Revisá el listado en la grilla (podés filtrar por columna, elegir qué columnas ver, usar plantillas y exportar a Excel).
+3. Revisá el listado en la grilla (podés filtrar por columna, elegir qué columnas ver, usar plantillas y exportar a Excel). Si el filtro devuelve más filas que las que entran en una hoja, usá el **paginador** al pie para pasar de página; el **total filtro** indica cuántos registros hay en el universo filtrado.
 4. Seleccioná filas, o usá la opción de seleccionar todos los del resultado (si hay varias páginas, confirmá que afectará a N partes).
 
 ### Cerrar o reabrir en lote

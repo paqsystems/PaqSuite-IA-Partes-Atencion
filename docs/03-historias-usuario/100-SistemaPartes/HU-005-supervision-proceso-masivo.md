@@ -11,8 +11,8 @@ Jira: PIAPARTES-19
 | Título | Supervisión: terceros y proceso masivo sobre tareas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-10-20 |
+| Estado | Finalizado |
+| Última actualización | 01/11/2026 |
 | SPEC origen | [SPEC-005-supervision-proceso-masivo](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 
@@ -23,7 +23,7 @@ Jira: PIAPARTES-19
 | Entregable / criterio SPEC-005 | Dónde en esta HU |
 |--------------------------------|------------------|
 | Supervisión sobre mismo dominio §2.1 | Alcance; R-SU-02 |
-| Descubrimiento: filtros + selección §4.3–4.4 | CA-02, CA-03, CA-14 |
+| Descubrimiento: filtros + selección §4.3–4.4 | CA-02, CA-03, CA-14, CA-CC11-01…05 |
 | Grilla Framework §4.3b, R-SU-03c | CA-15; Alcance |
 | Cerrar/reabrir lote §4.5b | CA-04, CA-05 |
 | Actualizar atributos Must §4.6 | CA-16, CA-17, CA-18 |
@@ -127,6 +127,11 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
 - [x] **CA-21** Un lote que incluye un id con `esTarea = false` falla por completo (cero cambios).
 - [x] **CA-CC3-05** En Proceso masivo, al tildar una o más filas los checks **siguen marcados** hasta que el usuario destilde, cambie filtros/búsqueda de listado de forma explícita, o ejecute una acción de lote que refresque el resultado.
 - [x] **CA-CC3-06** El tilde de cabecera / «seleccionar todos» (página o resultado filtrado, según SPEC-005) **no** se borra solo al hacer click; la selección resultante permanece visible.
+- [x] **CA-CC11-01** Con un filtro que devuelva más filas que el tamaño de página, el paginador permite llegar a la **última página** y los renglones difieren de la primera.
+- [x] **CA-CC11-02** «Total filtro» coincide con el `total` del API para el filtro vigente.
+- [x] **CA-CC11-03** Cambiar tamaño de página (10 / 20 / 40) recalcula páginas vía API.
+- [x] **CA-CC11-04** Agrupación por columnas no rompe la carga de datos ni deja la grilla vacía sin mensaje.
+- [x] **CA-CC11-05** Selección por fila y flujos de cierre/aplicar campos operativos en páginas distintas de la primera.
 
 ---
 
@@ -241,3 +246,4 @@ Feature: Proceso masivo de supervisión Partes
 | 2026-08-01 | Parte I: fusionado HU-005-update (CC-PQ #1, 31/07) en esta HU; update eliminado. Estado → Finalizado. |
 | 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): selección estable al tildar filas / select-all (bug técnico vs SPEC-005 §4.3). |
 | 2026-09-16 | Parte I: fusionado HU-005-update (CC-PQ #3, 09/08) en esta HU; update eliminado. Estado → Finalizado. |
+| 01/11/2026 | CC-PQ #11: paginación remota grilla masivo (CA-CC11-01…05). Parte I fusionó HU-005-update-cc-pq-11. Ver [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |

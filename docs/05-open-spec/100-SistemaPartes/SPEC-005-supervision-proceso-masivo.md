@@ -10,8 +10,8 @@ Jira: PIAPARTES-5
 | ID | SPEC-005 |
 | Título | Supervisión: terceros y proceso masivo sobre tareas |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | En revisión |
-| Última actualización | 2026-10-20 |
+| Estado | Finalizado |
+| Última actualización | 01/11/2026 |
 | HU relacionada(s) | [HU-005-supervision-proceso-masivo](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md) |
@@ -97,6 +97,7 @@ La supervisión **reutiliza** las mismas reglas de `cerrado`, tipos, marcas e in
 
 1. Solo supervisor entra a la pantalla/proceso.
 2. Aplica **filtros previos** (mínimo §4.4) y obtiene un listado acotado.
+   - Si el **`total`** del listado supera el tamaño de página, la grilla usa **paginación remota** (CC-PQ #11): cada cambio de página o de tamaño (10 / 20 / 40) solicita al API `page` + `pageSize`; el paginador DevExtreme refleja todas las páginas; la leyenda **Total filtro** muestra el `total` global del filtro.
 3. Marca una **selección explícita** de filas. No se procesa “todo el filtro” implícitamente sin selección. La UI ofrece **«Seleccionar todos los del resultado actual»** = **todo el resultado filtrado** (todas las páginas), con `id` + `rowVersion` de cada fila.
    - Si esa selección abarca **más de una página** → modal «Afectará a N partes. ¿Confirma?». Si cancela, no se arma esa selección masiva.
 4. Elige **una acción de lote** (§4.5b / §4.6): cerrar, reabrir, o actualizar atributo(s) permitidos.
@@ -114,6 +115,7 @@ La grilla del masivo **debe** usar el patrón común de grilla del framework (`P
 | Selección de campos | Sí — column chooser |
 | Plantillas de layout | Sí — guardar / aplicar / último usado según contrato GEN de layouts de grilla |
 | Exportación a Excel | Sí — del conjunto presentado en la grilla (capacidad framework; distinta de importación Excel fuera de alcance) |
+| Paginación alineada al total filtrado | Sí — remota vía API cuando `total > pageSize` (CC-PQ #11); agrupación/column chooser sobre la **página cargada** |
 
 La implementación concreta sigue las normas del framework; este SPEC solo exige su **uso** en el proceso.
 
@@ -278,6 +280,7 @@ La UI debe dejar claro **qué atributo(s)** y **qué valor** se aplicarán antes
 | 2026-07-31 | F1: Aprobado con observaciones (ver TR-005). |
 | 2026-07-31 | CC-PQ #1 (31/07/2026): masivo (listado, `list_ids`, lotes) opera únicamente sobre `es_tarea = 1`; id con `es_tarea = 0` en un lote falla atómico (R-SU-11/12). |
 | 2026-08-01 | Parte I: fusionado SPEC-005-update (CC-PQ #1, 31/07) en este original; update eliminado. Estado → Finalizado. |
+| 01/11/2026 | CC-PQ #11: paginación remota grilla masivo ↔ `GET /partes/tareas`; Parte I fusionó SPEC-005-update-cc-pq-11. [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |
 
 ---
 
