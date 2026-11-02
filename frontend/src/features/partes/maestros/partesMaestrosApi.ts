@@ -11,12 +11,32 @@ function platform() {
   return buildAuthPlatformHeaders()
 }
 
-export async function listPartesResource(path: string) {
-  return apiRequest<{ items: Record<string, unknown>[]; total?: number }>(`/api/v1/partes/${path}`, {
-    method: 'GET',
-    headers: authHeaders(),
-    platform: platform(),
-  })
+export type PartesResourceListQuery = {
+  page?: number
+  pageSize?: number
+  code?: string
+}
+
+export async function listPartesResource(path: string, query: PartesResourceListQuery = {}) {
+  const params = new URLSearchParams()
+  if (query.page != null) {
+    params.set('page', String(query.page))
+  }
+  if (query.pageSize != null) {
+    params.set('pageSize', String(query.pageSize))
+  }
+  if (query.code) {
+    params.set('code', query.code)
+  }
+  const qs = params.toString()
+  return apiRequest<{ items: Record<string, unknown>[]; total?: number }>(
+    `/api/v1/partes/${path}${qs ? `?${qs}` : ''}`,
+    {
+      method: 'GET',
+      headers: authHeaders(),
+      platform: platform(),
+    },
+  )
 }
 
 export async function savePartesResource(

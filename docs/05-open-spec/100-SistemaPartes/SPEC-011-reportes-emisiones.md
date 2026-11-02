@@ -49,7 +49,7 @@ Jira: PIAPARTES-11
 ### 2.2 Fuera de alcance
 
 - Redefinir el motor GEN (ventana Emitir, orquestación, DX Reporting, async, writers, envelope `4700–4799`).
-- Emitir desde consultas agrupadas, Paquete de horas, dashboard, carga diaria o kardex mobile.
+- Emitir desde consultas agrupadas, dashboard, carga diaria o kardex mobile.
 - ABM web del catálogo de procesos emisibles.
 - Matriz de permisos **por reporte** (usar/editar/eliminar/compartir).
 - ZIP documental / lotes segmentados; `permiteSegmentado`.
@@ -107,7 +107,7 @@ Jira: PIAPARTES-11
 | `requiereVistaPrevia` | **No** (preview opcional en desktop; no bloquea) |
 | Alta catálogo | Solo **seed/SQL**; sin ABM web GEN v1 |
 
-Otros informes (agrupadas, Paquete de horas) y el dashboard **no** montan Emitir en este SPEC.
+Consultas agrupadas y el dashboard **no** montan Emitir. **Paquete de Horas** monta Emitir (CC-PQ #12, paridad CC-ST #1: solo filas tildadas).
 
 ### 4.3 Canales (D-EM-10 / D-EM-04)
 
@@ -209,7 +209,8 @@ GEN-15 permite flujo corto de **emitir** en mobile. Este producto **no**: Consul
 | Diseñador | **No** |
 | Preview | **No** |
 | Emitir en Consulta detallada | **No** — ruta ya denegada (SPEC-007 / policy) |
-| Emitir desde kardex / Paquete de horas / dashboard | **No** (evolución: otro proceso emisible) |
+| Emitir desde kardex / dashboard | **No** |
+| Emitir desde Paquete de horas | **Sí** — proceso `partes.informes.paqueteHoras`, filas tildadas |
 
 Una emisión corta GEN desde kardex, si se desea, es **otro** SPEC.
 
@@ -244,7 +245,8 @@ Una emisión corta GEN desde kardex, si se desea, es **otro** SPEC.
 - [ ] La página monta `EmissionReportDesignerPage` **sin** `processCode` fijo; con seed de un solo proceso, la lista GEN es visible (unitaria) y el DX no opera hasta confirmar proceso; schema/reportes = `partes.informes.consultaDetallada`.
 - [ ] Seed: un reporte principal + una plantilla mail principal.
 - [ ] Una emisión OK deja evento bitácora `source=emission`; no hay pantalla/tabla de historial Partes.
-- [ ] Consultas agrupadas, Paquete de horas y dashboard **no** montan Emitir.
+- [ ] Consultas agrupadas y dashboard **no** montan Emitir.
+- [x] Paquete de Horas monta Emitir en web; emisión solo con filas tildadas (CC-PQ #12).
 - [ ] Mobile: Consulta detallada y diseñador siguen fuera de policy; no hay emisor documental en kardex en este SPEC.
 - [ ] Menú nuevo no usa `tipo_proceso = E`.
 - [ ] Manual de usuario documenta Emitir y diseñar.
@@ -343,6 +345,7 @@ Ninguna bloqueante tras A1. Refinamientos → B/C / TR:
 | 2026-08-25 | Parte D1: plan de implementación listo. |
 | 2026-10-29 | Parte I: **Finalizado**. R-EM-05 = minutos sin `hh:mm` automático. R-EM-24 = Emitir solo el diseño guardado (no la plantilla estándar); un control suelto en el detalle se repite por fila. |
 | 2026-10-29 | CC ST #1: emisión recortada por `hostContext.selectedTareaIds`; Emitir deshabilitado sin tildes; Parte I desde SPEC-011-update. |
+| 2026-11-02 | CC-PQ #12: segundo proceso emisible **Paquete de Horas** (`partes.informes.paqueteHoras`); mismo criterio de filas tildadas. |
 
 ---
 

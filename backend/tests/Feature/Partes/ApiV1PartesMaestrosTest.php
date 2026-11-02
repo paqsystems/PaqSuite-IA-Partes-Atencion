@@ -147,6 +147,39 @@ class ApiV1PartesMaestrosTest extends TestCase
         $this->assertTrue($codes->contains('GEN'));
     }
 
+    public function test_clientes_list_pagina_mas_alla_del_default(): void
+    {
+        $token = $this->loginAdmin();
+        $tipoId = DB::table('PQ_PARTES_TIPOS_CLIENTE')->insertGetId([
+            'code' => 'TPG',
+            'descripcion' => 'Paginacion',
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        for ($i = 1; $i <= 55; $i++) {
+            $this->postJson('/api/v1/partes/clientes', [
+                'code' => sprintf('PG%03d', $i),
+                'nombre' => 'Cliente pag '.$i,
+                'tipoClienteId' => $tipoId,
+            ], $this->authHeaders($token))->assertStatus(201);
+        }
+
+        $page1 = $this->getJson('/api/v1/partes/clientes?page=1&pageSize=20', $this->authHeaders($token));
+        $page1->assertStatus(200);
+        $total = (int) $page1->json('resultado.total');
+        $this->assertGreaterThanOrEqual(55, $total);
+        $this->assertCount(20, $page1->json('resultado.items'));
+
+        $page2 = $this->getJson('/api/v1/partes/clientes?page=2&pageSize=20', $this->authHeaders($token));
+        $page2->assertStatus(200);
+        $ids1 = collect($page1->json('resultado.items'))->pluck('id')->all();
+        $ids2 = collect($page2->json('resultado.items'))->pluck('id')->all();
+        $this->assertNotEquals($ids1, $ids2);
+    }
+
     public function test_cliente_erp_campos_crud_y_validacion(): void
     {
         $token = $this->loginAdmin();

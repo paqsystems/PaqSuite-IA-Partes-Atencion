@@ -310,6 +310,14 @@
             "dependsOn": []
         },
         {
+            "id": "partes-migration-2026_11_02_120000_remove_consultas_agrupadas_menu",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_11_02_120000_remove_consultas_agrupadas_menu.php",
+            "checksum": "f2828e40a4612153e75e415096d4283232d41c80e1624ef5e6d138db5859beec",
+            "dependsOn": []
+        },
+        {
             "id": "partes-sp-ddl_2026_07_31_theme_y_pq_rol_atributos",
             "kind": "sql",
             "target": "dictionary",
