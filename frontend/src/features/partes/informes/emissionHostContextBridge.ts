@@ -1,12 +1,15 @@
 import type { ConsultaDetalladaHostContext } from './consultaDetalladaHostContext'
+import type { PaqueteHorasHostContext } from './paqueteHorasHostContext'
 
-let emissionHostContextSnapshot: ConsultaDetalladaHostContext | null = null
+export type EmissionHostContextSnapshot = ConsultaDetalladaHostContext | PaqueteHorasHostContext
 
-export function setEmissionHostContextSnapshot(hostContext: ConsultaDetalladaHostContext): void {
+let emissionHostContextSnapshot: EmissionHostContextSnapshot | null = null
+
+export function setEmissionHostContextSnapshot(hostContext: EmissionHostContextSnapshot): void {
   emissionHostContextSnapshot = hostContext
 }
 
-export function getEmissionHostContextSnapshot(): ConsultaDetalladaHostContext | null {
+export function getEmissionHostContextSnapshot(): EmissionHostContextSnapshot | null {
   return emissionHostContextSnapshot
 }
 
