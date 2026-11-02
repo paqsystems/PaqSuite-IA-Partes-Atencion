@@ -33,7 +33,7 @@ Jira: PIAPARTES-33
 - Tope `PartesMasivoMaxIds`; i18n `partes.masivo.*` + testids.
 - **(CC-PQ #1, 31/07)** Listado/`list_ids` y lotes (`masivo_set_cerrado`, `masivo_actualizar`) operan solo sobre `es_tarea = 1`; id con `es_tarea = 0` en un lote → 422 atómico (`partes.masivo.noEsTarea`).
 - **(CC-PQ #3, 09/08)** Selección estable: `reduceMasivoSelection` + `isSpuriousMasivoClear`; conservar tildes ante re-render / `dataSource` / layout GEN.
-- **(CC-PQ #11, 01/11/2026)** Paginación **remota** en grilla masivo: `CustomStore` + `remoteOperations.paging` ↔ `GET /partes/tareas` (`page`, `pageSize`, `total`); helper `masivoTareasPaging.ts`.
+- **(CC-PQ #11, 01/11/2026)** Paginación **remota** en grilla masivo: `CustomStore` + `<RemoteOperations paging … />` (solo paging remoto) ↔ `GET /partes/tareas` (`page`, `pageSize`, `total`); helper `masivoTareasPaging.ts`. Follow-up prod **01/11/2026** (PR #117/#118): desactivar summary/filtro/sort/group remoto sin implementar en `CustomStore`.
 
 ### Out of scope
 - Atributos: cliente, duración/minutos, descripción.
@@ -57,7 +57,7 @@ Jira: PIAPARTES-33
 | AC-CC3-06 | Cabecera / select-all no se auto-limpia. |
 | AC-CC11-01 | Pager >1 cuando `total > pageSize`; ids distintos por página (E2E + manual PQ 01/11/2026). |
 | AC-CC11-02 | Leyenda total filtro = `total` envelope (manual PQ). |
-| AC-CC11-03 | Requests con `pageSize` 10/20/40 (manual PQ). |
+| AC-CC11-03 | Requests con `pageSize` 20/40/80 (selector grilla; manual PQ preview + prod). |
 | AC-CC11-04 | Group panel sin error silencioso (manual PQ). |
 | AC-CC11-05 | Selección + masivo API sin regresión (E2E + manual PQ). |
 
@@ -87,7 +87,7 @@ R-SU-01…10 (SPEC/HU).
 | RN-TR-CC3-12 | Vitest `masivoSelection.test.ts`; E2E humo tilde (opcional). |
 | RN-TR-CC11-01 | `ProcesoMasivoPage.tsx`: `DataSource` + `CustomStore.load` → `listTareas`. |
 | RN-TR-CC11-02 | `masivoGridLoadOptionsToQuery` (`masivoTareasPaging.ts`): `page = floor(skip/take)+1`. |
-| RN-TR-CC11-03 | `ProcessDataGrid` `remoteOperations`; `Pager` full; `ref` + `refresh()` tras filtros/acciones. |
+| RN-TR-CC11-03 | `ProcessDataGrid` con `remoteOperations` + hijo DevExtreme `<RemoteOperations paging filtering={false} sorting={false} grouping={false} summary={false} />` (Must: no summary remoto con totalizadores de pie); `pageSizes` 20/40/80; `Pager` full; `ref` + `refresh()` tras filtros/acciones. |
 | RN-TR-CC11-04 | Cambio filtros pantalla: `clearSelection()` + `refreshGrid()`. |
 | RN-TR-CC11-05 | Mantener `listTareaIds` para select-all universo (sin cambio). |
 
@@ -239,6 +239,7 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 | 2026-09-15 | Parte D CC-PQ #3: `reduceMasivoSelection` ignora vaciado espurio y conserva claves off-page. |
 | 2026-09-16 | Parte I: fusionado TR-005-update (CC-PQ #3, 09/08) en esta TR; update eliminado. Estado → Finalizado. |
 | 01/11/2026 | CC-PQ #11: paginación remota grilla masivo (T12/T13, AC-CC11-01…05). Parte I fusionó TR-005-update-cc-pq-11. [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |
+| 01/11/2026 | CC-PQ #11 follow-up prod: `RemoteOperations` solo paging (PR #117 → #118 `main`); Parte I acotada en base + D. |
 
 ---
 

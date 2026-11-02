@@ -56,7 +56,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 8 | 25/10/2026 | Especificado | Carga de paquetes desde 1 hora + destaque de paquetes + cálculo de saldo por renglón · [PIAPARTES-52](https://paqsystems.atlassian.net/browse/PIAPARTES-52) |
 | 9 | 30/10/2026 | Especificado | **Hito FRAMEWORK** — compatibilizar tablas de seguridad MONO vs MULTI (`users`, `pq_empresa`, roles, permisos) + GEN-34 |
 | 10 | 30/10/2026 | Especificado | Tareas programadas (historial / próxima ejecución) + saldo informe Paquete de horas — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
-| 11 | 01/11/2026 | Especificado | Proceso masivo paginación grilla — **F1/F Aprobado** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md)) |
+| 11 | 01/11/2026 | Especificado | Proceso masivo paginación grilla — **F1/F Aprobado** · **Parte I unificada** · **Prod OK** (PR #117/#118) ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md)) |
 
 ---
 
@@ -74,6 +74,8 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | **Parte E** | 01/11/2026 — Vitest 191 OK; E2E `partes-masivo-paging` + `partes-masivo-selection` OK |
 | **F1/F** | Aprobado 01/11/2026 — prueba manual PQ en preview develop; ver [D-VERIFICACION-CC-PQ-11](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md) |
 | **Parte I** | 01/11/2026 — fusionado en SPEC/HU/TR-005 base; updates CC #11 eliminados |
+| **Parte I acotada** | 01/11/2026 — follow-up prod (`RemoteOperations` solo paging) documentado en SPEC/HU/TR-005 base + D (sin updates) |
+| **Cierre prod** | 01/11/2026 — PR [#118](https://github.com/paqsystems/PaqSuite-IA-Partes-Atencion/pull/118) → `main`; PQ OK `paq.partesatencion…` |
 | **Proceso (probable)** | **Proceso masivo** — `partes.masivo` · ruta host `/partes/masivo` · componente `ProcesoMasivoPage.tsx` |
 | **Evidencia** | Captura CC #11 (01/11/2026): agrupación por tipo de actividad, selector de filas, leyenda «Totale filtro: 418», pager con único botón «1». |
 
@@ -114,13 +116,13 @@ Decisión documentada en SPEC-update: **paginación remota** DevExtreme ↔ `GET
 
 - [x] **CA-11-01** Con un filtro que devuelva **418** (o cualquier total > tamaño de página), el paginador permite ir a la **última página** y los renglones cambian respecto de la primera.
 - [x] **CA-11-02** «Totale filtro» (o texto acordado) es **coherente** con lo que la grilla puede navegar o se documenta explícitamente el alcance (p. ej. solo página actual).
-- [x] **CA-11-03** Cambiar tamaño de página (10 / 20 / 40) recalcula páginas y mantiene alineación con el API.
+- [x] **CA-11-03** Cambiar tamaño de página (20 / 40 / 80) recalcula páginas y mantiene alineación con el API.
 - [x] **CA-11-04** Agrupación por columnas (tipo actividad, etc.) no rompe paginación ni vacía filas de datos sin error en UI/red.
 - [x] **CA-11-05** Selección por fila y flujos de cierre/aplicar campos siguen operativos en páginas distintas de la primera.
 
 ### Derivación SDD
 
-Parte G **01/11/2026** — volcado updates CC #11. Implementación en `ProcesoMasivoPage` (`CustomStore`, `remoteOperations`). Parte E/F **01/11/2026** — tests + manual PQ. Parte I **01/11/2026** — SPEC/HU/TR-005 base **Finalizado**.
+Parte G **01/11/2026** — volcado updates CC #11. Implementación en `ProcesoMasivoPage` (`CustomStore`, `remoteOperations`). Parte E/F **01/11/2026** — tests + manual PQ. Parte I **01/11/2026** — SPEC/HU/TR-005 base **Finalizado**. Follow-up prod **01/11/2026** — PR #117/#118, `<RemoteOperations paging … summary={false} />`; Parte I acotada + cierre PQ prod en [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md).
 
 ---
 

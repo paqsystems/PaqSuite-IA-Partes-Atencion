@@ -129,7 +129,7 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
 - [x] **CA-CC3-06** El tilde de cabecera / «seleccionar todos» (página o resultado filtrado, según SPEC-005) **no** se borra solo al hacer click; la selección resultante permanece visible.
 - [x] **CA-CC11-01** Con un filtro que devuelva más filas que el tamaño de página, el paginador permite llegar a la **última página** y los renglones difieren de la primera.
 - [x] **CA-CC11-02** «Total filtro» coincide con el `total` del API para el filtro vigente.
-- [x] **CA-CC11-03** Cambiar tamaño de página (10 / 20 / 40) recalcula páginas vía API.
+- [x] **CA-CC11-03** Cambiar tamaño de página (20 / 40 / 80) recalcula páginas vía API.
 - [x] **CA-CC11-04** Agrupación por columnas no rompe la carga de datos ni deja la grilla vacía sin mensaje.
 - [x] **CA-CC11-05** Selección por fila y flujos de cierre/aplicar campos operativos en páginas distintas de la primera.
 
@@ -247,3 +247,4 @@ Feature: Proceso masivo de supervisión Partes
 | 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): selección estable al tildar filas / select-all (bug técnico vs SPEC-005 §4.3). |
 | 2026-09-16 | Parte I: fusionado HU-005-update (CC-PQ #3, 09/08) en esta HU; update eliminado. Estado → Finalizado. |
 | 01/11/2026 | CC-PQ #11: paginación remota grilla masivo (CA-CC11-01…05). Parte I fusionó HU-005-update-cc-pq-11. Ver [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |
+| 01/11/2026 | CC-PQ #11 prod: paginador OK tras `RemoteOperations` solo paging (PR #117/#118); Parte I acotada en HU base. |
