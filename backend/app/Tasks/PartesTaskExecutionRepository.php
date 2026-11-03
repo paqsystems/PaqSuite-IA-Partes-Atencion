@@ -94,12 +94,11 @@ final class PartesTaskExecutionRepository implements TaskExecutionRepository
 
     public function listExecutions(array $filters = [], int $page = 1, int $pageSize = 25): array
     {
-        if (! $this->isSqlsrv()) {
-            return $this->inner->listExecutions($filters, $page, $pageSize);
+        $result = $this->inner->listExecutions($filters, $page, $pageSize);
+        if ($this->isSqlsrv()) {
+            $result['items'] = $this->hydrateMissingMessages($result['items'] ?? []);
+            $result = $this->backfillListWhenTotalWithoutItems($result, $filters, $page, $pageSize);
         }
-
-        $result = $this->listExecutionsSqlsrv($filters, $page, $pageSize);
-        $result['items'] = $this->hydrateMissingMessages($result['items'] ?? []);
 
         return $result;
     }
@@ -127,50 +126,107 @@ final class PartesTaskExecutionRepository implements TaskExecutionRepository
     }
 
     /**
+     * Recuperación GEN-13: SP primero; si no hay filas pero existen EN_EJECUCION, lectura directa.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function listStaleExecutionsForRecovery(int $page, int $pageSize): array
+    {
+        $filters = ['statusCode' => TaskExecutionStatuses::EN_EJECUCION];
+        $result = $this->listExecutions($filters, $page, $pageSize);
+        $items = $result['items'] ?? [];
+        if ($items !== []) {
+            return $items;
+        }
+
+        $direct = $this->listExecutionsDirectSql($filters, $page, $pageSize);
+
+        return $direct['items'] ?? [];
+    }
+
+    /**
+     * Si el SP devolvió total>0 pero items vacío (drift rowsets sqlsrv), completar lectura directa.
+     *
+     * @param  array{items: list<array<string, mixed>>, total: int}  $result
      * @param  array<string, mixed>  $filters
      * @return array{items: list<array<string, mixed>>, total: int}
      */
-    private function listExecutionsSqlsrv(array $filters, int $page, int $pageSize): array
+    private function backfillListWhenTotalWithoutItems(
+        array $result,
+        array $filters,
+        int $page,
+        int $pageSize,
+    ): array {
+        $items = $result['items'] ?? [];
+        $total = (int) ($result['total'] ?? 0);
+        if ($items !== [] || $total === 0) {
+            return $result;
+        }
+
+        $direct = $this->listExecutionsDirectSql($filters, $page, $pageSize);
+        if ($direct['items'] === []) {
+            return $result;
+        }
+
+        return $direct;
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     * @return array{items: list<array<string, mixed>>, total: int}
+     */
+    private function listExecutionsDirectSql(array $filters, int $page, int $pageSize): array
     {
-        $pdo = DB::connection()->getPdo();
-        $stmt = $pdo->prepare(
-            'EXEC dbo.pq_sp_task_execution_list @definition_id = ?, @company_id = ?, @status_code = ?, @from_at = ?, @to_at = ?, @page = ?, @page_size = ?'
+        $offset = max(0, ($page - 1) * $pageSize);
+        $bindings = [];
+        $where = ['1=1'];
+
+        if (isset($filters['definitionId'])) {
+            $where[] = 'e.task_definition_id = ?';
+            $bindings[] = (int) $filters['definitionId'];
+        }
+        if (isset($filters['companyId'])) {
+            $where[] = 'e.company_id = ?';
+            $bindings[] = (int) $filters['companyId'];
+        }
+        if (isset($filters['statusCode']) && trim((string) $filters['statusCode']) !== '') {
+            $where[] = 'e.status_code = ?';
+            $bindings[] = trim((string) $filters['statusCode']);
+        }
+        if (isset($filters['fromAt']) && $filters['fromAt'] instanceof \DateTimeInterface) {
+            $where[] = 'e.started_at >= ?';
+            $bindings[] = $filters['fromAt']->format('Y-m-d H:i:s');
+        }
+        if (isset($filters['toAt']) && $filters['toAt'] instanceof \DateTimeInterface) {
+            $where[] = 'e.started_at <= ?';
+            $bindings[] = $filters['toAt']->format('Y-m-d H:i:s');
+        }
+
+        $whereSql = implode(' AND ', $where);
+        $countRow = DB::selectOne(
+            "SELECT COUNT(1) AS total FROM pq_task_execution e WITH (NOLOCK) WHERE {$whereSql}",
+            $bindings,
         );
-        $fromAt = $filters['fromAt'] ?? null;
-        $toAt = $filters['toAt'] ?? null;
-        $stmt->execute([
-            $filters['definitionId'] ?? null,
-            $filters['companyId'] ?? null,
-            $filters['statusCode'] ?? null,
-            $fromAt instanceof \DateTimeInterface ? $fromAt->format('Y-m-d H:i:s') : $fromAt,
-            $toAt instanceof \DateTimeInterface ? $toAt->format('Y-m-d H:i:s') : $toAt,
-            $page,
-            $pageSize,
-        ]);
+        $total = (int) ($countRow->total ?? 0);
+        if ($total === 0) {
+            return ['items' => [], 'total' => 0];
+        }
 
-        $total = 0;
+        $listBindings = array_merge($bindings, [$offset, $pageSize]);
+        $rows = DB::select(
+            "SELECT e.execution_id AS id, e.task_definition_id AS definitionId, e.company_id AS companyId,
+                    e.mode, e.is_simulation AS isSimulation, e.status_code AS statusCode, e.message,
+                    e.is_overlapped_skip AS isOverlappedSkip, e.started_at AS startedAt, e.finished_at AS finishedAt
+             FROM pq_task_execution e WITH (NOLOCK)
+             WHERE {$whereSql}
+             ORDER BY e.started_at DESC
+             OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
+            $listBindings,
+        );
+
         $items = [];
-
-        do {
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            if ($rows === []) {
-                continue;
-            }
-            $first = $rows[0];
-            if (array_key_exists('total', $first) && count($first) === 1) {
-                $total = (int) $first['total'];
-
-                continue;
-            }
-            if (array_key_exists('id', $first) || array_key_exists('definitionId', $first)) {
-                foreach ($rows as $row) {
-                    $items[] = $this->camelRow($row);
-                }
-            }
-        } while ($stmt->nextRowset());
-
-        if ($items === [] && $total === 0) {
-            return $this->inner->listExecutions($filters, $page, $pageSize);
+        foreach ($rows as $row) {
+            $items[] = $this->camelRow((array) $row);
         }
 
         return ['items' => $items, 'total' => $total];

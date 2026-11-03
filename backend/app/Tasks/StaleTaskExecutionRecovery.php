@@ -49,12 +49,7 @@ final class StaleTaskExecutionRecovery
         $page = 1;
 
         do {
-            $pageResult = $this->executionRepository->listExecutions(
-                ['statusCode' => TaskExecutionStatuses::EN_EJECUCION],
-                $page,
-                50,
-            );
-            $items = $pageResult['items'] ?? [];
+            $items = $this->listOpenExecutions($page, 50);
             if ($items === []) {
                 break;
             }
@@ -105,6 +100,24 @@ final class StaleTaskExecutionRecovery
             new DateTimeImmutable('now'),
             self::RECOVERY_MESSAGE,
         );
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function listOpenExecutions(int $page, int $pageSize): array
+    {
+        if ($this->executionRepository instanceof PartesTaskExecutionRepository) {
+            return $this->executionRepository->listStaleExecutionsForRecovery($page, $pageSize);
+        }
+
+        $pageResult = $this->executionRepository->listExecutions(
+            ['statusCode' => TaskExecutionStatuses::EN_EJECUCION],
+            $page,
+            $pageSize,
+        );
+
+        return $pageResult['items'] ?? [];
     }
 
     private function releaseInstallationBackupLock(): void

@@ -8,7 +8,7 @@ $partesLaravelCoreSemver = is_array($partesComposer)
     ? trim((string) ($partesComposer['require']['paqsuite/laravel-core'] ?? ''))
     : '';
 if ($partesLaravelCoreSemver === '') {
-    $partesLaravelCoreSemver = '1.3.18-beta.18';
+    $partesLaravelCoreSemver = '1.3.18-beta.23';
 }
 $partesDefaultHostManifest = dirname(__DIR__).'/database/manifest/partesatencion-'.$partesLaravelCoreSemver.'.json';
 
