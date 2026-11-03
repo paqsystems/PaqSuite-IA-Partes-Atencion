@@ -14,7 +14,7 @@ Jira: PIAPARTES-39
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Finalizado |
 | **Revisión C1** | Apto con observaciones (ver §11) |
-| **Última actualización** | 2026-10-29 (Parte I) |
+| **Última actualización** | 2026-11-03 (Parte I CC-PQ #13) |
 
 **Origen:** [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md)  
 **Referencia SPEC:** [SPEC-011](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md)  
@@ -404,4 +404,19 @@ Contrato que queda alineado al código:
 | Duración | El puerto entrega `duracionMinutos` (entero). El diseño en uso enlaza ese campo como número. |
 
 Forge que deba emitir el diseño real: `PAQSUITE_EMISSION_DX_MODE=remote`, `PAQSUITE_EMISSION_DX_SERVICE_URL=http://127.0.0.1:5055/api/v1/dx-reporting`, y `php artisan config:cache` (o `optimize`) más recarga de PHP-FPM. Detalle: [plan sidecar](../../../01-arquitectura/plan-dx-reporting-sidecar-aws-gateway.md) §4.
+
+---
+
+## 18) CC-PQ #13 — diseñador Paquete de horas (Field List) — Parte I 03/11/2026
+
+Verificación: [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md).
+
+| Tema | Comportamiento |
+|------|----------------|
+| Proceso | `partes.informes.paqueteHoras` — catálogo emisión (CC #12) + puerto `PartesPaqueteHorasEmissionPort` |
+| Layout diseño | Si el catálogo tiene layout JSON tabular, `SpEmissionRepository` sirve REPX Must vía `PartesEmissionDesignRepxBuilder::paqueteHorasPrincipal()` |
+| Field List sidecar | JSON en `backend/resources/emissions/schemas/` (`partes_paqueteHoras_principal`, alias `partes.informes.paqueteHoras`); sync Forge `scripts/forge/sync-dx-reporting-schemas.sh`; local `scripts/dev/sync-dx-reporting-schemas.ps1` |
+| Smoke | `php backend/scripts/dev/smoke-paquete-horas-designer-schema.php` |
+
+Deuda plataforma: pipeline GEN-34 unificado de schemas — [Framework CC #13](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/00-ControlCalidad/00-ControlCalidad-PQ.md#control-de-calidad-13).
 

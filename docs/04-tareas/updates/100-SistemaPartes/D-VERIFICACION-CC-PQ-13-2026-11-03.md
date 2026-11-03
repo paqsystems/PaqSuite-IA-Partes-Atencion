@@ -4,8 +4,9 @@
 |-------|--------|
 | **Origen** | `00-ControlCalidad-PQ` · CC **#13** |
 | **Parte E** | [E-CC-PQ-13-2026-11-03.md](./E-CC-PQ-13-2026-11-03.md) |
-| **Veredicto F** | **Apto con reserva UI** — regresión automatizada OK; smoke manual UI **pendiente credenciales lab** (03/11/2026) |
-| **F1/F** | **Aprobado condicional** 03/11/2026 — apto para merge/preview; completar checklist UI §4 cuando PQ valide en tenant con login |
+| **Veredicto F** | **Apto** — regresión automatizada OK; smoke manual UI **OK tenant DEV** (03/11/2026, PQ) |
+| **F1/F** | **Aprobado** 03/11/2026 — checklist §4 validado en DEV (Field List Paquete de horas + FilterRow maestros/masivo) |
+| **Parte I** | 03/11/2026 — fusionado en TR-003, TR-005, TR-011 base (updates CC #13 no versionados; cierre documental acotado) |
 
 ---
 
@@ -13,10 +14,10 @@
 
 | CA | Resultado F | Evidencia |
 |----|-------------|-----------|
-| **CA-13-01** Diseñador Paquete de horas — Field List negocio | **OK (automático)** · **UI manual pendiente** | Unit `PartesEmissionDesignRepxBuilderTest` + `SpEmissionReportLayoutTest` (`clienteNombre`, `saldo`, sin `id`/`label`). E2E `partes-emisiones-paquete-horas-designer.spec.ts` (GetDesignerModel). **Manual:** §4.1 |
-| **CA-13-02** Clientes — FilterRow nombre/código | **OK (automático)** · **UI manual pendiente** | Vitest `maestroListPaging` · Unit `PartesMaestrosOperationsFilterTest` · Playwright 4 maestros (mock). **Manual:** §4.2 |
-| **CA-13-03** Asistentes — FilterRow | **OK (automático)** · **UI manual pendiente** | Idem + E2E asistentes (columna nombre índice 2). **Manual:** §4.3 |
-| **CA-13-04** Proceso masivo — FilterRow cliente / tipo tarea | **OK (automático)** | Vitest `masivoTareasPaging.test.ts`. Feature `ApiV1PartesCc13FilterRowTest` (masivo) bloqueado en SQLite seed local (deuda entorno). **Manual:** §4.5 |
+| **CA-13-01** Diseñador Paquete de horas — Field List negocio | **OK** | Unit + E2E; manual DEV §4.1 (columnas negocio, no `id`/`label`); schemas `backend/resources/emissions/schemas/` + sync sidecar |
+| **CA-13-02** Clientes — FilterRow nombre/código | **OK** | Vitest + Playwright; manual DEV §4.2 |
+| **CA-13-03** Asistentes — FilterRow | **OK** | Idem; manual DEV §4.3 |
+| **CA-13-04** Proceso masivo — FilterRow cliente / tipo tarea | **OK** | Vitest; manual DEV §4.5 |
 | **CA-13-05** Regresión tests | **OK** | Ver [E-CC-PQ-13](./E-CC-PQ-13-2026-11-03.md) §1–3 |
 
 **Tipos cliente / tipos tarea (alcance CC):** cubiertos en E2E Playwright + Unit Operations (no listados como CA separados en PQ; incluidos en hito FilterRow maestros).
@@ -105,19 +106,20 @@ Ejecutar con credenciales válidas del tenant (lab **DEV**, preview o **PAQ** pr
 | Stack local | **OK** | Frontend `:3000`, backend `:8010`, health 200 |
 | Login UI tenant DEV (`PQ` / seed doc) | **FAIL** | Mensaje «Usuario o contraseña incorrectos» |
 | Login API script | **FAIL** | Mismo `auth.invalidCredentials` |
-| Checklist §4.1–4.6 | **Pendiente PQ** | Requiere credenciales tenant |
+| Checklist §4.1–4.6 | **OK DEV** | PQ 03/11/2026 — Field List Paquete de horas + FilterRow maestros/masivo |
 
 ---
 
-## 6) Deploy (cuando integre a preview/prod)
+## 6) Deploy (preview/prod)
 
-- Sin migraciones nuevas obligatorias específicas CC #13 (código API/FE + REPX runtime).
-- Si el release incluye solo código: smoke §4 tras deploy.
-- Si hay SP nuevos de list en SQL Server: `installation:update` + deploy SP (GEN-34).
+- Código API/FE + REPX runtime (`PartesEmissionDesignRepxBuilder`); catálogo emisión ya cubierto por migración CC #12 si aplica.
+- **Sidecar DX (Must diseñador):** copiar `backend/resources/emissions/schemas/*.json` → `data/schemas/` del sidecar (`scripts/forge/sync-dx-reporting-schemas.sh` en post-deploy Forge; local `scripts/dev/sync-dx-reporting-schemas.ps1`).
+- Smoke post-deploy: `php backend/scripts/dev/smoke-paquete-horas-designer-schema.php` (sidecar accesible).
+- Filtros listado: parámetros query en Operations maestros/masivo (sin migración CC #13 adicional).
 
 ---
 
-## 7) Siguiente
+## 7) Cierre
 
-- PQ: completar §4 en **DEV** o **PAQ** y anotar fecha en este doc (tabla §5).
-- **Parte I** cuando updates CC #13 estén **Finalizado** en metadatos HU/TR/SPEC.
+- **F1/F:** Aprobado 03/11/2026 (DEV, PQ).
+- **Parte I:** historial CC #13 en TR-003, TR-005, TR-011 base — ver [00-ControlCalidad-PQ §#13](../../../00-ControlCalidad/00-ControlCalidad-PQ.md).

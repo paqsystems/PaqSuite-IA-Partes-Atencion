@@ -146,7 +146,7 @@ Errores: 403 `partes.masivo.forbidden`; 422 empty/tope/inválido/`partes.masivo.
 | Ruta | `/partes/proceso-masivo` |
 | Atajo carga | Link → misma ruta, sin search params |
 | Filtros | Fechas obligatorias; cliente/asistente/estado opcionales |
-| Grid | **`ProcessDataGrid`**: selection, filterRow, summary duración, columnChooser, templates GEN, export Excel; **paginación remota** (CC-PQ #11) vía `CustomStore` |
+| Grid | **`ProcessDataGrid`**: selection, filterRow, summary duración, columnChooser, templates GEN, export Excel; **paginación remota** (CC-PQ #11) vía `CustomStore`; **FilterRow remoto** (CC-PQ #13) vía `masivoTareasPaging` → query `clienteNombre` / `tipoTareaDescripcion` |
 | Select all | `/tareas/ids` + modal N |
 | Acciones Must | Cerrar / Reabrir (existente); **Actualizar tipo de tarea**; **Actualizar sin cargo** (puede unificarse en un panel «Aplicar cambios» con campos opcionales) |
 | Acciones Should | Presencial / Asistente / Fecha en el mismo panel cuando T7 |
@@ -240,6 +240,7 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 | 2026-09-16 | Parte I: fusionado TR-005-update (CC-PQ #3, 09/08) en esta TR; update eliminado. Estado → Finalizado. |
 | 01/11/2026 | CC-PQ #11: paginación remota grilla masivo (T12/T13, AC-CC11-01…05). Parte I fusionó TR-005-update-cc-pq-11. [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |
 | 01/11/2026 | CC-PQ #11 follow-up prod: `RemoteOperations` solo paging (PR #117 → #118 `main`); Parte I acotada en base + D. |
+| 03/11/2026 | CC-PQ #13: FilterRow remoto en grilla masivo (`masivoTareasPaging.ts`, Vitest + E2E filterrow). Parte I acotada; [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). F1/F DEV OK. |
 
 ---
 

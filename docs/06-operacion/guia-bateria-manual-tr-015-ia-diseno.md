@@ -202,7 +202,7 @@ Captura **antes** y **después**.
 | Síntoma | Qué revisar |
 |---------|-------------|
 | Diseñador no carga | Sidecar caído, CORS, proxy `/DXXRD`, `hostMissing` en UI |
-| Field List genérico (`id`, `label`) | Schema JSON no resuelve: `reportUrl` vs archivos en `data/schemas/` |
+| Field List genérico (`id`, `label`) | Sincronizar `backend/resources/emissions/schemas/` al sidecar: local `scripts/dev/sync-dx-reporting-schemas.ps1`; Forge `scripts/forge/sync-dx-reporting-schemas.sh` (post-deploy). Claves: `partes_paqueteHoras_principal` y `partes.informes.paqueteHoras`. Smoke: `php backend/scripts/dev/smoke-paquete-horas-designer-schema.php` |
 | Sin IA | Env LLM solo en sidecar; reiniciar sidecar; licencia DX IA |
 | PDF en blanco al emitir | `PAQSUITE_EMISSION_DX_MODE=fake` en Forge (ver TR-011 F1) |
 | Guardar no actualiza combo Emitir | Callback catálogo Laravel; ver consola red `POST/PUT .../reports` |
