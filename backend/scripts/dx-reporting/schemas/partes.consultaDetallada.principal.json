@@ -1,0 +1,94 @@
+{
+  "name": "Consulta detallada",
+  "columns": [
+    {
+      "name": "fecha",
+      "type": "date",
+      "label": "Fecha",
+      "description": "Día en que se registró la tarea.",
+      "synonyms": ["día", "cuándo", "jornada"]
+    },
+    {
+      "name": "clienteCode",
+      "type": "string",
+      "label": "Cliente (código)",
+      "description": "Código interno del cliente."
+    },
+    {
+      "name": "clienteNombre",
+      "type": "string",
+      "label": "Cliente (nombre)",
+      "description": "Nombre o razón social del cliente.",
+      "synonyms": ["razón social", "empresa", "cliente"]
+    },
+    {
+      "name": "usuarioCode",
+      "type": "string",
+      "label": "Asistente (código)",
+      "description": "Código del asistente que cargó la tarea."
+    },
+    {
+      "name": "usuarioNombre",
+      "type": "string",
+      "label": "Asistente (nombre)",
+      "description": "Nombre del asistente que registró la tarea.",
+      "synonyms": ["técnico", "operador", "asistente"]
+    },
+    {
+      "name": "tipoTareaCode",
+      "type": "string",
+      "label": "Tipo de tarea (código)",
+      "description": "Código del tipo de tarea."
+    },
+    {
+      "name": "tipoTareaDescripcion",
+      "type": "string",
+      "label": "Tipo de tarea",
+      "description": "Descripción del tipo de tarea."
+    },
+    {
+      "name": "duracionMinutos",
+      "type": "number",
+      "label": "Duración",
+      "description": "Duración en minutos (múltiplos de 15).",
+      "synonyms": ["tiempo", "minutos", "horas", "dedicación"]
+    },
+    {
+      "name": "sinCargo",
+      "type": "boolean",
+      "label": "Sin cargo",
+      "description": "Indica si la tarea no se factura al cliente.",
+      "synonyms": ["gratis", "no facturable", "bonificado"]
+    },
+    {
+      "name": "presencial",
+      "type": "boolean",
+      "label": "Presencial",
+      "description": "Tarea realizada en forma presencial."
+    },
+    {
+      "name": "cerrado",
+      "type": "boolean",
+      "label": "Cerrado",
+      "description": "Estado cerrado de la tarea."
+    },
+    {
+      "name": "observacion",
+      "type": "string",
+      "label": "Observación",
+      "description": "Texto libre de la tarea."
+    },
+    {
+      "name": "erpCliente",
+      "type": "string",
+      "label": "ERP cliente",
+      "description": "Código de cliente en el ERP vinculado."
+    },
+    {
+      "name": "erpArticulo",
+      "type": "string",
+      "label": "ERP artículo",
+      "description": "Código de artículo/servicio ERP vinculado."
+    }
+  ]
+}

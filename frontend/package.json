@@ -38,6 +38,7 @@
     "devextreme-react": "26.1.4",
     "exceljs": "^4.4.0",
     "i18next": "^25.4.2",
+    "jquery": "^3.7.1",
     "knockout": "^3.5.3",
     "prop-types": "^15.8.1",
     "react": "^19.2.5",
