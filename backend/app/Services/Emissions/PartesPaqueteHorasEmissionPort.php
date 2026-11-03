@@ -42,6 +42,14 @@ final class PartesPaqueteHorasEmissionPort implements EmissionDatasetPort
     ) {
     }
 
+    /**
+     * @return list<string>
+     */
+    public static function designDatasetColumnNames(): array
+    {
+        return self::DATASET_COLUMNS;
+    }
+
     public function resolveDataset(EmissionContext $context): EmissionDataset
     {
         $hostContext = $this->resolveHostContext($context);

@@ -610,7 +610,21 @@ final class PartesTareaOperations
             $q->where('r.cerrado', 1);
         }
 
+        self::applyContainsFilter($q, $params['p_cliente_code'] ?? null, 'c.code');
+        self::applyContainsFilter($q, $params['p_cliente_nombre'] ?? null, 'c.nombre');
+        self::applyContainsFilter($q, $params['p_tipo_tarea_code'] ?? null, 't.code');
+        self::applyContainsFilter($q, $params['p_tipo_tarea_descripcion'] ?? null, 't.descripcion');
+
         return $q;
+    }
+
+    private static function applyContainsFilter($query, mixed $value, string $column): void
+    {
+        $needle = trim((string) ($value ?? ''));
+        if ($needle === '') {
+            return;
+        }
+        $query->where($column, 'like', '%'.$needle.'%');
     }
 
     /** @param array<string, mixed> $params */

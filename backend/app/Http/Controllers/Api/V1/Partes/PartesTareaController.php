@@ -28,6 +28,10 @@ final class PartesTareaController extends Controller
                 'p_estado_cerrado' => $request->query('estadoCerrado', 'todas'),
                 'p_page' => $request->query('page', 1),
                 'p_page_size' => $request->query('pageSize', 50),
+                'p_cliente_code' => $request->query('clienteCode'),
+                'p_cliente_nombre' => $request->query('clienteNombre'),
+                'p_tipo_tarea_code' => $request->query('tipoTareaCode'),
+                'p_tipo_tarea_descripcion' => $request->query('tipoTareaDescripcion'),
             ]));
 
             return ApiResponse::success($result);
@@ -45,6 +49,10 @@ final class PartesTareaController extends Controller
                 'p_cliente_id' => $request->query('clienteId'),
                 'p_usuario_id' => $request->query('usuarioId'),
                 'p_estado_cerrado' => $request->query('estadoCerrado', 'todas'),
+                'p_cliente_code' => $request->query('clienteCode'),
+                'p_cliente_nombre' => $request->query('clienteNombre'),
+                'p_tipo_tarea_code' => $request->query('tipoTareaCode'),
+                'p_tipo_tarea_descripcion' => $request->query('tipoTareaDescripcion'),
             ]));
 
             return ApiResponse::success($result);

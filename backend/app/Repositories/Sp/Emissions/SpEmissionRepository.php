@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Sp\Emissions;
 
+use App\Services\Emissions\PartesEmissionDesignRepxBuilder;
+use App\Services\Emissions\PartesPaqueteHorasEmissionPort;
 use Illuminate\Support\Facades\DB;
 use PaqSuite\LaravelCore\Emissions\Contracts\EmissionRepository;
 use PaqSuite\LaravelCore\Emissions\Dto\EmissionJob;
@@ -391,6 +393,14 @@ final class SpEmissionRepository implements EmissionRepository
             if ($this->isRepxXml($definition)) {
                 return [
                     'layoutDefinition' => (string) $definition,
+                    'layoutMime' => 'application/xml',
+                ];
+            }
+
+            $processCode = (string) ($row->process_code ?? '');
+            if ($processCode === PartesPaqueteHorasEmissionPort::PROCESS_CODE) {
+                return [
+                    'layoutDefinition' => PartesEmissionDesignRepxBuilder::paqueteHorasPrincipal(),
                     'layoutMime' => 'application/xml',
                 ];
             }
