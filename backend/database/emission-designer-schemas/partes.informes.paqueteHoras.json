@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "datasetDisplayName": "Paquete de horas",
+  "fields": [
+    { "name": "fecha", "type": "date" },
+    { "name": "clienteCode", "type": "string" },
+    { "name": "clienteNombre", "type": "string" },
+    { "name": "usuarioCode", "type": "string" },
+    { "name": "usuarioNombre", "type": "string" },
+    { "name": "tipoClienteCode", "type": "string" },
+    { "name": "tipoClienteDescripcion", "type": "string" },
+    { "name": "tipoTareaCode", "type": "string" },
+    { "name": "tipoTareaDescripcion", "type": "string" },
+    { "name": "duracionMinutos", "type": "number" },
+    { "name": "saldo", "type": "number" },
+    { "name": "esTarea", "type": "boolean" },
+    { "name": "observacion", "type": "string" },
+    { "name": "erpCliente", "type": "string" },
+    { "name": "erpArticulo", "type": "string" },
+    { "name": "sinCargo", "type": "boolean" },
+    { "name": "presencial", "type": "boolean" },
+    { "name": "cerrado", "type": "boolean" }
+  ]
+}
