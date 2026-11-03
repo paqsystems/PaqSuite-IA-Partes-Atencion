@@ -43,7 +43,7 @@ Detalle de cada objeto y campo: [SPEC-001](./SPEC-001-objetos-datos-y-glosario.m
 | **Inicio** | Dashboard | Todos los perfiles Partes |
 | **Archivos** | Asistentes, clientes, tipos de cliente, tipos de tarea, asignación tipos por cliente | Administración / supervisor |
 | **Partes** | Carga diaria; carga de paquetes; proceso masivo | Asistente/supervisor; paquetes y masivo solo supervisor |
-| **Informes** | Consulta detallada, consultas agrupadas, paquete de horas | Según perfil |
+| **Informes** | Consulta detallada, paquete de horas | Según perfil |
 | **Seguridad** | Usuarios, roles, permisos | Administradores |
 | **Parámetros** | Auth, Partes, importación, emisiones | Administradores / supervisor |
 | **Soporte Técnico** | Diseñador de emisiones | Quien tenga permiso de diseño |

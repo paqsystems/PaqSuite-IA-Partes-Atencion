@@ -121,7 +121,6 @@ R-CO-01…10.
 | Partes | `partes_carga_diaria` | `/partes/carga-diaria` | Asistente/supervisor |
 | Partes | `partes_proceso_masivo` | `/partes/proceso-masivo` | Solo supervisor dominio + permiso |
 | Informes | `partes_consulta_detallada` | `/partes/informes/consulta-detallada` | Todos (datos delimitados) |
-| Informes | `partes_consultas_agrupadas` | `/partes/informes/consultas-agrupadas` | Todos |
 | Informes | `partes_paquete_horas` | `/partes/informes/paquete-horas` | Todos (datos delimitados) |
 | Seguridad | GEN usuarios/roles/permisos | rutas GEN | Rol supervisor Framework (`admin`/`PQ`) |
 

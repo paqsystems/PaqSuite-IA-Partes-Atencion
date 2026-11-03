@@ -457,6 +457,7 @@ export function CargaPaquetesPage() {
             </div>
             <div data-testid="partesCargaPaquetesSmartCapture">
               <SmartCapturePanel
+                t={(key) => t(key)}
                 hintText={t('partes.paquete.smartCapture.hint')}
                 enabled={formOpen && llmSelection.activeCredentialId !== null}
                 credentials={llmSelection.credentials.map((item) => ({

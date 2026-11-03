@@ -21,29 +21,7 @@ function bootstrapTenantSqlsrvFromEnv(): InstalacionRecord
         throw new RuntimeException('PAQSUITE_CLIENTE y PAQSUITE_PROYECTO son obligatorios.');
     }
 
-    /** @var InstalacionResolver $resolver */
-    $resolver = app(InstalacionResolver::class);
+    require_once __DIR__ . '/post-deploy-installations.php';
 
-    try {
-        $instalacion = $resolver->resolve($cliente, $proyecto);
-    } catch (InstalacionInfraException $e) {
-        throw new RuntimeException($e->getMessage(), 0, $e);
-    }
-
-    if ($instalacion === null) {
-        throw new RuntimeException("Instalación no encontrada: {$cliente}/{$proyecto}");
-    }
-
-    if (! $instalacion->habilitado) {
-        throw new RuntimeException("Instalación deshabilitada o vencida: {$cliente}/{$proyecto}");
-    }
-
-    /** @var InstalacionConnectionConfigurator $configurator */
-    $configurator = app(InstalacionConnectionConfigurator::class);
-
-    if (! $configurator->apply($instalacion)) {
-        throw new RuntimeException("No se pudo aplicar conexión sqlsrv para {$cliente}/{$proyecto}");
-    }
-
-    return $instalacion;
+    return bootstrapTenantSqlsrvForInstallation($cliente, $proyecto);
 }

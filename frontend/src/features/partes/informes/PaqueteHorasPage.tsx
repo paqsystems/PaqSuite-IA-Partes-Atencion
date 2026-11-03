@@ -1,12 +1,19 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Column, Paging, Pager } from 'devextreme-react/data-grid'
+import { Column, Paging, Pager, Selection } from 'devextreme-react/data-grid'
 import Button from 'devextreme-react/button'
 import DateBox from 'devextreme-react/date-box'
 import SelectBox from 'devextreme-react/select-box'
 import { useTranslation } from 'react-i18next'
 import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 import Chart, { CommonSeriesSettings, Series, ArgumentAxis, ValueAxis, Legend } from 'devextreme-react/chart'
-import { ConsultaKardexList, isNativeApp, ProcessDataGrid, ProcessPageLayout } from '@paqsuite/react-core'
+import {
+  ConsultaKardexList,
+  EmissionDialog,
+  getEmissionProcess,
+  isNativeApp,
+  ProcessDataGrid,
+  ProcessPageLayout,
+} from '@paqsuite/react-core'
 import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
@@ -26,6 +33,12 @@ import { PartesInformeGrillaPivotSection } from './PartesInformeGrillaPivotSecti
 import { buildPartesPaqueteHorasPivotCatalog } from './partesInformePivotCatalog'
 import { aggregatePaqueteHorasDesglose } from '../mobile/aggregatePaqueteHorasDesglose'
 import { mapDesgloseToKardexItem } from '../mobile/mapPartesTareaToKardexItem'
+import {
+  buildPaqueteHorasHostContext,
+  shouldDisablePaqueteHorasEmit,
+  shouldMountPaqueteHorasEmit,
+} from './paqueteHorasHostContext'
+import { setEmissionHostContextSnapshot } from './emissionHostContextBridge'
 
 function formatDuracionCell(cell: { value?: unknown; data?: Record<string, unknown> }) {
   const row = cell.data ?? {}
@@ -66,6 +79,7 @@ function onPaqueteHorasCellPrepared(e: {
 }
 
 const PAQUETE_HORAS_CONSULTA_ID = 'partes.informes.paqueteHoras'
+const PAQUETE_HORAS_PROCESS = 'partes.informes.paqueteHoras'
 
 export function PaqueteHorasPage() {
   const { t, i18n } = useTranslation()
@@ -90,8 +104,19 @@ export function PaqueteHorasPage() {
   const [error, setError] = useState<string | null>(null)
   /** Remonta la grilla tras búsqueda OK (plantilla DX / filter row no debe dejar filas ocultas). */
   const [gridResetKey, setGridResetKey] = useState(0)
+  const [selectedTareaIds, setSelectedTareaIds] = useState<number[]>([])
+  const [emissionEnabled, setEmissionEnabled] = useState(false)
+  const [emitDialogVisible, setEmitDialogVisible] = useState(false)
 
   const [ejeChart, setEjeChart] = useState<'cliente' | 'tipo'>('cliente')
+
+  const effectiveClienteId = useMemo(() => {
+    if (esCliente) {
+      const id = session?.partes?.clienteId
+      return id != null && id > 0 ? id : null
+    }
+    return clienteId
+  }, [clienteId, esCliente, session?.partes?.clienteId])
 
   const rows = useMemo(
     () => enrichRowsWithDuracionHoras(enrichRowsWithDiaSemana(rawRows, t, 'fecha')),
@@ -171,15 +196,45 @@ export function PaqueteHorasPage() {
       .finally(() => setTiposClienteLoading(false))
   }, [])
 
+  const syncHostContext = useCallback(() => {
+    if (effectiveClienteId == null || effectiveClienteId <= 0) {
+      return
+    }
+    setEmissionHostContextSnapshot(
+      buildPaqueteHorasHostContext({
+        fechaDesde,
+        fechaHasta,
+        clienteId: effectiveClienteId,
+        tipoClienteId,
+        selectedTareaIds,
+      }),
+    )
+  }, [effectiveClienteId, fechaDesde, fechaHasta, selectedTareaIds, tipoClienteId])
+
+  useEffect(() => {
+    syncHostContext()
+  }, [syncHostContext])
+
+  useEffect(() => {
+    if (native) {
+      return
+    }
+    void getEmissionProcess(PAQUETE_HORAS_PROCESS).then((result) => {
+      setEmissionEnabled(result.kind === 'ok')
+    })
+  }, [native])
+
   const load = useCallback(async () => {
     if (!esCliente && (clienteId === null || clienteId <= 0)) {
       setError(resolveAuthMessage('partes.informe.clienteRequerido'))
       setRawRows([])
       setSaldoInicial(0)
+      setSelectedTareaIds([])
       return
     }
     setLoading(true)
     setError(null)
+    setSelectedTareaIds([])
     try {
       await fetchPaqueteHorasRows()
       setGridResetKey((revision) => revision + 1)
@@ -213,6 +268,42 @@ export function PaqueteHorasPage() {
 
   const needsClienteSelection = !esCliente && (clienteId == null || clienteId <= 0)
 
+  const showEmit = shouldMountPaqueteHorasEmit(native, emissionEnabled)
+  const emitDisabled = shouldDisablePaqueteHorasEmit(loading, selectedTareaIds.length, needsClienteSelection)
+
+  const onPaqueteHorasSelectionChanged = useCallback(
+    (e: { selectedRowKeys?: Array<string | number>; selectedRowsData?: Record<string, unknown>[] }) => {
+      const fromRows = (e.selectedRowsData ?? [])
+        .filter((row) => !row.esSaldoInicial)
+        .map((row) => Number(row.id))
+        .filter((id) => id > 0)
+      if (fromRows.length > 0) {
+        setSelectedTareaIds(fromRows)
+        return
+      }
+      setSelectedTareaIds((e.selectedRowKeys ?? []).map((key) => Number(key)).filter((id) => id > 0))
+    },
+    [],
+  )
+
+  const openEmitDialog = useCallback(() => {
+    syncHostContext()
+    setEmitDialogVisible(true)
+  }, [syncHostContext])
+
+  const emitButton = useMemo(
+    () =>
+      showEmit ? (
+        <Button
+          text={t('partes.informe.emitir')}
+          disabled={emitDisabled}
+          onClick={openEmitDialog}
+          elementAttr={{ 'data-testid': 'partesPaqueteHorasEmit' }}
+        />
+      ) : null,
+    [emitDisabled, openEmitDialog, showEmit, t],
+  )
+
   const renderPaqueteGridView = useCallback(
     (toolbarLeading: ReactNode) => (
       <div data-testid="partesPaqueteHorasGrid">
@@ -229,7 +320,15 @@ export function PaqueteHorasPage() {
           accessToken={getAuthToken()}
           platform={buildAuthPlatformHeaders()}
           toolbarLeading={toolbarLeading}
+          selectedRowKeys={selectedTareaIds}
+          onSelectionChanged={onPaqueteHorasSelectionChanged}
         >
+          <Selection
+            mode="multiple"
+            showCheckBoxesMode="always"
+            selectAllMode="allPages"
+            allowSelectAll
+          />
           <Paging defaultPageSize={50} />
           <Pager visible showPageSizeSelector />
           <Column dataField="fecha" caption={t('partes.informe.field.fecha')} dataType="date" />
@@ -276,7 +375,19 @@ export function PaqueteHorasPage() {
         </ProcessDataGrid>
       </div>
     ),
-    [clienteId, fechaDesde, fechaHasta, gridResetKey, load, loading, rows, t, tipoClienteId],
+    [
+      clienteId,
+      fechaDesde,
+      fechaHasta,
+      gridResetKey,
+      load,
+      loading,
+      onPaqueteHorasSelectionChanged,
+      rows,
+      selectedTareaIds,
+      t,
+      tipoClienteId,
+    ],
   )
 
   if (native) {
@@ -488,8 +599,19 @@ export function PaqueteHorasPage() {
         locale={i18n.language}
         native={native}
         loadPivotDataset={loadPivotDataset}
+        toolbarLeadingExtras={emitButton}
         renderGridView={renderPaqueteGridView}
       />
+      {showEmit && emitDialogVisible ? (
+        <EmissionDialog
+          processCode={PAQUETE_HORAS_PROCESS}
+          visible={emitDialogVisible}
+          onClose={() => setEmitDialogVisible(false)}
+          isNative={false}
+          permiteConsolidado={false}
+          t={(key) => t(key)}
+        />
+      ) : null}
     </div>
     </ProcessPageLayout>
   )

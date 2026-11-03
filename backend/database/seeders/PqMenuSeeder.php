@@ -46,7 +46,6 @@ class PqMenuSeeder extends Seeder
             // 40000 Informes
             $this->folder(40000, null, 'informes', 'Informes', 40000),
             $this->process(40100, 40000, 'partes_consulta_detallada', 'Consulta detallada', '/partes/informes/consulta-detallada', 40100),
-            $this->process(40200, 40000, 'partes_consultas_agrupadas', 'Consultas agrupadas', '/partes/informes/consultas-agrupadas', 40200),
             $this->process(40300, 40000, 'partes_informe_paquete_horas', 'Paquete de horas', '/partes/informes/paquete-horas', 40300),
 
             // 50000 Seguridad (GEN)

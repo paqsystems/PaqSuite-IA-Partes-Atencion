@@ -1,6 +1,10 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import CustomStore from 'devextreme/data/custom_store'
+import DataSource from 'devextreme/data/data_source'
+import type { LoadOptions } from 'devextreme/data'
 import { ProcessDataGrid, ProcessPageLayout } from '@paqsuite/react-core'
-import { Column, Paging, Pager } from 'devextreme-react/data-grid'
+import { Column, Paging, Pager, RemoteOperations } from 'devextreme-react/data-grid'
+import type dxDataGrid from 'devextreme/ui/data_grid'
 import Button from 'devextreme-react/button'
 import TextBox from 'devextreme-react/text-box'
 import CheckBox from 'devextreme-react/check-box'
@@ -23,6 +27,9 @@ import {
   listPartesResource,
   savePartesResource,
 } from './partesMaestrosApi'
+import { maestroGridLoadOptionsToQuery } from './maestroListPaging'
+
+const MAESTRO_PAGE_SIZE = 20
 
 export type MaestroField =
   | { key: string; label: string; type: 'text'; maxLength?: number }
@@ -56,7 +63,8 @@ export function MaestroCrudPage({
 }: MaestroCrudPageProps) {
   const { t } = useTranslation()
   const pageTitle = useProcessMenuTitle(title)
-  const [rows, setRows] = useState<Record<string, unknown>[]>([])
+  const gridRef = useRef<dxDataGrid | null>(null)
+  const editingRowRef = useRef<Record<string, unknown> | null>(null)
   const [loading, setLoading] = useState(true)
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -67,24 +75,49 @@ export function MaestroCrudPage({
   const [usersLoading, setUsersLoading] = useState(false)
   const [catalogs, setCatalogs] = useState<Record<string, Record<string, unknown>[]>>({})
 
-  const load = useCallback(async () => {
+  const resourcePathRef = useRef(resourcePath)
+  resourcePathRef.current = resourcePath
+
+  const refreshGrid = useCallback(() => {
+    gridRef.current?.instance()?.refresh()
+  }, [])
+
+  const loadMaestroStore = useRef(async (loadOptions: LoadOptions) => {
     setLoading(true)
     setListError(null)
     try {
-      const result = await listPartesResource(resourcePath)
+      const { page, pageSize } = maestroGridLoadOptionsToQuery({
+        skip: loadOptions.skip,
+        take: loadOptions.take,
+      })
+      const result = await listPartesResource(resourcePathRef.current, { page, pageSize })
       if (result.kind === 'ok') {
-        setRows(result.envelope.resultado.items ?? [])
-      } else if (result.kind === 'envelopeError') {
+        const items = result.envelope.resultado.items ?? []
+        const totalCount = result.envelope.resultado.total ?? items.length
+        return { data: items, totalCount }
+      }
+      if (result.kind === 'envelopeError') {
         setListError(resolveAuthMessage(result.envelope.respuesta))
       }
+      return { data: [] as Record<string, unknown>[], totalCount: 0 }
     } finally {
       setLoading(false)
     }
-  }, [resourcePath])
+  })
 
-  useEffect(() => {
-    void load()
-  }, [load])
+  const maestroDataSource = useMemo(
+    () =>
+      new DataSource({
+        paginate: true,
+        pageSize: MAESTRO_PAGE_SIZE,
+        requireTotalCount: true,
+        store: new CustomStore({
+          key: 'id',
+          load: (loadOptions) => loadMaestroStore.current(loadOptions),
+        }),
+      }),
+    [],
+  )
 
   const loadVinculables = useCallback((exceptoUserId?: number | null) => {
     if (!fields.some((field) => field.type === 'user')) {
@@ -102,7 +135,7 @@ export function MaestroCrudPage({
 
   useEffect(() => {
     const catalogFields = fields.filter(
-      (field): field is Extract<MaestroField, { type: 'catalog' }> => field.type === 'catalog'
+      (field): field is Extract<MaestroField, { type: 'catalog' }> => field.type === 'catalog',
     )
     catalogFields.forEach((field) => {
       void listCatalogo(field.catalog).then((result) => {
@@ -116,10 +149,12 @@ export function MaestroCrudPage({
   function closeForm() {
     setFormOpen(false)
     setFormError(null)
+    editingRowRef.current = null
   }
 
   function openCreate() {
     setEditingId(null)
+    editingRowRef.current = null
     setForm({ ...initialForm })
     loadVinculables(null)
     setFormError(null)
@@ -127,6 +162,7 @@ export function MaestroCrudPage({
   }
 
   function openEdit(row: Record<string, unknown>) {
+    editingRowRef.current = row
     setEditingId(Number(row.id))
     setForm({ ...initialForm, ...row })
     const currentUserId = Number(row.userId ?? 0)
@@ -138,7 +174,7 @@ export function MaestroCrudPage({
   async function handleSave() {
     setFormError(null)
     if (editingId !== null && fields.some((f) => f.type === 'user')) {
-      const previous = rows.find((row) => Number(row.id) === editingId)
+      const previous = editingRowRef.current
       if (previous && previous.userId && form.userId && previous.userId !== form.userId) {
         const ok = await confirm(
           t('partes.maestros.cambioUsuarioConfirm'),
@@ -152,7 +188,7 @@ export function MaestroCrudPage({
     const result = await savePartesResource(resourcePath, form, editingId ?? undefined)
     if (result.kind === 'ok') {
       setFormOpen(false)
-      void load()
+      refreshGrid()
       return
     }
     if (result.kind === 'envelopeError') {
@@ -167,7 +203,7 @@ export function MaestroCrudPage({
     }
     const result = await deletePartesResource(resourcePath, Number(row.id))
     if (result.kind === 'ok') {
-      void load()
+      refreshGrid()
     } else if (result.kind === 'envelopeError') {
       setListError(resolveAuthMessage(result.envelope.respuesta))
     }
@@ -181,10 +217,17 @@ export function MaestroCrudPage({
       ) : null}
       <div data-testid={`${testIdPrefix}Grid`}>
         <ProcessDataGrid
-          dataSource={rows}
+          ref={gridRef}
+          dataSource={maestroDataSource}
           keyExpr="id"
           loading={loading}
-          onRefresh={() => void load()}
+          remoteOperations
+          pageSizes={{
+            GridPageSize1: MAESTRO_PAGE_SIZE,
+            GridPageSize2: 40,
+            GridPageSize3: 80,
+          }}
+          onRefresh={() => refreshGrid()}
           proceso={`partes.maestros.${resourcePath}`}
           gridId={testIdPrefix}
           accessToken={getAuthToken()}
@@ -193,7 +236,14 @@ export function MaestroCrudPage({
           createHint={t('partes.common.agregar')}
           createTestId={`${testIdPrefix}Add`}
         >
-          <Paging defaultPageSize={20} />
+          <RemoteOperations
+            paging
+            filtering={false}
+            sorting={false}
+            grouping={false}
+            summary={false}
+          />
+          <Paging defaultPageSize={MAESTRO_PAGE_SIZE} />
           <Pager visible showPageSizeSelector />
           {columns.map((column) => (
             <Column key={column.dataField} dataField={column.dataField} caption={column.caption} />

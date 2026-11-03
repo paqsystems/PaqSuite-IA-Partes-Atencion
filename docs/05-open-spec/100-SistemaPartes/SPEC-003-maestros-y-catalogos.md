@@ -1,4 +1,4 @@
-# SPEC-003 – Maestros y catálogos del módulo
+# SPEC-003 – Maestros y catálogos del módulo
 
 Jira: PIAPARTES-3
 
@@ -278,6 +278,7 @@ R-MA-05 permanece: la exclusividad cruzada sigue vigente y queda cubierta por R-
 | 2026-08-01 | CC-PQ #2 (01/08/2026): ABM clientes captura/muestra `erpCliente` / `erpArticulo` (R-MA-13/14). |
 | 2026-08-01 | Parte I: fusionado SPEC-003-update (CC-PQ #2, 01/08) en este original; update eliminado. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4 (04/10/2026): código de usuario en asistentes, universo vinculable y unicidad R-MA-15…18; update eliminado. Estado → Finalizado. |
+| 2026-11-02 | CC-PQ #12: listados ABM (`MaestroCrudPage`) con paginación remota alineada a `page` / `pageSize` / `total` del API maestros. |
 
 ---
 

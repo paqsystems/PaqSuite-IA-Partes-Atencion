@@ -195,7 +195,7 @@ Gráficos simples opcionales si no complican el MVP.
 | Inicio | Dashboard | Todos los perfiles Partes |
 | Archivos | Clientes, asistentes, tipos cliente, tipos tarea, asignaciones | Quienes tengan permiso menú ABM (seed: rol supervisor → `admin`/`PQ`) |
 | Partes | Carga diaria; proceso masivo (pantalla + atajo desde carga) | Asistente/supervisor; masivo solo supervisor de dominio |
-| Informes | Consulta detallada; consultas agrupadas (1 pantalla + eje); Paquete de Horas | Todos según delimitación |
+| Informes | Consulta detallada; Paquete de Horas | Todos según delimitación |
 | Seguridad | Usuarios, roles, permisos (GEN) | Rol supervisor / permisos seguridad (MVP incluido) |
 
 - Perfil vía avatar (SPEC-002); no requiere ítem de menú dedicado Must.
@@ -295,6 +295,7 @@ Gráficos simples opcionales si no complican el MVP.
 | 2026-08-01 | CC-PQ #2 (01/08/2026): consulta detallada y agrupada incorporan `erpCliente` / `erpArticulo` en grilla y pivot (R-CO-13). |
 | 2026-08-01 | Parte I: fusionados SPEC-006-update (CC-PQ #1, 31/07) y SPEC-006-update-01 (CC-PQ #2, 01/08) en este original; updates eliminados. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4 (04/10/2026): filtro y columnas de tipo de cliente en Paquete de Horas (R-CO-14/15); update eliminado. Estado → Finalizado. |
+| 2026-11-02 | CC-PQ #12: ítem menú **Consultas agrupadas** (`40200`) retirado del seed y migración de despliegue. |
 | 2026-10-29 | CC ST #1 (29/10/2026): selector de filas en Consulta detallada (web) para Emitir; select all allPages; export grilla independiente. Parte I desde SPEC-006-update. |
 
 ---

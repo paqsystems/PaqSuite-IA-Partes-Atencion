@@ -16,6 +16,8 @@ class PqEmissionSeeder extends Seeder
 {
     public const PROCESS_CODE = 'partes.informes.consultaDetallada';
 
+    public const PROCESS_CODE_PAQUETE_HORAS = 'partes.informes.paqueteHoras';
+
     public function run(): void
     {
         $now = now()->format('Ymd H:i:s');
@@ -151,6 +153,93 @@ class PqEmissionSeeder extends Seeder
                 'is_principal' => true,
                 'is_standard' => true,
                 'visible_mobile' => true,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
+        $this->seedPaqueteHorasProcess($now);
+    }
+
+    /** Idempotente — invocable desde migración de despliegue (CC-PQ #12). */
+    public function seedPaqueteHorasCatalog(): void
+    {
+        $this->seedPaqueteHorasProcess(now()->format('Ymd H:i:s'));
+    }
+
+    private function seedPaqueteHorasProcess(string $now): void
+    {
+        DB::table('pq_emission_processes')->updateOrInsert(
+            ['process_code' => self::PROCESS_CODE_PAQUETE_HORAS],
+            [
+                'name' => 'Paquete de horas',
+                'description' => 'Emisión de filas tildadas del informe Paquete de horas',
+                'menu_process_code' => 'partes_informe_paquete_horas',
+                'permite_consolidado' => true,
+                'permite_segmentado' => false,
+                'requiere_vista_previa' => false,
+                'canal_pdf' => true,
+                'canal_print' => true,
+                'canal_excel' => true,
+                'canal_csv' => true,
+                'canal_mail' => true,
+                'canal_zip' => false,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
+        $layout = json_encode([
+            'kind' => 'tabular',
+            'columns' => [
+                'fecha',
+                'clienteCode',
+                'clienteNombre',
+                'usuarioCode',
+                'usuarioNombre',
+                'tipoTareaCode',
+                'tipoTareaDescripcion',
+                'duracionMinutos',
+                'saldo',
+                'esTarea',
+                'observacion',
+                'erpCliente',
+                'erpArticulo',
+            ],
+        ], JSON_UNESCAPED_UNICODE);
+
+        DB::table('pq_emission_reports')->updateOrInsert(
+            [
+                'process_code' => self::PROCESS_CODE_PAQUETE_HORAS,
+                'report_code' => 'partes_paqueteHoras_principal',
+            ],
+            [
+                'name' => '<Original>',
+                'is_standard' => true,
+                'is_principal' => true,
+                'visible_mobile' => false,
+                'layout_definition' => $layout,
+                'layout_mime' => 'application/json',
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
+        DB::table('pq_emission_mail_templates')->updateOrInsert(
+            [
+                'process_code' => self::PROCESS_CODE_PAQUETE_HORAS,
+                'template_code' => 'partes.paqueteHoras.mail',
+            ],
+            [
+                'name' => 'Paquete de horas',
+                'subject_template' => 'Partes — paquete de horas',
+                'body_html_template' => '<p>Adjunto el reporte de paquete de horas.</p>',
+                'is_principal' => true,
+                'is_standard' => true,
+                'visible_mobile' => false,
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),

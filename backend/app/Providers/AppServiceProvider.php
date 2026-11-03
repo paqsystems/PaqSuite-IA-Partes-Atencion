@@ -312,6 +312,7 @@ class AppServiceProvider extends ServiceProvider
         );
         $this->app->singleton(\App\Services\Emissions\PartesEmissionHostContextStore::class);
         $this->app->singleton(\App\Services\Emissions\PartesConsultaDetalladaEmissionPort::class);
+        $this->app->singleton(\App\Services\Emissions\PartesPaqueteHorasEmissionPort::class);
         $this->app->singleton(\PaqSuite\LaravelCore\Emissions\EmissionSettings::class);
         $this->app->singleton(\PaqSuite\LaravelCore\Emissions\EmissionCapabilityGuard::class);
         $this->app->singleton(\PaqSuite\LaravelCore\Emissions\EmissionAsyncThreshold::class);
@@ -320,6 +321,10 @@ class AppServiceProvider extends ServiceProvider
             $registry->register(
                 \App\Services\Emissions\PartesConsultaDetalladaEmissionPort::PROCESS_CODE,
                 $app->make(\App\Services\Emissions\PartesConsultaDetalladaEmissionPort::class)
+            );
+            $registry->register(
+                \App\Services\Emissions\PartesPaqueteHorasEmissionPort::PROCESS_CODE,
+                $app->make(\App\Services\Emissions\PartesPaqueteHorasEmissionPort::class)
             );
 
             return $registry;

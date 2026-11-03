@@ -57,6 +57,93 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 9 | 30/10/2026 | Especificado | **Hito FRAMEWORK** — compatibilizar tablas de seguridad MONO vs MULTI (`users`, `pq_empresa`, roles, permisos) + GEN-34 |
 | 10 | 30/10/2026 | Especificado | Tareas programadas (historial / próxima ejecución) + saldo informe Paquete de horas — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
 | 11 | 01/11/2026 | Especificado | Proceso masivo paginación grilla — **F1/F Aprobado** · **Parte I unificada** · **Prod OK** (PR #117/#118) ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md)) |
+| 12 | 02/11/2026 | Especificado | ABM maestros paginación · menú sin agrupadas · Emitir Paquete de Horas — **F1/F Aprobado** · **Preview OK** (PR #122/#124/#125) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
+
+---
+
+## Control de Calidad #12
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 02/11/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado |
+| **Parte G** | 02/11/2026 — SPEC/HU/TR-update CC #12 |
+| **Parte D/E/F** | 02/11/2026 — ver [D-CC-PQ-12](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-12-2026-11-02.md) · [E-CC-PQ-12](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-12-2026-11-02.md) · [D-VERIFICACION-CC-PQ-12](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
+| **F1/F** | Aprobado 02/11/2026 — smoke API preview develop (tenant DEV); ver [D-VERIFICACION-CC-PQ-12](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
+| **Smoke preview** | 02/11/2026 — **OK** API (PR #124 FK menú + #125 seed emisión; SHA `eafa6fe`). UI Vercel no verificada (SSO). **Prod pendiente** (promover `develop` → `main`). |
+| **Origen** | Prueba manual en **producción** (UI en italiano) — hallazgos acumulados en sesión de control |
+| **Evidencia** | Captura CC #12 (02/11/2026): ABM **Clienti** (`/archivos/partes/clientes`) con grilla que no supera ~50 filas pese a **192** registros en `pq_partes_clientes` |
+
+### Resumen del hito (alcance por producto)
+
+| # | Ítem | Proyecto | Notas |
+|---|------|----------|--------|
+| 1 | ABM Clientes (y resto de maestros Partes) limitado a 50 filas | **Partes** | Revisión transversal ABMs; reutiliza motor GEN (`ProcessDataGrid`) sin cambio de contrato Framework salvo que el fix sea transversal documentado |
+| 2 | Quitar del menú **Consultas agrupadas** | **Partes** | Menú `pq_menus` / seed + coherencia rutas y mobile policy |
+| 3 | **Emitir** en informe **Paquete de Horas** | **Partes** (emisión vía GEN-15 existente) | Hoy excluido por SPEC-011 / HU-011; ampliar alcance acordado con negocio |
+
+### Hallazgos
+
+#### 1) ABM Clientes — solo 50 registros visibles
+
+En producción el ABM **Clienti** muestra como máximo **50** clientes. En base hay **192** filas en `pq_partes_clientes`. El usuario no puede administrar el catálogo completo desde la grilla.
+
+**Triage preliminar (código host):**
+
+| Capa | Observación |
+|------|-------------|
+| **API** | `GET /api/v1/partes/clientes` — `PartesMaestrosController::list` usa `pageSize` por defecto **50** si el cliente no envía query. |
+| **FE** | `MaestroCrudPage` → `listPartesResource` **sin** `page` / `pageSize`; carga una sola página en `rows` y pagina **en cliente** con `<Paging defaultPageSize={20} />`. |
+| **Patrón** | Mismo componente alimenta **Asistentes**, **Tipos cliente**, **Tipos tarea** (`PartesMaestrosPages.tsx`). **Asignaciones cliente–tipo tarea** (`ClienteTiposTareaPage`) usa otro listado — incluir en auditoría. |
+
+**Hito solicitado:** corregir listado maestros para que el universo administrable coincida con el total en BD (paginación remota alineada al API **o** carga completa documentada con límite de producto), y **verificar todos los ABMs Partes** para el mismo anti-patrón (CC #11 ya corrigió Proceso masivo).
+
+*Procesado* · fusionado Parte I en [HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) · [TR-003](../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md)
+
+#### 2) Menú — eliminar **Consultas agrupadas**
+
+Solicitud de negocio: la opción de menú **Consultas agrupadas** / **Consultazioni raggruppate** (`partes_consultas_agrupadas`, ruta `/partes/informes/consultas-agrupadas`) **no debe ofrecerse** en producción.
+
+Alcance mínimo esperado:
+
+- Retirar ítem del menú (`pq_menus` seed / installation update) y permisos asociados si aplica.
+- Decidir si la ruta queda inaccesible (404 / redirect) o solo oculta — documentar en SPEC-update.
+- Actualizar manual usuario y `partesMobilePolicy` si el ítem seguía referenciado.
+- **No** implica borrar código pivot/agrupadas salvo decisión explícita posterior; foco en **no exponer** el proceso.
+
+*Procesado* · fusionado Parte I en [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md)
+
+#### 3) Informe **Paquete de Horas** — agregar **Emitir**
+
+Solicitud: el informe **Paquete de Horas** (`/partes/informes/paquete-horas`, `PaqueteHorasPage.tsx`) debe ofrecer **Emitir** (mismo patrón GEN que Consulta Detallada: `EmissionDialog`, filtros de pantalla, contrato SPEC-011).
+
+Estado actual documentado: SPEC-011 / HU-011 **excluyen** Paquete de horas de Emitir; `partesConsultasEmissionsGate.test.ts` exige que agrupadas **no** monten el diálogo; Paquete de Horas tampoco lo monta hoy.
+
+**Cerrado (PQ):** emisión sobre **filas tildadas** (paridad CC-ST #1). Proceso `partes.informes.paqueteHoras`; mobile sin Emitir.
+
+*Procesado* · fusionado Parte I en [HU-011](../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) · [TR-011](../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md)
+
+### Criterios de aceptación preliminares
+
+- [x] **CA-12-01** Con **> 50** clientes activos en BD, el ABM Clientes permite ver/administrar **todos** (paginación remota coherente con `total` del API o carga completa acordada).
+- [x] **CA-12-02** Asistentes, tipos cliente, tipos tarea y asignaciones cliente–tipo tarea **no** quedan capados en 50 filas sin aviso si el volumen supera el default del API.
+- [x] **CA-12-03** Tras deploy, ningún perfil ve **Consultas agrupadas** en el menú Partes; la ruta no queda accesible por menú estándar.
+- [x] **CA-12-04** Paquete de Horas muestra **Emitir** en web (filas tildadas) y respeta permisos / envelope GEN-15.
+- [x] **CA-12-05** Tests de regresión (unit/E2E) cubren listado maestros ampliado y gate de emisiones actualizado.
+
+### Derivación SDD
+
+| Artefacto | Ruta |
+|-----------|------|
+| SPEC base | [SPEC-003](../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) · [SPEC-006](../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) · [SPEC-011](../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) |
+| D / E / F | [D-CC-PQ-12](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-12-2026-11-02.md) · [E-CC-PQ-12](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-12-2026-11-02.md) · [D-VERIFICACION-CC-PQ-12](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
+
+Parte **I** aplicada (02/11/2026): fusionado en SPEC/HU/TR base; updates CC #12 eliminados.
+
+**Comando de volcado:** `Corrige los errores del 02/11/2026 de PQ`
 
 ---
 

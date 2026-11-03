@@ -39,5 +39,5 @@ if [[ -z "${PAQSUITE_CLIENTE:-}" || -z "${PAQSUITE_PROYECTO:-}" ]]; then
   exit 1
 fi
 
-# Un solo proceso PHP: tenant EMPRESAS_CONEXION + migrate + deploy-sp + installation:update
+# Un proceso PHP: por cada instalación SQL directo del proyecto → migrate + installation:update + deploy-sp
 php scripts/forge/run-post-deploy-backend.php
