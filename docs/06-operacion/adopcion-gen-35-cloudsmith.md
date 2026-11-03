@@ -38,7 +38,7 @@ Si ya cargaste el valor como *Variable*: borrala y creala como **Secret**.
 
 ## 1. GitHub Actions (este repo)
 
-Partes **no tiene** workflows de install hoy. Cuando exista CI (`composer install` / `npm ci`):
+CI en este repo: `manifest-validate.yml` (Composer) y `menu-i18n-validate.yml` (`npm ci` + Vitest). Ambos exigen el secret **`CLOUDSMITH_READ_TOKEN`**. Para jobs nuevos con `composer install` / `npm ci`:
 
 1. Repo → **Settings → Secrets and variables → Actions → New repository secret**.
 2. Name: `CLOUDSMITH_READ_TOKEN`. Value: token **read** Cloudsmith.
