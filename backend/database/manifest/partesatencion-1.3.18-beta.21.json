@@ -318,6 +318,14 @@
             "dependsOn": []
         },
         {
+            "id": "partes-migration-2026_11_03_100000_seed_paquete_horas_emission_catalog",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_11_03_100000_seed_paquete_horas_emission_catalog.php",
+            "checksum": "6cd8fd3bbd7f773ff8bd03ab663f90065c94fe4d5ba242cbf16252bca90d659a",
+            "dependsOn": []
+        },
+        {
             "id": "partes-sp-ddl_2026_07_31_theme_y_pq_rol_atributos",
             "kind": "sql",
             "target": "dictionary",
