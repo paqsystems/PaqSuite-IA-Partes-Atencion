@@ -39,6 +39,10 @@ export type TareaListQuery = {
   estadoCerrado?: 'todas' | 'abiertas' | 'cerradas'
   page?: number
   pageSize?: number
+  clienteCode?: string
+  clienteNombre?: string
+  tipoTareaCode?: string
+  tipoTareaDescripcion?: string
 }
 
 export async function fetchDuracionTramo() {
@@ -62,6 +66,18 @@ export async function listTareas(query: TareaListQuery) {
   }
   if (query.usuarioId) {
     params.set('usuarioId', String(query.usuarioId))
+  }
+  if (query.clienteCode) {
+    params.set('clienteCode', query.clienteCode)
+  }
+  if (query.clienteNombre) {
+    params.set('clienteNombre', query.clienteNombre)
+  }
+  if (query.tipoTareaCode) {
+    params.set('tipoTareaCode', query.tipoTareaCode)
+  }
+  if (query.tipoTareaDescripcion) {
+    params.set('tipoTareaDescripcion', query.tipoTareaDescripcion)
   }
   return apiRequest<{ items: PartesTareaItem[]; total: number }>(
     `/api/v1/partes/tareas?${params.toString()}`,

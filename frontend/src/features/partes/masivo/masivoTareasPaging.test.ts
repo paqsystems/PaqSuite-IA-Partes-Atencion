@@ -29,4 +29,14 @@ describe('masivoGridLoadOptionsToQuery', () => {
       pageSize: 20,
     })
   })
+
+  it('maps filter contains on clienteNombre', () => {
+    expect(
+      masivoGridLoadOptionsToQuery({
+        skip: 0,
+        take: 20,
+        filter: ['clienteNombre', 'contains', 'ANKAS'],
+      }),
+    ).toEqual({ page: 1, pageSize: 20, clienteNombre: 'ANKAS' })
+  })
 })
