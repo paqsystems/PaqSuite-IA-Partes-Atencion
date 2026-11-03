@@ -28,8 +28,16 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: npm ci
-        run: npm ci
+      - name: npm ci (Cloudsmith)
+        env:
+          CLOUDSMITH_READ_TOKEN: ${{ secrets.CLOUDSMITH_READ_TOKEN }}
+        run: |
+          if [ -z "${CLOUDSMITH_READ_TOKEN:-}" ]; then
+            echo "Falta secret CLOUDSMITH_READ_TOKEN en GitHub Actions (Settings → Secrets)." >&2
+            exit 1
+          fi
+          echo "::add-mask::${CLOUDSMITH_READ_TOKEN}"
+          npm ci
 
       - name: Vitest menu i18n
         run: npm run test -- --run src/features/partes/partesMenuI18n.test.ts

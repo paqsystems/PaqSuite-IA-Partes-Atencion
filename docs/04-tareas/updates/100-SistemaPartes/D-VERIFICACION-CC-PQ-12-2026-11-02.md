@@ -40,3 +40,4 @@ Entorno: `https://partesatencion-paqsystems-dev.on-forge.com/api/v1` · tenant *
 | 02/11/2026 | `24c8b28` / #122 | FAIL menú 40200 y emisión: migrate FK en Forge |
 | 02/11/2026 | `858b7c0` / #124 | Menú OK tras borrar `pq_rol_atributos`; emisión aún sin seed |
 | 02/11/2026 | `eafa6fe` / #125 | Emisión Paquete de Horas OK en API |
+| 02/11/2026 | `57f2438` / #123 → `main` | Prod API tenant **PAQ**: menú sin 40200, clientes paginados, `partes.informes.paqueteHoras` |

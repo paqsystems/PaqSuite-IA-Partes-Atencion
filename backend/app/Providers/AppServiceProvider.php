@@ -138,6 +138,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(InstalacionConnectionConfigurator::class);
         $this->app->singleton(CliInstalacionContext::class);
         $this->app->singleton(StaleTaskExecutionRecovery::class);
+        $this->app->singleton(
+            \PaqSuite\LaravelCore\Tasks\TaskExecutionStaleRecovery::class,
+            \App\Tasks\PartesTaskExecutionStaleRecovery::class,
+        );
         $this->app->singleton(TaskScheduleCalculator::class, static function () {
             $tzName = (string) config('paqsuite.tasks.scheduleTimezone', config('app.timezone', 'UTC'));
 

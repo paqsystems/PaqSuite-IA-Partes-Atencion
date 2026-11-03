@@ -221,6 +221,10 @@ de reintentar el seed.
    venció (mismo tenant que `PAQSUITE_CLIENTE` del sitio).
 7. En CLI, `BackupInstallationProfileResolver` debe resolver `PAQSUITE_CLIENTE`
    (sin header HTTP).
+8. **Ejecución colgada (backup RDS OK, UI «En curso»):** usar botón **Liberar colgadas**
+   en Monitoreo/Historial (SDK) o `php artisan partes:tasks-recover-stale --cliente={PAQSUITE_CLIENTE}`.
+   Modo `--full` si la corrida supera ~2 h (timeout RDS). Nota incidente PAQ 2026-11-03:
+   Framework `docs/08-control/d-nota-gen-13-backup-zombie-paq-2026-11-03.md`.
 
 La implementación de código no forma parte de esta definición; el host adopta
 los exports y contratos del SDK.
@@ -256,7 +260,8 @@ timeout → migrate + seed + `installation:update` + `deploy-sp.php`.
 | Decorador listado sqlsrv | `backend/app/Tasks/PartesTaskDefinitionRepository.php` |
 | Agenda `nextRunAt` | `backend/app/Tasks/SchedulingTaskDefinitionRepository.php` |
 | Ejecuciones sqlsrv | `backend/app/Tasks/PartesTaskExecutionRepository.php` |
-| Scheduler CLI | `backend/app/Console/Commands/PartesTasksRunDueCommand.php`, `PartesTasksBackfillNextRunAtCommand.php` |
+| Scheduler CLI | `backend/app/Console/Commands/PartesTasksRunDueCommand.php`, `PartesTasksRecoverStaleCommand.php`, `PartesTasksBackfillNextRunAtCommand.php` |
+| Recuperación UI/API | `POST /api/v1/task-executions/recover-stale` · `PartesTaskExecutionStaleRecovery` |
 | Backup RDS | `backend/app/Tasks/Backup/*` |
 | Override SP parámetros definición | `backend/database/sp/pq_sp_task_definition_parameter_set.sql` |
 | Otros SP host tenant | `backend/database/sp/*.sql`, `backend/scripts/sql/partes/` |
