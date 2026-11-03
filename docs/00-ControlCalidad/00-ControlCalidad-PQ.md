@@ -58,7 +58,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 10 | 30/10/2026 | Especificado | Tareas programadas (historial / próxima ejecución) + saldo informe Paquete de horas — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
 | 11 | 01/11/2026 | Especificado | Proceso masivo paginación grilla — **F1/F Aprobado** · **Parte I unificada** · **Prod OK** (PR #117/#118) ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md)) |
 | 12 | 02/11/2026 | Especificado | ABM maestros paginación · menú sin agrupadas · Emitir Paquete de Horas — **F1/F Aprobado** · **Preview OK** · **Prod OK** (PR #123 → `main`) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
-| 13 | 02/11/2026 | Especificado | Diseñador Paquete de Horas (dataset) · FilterRow maestros + Proceso masivo — **F1/F condicional** 03/11/2026 ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md)) |
+| 13 | 02/11/2026 | Especificado | Diseñador Paquete de Horas (dataset) · FilterRow maestros + Proceso masivo — **F1/F Aprobado** · **Parte I** · **DEV OK** 03/11/2026 ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md)) |
 
 ---
 
@@ -73,7 +73,8 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | **Estado** | Especificado |
 | **Parte G** | 02/11/2026 — SPEC/HU/TR-update CC #13 (003 / 005 / 011) |
 | **Parte D/E/F** | 03/11/2026 — [D-CC-PQ-13](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-13-2026-11-03.md) · [E-CC-PQ-13](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-13-2026-11-03.md) · [D-VERIFICACION-CC-PQ-13](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md) |
-| **F1/F** | **Aprobado condicional** 03/11/2026 — regresión E OK; smoke UI manual §4 pendiente credenciales lab |
+| **F1/F** | **Aprobado** 03/11/2026 — regresión E OK; smoke UI manual §4 **OK tenant DEV** (PQ) |
+| **Parte I** | 03/11/2026 — fusionado en TR-003 / TR-005 / TR-011 base |
 | **Origen** | Prueba manual post **CC #12** (prod tenant **PQ**): diseñador Paquete de horas, maestros, Proceso masivo |
 | **Evidencia** | Capturas CC #13: Field List `id`/`label`; FilterRow **ANKAS** en Clientes sin acotar filas |
 
@@ -86,10 +87,10 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 
 ### Criterios de aceptación
 
-- [x] **CA-13-01** Field List Paquete de horas con columnas de negocio *(F: unit/E2E; UI manual §4.1 pendiente PQ)*
-- [x] **CA-13-02** Clientes FilterRow nombre/código *(F: E2E mock + unit; §4.2 pendiente PQ)*
-- [x] **CA-13-03** Asistentes FilterRow *(§4.3 pendiente PQ)*
-- [x] **CA-13-04** Proceso masivo FilterRow cliente/tipo tarea *(Vitest; §4.5 pendiente PQ)*
+- [x] **CA-13-01** Field List Paquete de horas con columnas de negocio *(F1/F DEV 03/11/2026)*
+- [x] **CA-13-02** Clientes FilterRow nombre/código *(F1/F DEV)*
+- [x] **CA-13-03** Asistentes FilterRow *(F1/F DEV)*
+- [x] **CA-13-04** Proceso masivo FilterRow cliente/tipo tarea *(F1/F DEV)*
 - [x] **CA-13-05** Tests regresión *(ver E-CC-PQ-13)*
 
 ### Derivación SDD
@@ -102,7 +103,9 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 
 Plan D1: [D1-TR-003-005-011-update-cc-pq-13](../04-tareas/updates/100-SistemaPartes/d1/D1-TR-003-005-011-update-cc-pq-13.md).
 
-**Siguiente:** **Parte I** cuando updates estén **Finalizado**; PQ completa smoke manual [§4](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md).
+**Hito FRAMEWORK (causa raíz):** el Field List del diseñador no debe depender de despliegue manual al sidecar ni de hardcode C# por producto. Seguimiento en [PaqSuite-IA-FRAMEWORK — Control de Calidad #13](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/00-ControlCalidad/00-ControlCalidad-PQ.md#control-de-calidad-13) (**GEN-15 + GEN-34:** definición del dataset de reportes nuevos/modificados en **instalación/actualización**).
+
+**Cierre:** F1/F **Aprobado** y **Parte I** 03/11/2026 — [D-VERIFICACION §6–7](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). Hito FRAMEWORK (schema en GEN-34) sigue en repo Framework CC #13.
 
 ---
 

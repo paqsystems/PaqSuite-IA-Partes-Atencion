@@ -1,4 +1,4 @@
-# TR-003 – Maestros y catálogos del módulo
+# TR-003 – Maestros y catálogos del módulo
 
 Jira: PIAPARTES-31
 
@@ -13,7 +13,7 @@ Jira: PIAPARTES-31
 | **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md), [TR-002](./TR-002-identidad-funcional-y-acceso.md); catálogo vínculo `GET /api/v1/partes/catalogos/usuarios-vinculables`; lookup GEN admin usuarios para ABM Usuarios |
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Finalizado |
-| **Última actualización** | 2026-10-11 |
+| **Última actualización** | 2026-11-03 (Parte I CC-PQ #13) |
 
 **Origen:** [HU-003](../../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md)  
 **Referencia SPEC:** [SPEC-003](../../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md)  
@@ -261,7 +261,7 @@ Filtrar menú: no mostrar ítems Archivos Partes si `resultado.partes.tipoFuncio
 
 ## 11) Informe C1
 
-# Revisión de ambigüedad - TR-003
+# Revisión de ambigüedad - TR-003
 
 Jira: PIAPARTES-31
 
@@ -302,6 +302,7 @@ Jira: PIAPARTES-31
 | 2026-08-01 | CC-PQ #2 (01/08/2026): maestro clientes captura/muestra `erpCliente` / `erpArticulo` (AC-13, T8/T9); [D-VERIFICACION-CC-PQ-02](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md). |
 | 2026-08-01 | Parte I: fusionado TR-003-update (CC-PQ #2, 01/08) en esta TR; update eliminado. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4: AC-U01…U04, catálogo vinculable; update eliminado. Estado → Finalizado. |
+| 03/11/2026 | CC-PQ #13: FilterRow remoto en ABM maestros (`devExtremeFilterContains`, `maestroListPaging` → query API). Parte I acotada; [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 
 ---
 
