@@ -57,7 +57,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 9 | 30/10/2026 | Especificado | **Hito FRAMEWORK** — compatibilizar tablas de seguridad MONO vs MULTI (`users`, `pq_empresa`, roles, permisos) + GEN-34 |
 | 10 | 30/10/2026 | Especificado | Tareas programadas (historial / próxima ejecución) + saldo informe Paquete de horas — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
 | 11 | 01/11/2026 | Especificado | Proceso masivo paginación grilla — **F1/F Aprobado** · **Parte I unificada** · **Prod OK** (PR #117/#118) ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md)) |
-| 12 | 02/11/2026 | Especificado | ABM maestros paginación · menú sin agrupadas · Emitir Paquete de Horas — **F1/F Aprobado** · **Preview OK** (PR #122/#124/#125) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
+| 12 | 02/11/2026 | Especificado | ABM maestros paginación · menú sin agrupadas · Emitir Paquete de Horas — **F1/F Aprobado** · **Preview OK** · **Prod OK** (PR #123 → `main`) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
 
 ---
 
@@ -73,7 +73,8 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | **Parte G** | 02/11/2026 — SPEC/HU/TR-update CC #12 |
 | **Parte D/E/F** | 02/11/2026 — ver [D-CC-PQ-12](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-12-2026-11-02.md) · [E-CC-PQ-12](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-12-2026-11-02.md) · [D-VERIFICACION-CC-PQ-12](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
 | **F1/F** | Aprobado 02/11/2026 — smoke API preview develop (tenant DEV); ver [D-VERIFICACION-CC-PQ-12](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
-| **Smoke preview** | 02/11/2026 — **OK** API (PR #124 FK menú + #125 seed emisión; SHA `eafa6fe`). UI Vercel no verificada (SSO). **Prod pendiente** (promover `develop` → `main`). |
+| **Smoke preview** | 02/11/2026 — **OK** API (PR #124/#125; SHA `eafa6fe`). UI Vercel no verificada (SSO). |
+| **Cierre prod** | 02/11/2026 — PR [#123](https://github.com/paqsystems/PaqSuite-IA-Partes-Atencion/pull/123) → `main` (SHA `57f2438`); smoke API tenant **PAQ** OK (menú, clientes `total=192`, emisión paquete horas). |
 | **Origen** | Prueba manual en **producción** (UI en italiano) — hallazgos acumulados en sesión de control |
 | **Evidencia** | Captura CC #12 (02/11/2026): ABM **Clienti** (`/archivos/partes/clientes`) con grilla que no supera ~50 filas pese a **192** registros en `pq_partes_clientes` |
 
