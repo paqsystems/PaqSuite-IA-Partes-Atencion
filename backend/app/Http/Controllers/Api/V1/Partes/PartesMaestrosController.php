@@ -302,6 +302,8 @@ final class PartesMaestrosController extends Controller
         try {
             $result = $this->repository->list($procedure, [
                 'p_code' => $request->query('code'),
+                'p_nombre' => $request->query('nombre'),
+                'p_descripcion' => $request->query('descripcion'),
                 'p_page' => $request->query('page', 1),
                 'p_page_size' => $request->query('pageSize', 50),
             ]);

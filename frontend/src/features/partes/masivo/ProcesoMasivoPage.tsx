@@ -151,9 +151,10 @@ function ProcesoMasivoView() {
     }
     setError(null)
     try {
-      const { page, pageSize } = masivoGridLoadOptionsToQuery({
+      const pagingQuery = masivoGridLoadOptionsToQuery({
         skip: loadOptions.skip,
         take: loadOptions.take,
+        filter: loadOptions.filter,
       })
       const result = await listTareas({
         fechaDesde: desde,
@@ -161,8 +162,7 @@ function ProcesoMasivoView() {
         clienteId,
         usuarioId,
         estadoCerrado: estado,
-        page,
-        pageSize,
+        ...pagingQuery,
       })
       if (result.kind === 'ok') {
         const items = result.envelope.resultado.items ?? []
@@ -810,7 +810,7 @@ function ProcesoMasivoView() {
         >
           <RemoteOperations
             paging
-            filtering={false}
+            filtering
             sorting={false}
             grouping={false}
             summary={false}

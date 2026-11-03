@@ -78,4 +78,60 @@ final class SpEmissionReportLayoutTest extends TestCase
 
         $this->assertSame($xml, $found['layoutDefinition'] ?? null);
     }
+
+    public function test_paquete_horas_json_tabular_usa_repx_con_schema_negocio(): void
+    {
+        DB::table('pq_emission_processes')->updateOrInsert(
+            ['process_code' => 'partes.informes.paqueteHoras'],
+            [
+                'name' => 'Paquete de horas',
+                'menu_process_code' => 'partes_informe_paquete_horas',
+                'permite_consolidado' => 1,
+                'permite_segmentado' => 0,
+                'requiere_vista_previa' => 0,
+                'canal_pdf' => 1,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
+        $layout = json_encode(['kind' => 'tabular', 'columns' => ['fecha', 'clienteNombre', 'saldo']]);
+        DB::table('pq_emission_reports')->updateOrInsert(
+            [
+                'process_code' => 'partes.informes.paqueteHoras',
+                'report_code' => 'partes_paqueteHoras_principal',
+            ],
+            [
+                'name' => '<Original>',
+                'is_standard' => 1,
+                'is_principal' => 1,
+                'visible_mobile' => 0,
+                'layout_definition' => $layout,
+                'layout_mime' => 'application/json',
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+        $id = (int) DB::table('pq_emission_reports')
+            ->where('process_code', 'partes.informes.paqueteHoras')
+            ->where('report_code', 'partes_paqueteHoras_principal')
+            ->value('id');
+
+        $repository = $this->app->make(SpEmissionRepository::class);
+        $found = $repository->findReportLayoutForRender($id);
+
+        $this->assertNotNull($found);
+        $this->assertStringContainsString('XtraReportsLayoutSerializer', $found['layoutDefinition']);
+        $this->assertStringContainsString('clienteNombre', $found['layoutDefinition']);
+        if (preg_match('/Base64="([^"]+)"/', $found['layoutDefinition'], $matches)) {
+            $decoded = base64_decode($matches[1], true);
+            $this->assertIsString($decoded);
+            $this->assertStringContainsString('saldo', $decoded);
+            $this->assertStringNotContainsString('Name="id"', $decoded);
+        } else {
+            $this->fail('REPX paquete horas sin JsonDataSource Base64');
+        }
+    }
 }
