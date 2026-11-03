@@ -314,7 +314,7 @@
             "kind": "migration",
             "target": "dictionary",
             "path": "database/migrations/2026_11_02_120000_remove_consultas_agrupadas_menu.php",
-            "checksum": "f2828e40a4612153e75e415096d4283232d41c80e1624ef5e6d138db5859beec",
+            "checksum": "04d0c678e9c9c0b47595ba8df7e16c2eb91ea83d0f85b0b16b6383c5d62c9893",
             "dependsOn": []
         },
         {

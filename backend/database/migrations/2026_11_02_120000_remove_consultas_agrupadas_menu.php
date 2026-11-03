@@ -12,10 +12,21 @@ return new class extends Migration
             return;
         }
 
-        DB::table('pq_menus')
+        $menuIds = DB::table('pq_menus')
             ->where('id', 40200)
             ->orWhere('codigo', 'partes_consultas_agrupadas')
-            ->delete();
+            ->pluck('id')
+            ->all();
+
+        if ($menuIds === []) {
+            return;
+        }
+
+        if (Schema::hasTable('pq_rol_atributos')) {
+            DB::table('pq_rol_atributos')->whereIn('menu_id', $menuIds)->delete();
+        }
+
+        DB::table('pq_menus')->whereIn('id', $menuIds)->delete();
     }
 
     public function down(): void
