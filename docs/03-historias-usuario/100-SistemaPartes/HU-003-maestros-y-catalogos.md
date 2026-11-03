@@ -1,4 +1,4 @@
-# HU-003 – Maestros y catálogos del módulo
+# HU-003 – Maestros y catálogos del módulo
 
 Jira: PIAPARTES-17
 
@@ -12,7 +12,7 @@ Jira: PIAPARTES-17
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
 | Estado | Finalizado |
-| Última actualización | 2026-10-11 |
+| Última actualización | 2026-11-03 (Parte I CC-PQ #13) |
 | SPEC origen | [SPEC-003-maestros-y-catalogos](../../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) |
 | TR relacionada(s) | [TR-003-maestros-y-catalogos](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |
 
@@ -240,3 +240,4 @@ Feature: ABM maestros y catálogos Partes
 | 2026-08-01 | CC-PQ #2 (01/08/2026): ABM clientes captura/muestra `erpCliente` / `erpArticulo` (CA-13, R-MA-13/14). |
 | 2026-08-01 | Parte I: fusionado HU-003-update (CC-PQ #2, 01/08) en esta HU; update eliminado. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4: código de usuario, selector vinculable y unicidad (CA-U01…U04); update eliminado. Estado → Finalizado. |
+| 03/11/2026 | CC-PQ #13: FilterRow remoto en listados ABM (nombre/código/descripción). Parte I acotada; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |

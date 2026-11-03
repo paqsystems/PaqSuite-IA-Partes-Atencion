@@ -417,6 +417,7 @@ Verificación: [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICA
 | Layout diseño | Si el catálogo tiene layout JSON tabular, `SpEmissionRepository` sirve REPX Must vía `PartesEmissionDesignRepxBuilder::paqueteHorasPrincipal()` |
 | Field List sidecar | JSON en `backend/resources/emissions/schemas/` (`partes_paqueteHoras_principal`, alias `partes.informes.paqueteHoras`); sync Forge `scripts/forge/sync-dx-reporting-schemas.sh`; local `scripts/dev/sync-dx-reporting-schemas.ps1` |
 | Smoke | `php backend/scripts/dev/smoke-paquete-horas-designer-schema.php` |
+| Cierre CC #13 | F1/F **Preview OK** 03/11/2026 — [D-VERIFICACION-CC-PQ-13 §6](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md) |
 
 Deuda plataforma: pipeline GEN-34 unificado de schemas — [Framework CC #13](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/00-ControlCalidad/00-ControlCalidad-PQ.md#control-de-calidad-13).
 

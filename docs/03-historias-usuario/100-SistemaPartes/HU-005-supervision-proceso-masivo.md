@@ -248,3 +248,4 @@ Feature: Proceso masivo de supervisión Partes
 | 2026-09-16 | Parte I: fusionado HU-005-update (CC-PQ #3, 09/08) en esta HU; update eliminado. Estado → Finalizado. |
 | 01/11/2026 | CC-PQ #11: paginación remota grilla masivo (CA-CC11-01…05). Parte I fusionó HU-005-update-cc-pq-11. Ver [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |
 | 01/11/2026 | CC-PQ #11 prod: paginador OK tras `RemoteOperations` solo paging (PR #117/#118); Parte I acotada en HU base. |
+| 03/11/2026 | CC-PQ #13: FilterRow remoto grilla masivo (cliente / tipo tarea). Parte I acotada; F1/F Preview OK; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |

@@ -11,7 +11,7 @@ Jira: PIAPARTES-3
 | Título | Maestros y catálogos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Finalizado |
-| Última actualización | 2026-10-11 |
+| Última actualización | 2026-11-03 (Parte I CC-PQ #13) |
 | HU relacionada(s) | [HU-003-maestros-y-catalogos](../../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) |
 | TR relacionada(s) | [TR-003-maestros-y-catalogos](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |
 | Depende de | [SPEC-001](./SPEC-001-modelo-datos-modulo.md), [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md) (quién opera; exclusividad `user_id`) |
@@ -279,6 +279,7 @@ R-MA-05 permanece: la exclusividad cruzada sigue vigente y queda cubierta por R-
 | 2026-08-01 | Parte I: fusionado SPEC-003-update (CC-PQ #2, 01/08) en este original; update eliminado. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4 (04/10/2026): código de usuario en asistentes, universo vinculable y unicidad R-MA-15…18; update eliminado. Estado → Finalizado. |
 | 2026-11-02 | CC-PQ #12: listados ABM (`MaestroCrudPage`) con paginación remota alineada a `page` / `pageSize` / `total` del API maestros. |
+| 03/11/2026 | CC-PQ #13: FilterRow remoto en maestros (filtros parciales vía API). Parte I acotada; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 
 ---
 

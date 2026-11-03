@@ -240,7 +240,7 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 | 2026-09-16 | Parte I: fusionado TR-005-update (CC-PQ #3, 09/08) en esta TR; update eliminado. Estado → Finalizado. |
 | 01/11/2026 | CC-PQ #11: paginación remota grilla masivo (T12/T13, AC-CC11-01…05). Parte I fusionó TR-005-update-cc-pq-11. [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |
 | 01/11/2026 | CC-PQ #11 follow-up prod: `RemoteOperations` solo paging (PR #117 → #118 `main`); Parte I acotada en base + D. |
-| 03/11/2026 | CC-PQ #13: FilterRow remoto en grilla masivo (`masivoTareasPaging.ts`, Vitest + E2E filterrow). Parte I acotada; [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). F1/F DEV OK. |
+| 03/11/2026 | CC-PQ #13: FilterRow remoto en grilla masivo (`masivoTareasPaging.ts`, Vitest + E2E filterrow). Parte I acotada; F1/F **Preview OK** (`88c46ea`); [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 
 ---
 

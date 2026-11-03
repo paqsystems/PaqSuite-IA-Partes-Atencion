@@ -302,7 +302,7 @@ Jira: PIAPARTES-31
 | 2026-08-01 | CC-PQ #2 (01/08/2026): maestro clientes captura/muestra `erpCliente` / `erpArticulo` (AC-13, T8/T9); [D-VERIFICACION-CC-PQ-02](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md). |
 | 2026-08-01 | Parte I: fusionado TR-003-update (CC-PQ #2, 01/08) en esta TR; update eliminado. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4: AC-U01…U04, catálogo vinculable; update eliminado. Estado → Finalizado. |
-| 03/11/2026 | CC-PQ #13: FilterRow remoto en ABM maestros (`devExtremeFilterContains`, `maestroListPaging` → query API). Parte I acotada; [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
+| 03/11/2026 | CC-PQ #13: FilterRow remoto en ABM maestros (`devExtremeFilterContains`, `maestroListPaging` → query API). Parte I acotada; F1/F **Preview OK** (`88c46ea`); [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 
 ---
 

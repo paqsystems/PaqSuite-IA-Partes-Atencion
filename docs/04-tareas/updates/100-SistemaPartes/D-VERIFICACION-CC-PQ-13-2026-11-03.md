@@ -4,9 +4,9 @@
 |-------|--------|
 | **Origen** | `00-ControlCalidad-PQ` · CC **#13** |
 | **Parte E** | [E-CC-PQ-13-2026-11-03.md](./E-CC-PQ-13-2026-11-03.md) |
-| **Veredicto F** | **Apto** — regresión automatizada OK; smoke manual UI **OK tenant DEV** (03/11/2026, PQ) |
-| **F1/F** | **Aprobado** 03/11/2026 — checklist §4 validado en DEV (Field List Paquete de horas + FilterRow maestros/masivo) |
-| **Parte I** | 03/11/2026 — fusionado en TR-003, TR-005, TR-011 base (updates CC #13 no versionados; cierre documental acotado) |
+| **Veredicto F** | **Apto** — regresión automatizada OK; smoke manual UI **OK** DEV + **preview** (03/11/2026, PQ) |
+| **F1/F** | **Aprobado** 03/11/2026 — §4 DEV + preview `v1.3.0-CLOUDSMITH` @ **`88c46ea`** (Field List Paquete de horas + FilterRow maestros/masivo) |
+| **Parte I** | 03/11/2026 — fusionado en SPEC/HU/TR-003, 005, 011 base (cierre acotado; updates CC #13 conservados en repo) |
 
 ---
 
@@ -21,6 +21,20 @@
 | **CA-13-05** Regresión tests | **OK** | Ver [E-CC-PQ-13](./E-CC-PQ-13-2026-11-03.md) §1–3 |
 
 **Tipos cliente / tipos tarea (alcance CC):** cubiertos en E2E Playwright + Unit Operations (no listados como CA separados en PQ; incluidos en hito FilterRow maestros).
+
+---
+
+## 1.1) F1 — revisión código ↔ TR (03/11/2026)
+
+| RN / pieza | Evidencia | Estado |
+|------------|-----------|--------|
+| Diseñador Paquete de horas — schema negocio | `PartesEmissionDesignRepxBuilder`, `backend/resources/emissions/schemas/`, `sync-dx-reporting-schemas.*`, TR-011 §18 | **OK** |
+| FilterRow maestros | `devExtremeFilterContains`, `maestroListPaging`, Operations filtros API, TR-003 | **OK** |
+| FilterRow masivo | `masivoTareasPaging`, query `clienteNombre` / `tipoTareaDescripcion`, TR-005 | **OK** |
+| Regresión paginación CC #11/#12 | E2E + manual §4.6 | **OK** |
+| OpenAPI / contratos listado | Query params documentados en rutas maestros/masivo | **OK** |
+
+**Veredicto F1:** **Aprobado** (consistente con [D-CC-PQ-13](./D-CC-PQ-13-2026-11-03.md)).
 
 ---
 
@@ -107,10 +121,35 @@ Ejecutar con credenciales válidas del tenant (lab **DEV**, preview o **PAQ** pr
 | Login UI tenant DEV (`PQ` / seed doc) | **FAIL** | Mensaje «Usuario o contraseña incorrectos» |
 | Login API script | **FAIL** | Mismo `auth.invalidCredentials` |
 | Checklist §4.1–4.6 | **OK DEV** | PQ 03/11/2026 — Field List Paquete de horas + FilterRow maestros/masivo |
+| Checklist §4.1–4.6 | **OK preview** | PQ 03/11/2026 — mismo checklist en preview post-deploy |
 
 ---
 
-## 6) Deploy (preview/prod)
+## 6) Smoke preview (`v1.3.0-CLOUDSMITH` @ `88c46ea`)
+
+| Campo | Valor |
+|-------|--------|
+| **Frontend** | [partesatencion-dev.paqsystems.com](https://partesatencion-dev.paqsystems.com) → deployment Vercel `88c46ea` |
+| **API** | `https://partesatencion-paqsystems-dev.on-forge.com/api/v1` |
+| **Tenant** | **DEV** |
+| **Responsable smoke** | PQ — 03/11/2026 |
+
+| CA | Resultado | Notas |
+|----|-----------|-------|
+| CA-13-01 | **OK** | Field List Paquete de horas — columnas de negocio (no predominio `id`/`label`) |
+| CA-13-02 | **OK** | Clientes — FilterRow nombre/código acota filas + total coherente |
+| CA-13-03 | **OK** | Asistentes — FilterRow nombre |
+| CA-13-04 | **OK** | Proceso masivo — FilterRow cliente / tipo tarea; paginador remoto intacto |
+| CA-13-05 | **OK** | Sin regresión perceptible vs suite E/Vitest (Parte E) |
+| §4.6 CC #11/#12 | **OK** | Paginación maestros/masivo sin pérdida de filtros de pantalla |
+
+Deploy: Forge post-deploy (`installation:update`, `sync-dx-reporting-schemas.sh`); manifiesto host **beta.24** en rama de preview.
+
+---
+
+## 7) Deploy (prod — pendiente)
+
+Referencia operativa (no bloquea cierre F1/F preview):
 
 - Código API/FE + REPX runtime (`PartesEmissionDesignRepxBuilder`); catálogo emisión ya cubierto por migración CC #12 si aplica.
 - **Sidecar DX (Must diseñador):** copiar `backend/resources/emissions/schemas/*.json` → `data/schemas/` del sidecar (`scripts/forge/sync-dx-reporting-schemas.sh` en post-deploy Forge; local `scripts/dev/sync-dx-reporting-schemas.ps1`).
@@ -119,7 +158,9 @@ Ejecutar con credenciales válidas del tenant (lab **DEV**, preview o **PAQ** pr
 
 ---
 
-## 7) Cierre
+## 8) Cierre
 
-- **F1/F:** Aprobado 03/11/2026 (DEV, PQ).
-- **Parte I:** historial CC #13 en TR-003, TR-005, TR-011 base — ver [00-ControlCalidad-PQ §#13](../../../00-ControlCalidad/00-ControlCalidad-PQ.md).
+- **F1:** Aprobado 03/11/2026 — §1.1 código ↔ TR.
+- **F:** Aprobado 03/11/2026 — regresión §2 + smoke DEV + **preview** §6 (PQ).
+- **Parte I:** 03/11/2026 — historial CC #13 en SPEC/HU/TR-003, 005, 011 base — [00-ControlCalidad-PQ §#13](../../../00-ControlCalidad/00-ControlCalidad-PQ.md).
+- **Prod:** pendiente PR/`main` (fuera de alcance de este cierre preview).
