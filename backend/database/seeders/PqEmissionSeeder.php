@@ -162,6 +162,12 @@ class PqEmissionSeeder extends Seeder
         $this->seedPaqueteHorasProcess($now);
     }
 
+    /** Idempotente — invocable desde migración de despliegue (CC-PQ #12). */
+    public function seedPaqueteHorasCatalog(): void
+    {
+        $this->seedPaqueteHorasProcess(now()->format('Ymd H:i:s'));
+    }
+
     private function seedPaqueteHorasProcess(string $now): void
     {
         DB::table('pq_emission_processes')->updateOrInsert(
