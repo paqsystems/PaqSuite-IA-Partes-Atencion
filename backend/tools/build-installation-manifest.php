@@ -120,6 +120,38 @@ foreach (array_merge($spPaths, $partesDomainSpPaths) as $path) {
     ];
 }
 
+// GEN-15 / CC#13 — Field List schemas (DIC) para el diseñador DX.
+$designerSchemaPaths = scanPublishable($backendRoot, 'database/emission-designer-schemas/*.json');
+foreach ($designerSchemaPaths as $path) {
+    $basename = basename($path);
+    if (str_ends_with($basename, '.port-names.json') || strcasecmp($basename, 'README.md') === 0) {
+        continue;
+    }
+    if (! str_ends_with($basename, '.json')) {
+        continue;
+    }
+
+    $processCode = pathinfo($basename, PATHINFO_FILENAME);
+    $absolute = $backendRoot.'/'.$path;
+    $portNamesRel = 'database/emission-designer-schemas/'.$processCode.'.port-names.json';
+    $entry = [
+        'id' => 'partes-emission-designer-schema-'.$processCode,
+        'kind' => 'emissionDesignerSchema',
+        'target' => 'dictionary',
+        'path' => $path,
+        'checksum' => hashFile($absolute),
+        'dependsOn' => [
+            'fw-migration-2026_11_03_000041_create_pq_emission_designer_schemas_table',
+            'fw-sp-pq_sp_emission_designer_schema',
+        ],
+        'processCode' => $processCode,
+    ];
+    if (is_readable($backendRoot.'/'.$portNamesRel)) {
+        $entry['emissionPortSchemaRef'] = $portNamesRel;
+    }
+    $entries[] = $entry;
+}
+
 usort($entries, static fn (array $a, array $b) => strcmp($a['id'], $b['id']));
 
 $document = [

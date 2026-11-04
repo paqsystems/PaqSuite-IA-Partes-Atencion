@@ -5,6 +5,16 @@ import { selectDevExtremeSelectByText } from './helpers/partesPaqueteHorasE2e'
 const e2eUser = process.env.PW_LOGIN_USER ?? 'admin'
 const e2ePassword = process.env.PW_LOGIN_PASSWORD ?? 'Paqsystems'
 const e2eTenant = process.env.PW_TENANT ?? process.env.VITE_TENANT_DEFAULT_CLIENT ?? 'DEMO'
+const vercelShare = (process.env.PW_VERCEL_SHARE ?? '').trim()
+
+function withTenantQuery(path: string): string {
+  const url = new URL(path, 'http://localhost')
+  url.searchParams.set('cliente', e2eTenant)
+  if (vercelShare) {
+    url.searchParams.set('_vercel_share', vercelShare)
+  }
+  return `${url.pathname}${url.search}`
+}
 
 /** Un retry si php -S / sqlite rechazan el login bajo carga; los casos siguen independientes. */
 test.describe.configure({ retries: 1 })
@@ -12,7 +22,7 @@ test.describe.configure({ retries: 1 })
 async function loginPartes(page: Page) {
   let lastError: unknown
   for (let attempt = 1; attempt <= 3; attempt++) {
-    await page.goto(`/login?cliente=${encodeURIComponent(e2eTenant)}`)
+    await page.goto(withTenantQuery('/login'))
     await page.getByTestId('loginUsuario').locator('input').fill(e2eUser)
     await page.getByTestId('loginPassword').locator('input').fill(e2ePassword)
     await page.getByTestId('loginSubmit').click()
@@ -65,7 +75,8 @@ async function recoverTransientTransport(page: Page): Promise<string | null> {
 async function waitForDesignerProcessReady(page: Page) {
   const confirm = page.getByTestId('emission.design.confirmProcess')
   const process = page.getByTestId('emission.design.process')
-  const option = page.getByRole('option', { name: /consulta detallada/i })
+  /** Mismo proceso que falló en preview DEV («Error de comunicación al emitir»). */
+  const option = page.getByRole('option', { name: /paquete de horas/i })
 
   await expect(confirm).toBeVisible({ timeout: 20_000 })
   await expect(process).toBeVisible({ timeout: 20_000 })
@@ -76,10 +87,6 @@ async function waitForDesignerProcessReady(page: Page) {
         const transport = await recoverTransientTransport(page)
         if (transport) {
           return `retry:${transport}`
-        }
-
-        if (!(await isDxDisabled(confirm))) {
-          return 'ready'
         }
 
         await process.click()
@@ -96,6 +103,9 @@ async function waitForDesignerProcessReady(page: Page) {
           return 'empty-catalog'
         }
         await page.keyboard.press('Escape')
+        if (!(await isDxDisabled(confirm))) {
+          return 'ready'
+        }
         return 'waiting-catalog'
       },
       { timeout: 45_000, intervals: [500, 1_000, 2_000] },
@@ -150,7 +160,7 @@ for (const entry of partesEmissionMenuEntries) {
     await loginPartes(page)
 
     const emissionApiReady = waitForEmissionProcessApi(page, entry.processCode)
-    await page.goto(`${entry.routePath}?cliente=${encodeURIComponent(e2eTenant)}`)
+    await page.goto(withTenantQuery(entry.routePath))
     if (!(await emissionApiReady)) {
       test.skip(true, `Backend sin emisión para ${entry.processCode} (GET processes)`)
     }
@@ -170,39 +180,53 @@ for (const entry of partesEmissionMenuEntries) {
 }
 
 test('disenador llega al diseño del reporte sin errores', async ({ page }) => {
-  test.setTimeout(120_000)
+  test.setTimeout(180_000)
   const pageErrors: string[] = []
+  const failedApis: string[] = []
   page.on('pageerror', (error) => {
     pageErrors.push(error.message)
+  })
+  page.on('response', (response) => {
+    const url = response.url()
+    if (!/\/api\/v1\/emissions\//.test(url) && !/GetDesignerModel/i.test(url)) {
+      return
+    }
+    if (response.status() >= 400) {
+      failedApis.push(`${response.status()} ${response.request().method()} ${url}`)
+    }
   })
 
   await loginPartes(page)
 
-  await page.goto(`/emisiones/disenador?cliente=${encodeURIComponent(e2eTenant)}`)
+  await page.goto(withTenantQuery('/emisiones/disenador'))
   await expect(page).toHaveURL(/\/emisiones\/disenador/, { timeout: 20_000 })
   await expect(page.getByTestId('partesEmisionesDisenadorPage')).toBeVisible({ timeout: 20_000 })
   await expect(page.getByTestId('emission.design.process')).toBeVisible({ timeout: 20_000 })
   await expect(page.getByTestId('emission.design.confirmProcess')).toBeVisible()
   await expect(page.getByTestId('emission.design.host')).toHaveCount(0)
 
-  try {
-    await waitForDesignerProcessReady(page)
-  } catch {
-    test.skip(true, 'Catálogo de procesos de emisión vacío en este entorno (p. ej. capability off o sin seed)')
-  }
+  await waitForDesignerProcessReady(page)
 
+  const fieldSchemaOk = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'GET' &&
+      /\/emissions\/design\/field-schema/.test(response.url()) &&
+      response.ok(),
+    { timeout: 45_000 },
+  )
   const designerModel = page.waitForResponse(
     (response) => /GetDesignerModel/i.test(response.url()) && response.ok(),
     { timeout: 60_000 },
   )
   await confirmDesignerProcess(page)
 
+  await fieldSchemaOk
+  await expect(page.getByTestId('emission.design.apiError')).toHaveCount(0)
+  await expect(page.getByTestId('emissionDesignerSchemaError')).toHaveCount(0)
+  await expect(page.getByText(/Error de comunicación|Communication error|infra\.transport/i)).toHaveCount(0)
+
   const designHost = page.getByTestId('emission.design.host')
-  try {
-    await expect(designHost).toBeVisible({ timeout: 30_000 })
-  } catch {
-    test.skip(true, 'Sidecar DX / emission.design.host no disponible en este entorno')
-  }
+  await expect(designHost).toBeVisible({ timeout: 30_000 })
   await expect(page.getByTestId('emission.design.report')).toBeVisible({ timeout: 20_000 })
   await expect(page.getByTestId('emission.design.setPrincipal')).toBeVisible()
   await expect(page.getByTestId('emissions.designer.hostMissing')).toHaveCount(0)
@@ -216,6 +240,7 @@ test('disenador llega al diseño del reporte sin errores', async ({ page }) => {
     page.locator('.dxrd, .dxrd-designer, .dxrd-toolbar, .dx-designer, .dxrd-viewport').first(),
   ).toBeVisible({ timeout: 45_000 })
 
+  expect(failedApis, `APIs fallidas: ${failedApis.join(' | ')}`).toEqual([])
   const blocking = pageErrors.filter(
     (message) =>
       !/License|trial|evaluation|W0019|W0021/i.test(message) &&
