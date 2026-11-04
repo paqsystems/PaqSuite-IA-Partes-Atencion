@@ -1,4 +1,5 @@
--- Destinatarios únicos (users vinculados a clientes) del universo filtrado del proceso masivo.
+-- Destinatarios únicos: users vinculados a clientes del universo filtrado del proceso masivo.
+-- To del mail = users.email (NUNCA PQ_PARTES_CLIENTES.email).
 -- Parámetros alineados a pq_sp_partes_tarea_list (actor + filtros fechas/cliente/usuario/estado/columnas).
 CREATE OR ALTER PROCEDURE dbo.pq_sp_partes_masivo_destinatarios_novedad
     @p_actor_tipo_funcional NVARCHAR(32),

@@ -233,7 +233,7 @@
   "partes.masivo.preview.rangoFiltro": "Intervallo filtro",
   "partes.masivo.informarClientes": "Informare i clienti",
   "partes.masivo.mailInformarClientes.confirmTitle": "Informare i clienti sulle novità",
-  "partes.masivo.mailInformarClientes.confirmBody": "Verranno inviate {{count}} e-mail ai clienti con utente attivo.\nPeriodo filtro: {{desde}} → {{hasta}}.",
+  "partes.masivo.mailInformarClientes.confirmBody": "Verranno inviate {{count}} e-mail agli utenti Framework collegati (users.email) dei clienti del filtro.\nPeriodo: {{desde}} → {{hasta}}.",
   "partes.masivo.mailInformarClientes.confirmSend": "Invia e-mail",
   "partes.masivo.leaveConfirmInformarClientes.title": "Modifiche in sospeso nel processo massivo",
   "partes.masivo.leaveConfirmInformarClientes.body": "Ci sono modifiche o una selezione non applicata. Inviare l’e-mail di avviso ai clienti prima di uscire?",

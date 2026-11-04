@@ -498,6 +498,70 @@ class ApiV1PartesMasivoTest extends TestCase
         Notification::assertSentTo($clienteUser, PartesMasivoInformarClientesNotification::class);
     }
 
+    public function test_informar_clientes_usa_users_email_no_maestro_cliente(): void
+    {
+        Notification::fake();
+        $token = $this->loginAdmin();
+        $cat = $this->seedCatalogos();
+        $clienteUser = $this->linkClienteToUser($cat['clienteId'], [
+            'email' => 'users.destinatario@test.com',
+            'usuario' => 'cliusrMail',
+        ]);
+        DB::table('PQ_PARTES_CLIENTES')->where('id', $cat['clienteId'])->update([
+            'email' => 'maestro.cliente@test.com',
+        ]);
+        $this->createTarea($token, $cat, 'Mail users.email');
+        $hoy = now()->toDateString();
+        $qs = 'fechaDesde='.$hoy.'&fechaHasta='.$hoy;
+
+        $this->postJson(
+            '/api/v1/partes/masivo/informar-clientes?'.$qs,
+            [],
+            $this->authHeaders($token)
+        )
+            ->assertStatus(200)
+            ->assertJsonPath('resultado.item.enviados', 1);
+
+        Notification::assertSentTo(
+            $clienteUser,
+            PartesMasivoInformarClientesNotification::class,
+            function ($notification, $channels, $notifiable) {
+                return $notifiable->email === 'users.destinatario@test.com'
+                    && $notifiable->email !== 'maestro.cliente@test.com';
+            }
+        );
+    }
+
+    public function test_informar_clientes_ignora_mail_maestro_si_user_sin_email(): void
+    {
+        $token = $this->loginAdmin();
+        $cat = $this->seedCatalogos();
+        $this->linkClienteToUser($cat['clienteId'], [
+            'email' => '',
+            'usuario' => 'cliusrSinMail',
+        ]);
+        DB::table('PQ_PARTES_CLIENTES')->where('id', $cat['clienteId'])->update([
+            'email' => 'solo.maestro@test.com',
+        ]);
+        $this->createTarea($token, $cat, 'Solo mail maestro');
+        $hoy = now()->toDateString();
+        $qs = 'fechaDesde='.$hoy.'&fechaHasta='.$hoy;
+
+        $preview = $this->getJson(
+            '/api/v1/partes/masivo/informar-clientes/preview?'.$qs,
+            $this->authHeaders($token)
+        );
+        $preview->assertStatus(200)->assertJsonPath('resultado.destinatarioCount', 0);
+
+        $this->postJson(
+            '/api/v1/partes/masivo/informar-clientes?'.$qs,
+            [],
+            $this->authHeaders($token)
+        )
+            ->assertStatus(422)
+            ->assertJsonPath('respuesta', 'partes.masivo.sinDestinatarios');
+    }
+
     public function test_informar_clientes_sin_destinatarios(): void
     {
         $token = $this->loginAdmin();

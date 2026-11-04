@@ -109,8 +109,8 @@ La supervisión **reutiliza** las mismas reglas de `cerrado`, tipos, marcas e in
 ### 4.7 Informar novedades a clientes (CC #7 / #15) — Must
 
 1. Toolbar: ícono mail + tooltip i18n `partes.masivo.informarClientes` + `data-testid` `partesMasivoInformarClientes` (solo supervisor; excluido native).
-2. Destinatarios: usuarios únicos de clientes presentes en **todo** el resultado filtrado (`es_tarea = 1`), con usuario usable + email; recolección en servidor (SP JOIN; sin `whereIn` N); sin exigir selección ni modificación de filas.
-3. Mail v1 (Mail Engine GEN / futuro GEN-30): empresa emisora; período filtros; URL portal tenant; `users.codigo`; forgot GEN-04; **sin** contraseña; asunto/cuerpo en `users.locale` (5 locales host).
+2. Destinatarios: `users.id` únicos de clientes del resultado filtrado (`es_tarea = 1`) con `PQ_PARTES_CLIENTES.user_id` → `USERS` usable (`activo`, no inhabilitado) y **`users.email`** no vacío. To del mail = **`users.email`** (**prohibido** `PQ_PARTES_CLIENTES.email`). Recolección en servidor (SP JOIN; sin `whereIn` N); sin exigir selección ni modificación de filas.
+3. Mail v1 (Mail Engine GEN / futuro GEN-30): empresa emisora; período filtros; URL portal tenant; `users.usuario` / código; forgot GEN-04; **sin** contraseña; asunto/cuerpo en `users.locale` (5 locales host).
 4. Confirmación previa con N destinatarios y rango fechas; 422 sin destinatarios / tope.
 5. **Guard salida:** si hay cambios/selección pendientes y el supervisor abandona (menú / pestaña / `beforeunload`), diálogo i18n ofrece Enviar correos y salir / Salir sin enviar / Cancelar.
 
@@ -294,6 +294,7 @@ La UI debe dejar claro **qué atributo(s)** y **qué valor** se aplicarán antes
 | 01/11/2026 | CC-PQ #11 prod: `RemoteOperations` solo paging; verificado preview + prod (PR #117/#118). Parte I acotada en SPEC base. |
 | 03/11/2026 | CC-PQ #13: FilterRow remoto en grilla masivo (`clienteNombre`, `tipoTareaDescripcion`). Parte I acotada; F1/F Preview OK; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 | 04/11/2026 | CC-PQ #15: Informar a clientes (§4.7 — URL tenant, i18n destinatario, guard salida, plantilla v1). Parte I fusionó SPEC-005-update; [D-VERIFICACION-CC-PQ-15](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md). |
+| 04/11/2026 | Corrección PQ: destinatario = **`users.email`** del usuario vinculado; nunca `PQ_PARTES_CLIENTES.email`. |
 
 ---
 

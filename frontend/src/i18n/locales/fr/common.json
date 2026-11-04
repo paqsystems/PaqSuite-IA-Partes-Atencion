@@ -233,7 +233,7 @@
   "partes.masivo.preview.rangoFiltro": "Plage filtre",
   "partes.masivo.informarClientes": "Informer les clients",
   "partes.masivo.mailInformarClientes.confirmTitle": "Informer les clients des nouveautés",
-  "partes.masivo.mailInformarClientes.confirmBody": "{{count}} e-mail(s) seront envoyés aux clients avec un utilisateur actif.\nPériode du filtre : {{desde}} → {{hasta}}.",
+  "partes.masivo.mailInformarClientes.confirmBody": "{{count}} e-mail(s) seront envoyés aux utilisateurs Framework liés (users.email) des clients du filtre.\nPériode : {{desde}} → {{hasta}}.",
   "partes.masivo.mailInformarClientes.confirmSend": "Envoyer les e-mails",
   "partes.masivo.leaveConfirmInformarClientes.title": "Modifications en attente (processus massif)",
   "partes.masivo.leaveConfirmInformarClientes.body": "Des modifications ou une sélection ne sont pas appliquées. Envoyer l’e-mail d’information aux clients avant de quitter ?",

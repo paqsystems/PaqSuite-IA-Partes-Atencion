@@ -655,10 +655,13 @@ en el Abm de Usuarios, agregar un botón "Notificación", por el cual :
 
 En el proceso de "Partes Masivos":
 - habilitar un ícono con la imagen de mail, y tooltip "Informar a clientes", con el cual.
-- se determinan todos los clientes que figuran en la grilla en ese momento, y que tengan asociado un usuario.
-- Enviar un mail a todos los usuarios recolectados.
+- se determinan todos los clientes que figuran en la grilla en ese momento y que tengan asociado un código/usuario de la tabla `USERS` (`PQ_PARTES_CLIENTES.user_id`).
+- ese usuario debe estar **activo** (usable: activo y no inhabilitado) y tener **mail en `USERS`**.
+- enviar el aviso a **`users.email`** de cada usuario recolectado (destinatarios únicos). **No** usar el mail que eventualmente figure en el maestro cliente (`PQ_PARTES_CLIENTES.email`).
 - Asunto : Codigo de la empresa y algo así como : "Existen novedades de atención a su empresa".
 - Mensaje : informar que hubo novedades de servicios prestados en el periodod (desde y hasta con se filtró el procesó), recordando la URL de aviso y el codigo de usuario para acceder, y que si no recuerda su contraseña podrá solicitar una nueva en el login.
+
+> **Corrección conceptual (04/11/2026):** el destinatario del aviso es siempre `users.email` del usuario vinculado al cliente; nunca `PQ_PARTES_CLIENTES.email`.
 
 ---
 

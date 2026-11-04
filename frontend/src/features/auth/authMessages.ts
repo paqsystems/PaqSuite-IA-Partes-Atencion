@@ -102,7 +102,7 @@ const authMessageMap: Record<string, string> = {
   'partes.masivo.noEsTarea':
     'El lote incluye registros que no son tareas de carga. No se aplicaron cambios.',
   'partes.masivo.sinDestinatarios':
-    'No hay clientes con usuario y correo en el resultado filtrado.',
+    'No hay clientes con usuario Framework activo y correo (users.email) en el resultado filtrado.',
   'roles.delete.hasPermisos':
     'No se puede eliminar el rol: está asignado a uno o más permisos.',
   'shell.blockedNoCompany': 'No tiene empresas habilitadas.',

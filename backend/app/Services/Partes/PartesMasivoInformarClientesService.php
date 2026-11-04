@@ -47,7 +47,8 @@ final class PartesMasivoInformarClientesService
         foreach ($destinatarios as $row) {
             $userId = (int) ($row['userId'] ?? $row['user_id'] ?? 0);
             $user = User::query()->find($userId);
-            if ($user === null || ! $user->isLoginAllowed()) {
+            // To = users.email vía Notifiable; no usar PQ_PARTES_CLIENTES.email.
+            if ($user === null || ! $user->isLoginAllowed() || trim((string) $user->email) === '') {
                 $errores++;
                 continue;
             }

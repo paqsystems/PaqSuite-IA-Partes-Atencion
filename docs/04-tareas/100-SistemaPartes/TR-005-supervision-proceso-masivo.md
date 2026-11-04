@@ -62,7 +62,7 @@ Jira: PIAPARTES-33
 | AC-CC11-05 | Selección + masivo API sin regresión (E2E + manual PQ). |
 | AC-CC15-M01 | Ícono mail + tooltip + testid `partesMasivoInformarClientes`. |
 | AC-CC15-M02 | Mail empresa + URL tenant + `users.codigo`; locale destinatario; sin password. |
-| AC-CC15-M03 | Destinatarios SP universo filtrado; 403 no supervisor; 422 sin destinatarios. |
+| AC-CC15-M03 | Destinatarios SP: `user_id` → `USERS` usable + `users.email` (nunca mail del maestro cliente); 403 no supervisor; 422 sin destinatarios. |
 | AC-CC15-M04 | Guard salida + i18n 5 locales plantilla v1. |
 
 ---
@@ -95,7 +95,7 @@ R-SU-01…10 (SPEC/HU).
 | RN-TR-CC11-04 | Cambio filtros pantalla: `clearSelection()` + `refreshGrid()`. |
 | RN-TR-CC11-05 | Mantener `listTareaIds` para select-all universo (sin cambio). |
 | RN-TR-CC15-01 | `POST/GET /api/v1/partes/masivo/informar-clientes[/preview]`; filtros = listado. |
-| RN-TR-CC15-02 | SP `pq_sp_partes_masivo_destinatarios_novedad` (JOIN; sin `whereIn` N). |
+| RN-TR-CC15-02 | SP `pq_sp_partes_masivo_destinatarios_novedad` (JOIN clientes→`users` por `user_id`; proyectar `users.email`; sin `whereIn` N). |
 | RN-TR-CC15-03 | Mail Engine + locale `users.locale`; URL `https://{tenant}.partesatencion.paqsystems.com`. |
 | RN-TR-CC15-04 | FE `sessionDirty` + `useMasivoLeaveGuard`; diálogo Enviar / Salir / Cancelar. |
 
