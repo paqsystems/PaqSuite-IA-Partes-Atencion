@@ -4,9 +4,9 @@ Jira: [PIAPARTES-45](https://paqsystems.atlassian.net/browse/PIAPARTES-45)
 
 | Campo | Valor |
 |-------|--------|
-| **TR** | [TR-005-supervision-proceso-masivo-update.md](./TR-005-supervision-proceso-masivo-update.md) |
-| **Estado TR** | Pendiente de Revisión |
-| **Alcance** | CC-PQ #7 + #14 (mail masivo) · smoke emisión vacía por proceso menú · E2E Emitir |
+| **TR** | [TR-005-supervision-proceso-masivo.md](../../100-SistemaPartes/TR-005-supervision-proceso-masivo.md) (Parte I 04/11/2026) |
+| **Estado TR** | Finalizado |
+| **Alcance** | CC-PQ #7 + #15 (mail masivo) · smoke emisión vacía por proceso menú · E2E Emitir · [D-VERIFICACION-CC-PQ-15](./D-VERIFICACION-CC-PQ-15-2026-11-04.md) |
 
 ---
 
@@ -33,7 +33,7 @@ Validar de punta a punta:
 
 ---
 
-## 3) Matriz TR-005 — informar clientes (CC #7 / #14)
+## 3) Matriz TR-005 — informar clientes (CC #7 / #15)
 
 | ID | Caso | Tipo | Comando / ruta | Esperado |
 |----|------|------|----------------|----------|

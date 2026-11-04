@@ -12,7 +12,7 @@ Jira: PIAPARTES-19
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
 | Estado | Finalizado |
-| Última actualización | 01/11/2026 |
+| Última actualización | 04/11/2026 (Parte I CC-PQ #15 — informar clientes) |
 | SPEC origen | [SPEC-005-supervision-proceso-masivo](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 
@@ -64,6 +64,7 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
   - **Should acciones (mismo circuito):** `presencial`, `asistente`, `fecha`;
   - confirmación con cantidad y valores; lote atómico; tope `PartesMasivoMaxIds`;
   - SP + 403/409/422; i18n `partes.masivo.*` + `data-testid`.
+  - **Informar a clientes** (CC #15): ícono mail; destinatarios del universo filtrado; URL tenant + código; locale destinatario; guard salida; plantilla v1 i18n.
 - Delimitación implícita por `es_tarea = true`: listado, `list_ids`/«seleccionar todos» y lotes (cerrar/reabrir, atributos) operan únicamente sobre registros de tarea; un id con `es_tarea = false` en un lote falla de forma atómica (422, cero cambios).
 
 ---
@@ -74,7 +75,8 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
 - Consultas / dashboard / pivots de informes (SPEC-006).
 - Mobile del masivo (SPEC-007).
 - Edición masiva de **cliente**, **duración/minutos**, **descripción**.
-- Importación Excel y mails (auditoría evolutiva) — distinto del **export** Excel de la grilla.
+- Importación Excel y mails selectivos de auditoría evolutiva — distinto del **export** Excel de la grilla y de **Informar a clientes**.
+- Editor de plantillas de mail (v1 hardcode i18n).
 - Workflow de estados más allá de `cerrado`; ABM maestros (SPEC-003).
 
 ---
@@ -132,6 +134,10 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
 - [x] **CA-CC11-03** Cambiar tamaño de página (20 / 40 / 80) recalcula páginas vía API.
 - [x] **CA-CC11-04** Agrupación por columnas no rompe la carga de datos ni deja la grilla vacía sin mensaje.
 - [x] **CA-CC11-05** Selección por fila y flujos de cierre/aplicar campos operativos en páginas distintas de la primera.
+- [x] **CA-CC15-M01** Ícono mail «Informar a clientes» en proceso masivo (`partesMasivoInformarClientes`); mail con empresa emisora.
+- [x] **CA-CC15-M02** URL `https://{tenant}.partesatencion.paqsystems.com` + código usuario; locale del destinatario; sin password.
+- [x] **CA-CC15-M03** Destinatarios = clientes con usuario en el universo filtrado (todas las páginas; sin tilde obligatoria).
+- [x] **CA-CC15-M04** Guard al salir con cambios: Enviar / Salir sin enviar / Cancelar; plantilla v1 i18n sin editor.
 
 ---
 
@@ -249,3 +255,4 @@ Feature: Proceso masivo de supervisión Partes
 | 01/11/2026 | CC-PQ #11: paginación remota grilla masivo (CA-CC11-01…05). Parte I fusionó HU-005-update-cc-pq-11. Ver [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |
 | 01/11/2026 | CC-PQ #11 prod: paginador OK tras `RemoteOperations` solo paging (PR #117/#118); Parte I acotada en HU base. |
 | 03/11/2026 | CC-PQ #13: FilterRow remoto grilla masivo (cliente / tipo tarea). Parte I acotada; F1/F Preview OK; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
+| 04/11/2026 | CC-PQ #15: Informar a clientes (CA-CC15-M01…04). Parte I fusionó HU-005-update; [D-VERIFICACION-CC-PQ-15](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md). |

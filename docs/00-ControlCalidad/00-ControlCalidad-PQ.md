@@ -60,7 +60,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 12 | 02/11/2026 | Especificado | ABM maestros paginación · menú sin agrupadas · Emitir Paquete de Horas — **F1/F Aprobado** · **Preview OK** · **Prod OK** (PR #123 → `main`) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
 | 13 | 02/11/2026 | Especificado | Diseñador Paquete de Horas (dataset) · FilterRow maestros + Proceso masivo — **F1/F Aprobado** · **Parte I** · **Preview OK** 03/11/2026 (`88c46ea`) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md) |
 | 14 | 03/11/2026 | Especificado | ABM Clientes — columnas usuario/mail + FilterRow usuario — **F1/F Aprobado** · **Parte I** · manual DEV OK — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md) |
-| 15 | 04/11/2026 | Pendiente | Informar por mail a clientes desde Proceso masivo (asistencias / revisar / observaciones) — refino CC #7 (URL tenant, i18n destinatario, guard salida, plantilla v1 hardcode) |
+| 15 | 04/11/2026 | Especificado · **F1/F Aprobado** · **Parte I** cerrada | Informar por mail a clientes desde Proceso masivo (asistencias / revisar / observaciones) — refino CC #7 (URL tenant, i18n destinatario, guard salida, plantilla v1 hardcode) |
 
 ---
 
@@ -72,10 +72,14 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 |-------|--------|
 | **Fecha** | 04/11/2026 |
 | **Responsable** | Pablo Quarracino (PQ) |
-| **Estado** | Pendiente |
+| **Estado** | Especificado · **F1/F Aprobado** · **Parte I** cerrada |
+| **Parte G** | 04/11/2026 — confirmado/alineado SPEC/HU/TR-005-update (CC #7 + refino #15); sin épica paralela |
+| **Parte D/E/F** | 04/11/2026 — [D-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-15-2026-11-04.md) · [E-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-15-2026-11-04.md) · [D-VERIFICACION-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md) |
+| **F1/F** | **Aprobado** 04/11/2026 — F1 código ↔ TR + PHPUnit/Vitest OK |
+| **Parte I** | 04/11/2026 — fusionado en SPEC/HU/TR-005 base; updates 005 eliminados |
 | **Origen** | Mejora solicitada — anuncio a clientes de asistencias registradas; refino operativo del ítem «Envio mail a clientes…» de **CC #7** (19/10/2026) |
 | **Proceso** | **Proceso masivo** — `partes.masivo` · ruta `/partes/masivo` · `ProcesoMasivoPage` |
-| **Cola previa** | [SPEC-005-update](../05-open-spec/updates/100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) · [HU-005-update](../03-historias-usuario/updates/100-SistemaPartes/HU-005-supervision-proceso-masivo-update.md) · [TR-005-update](../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md) · Jira [PIAPARTES-56](https://paqsystems.atlassian.net/browse/PIAPARTES-56) / [57](https://paqsystems.atlassian.net/browse/PIAPARTES-57) / [45](https://paqsystems.atlassian.net/browse/PIAPARTES-45) |
+| **Jira** | [PIAPARTES-56](https://paqsystems.atlassian.net/browse/PIAPARTES-56) / [57](https://paqsystems.atlassian.net/browse/PIAPARTES-57) / [45](https://paqsystems.atlassian.net/browse/PIAPARTES-45) |
 | **Relación** | Extiende / precisa CC #7 § «Envio mail a clientes para informar existencia de novedades»; no sustituye el mail de acceso ABM Usuarios (HU-002-update). **No** confundir con **CC #14** (columnas usuario/mail en ABM Clientes). |
 
 ### Resumen del hito
@@ -85,6 +89,8 @@ Enviar a clientes mails anunciando que la **empresa emisora** registró **asiste
 ### Objetivo / mejora solicitada
 
 #### Mail «Informar a clientes» desde Proceso masivo
+
+*Procesado* · cola **SPEC/HU/TR-005-update** (sin `-update-01`; mismo alcance formalizado)
 
 1. **Disparo:** botón/ícono específico en el proceso **Proceso masivo** (no desde otros procesos).
 2. **Contenido del mail (MUST):**
@@ -100,17 +106,19 @@ Enviar a clientes mails anunciando que la **empresa emisora** registró **asiste
 
 #### Guard al abandonar el proceso
 
+*Procesado* · mismo TR-005-update (RN-CC15-M03)
+
 Si el supervisor **abandona la pestaña** (cambio de pestaña del shell, cambio de opción de menú, intento de cierre/recarga) **y** se realizaron **cambios** en el proceso masivo, **avisar** y **preguntar** si quiere **enviar** el mail a clientes antes de salir (diálogo i18n; cancelar debe conservar el trabajo en pantalla).
 
 ### Criterios de aceptación preliminares
 
-- [ ] **CA-15-01** En Proceso masivo hay un botón/ícono específico para informar a clientes (`data-testid` estable; tooltip i18n).
-- [ ] **CA-15-02** El mail identifica la empresa emisora.
-- [ ] **CA-15-03** El mail incluye URL `https://{tenant}.partesatencion.paqsystems.com` y el código de usuario; sin contraseña.
-- [ ] **CA-15-04** Asunto/cuerpo en el locale del destinatario (5 locales).
-- [ ] **CA-15-05** Destinatarios = clientes con `users` asociado **y** presentes en ≥1 fila del universo filtrado (todas las páginas; sin exigir modificación ni selección).
-- [ ] **CA-15-06** Al salir con cambios pendientes, diálogo ofrece enviar / salir sin enviar / cancelar.
-- [ ] **CA-15-07** Texto v1 hardcodeado vía i18n; sin editor de plantillas.
+- [x] **CA-15-01** En Proceso masivo hay un botón/ícono específico para informar a clientes (`data-testid` estable; tooltip i18n). *(F1/F 04/11/2026)*
+- [x] **CA-15-02** El mail identifica la empresa emisora. *(F1/F)*
+- [x] **CA-15-03** El mail incluye URL `https://{tenant}.partesatencion.paqsystems.com` y el código de usuario; sin contraseña. *(F1/F)*
+- [x] **CA-15-04** Asunto/cuerpo en el locale del destinatario (5 locales). *(F1/F)*
+- [x] **CA-15-05** Destinatarios = clientes con `users` asociado **y** presentes en ≥1 fila del universo filtrado (todas las páginas; sin exigir modificación ni selección). *(F1/F)*
+- [x] **CA-15-06** Al salir con cambios pendientes, diálogo ofrece enviar / salir sin enviar / cancelar. *(F1/F código + Vitest; smoke UI opcional post-deploy)*
+- [x] **CA-15-07** Texto v1 hardcodeado vía i18n; sin editor de plantillas. *(F1/F)*
 
 ### Notas para Parte G
 
@@ -121,7 +129,13 @@ Si el supervisor **abandona la pestaña** (cambio de pestaña del shell, cambio 
 
 ### Derivación SDD
 
-Pendiente Parte G (`Corrige los errores del 04/11/2026 de PQ` / *Procesa las solicitudes…*). Cola existente a confirmar/completar: SPEC/HU/TR-005-update + [D-VERIFICACION-005-update-masivo-informar-clientes](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-005-update-masivo-informar-clientes.md).
+| Paso | Artefacto |
+|------|-----------|
+| **G** | 04/11/2026 — cola confirmada (sin update-01) |
+| **D/E/F** | [D-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-15-2026-11-04.md) · [E-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-15-2026-11-04.md) · [D-VERIFICACION-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md) |
+| **I** | Fusionado en [SPEC-005](../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) / [HU-005](../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) / [TR-005](../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
+
+**Cierre:** F1/F **Aprobado**, **Parte I** 04/11/2026. Smoke UI preview opcional post-deploy.
 
 ---
 
@@ -637,7 +651,7 @@ en el Abm de Usuarios, agregar un botón "Notificación", por el cual :
 
 #### Envio mail a clientes para informar existencia de novedades
 
-*Procesado* (Parte G 20/10/2026) → [SPEC-005-update](../05-open-spec/updates/100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) · [HU-005-update](../03-historias-usuario/updates/100-SistemaPartes/HU-005-supervision-proceso-masivo-update.md) · [TR-005-update](../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md)
+*Procesado* (Parte G 20/10/2026) · refino **CC #15** · **Parte I** 04/11/2026 → [SPEC-005](../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) §4.7 · [HU-005](../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) · [TR-005](../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md)
 
 En el proceso de "Partes Masivos":
 - habilitar un ícono con la imagen de mail, y tooltip "Informar a clientes", con el cual.

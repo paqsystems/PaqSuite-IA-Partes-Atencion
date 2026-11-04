@@ -13,7 +13,7 @@ Jira: PIAPARTES-33
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-004](./TR-004-operacion-carga-diaria.md) (listado/tareas/`rowVersion`/tipos), GEN layouts/export grilla |
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Finalizado |
-| **Última actualización** | 01/11/2026 |
+| **Última actualización** | 04/11/2026 (Parte I CC-PQ #15 — informar clientes) |
 
 **Origen:** [HU-005](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md)  
 **Referencia SPEC:** [SPEC-005](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md)  
@@ -60,6 +60,10 @@ Jira: PIAPARTES-33
 | AC-CC11-03 | Requests con `pageSize` 20/40/80 (selector grilla; manual PQ preview + prod). |
 | AC-CC11-04 | Group panel sin error silencioso (manual PQ). |
 | AC-CC11-05 | Selección + masivo API sin regresión (E2E + manual PQ). |
+| AC-CC15-M01 | Ícono mail + tooltip + testid `partesMasivoInformarClientes`. |
+| AC-CC15-M02 | Mail empresa + URL tenant + `users.codigo`; locale destinatario; sin password. |
+| AC-CC15-M03 | Destinatarios SP universo filtrado; 403 no supervisor; 422 sin destinatarios. |
+| AC-CC15-M04 | Guard salida + i18n 5 locales plantilla v1. |
 
 ---
 
@@ -90,6 +94,10 @@ R-SU-01…10 (SPEC/HU).
 | RN-TR-CC11-03 | `ProcessDataGrid` con `remoteOperations` + hijo DevExtreme `<RemoteOperations paging filtering={false} sorting={false} grouping={false} summary={false} />` (Must: no summary remoto con totalizadores de pie); `pageSizes` 20/40/80; `Pager` full; `ref` + `refresh()` tras filtros/acciones. |
 | RN-TR-CC11-04 | Cambio filtros pantalla: `clearSelection()` + `refreshGrid()`. |
 | RN-TR-CC11-05 | Mantener `listTareaIds` para select-all universo (sin cambio). |
+| RN-TR-CC15-01 | `POST/GET /api/v1/partes/masivo/informar-clientes[/preview]`; filtros = listado. |
+| RN-TR-CC15-02 | SP `pq_sp_partes_masivo_destinatarios_novedad` (JOIN; sin `whereIn` N). |
+| RN-TR-CC15-03 | Mail Engine + locale `users.locale`; URL `https://{tenant}.partesatencion.paqsystems.com`. |
+| RN-TR-CC15-04 | FE `sessionDirty` + `useMasivoLeaveGuard`; diálogo Enviar / Salir / Cancelar. |
 
 ---
 
@@ -211,6 +219,7 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 - [x] SP actualizar + API + FE ProcessDataGrid
 - [x] Tests Feature + unit FE; OpenAPI/manual pendientes menores
 - [x] AC-CC11-01…05 (CC-PQ #11, paginación remota; F1/F 01/11/2026)
+- [x] AC-CC15-M01…04 (CC-PQ #15 informar clientes; F1/F 04/11/2026)
 
 ---
 
@@ -241,6 +250,7 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 | 01/11/2026 | CC-PQ #11: paginación remota grilla masivo (T12/T13, AC-CC11-01…05). Parte I fusionó TR-005-update-cc-pq-11. [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |
 | 01/11/2026 | CC-PQ #11 follow-up prod: `RemoteOperations` solo paging (PR #117 → #118 `main`); Parte I acotada en base + D. |
 | 03/11/2026 | CC-PQ #13: FilterRow remoto en grilla masivo (`masivoTareasPaging.ts`, Vitest + E2E filterrow). Parte I acotada; F1/F **Preview OK** (`88c46ea`); [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
+| 04/11/2026 | CC-PQ #15: Informar a clientes (RN-TR-CC15-*, AC-CC15-M01…04). Parte I fusionó TR-005-update; [D-VERIFICACION-CC-PQ-15](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md). |
 
 ---
 

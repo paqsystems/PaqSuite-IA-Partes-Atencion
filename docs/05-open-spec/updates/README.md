@@ -10,10 +10,10 @@ Convención de nombres: `SPEC-NNN-slug-update.md`, `SPEC-NNN-slug-update-01.md`,
 
 Las carpetas se crean al primer update; no es obligatorio tener archivos aquí solo por existir los SPEC base.
 
-Cola activa (CC-PQ #7, 19/10/2026, Parte G 20/10/2026):
+Cola histórica:
 
-- [SPEC-002-update](./100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update.md) — mail de acceso ABM Usuarios
-- [SPEC-005-update](./100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) — informar clientes desde masivo
+- [SPEC-002-update](./100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update.md) — mail de acceso ABM Usuarios (si aún abierto)
+- SPEC-005-update (informar clientes masivo, CC #7/#15): **unificado** 04/11/2026 en SPEC/HU/TR-005 · [D-VERIFICACION-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md)
 
 SPEC-002-update (CC-PQ #6 PA-02…PA-14): **unificado** 12/10/2026 en SPEC/HU/TR-002 originales.
 

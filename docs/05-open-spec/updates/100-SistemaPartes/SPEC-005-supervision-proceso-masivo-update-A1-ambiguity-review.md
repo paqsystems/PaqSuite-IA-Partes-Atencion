@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|--------|
-| **SPEC** | [`SPEC-005-supervision-proceso-masivo-update.md`](./SPEC-005-supervision-proceso-masivo-update.md) |
+| **SPEC** | Fusionado Parte I 04/11/2026 → [`SPEC-005-supervision-proceso-masivo.md`](../../100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) §4.7 (archivo update eliminado) |
 | **Paso** | A1 (cierre de preguntas 20/10/2026) |
 | **Fecha** | 2026-10-20 |
 | **Origen** | CC-PQ #7 19/10/2026 |
