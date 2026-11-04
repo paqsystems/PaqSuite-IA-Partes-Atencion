@@ -64,7 +64,7 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
   - **Should acciones (mismo circuito):** `presencial`, `asistente`, `fecha`;
   - confirmación con cantidad y valores; lote atómico; tope `PartesMasivoMaxIds`;
   - SP + 403/409/422; i18n `partes.masivo.*` + `data-testid`.
-  - **Informar a clientes** (CC #15): ícono mail; destinatarios del universo filtrado; URL tenant + código; locale destinatario; guard salida; plantilla v1 i18n.
+  - **Informar a clientes** (CC #15): ícono mail; destinatarios = usuarios Framework vinculados (`users.email`, nunca mail del maestro cliente); URL tenant + código; locale destinatario; guard salida; plantilla v1 i18n.
 - Delimitación implícita por `es_tarea = true`: listado, `list_ids`/«seleccionar todos» y lotes (cerrar/reabrir, atributos) operan únicamente sobre registros de tarea; un id con `es_tarea = false` en un lote falla de forma atómica (422, cero cambios).
 
 ---

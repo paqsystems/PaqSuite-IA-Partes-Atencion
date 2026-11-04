@@ -400,7 +400,13 @@ final class PartesTareaOperations
         ]];
     }
 
-    /** @param array<string, mixed> $params @return list<object> */
+    /**
+     * Destinatarios de novedades: users vinculados (`PQ_PARTES_CLIENTES.user_id`) activos
+     * con `users.email`. El To del aviso es siempre `users.email` — nunca `PQ_PARTES_CLIENTES.email`.
+     *
+     * @param  array<string, mixed>  $params
+     * @return list<object>
+     */
     private static function masivoDestinatariosNovedad(array $params): array
     {
         self::assertActorAsistente($params);
@@ -421,7 +427,7 @@ final class PartesTareaOperations
             ->where('fu.activo', 1)
             ->where('fu.inhabilitado', 0)
             ->whereNotNull('fu.email')
-            ->where('fu.email', '!=', '')
+            ->whereRaw("TRIM(fu.email) <> ''")
             ->select([
                 'fu.id as user_id',
                 'fu.email',
@@ -435,9 +441,13 @@ final class PartesTareaOperations
 
         $out = [];
         foreach ($rows as $row) {
+            $email = trim((string) $row->email);
+            if ($email === '') {
+                continue;
+            }
             $out[] = (object) [
                 'user_id' => (int) $row->user_id,
-                'email' => (string) $row->email,
+                'email' => $email,
                 'codigo' => (string) $row->codigo,
                 'locale' => (string) ($row->locale ?? 'es'),
                 'name' => (string) ($row->name ?? ''),

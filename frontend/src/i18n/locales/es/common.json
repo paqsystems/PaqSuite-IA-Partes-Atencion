@@ -250,7 +250,7 @@
   "partes.masivo.preview.rangoFiltro": "Rango filtro",
   "partes.masivo.informarClientes": "Informar a clientes",
   "partes.masivo.mailInformarClientes.confirmTitle": "Informar novedades a clientes",
-  "partes.masivo.mailInformarClientes.confirmBody": "Se enviarán {{count}} correo(s) a clientes con usuario activo.\nPeríodo del filtro: {{desde}} → {{hasta}}.",
+  "partes.masivo.mailInformarClientes.confirmBody": "Se enviarán {{count}} correo(s) a los usuarios Framework vinculados (users.email) de clientes del filtro.\nPeríodo: {{desde}} → {{hasta}}.",
   "partes.masivo.mailInformarClientes.confirmSend": "Enviar correos",
   "partes.masivo.leaveConfirmInformarClientes.title": "Cambios pendientes en proceso masivo",
   "partes.masivo.leaveConfirmInformarClientes.body": "Hay cambios o selección sin aplicar. ¿Desea enviar el aviso por correo a los clientes antes de salir?",
