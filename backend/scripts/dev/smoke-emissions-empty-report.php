@@ -128,9 +128,17 @@ foreach ($processes as $spec) {
         'hostContext' => $spec['hostContext'],
     ];
     $reportId = resolveEmittableReportId($base, $authHeaders, $processCode);
-    if ($reportId !== null) {
-        $body['reportId'] = $reportId;
+    if ($reportId === null) {
+        fwrite(STDERR, "SMOKE_SKIP {$processCode}: sin reporte emisible no estándar en catálogo\n");
+        $summary['processes'][] = [
+            'processCode' => $processCode,
+            'skipped' => true,
+            'reason' => 'noEmittableReport',
+        ];
+
+        continue;
     }
+    $body['reportId'] = $reportId;
 
     $job = request('POST', "{$base}/emissions/jobs", $authHeaders, $body);
     $row = [

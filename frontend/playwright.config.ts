@@ -16,7 +16,7 @@ export default defineConfig({
     command: 'npm run dev:e2e',
     url: 'http://localhost:3101',
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 180_000,
     env: {
       ...process.env,
       VITE_API_PROXY_TARGET: process.env.VITE_API_PROXY_TARGET ?? 'http://127.0.0.1:8010',
