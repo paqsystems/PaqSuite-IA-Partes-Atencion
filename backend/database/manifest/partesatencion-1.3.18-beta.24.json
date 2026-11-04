@@ -6,32 +6,6 @@
     ],
     "entries": [
         {
-            "id": "partes-emission-designer-schema-partes-informes-consultaDetallada",
-            "kind": "emissionDesignerSchema",
-            "target": "dictionary",
-            "processCode": "partes.informes.consultaDetallada",
-            "path": "database/emission-designer-schemas/partes.informes.consultaDetallada.json",
-            "checksum": "428dd13a7441c77823062ec6fe593b2e6415ea22fbddef1921865344103c9a71",
-            "dependsOn": [
-                "fw-migration-2026_11_03_000041_create_pq_emission_designer_schemas_table",
-                "fw-sp-pq_sp_emission_designer_schema"
-            ],
-            "emissionPortSchemaRef": "database/emission-designer-schemas/partes.informes.consultaDetallada.port-names.json"
-        },
-        {
-            "id": "partes-emission-designer-schema-partes-informes-paqueteHoras",
-            "kind": "emissionDesignerSchema",
-            "target": "dictionary",
-            "processCode": "partes.informes.paqueteHoras",
-            "path": "database/emission-designer-schemas/partes.informes.paqueteHoras.json",
-            "checksum": "2dca4a9b189b874769c57cb6ba1dde65565dec0f740b42f36f5f60d3797f13e9",
-            "dependsOn": [
-                "fw-migration-2026_11_03_000041_create_pq_emission_designer_schemas_table",
-                "fw-sp-pq_sp_emission_designer_schema"
-            ],
-            "emissionPortSchemaRef": "database/emission-designer-schemas/partes.informes.paqueteHoras.port-names.json"
-        },
-        {
             "id": "partes-migration-2014_10_12_000000_create_users_table",
             "kind": "migration",
             "target": "dictionary",
