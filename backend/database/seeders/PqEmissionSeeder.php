@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Services\Emissions\PartesPaqueteHorasEmissionPort;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -193,21 +194,7 @@ class PqEmissionSeeder extends Seeder
 
         $layout = json_encode([
             'kind' => 'tabular',
-            'columns' => [
-                'fecha',
-                'clienteCode',
-                'clienteNombre',
-                'usuarioCode',
-                'usuarioNombre',
-                'tipoTareaCode',
-                'tipoTareaDescripcion',
-                'duracionMinutos',
-                'saldo',
-                'esTarea',
-                'observacion',
-                'erpCliente',
-                'erpArticulo',
-            ],
+            'columns' => PartesPaqueteHorasEmissionPort::designDatasetColumnNames(),
         ], JSON_UNESCAPED_UNICODE);
 
         DB::table('pq_emission_reports')->updateOrInsert(

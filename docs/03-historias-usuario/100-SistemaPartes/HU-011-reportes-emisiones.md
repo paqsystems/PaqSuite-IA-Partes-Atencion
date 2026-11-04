@@ -301,3 +301,4 @@ Ninguna bloquea Parte C.
 | 2026-10-16 | Parte E: evidencia tests en `docs/04-tareas/updates/100-SistemaPartes/E-TR-011-reportes-emisiones-2026-10-16.md`. |
 | 2026-10-29 | Parte I: **Finalizado**. Duración en minutos (sin `hh:mm` automático). Emitir usa el diseño guardado. |
 | 2026-10-29 | CC ST #1: emisión acotada a filas tildadas; `selectedTareaIds` en hostContext; CA-CC1-11-01…04. |
+| 03/11/2026 | CC-PQ #13: Field List diseñador **Paquete de horas** con dataset de negocio (schemas sidecar + REPX host). Parte I acotada; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |

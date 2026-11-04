@@ -11,7 +11,7 @@ Jira: PIAPARTES-5
 | Título | Supervisión: terceros y proceso masivo sobre tareas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Finalizado |
-| Última actualización | 01/11/2026 |
+| Última actualización | 03/11/2026 (Parte I CC-PQ #13) |
 | HU relacionada(s) | [HU-005-supervision-proceso-masivo](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md) |
@@ -282,6 +282,7 @@ La UI debe dejar claro **qué atributo(s)** y **qué valor** se aplicarán antes
 | 2026-08-01 | Parte I: fusionado SPEC-005-update (CC-PQ #1, 31/07) en este original; update eliminado. Estado → Finalizado. |
 | 01/11/2026 | CC-PQ #11: paginación remota grilla masivo ↔ `GET /partes/tareas`; Parte I fusionó SPEC-005-update-cc-pq-11. [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |
 | 01/11/2026 | CC-PQ #11 prod: `RemoteOperations` solo paging; verificado preview + prod (PR #117/#118). Parte I acotada en SPEC base. |
+| 03/11/2026 | CC-PQ #13: FilterRow remoto en grilla masivo (`clienteNombre`, `tipoTareaDescripcion`). Parte I acotada; F1/F Preview OK; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 
 ---
 

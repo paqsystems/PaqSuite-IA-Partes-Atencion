@@ -1,4 +1,4 @@
-# TR-003 – Maestros y catálogos del módulo
+# TR-003 – Maestros y catálogos del módulo
 
 Jira: PIAPARTES-31
 
@@ -13,7 +13,7 @@ Jira: PIAPARTES-31
 | **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md), [TR-002](./TR-002-identidad-funcional-y-acceso.md); catálogo vínculo `GET /api/v1/partes/catalogos/usuarios-vinculables`; lookup GEN admin usuarios para ABM Usuarios |
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Finalizado |
-| **Última actualización** | 2026-10-11 |
+| **Última actualización** | 2026-11-03 (Parte I CC-PQ #14) |
 
 **Origen:** [HU-003](../../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md)  
 **Referencia SPEC:** [SPEC-003](../../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md)  
@@ -35,6 +35,7 @@ Maestros y catálogos del módulo Sistema Partes
 - Lookup users PedidosWeb + `soloActivos` (ABM Usuarios GEN).
 - **(CC-PQ #2, 01/08)** Maestro clientes: capturar/mostrar `erpCliente` / `erpArticulo` (máx. 15) en API (map/upsert) y UI (columnas + formulario).
 - **(CC-PQ #4, 04/10)** Columna `usuarioCodigo` en asistentes; selector de vínculo contra `usuarios-vinculables`; unicidad R-MA-17/18.
+- **(CC-PQ #14, 03/11)** Grilla Clientes: columnas `usuarioCodigo`, `email`; query list `usuario`, `email`; FilterRow FE → API (extensión CC #13).
 
 ### Out of scope
 - DDL tablas; gate login; carga/consultas; reinventar ABM users/roles (usar menú Seguridad GEN existente/patrón Framework); Excel; mobile ABM.
@@ -63,6 +64,11 @@ Maestros y catálogos del módulo Sistema Partes
 | AC-U02 | `GET /api/v1/partes/catalogos/usuarios-vinculables` omite inactivos, inhabilitados y asignados; `exceptoUserId` reincorpora el de la fila |
 | AC-U03 | Segundo asistente o cliente con el mismo `userId` → 422 `partes.maestros.exclusividadUserId`. Editar la misma fila conservando el `userId` → 200 |
 | AC-U04 | `userId` inactivo o `inhabilitado = 1` → 422 `partes.maestros.usuarioNoVinculable` |
+| AC-14-01 | Grilla Clientes: `usuarioCodigo`, `email` en list items |
+| AC-14-02 | `GET .../asistentes?usuario=` filtra contains en `users.usuario` |
+| AC-14-03 | `GET .../clientes?usuario=` y `?email=` filtran contains |
+| AC-14-04 | `maestroGridLoadOptionsToQuery` mapea `usuarioCodigo`/`email` |
+| AC-14-05 | Regresión filtros `code`/`nombre`/`descripcion` (CC #13) |
 
 ### Gherkin
 Heredar HU-003; añadir escenario AC-05b y AC-12.
@@ -153,13 +159,13 @@ Base: `/api/v1/partes/...` — Auth Bearer + `X-Paq-Cliente` + perfil Partes no-
 
 | Método | Path | Notas |
 |--------|------|-------|
-| GET | `/partes/asistentes` | list paginado |
+| GET | `/partes/asistentes` | list paginado; query opc. `page`, `pageSize`, `code`, `nombre`, `usuario` (contains) |
 | GET | `/partes/asistentes/{id}` | |
 | POST | `/partes/asistentes` | body camelCase |
 | PUT | `/partes/asistentes/{id}` | |
 | PATCH | `/partes/asistentes/{id}/estado` | `{ activo?, inhabilitado? }` |
 | DELETE | `/partes/asistentes/{id}` | 422 si refs |
-| GET/POST/PUT/PATCH/DELETE | `/partes/clientes` … | + `POST/DELETE .../clientes/{id}/acceso` body `{ userId }` / revocar |
+| GET/POST/PUT/PATCH/DELETE | `/partes/clientes` … | list query opc. `usuario`, `email` (contains); items incl. `usuarioCodigo`; + acceso `{ userId }` |
 | … | `/partes/tipos-cliente` | |
 | … | `/partes/tipos-tarea` | |
 | GET/POST/DELETE | `/partes/cliente-tipos-tarea` | asignación |
@@ -197,7 +203,7 @@ Actualizar paths anteriores + matriz permisos menú Archivos Partes.
 | Feature | Ruta | Notas |
 |---------|------|-------|
 | Asistentes | `/archivos/partes/asistentes` | Grilla+modal; SelectBox users (`soloActivos`); warn confirm cambio `userId` |
-| Clientes | `/archivos/partes/clientes` | Acciones Habilitar/Revocar acceso + campo modal; columnas y campos `erpCliente` / `erpArticulo` (maxLength 15) |
+| Clientes | `/archivos/partes/clientes` | Acciones acceso + modal; columnas `erpCliente`/`erpArticulo`, `usuarioCodigo`, `email`; FilterRow remoto |
 | Tipos cliente | `/archivos/partes/tipos-cliente` | |
 | Tipos tarea | `/archivos/partes/tipos-tarea` | Checkbox default → SP; bloquear inhabilitar default |
 | Asignaciones | `/archivos/partes/cliente-tipos-tarea` | Selector tipos no genéricos |
@@ -261,7 +267,7 @@ Filtrar menú: no mostrar ítems Archivos Partes si `resultado.partes.tipoFuncio
 
 ## 11) Informe C1
 
-# Revisión de ambigüedad - TR-003
+# Revisión de ambigüedad - TR-003
 
 Jira: PIAPARTES-31
 
@@ -302,6 +308,8 @@ Jira: PIAPARTES-31
 | 2026-08-01 | CC-PQ #2 (01/08/2026): maestro clientes captura/muestra `erpCliente` / `erpArticulo` (AC-13, T8/T9); [D-VERIFICACION-CC-PQ-02](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md). |
 | 2026-08-01 | Parte I: fusionado TR-003-update (CC-PQ #2, 01/08) en esta TR; update eliminado. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4: AC-U01…U04, catálogo vinculable; update eliminado. Estado → Finalizado. |
+| 03/11/2026 | CC-PQ #13: FilterRow remoto en ABM maestros (`devExtremeFilterContains`, `maestroListPaging` → query API). Parte I acotada; F1/F **Preview OK** (`88c46ea`); [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
+| 03/11/2026 | CC-PQ #14: columnas usuario/mail Clientes + filtros `usuario`/`email`. Parte I; F1/F manual DEV OK; [D-VERIFICACION-CC-PQ-14](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md). |
 
 ---
 

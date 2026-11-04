@@ -58,7 +58,83 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 10 | 30/10/2026 | Especificado | Tareas programadas (historial / próxima ejecución) + saldo informe Paquete de horas — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
 | 11 | 01/11/2026 | Especificado | Proceso masivo paginación grilla — **F1/F Aprobado** · **Parte I unificada** · **Prod OK** (PR #117/#118) ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md)) |
 | 12 | 02/11/2026 | Especificado | ABM maestros paginación · menú sin agrupadas · Emitir Paquete de Horas — **F1/F Aprobado** · **Preview OK** · **Prod OK** (PR #123 → `main`) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
-| 13 | 02/11/2026 | Especificado | Diseñador Paquete de Horas (dataset) · FilterRow maestros + Proceso masivo — **F1/F condicional** 03/11/2026 ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md)) |
+| 13 | 02/11/2026 | Especificado | Diseñador Paquete de Horas (dataset) · FilterRow maestros + Proceso masivo — **F1/F Aprobado** · **Parte I** · **Preview OK** 03/11/2026 (`88c46ea`) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md) |
+| 14 | 03/11/2026 | Especificado | ABM Clientes — columnas usuario/mail + FilterRow usuario — **F1/F Aprobado** · **Parte I** · manual DEV OK — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md) |
+
+---
+
+## Control de Calidad #14
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 03/11/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado · **F1/F Aprobado** · **Parte I** cerrada |
+| **Parte G** | 03/11/2026 — SPEC/HU/TR-update CC #14 (003) |
+| **Parte D/E/F** | 03/11/2026 — [D-CC-PQ-14](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-14-2026-11-03.md) · [E-CC-PQ-14](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-14-2026-11-03.md) · [D-VERIFICACION-CC-PQ-14](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md) |
+| **F1/F** | **Aprobado** 03/11/2026 — smoke manual DEV (tenant **DEV**); regresión E OK |
+| **Parte I** | 03/11/2026 — fusionado en SPEC/HU/TR-003 base |
+| **Origen** | Prueba manual post **CC #13** (preview): ABM **Clientes** y **Asistentes** — visibilidad de usuario en listado y FilterRow |
+| **Proceso** | Maestros Partes — `partes.maestros.clientes` · `partes.maestros.asistentes` ([HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md)) |
+
+### Resumen del hito
+
+| # | Ítem | Notas |
+|---|------|--------|
+| 1 | **ABM Clientes** — columnas **usuario** y **mail** en la grilla | Hoy el modal incluye `userId` y `email`; la grilla no los muestra (solo código, nombre, tipo, ERP, activo). |
+| 2 | **ABM Asistentes** — FilterRow no filtra por **usuario** | El resto de columnas con FilterRow responden; la columna de usuario (`usuarioCodigo`) no acota filas. |
+| 3 | **ABM Clientes** — FilterRow **usuario** al incorporar columna | Misma corrección que ítem 2: al exponer usuario en grilla, verificar filtro remoto coherente con paginación (CC #12/#13). |
+
+### Hallazgos
+
+#### 1) ABM Clientes — usuario y mail ausentes en grilla
+
+Desde la grilla no se identifica qué **usuario de acceso** ni qué **mail** tiene cada cliente sin abrir el modal de edición.
+
+**Expectativa:** columnas visibles alineadas al formulario (código de usuario vinculado y correo), con i18n existente (`partes.maestros.field.*`).
+
+#### 2) ABM Asistentes — FilterRow en columna usuario
+
+Tras **CC #13**, FilterRow en nombre/código/supervisor/activo funciona; al filtrar por **usuario** la grilla no reduce resultados (comportamiento distinto al resto).
+
+**Triage preliminar (código host):**
+
+| Capa | Observación |
+|------|-------------|
+| **FE** | `maestroGridLoadOptionsToQuery` (`maestroListPaging.ts`) mapea FilterRow solo a query `code`, `nombre`, `descripcion` — no incluye `usuarioCodigo` / `email`. |
+| **API** | Revisar si `GET /api/v1/partes/asistentes` (y `clientes`) acepta filtro por usuario/mail en listado remoto; extender SP/list si falta contrato. |
+
+#### 3) ABM Clientes — FilterRow usuario (regresión explícita)
+
+Al agregar la columna de usuario en Clientes, **obligatorio** validar FilterRow sobre ese campo (y, si aplica, mail) en entorno con paginación remota — no repetir el gap del ítem 2.
+
+### Mejoras solicitadas
+
+#### HU-003-maestros-y-catalogos — ABM Clientes (grilla) + FilterRow usuario
+
+*Procesado* · **Parte I** → [SPEC-003](../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) · [HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) · [TR-003](../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md)
+
+- Agregar a la grilla del ABM **Clientes** las columnas **usuario** (código/login vinculado) y **mail** (mismo payload list API).
+- Corregir FilterRow remoto para la columna **usuario** en **Asistentes**.
+- Al incorporar usuario/mail en **Clientes**, FilterRow equivalente (contains / query API).
+- Tests de regresión en `maestroListPaging` + integración list API si cambia query.
+
+### Criterios de aceptación
+
+- [x] **CA-14-01** ABM Clientes muestra columnas **usuario** y **mail** en la grilla, con valores coherentes al modal. *(F1/F manual DEV 03/11/2026)*
+- [x] **CA-14-02** ABM Asistentes: FilterRow en columna **usuario** reduce filas según texto ingresado (paginación remota). *(F1/F manual DEV)*
+- [x] **CA-14-03** ABM Clientes: FilterRow en columna **usuario** (y **mail** si es filtrable) funciona igual que nombre/código. *(F1/F manual DEV)*
+- [x] **CA-14-04** Sin regresión de paginación remota ni FilterRow de CC #12/#13 en otros maestros. *(F1/F manual DEV)*
+
+### Derivación SDD
+
+| Ítem | Updates |
+|------|---------|
+| Columnas + filtros maestros | Unificado Parte I en SPEC/HU/TR-003 (updates CC #14 eliminados) |
+
+**Cierre:** F1/F **Aprobado**, **Parte I** 03/11/2026 — [D-VERIFICACION-CC-PQ-14 §1–§4](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md). **Prod/preview** pendiente de deploy del código host.
 
 ---
 
@@ -73,7 +149,8 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | **Estado** | Especificado |
 | **Parte G** | 02/11/2026 — SPEC/HU/TR-update CC #13 (003 / 005 / 011) |
 | **Parte D/E/F** | 03/11/2026 — [D-CC-PQ-13](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-13-2026-11-03.md) · [E-CC-PQ-13](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-13-2026-11-03.md) · [D-VERIFICACION-CC-PQ-13](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md) |
-| **F1/F** | **Aprobado condicional** 03/11/2026 — regresión E OK; smoke UI manual §4 pendiente credenciales lab |
+| **F1/F** | **Aprobado** 03/11/2026 — F1 §1.1 + regresión E OK; smoke §4 **OK** DEV + **preview** (`v1.3.0-CLOUDSMITH` @ `88c46ea`, PQ) |
+| **Parte I** | 03/11/2026 — fusionado en SPEC/HU/TR-003, 005, 011 base (cierre acotado) |
 | **Origen** | Prueba manual post **CC #12** (prod tenant **PQ**): diseñador Paquete de horas, maestros, Proceso masivo |
 | **Evidencia** | Capturas CC #13: Field List `id`/`label`; FilterRow **ANKAS** en Clientes sin acotar filas |
 
@@ -86,10 +163,10 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 
 ### Criterios de aceptación
 
-- [x] **CA-13-01** Field List Paquete de horas con columnas de negocio *(F: unit/E2E; UI manual §4.1 pendiente PQ)*
-- [x] **CA-13-02** Clientes FilterRow nombre/código *(F: E2E mock + unit; §4.2 pendiente PQ)*
-- [x] **CA-13-03** Asistentes FilterRow *(§4.3 pendiente PQ)*
-- [x] **CA-13-04** Proceso masivo FilterRow cliente/tipo tarea *(Vitest; §4.5 pendiente PQ)*
+- [x] **CA-13-01** Field List Paquete de horas con columnas de negocio *(F1/F preview 03/11/2026)*
+- [x] **CA-13-02** Clientes FilterRow nombre/código *(F1/F preview)*
+- [x] **CA-13-03** Asistentes FilterRow *(F1/F preview)*
+- [x] **CA-13-04** Proceso masivo FilterRow cliente/tipo tarea *(F1/F preview)*
 - [x] **CA-13-05** Tests regresión *(ver E-CC-PQ-13)*
 
 ### Derivación SDD
@@ -102,7 +179,9 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 
 Plan D1: [D1-TR-003-005-011-update-cc-pq-13](../04-tareas/updates/100-SistemaPartes/d1/D1-TR-003-005-011-update-cc-pq-13.md).
 
-**Siguiente:** **Parte I** cuando updates estén **Finalizado**; PQ completa smoke manual [§4](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md).
+**Hito FRAMEWORK (causa raíz):** el Field List del diseñador no debe depender de despliegue manual al sidecar ni de hardcode C# por producto. Seguimiento en [PaqSuite-IA-FRAMEWORK — Control de Calidad #13](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/00-ControlCalidad/00-ControlCalidad-PQ.md#control-de-calidad-13) (**GEN-15 + GEN-34:** definición del dataset de reportes nuevos/modificados en **instalación/actualización**).
+
+**Cierre:** F1/F **Aprobado**, **Parte I** y **Preview OK** 03/11/2026 — [D-VERIFICACION §1.1, §6, §8](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). **Prod** pendiente (PR → `develop` → `main`). Hito FRAMEWORK (schema en GEN-34) sigue en [Framework CC #13](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/00-ControlCalidad/00-ControlCalidad-PQ.md#control-de-calidad-13).
 
 ---
 

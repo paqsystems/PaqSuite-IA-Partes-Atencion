@@ -12,6 +12,24 @@ describe('maestroGridLoadOptionsToQuery', () => {
     ).toEqual({ page: 1, pageSize: 20, nombre: 'ANKAS' })
   })
 
+  it('maps usuarioCodigo and email filters to query params', () => {
+    expect(
+      maestroGridLoadOptionsToQuery({
+        skip: 0,
+        take: 20,
+        filter: ['usuarioCodigo', 'contains', 'cliAcc'],
+      }),
+    ).toEqual({ page: 1, pageSize: 20, usuario: 'cliAcc' })
+
+    expect(
+      maestroGridLoadOptionsToQuery({
+        skip: 0,
+        take: 20,
+        filter: ['email', 'contains', '@acme'],
+      }),
+    ).toEqual({ page: 1, pageSize: 20, email: '@acme' })
+  })
+
   it('maps skip/take to page and pageSize', () => {
     expect(maestroGridLoadOptionsToQuery({ skip: 0, take: 20 })).toEqual({ page: 1, pageSize: 20 })
     expect(maestroGridLoadOptionsToQuery({ skip: 20, take: 20 })).toEqual({ page: 2, pageSize: 20 })

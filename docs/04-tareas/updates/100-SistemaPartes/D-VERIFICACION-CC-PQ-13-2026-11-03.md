@@ -4,8 +4,9 @@
 |-------|--------|
 | **Origen** | `00-ControlCalidad-PQ` · CC **#13** |
 | **Parte E** | [E-CC-PQ-13-2026-11-03.md](./E-CC-PQ-13-2026-11-03.md) |
-| **Veredicto F** | **Apto con reserva UI** — regresión automatizada OK; smoke manual UI **pendiente credenciales lab** (03/11/2026) |
-| **F1/F** | **Aprobado condicional** 03/11/2026 — apto para merge/preview; completar checklist UI §4 cuando PQ valide en tenant con login |
+| **Veredicto F** | **Apto** — regresión automatizada OK; smoke manual UI **OK** DEV + **preview** (03/11/2026, PQ) |
+| **F1/F** | **Aprobado** 03/11/2026 — §4 DEV + preview `v1.3.0-CLOUDSMITH` @ **`88c46ea`** (Field List Paquete de horas + FilterRow maestros/masivo) |
+| **Parte I** | 03/11/2026 — fusionado en SPEC/HU/TR-003, 005, 011 base (cierre acotado; updates CC #13 conservados en repo) |
 
 ---
 
@@ -13,13 +14,27 @@
 
 | CA | Resultado F | Evidencia |
 |----|-------------|-----------|
-| **CA-13-01** Diseñador Paquete de horas — Field List negocio | **OK (automático)** · **UI manual pendiente** | Unit `PartesEmissionDesignRepxBuilderTest` + `SpEmissionReportLayoutTest` (`clienteNombre`, `saldo`, sin `id`/`label`). E2E `partes-emisiones-paquete-horas-designer.spec.ts` (GetDesignerModel). **Manual:** §4.1 |
-| **CA-13-02** Clientes — FilterRow nombre/código | **OK (automático)** · **UI manual pendiente** | Vitest `maestroListPaging` · Unit `PartesMaestrosOperationsFilterTest` · Playwright 4 maestros (mock). **Manual:** §4.2 |
-| **CA-13-03** Asistentes — FilterRow | **OK (automático)** · **UI manual pendiente** | Idem + E2E asistentes (columna nombre índice 2). **Manual:** §4.3 |
-| **CA-13-04** Proceso masivo — FilterRow cliente / tipo tarea | **OK (automático)** | Vitest `masivoTareasPaging.test.ts`. Feature `ApiV1PartesCc13FilterRowTest` (masivo) bloqueado en SQLite seed local (deuda entorno). **Manual:** §4.5 |
+| **CA-13-01** Diseñador Paquete de horas — Field List negocio | **OK** | Unit + E2E; manual DEV §4.1 (columnas negocio, no `id`/`label`); schemas `backend/resources/emissions/schemas/` + sync sidecar |
+| **CA-13-02** Clientes — FilterRow nombre/código | **OK** | Vitest + Playwright; manual DEV §4.2 |
+| **CA-13-03** Asistentes — FilterRow | **OK** | Idem; manual DEV §4.3 |
+| **CA-13-04** Proceso masivo — FilterRow cliente / tipo tarea | **OK** | Vitest; manual DEV §4.5 |
 | **CA-13-05** Regresión tests | **OK** | Ver [E-CC-PQ-13](./E-CC-PQ-13-2026-11-03.md) §1–3 |
 
 **Tipos cliente / tipos tarea (alcance CC):** cubiertos en E2E Playwright + Unit Operations (no listados como CA separados en PQ; incluidos en hito FilterRow maestros).
+
+---
+
+## 1.1) F1 — revisión código ↔ TR (03/11/2026)
+
+| RN / pieza | Evidencia | Estado |
+|------------|-----------|--------|
+| Diseñador Paquete de horas — schema negocio | `PartesEmissionDesignRepxBuilder`, `backend/resources/emissions/schemas/`, `sync-dx-reporting-schemas.*`, TR-011 §18 | **OK** |
+| FilterRow maestros | `devExtremeFilterContains`, `maestroListPaging`, Operations filtros API, TR-003 | **OK** |
+| FilterRow masivo | `masivoTareasPaging`, query `clienteNombre` / `tipoTareaDescripcion`, TR-005 | **OK** |
+| Regresión paginación CC #11/#12 | E2E + manual §4.6 | **OK** |
+| OpenAPI / contratos listado | Query params documentados en rutas maestros/masivo | **OK** |
+
+**Veredicto F1:** **Aprobado** (consistente con [D-CC-PQ-13](./D-CC-PQ-13-2026-11-03.md)).
 
 ---
 
@@ -105,19 +120,47 @@ Ejecutar con credenciales válidas del tenant (lab **DEV**, preview o **PAQ** pr
 | Stack local | **OK** | Frontend `:3000`, backend `:8010`, health 200 |
 | Login UI tenant DEV (`PQ` / seed doc) | **FAIL** | Mensaje «Usuario o contraseña incorrectos» |
 | Login API script | **FAIL** | Mismo `auth.invalidCredentials` |
-| Checklist §4.1–4.6 | **Pendiente PQ** | Requiere credenciales tenant |
+| Checklist §4.1–4.6 | **OK DEV** | PQ 03/11/2026 — Field List Paquete de horas + FilterRow maestros/masivo |
+| Checklist §4.1–4.6 | **OK preview** | PQ 03/11/2026 — mismo checklist en preview post-deploy |
 
 ---
 
-## 6) Deploy (cuando integre a preview/prod)
+## 6) Smoke preview (`v1.3.0-CLOUDSMITH` @ `88c46ea`)
 
-- Sin migraciones nuevas obligatorias específicas CC #13 (código API/FE + REPX runtime).
-- Si el release incluye solo código: smoke §4 tras deploy.
-- Si hay SP nuevos de list en SQL Server: `installation:update` + deploy SP (GEN-34).
+| Campo | Valor |
+|-------|--------|
+| **Frontend** | [partesatencion-dev.paqsystems.com](https://partesatencion-dev.paqsystems.com) → deployment Vercel `88c46ea` |
+| **API** | `https://partesatencion-paqsystems-dev.on-forge.com/api/v1` |
+| **Tenant** | **DEV** |
+| **Responsable smoke** | PQ — 03/11/2026 |
+
+| CA | Resultado | Notas |
+|----|-----------|-------|
+| CA-13-01 | **OK** | Field List Paquete de horas — columnas de negocio (no predominio `id`/`label`) |
+| CA-13-02 | **OK** | Clientes — FilterRow nombre/código acota filas + total coherente |
+| CA-13-03 | **OK** | Asistentes — FilterRow nombre |
+| CA-13-04 | **OK** | Proceso masivo — FilterRow cliente / tipo tarea; paginador remoto intacto |
+| CA-13-05 | **OK** | Sin regresión perceptible vs suite E/Vitest (Parte E) |
+| §4.6 CC #11/#12 | **OK** | Paginación maestros/masivo sin pérdida de filtros de pantalla |
+
+Deploy: Forge post-deploy (`installation:update`, `sync-dx-reporting-schemas.sh`); manifiesto host **beta.24** en rama de preview.
 
 ---
 
-## 7) Siguiente
+## 7) Deploy (prod — pendiente)
 
-- PQ: completar §4 en **DEV** o **PAQ** y anotar fecha en este doc (tabla §5).
-- **Parte I** cuando updates CC #13 estén **Finalizado** en metadatos HU/TR/SPEC.
+Referencia operativa (no bloquea cierre F1/F preview):
+
+- Código API/FE + REPX runtime (`PartesEmissionDesignRepxBuilder`); catálogo emisión ya cubierto por migración CC #12 si aplica.
+- **Sidecar DX (Must diseñador):** copiar `backend/resources/emissions/schemas/*.json` → `data/schemas/` del sidecar (`scripts/forge/sync-dx-reporting-schemas.sh` en post-deploy Forge; local `scripts/dev/sync-dx-reporting-schemas.ps1`).
+- Smoke post-deploy: `php backend/scripts/dev/smoke-paquete-horas-designer-schema.php` (sidecar accesible).
+- Filtros listado: parámetros query en Operations maestros/masivo (sin migración CC #13 adicional).
+
+---
+
+## 8) Cierre
+
+- **F1:** Aprobado 03/11/2026 — §1.1 código ↔ TR.
+- **F:** Aprobado 03/11/2026 — regresión §2 + smoke DEV + **preview** §6 (PQ).
+- **Parte I:** 03/11/2026 — historial CC #13 en SPEC/HU/TR-003, 005, 011 base — [00-ControlCalidad-PQ §#13](../../../00-ControlCalidad/00-ControlCalidad-PQ.md).
+- **Prod:** pendiente PR/`main` (fuera de alcance de este cierre preview).

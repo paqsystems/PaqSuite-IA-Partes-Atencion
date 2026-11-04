@@ -14,6 +14,50 @@ import type { Plugin } from 'vite'
  *    para que el acceso a propiedades no se convierta en named import.
  */
 export const KNOCKOUT_VIRTUAL_ID = '\0paq-knockout-esm'
+export const JQUERY_VIRTUAL_ID = '\0paq-jquery-esm'
+
+export function isJqueryModuleId(id: string): boolean {
+  const file = id.split('?')[0].replaceAll('\\', '/')
+  return (
+    file === 'jquery' ||
+    file === JQUERY_VIRTUAL_ID ||
+    file.endsWith('/jquery/dist/jquery.js')
+  )
+}
+
+export function rewriteJqueryNamespaceImport(code: string): string {
+  return code.replace(
+    /\bimport\s+\*\s+as\s+([A-Za-z_$][\w$]*)\s+from\s+(['"])jquery\2/g,
+    'import $1 from $2jquery$2',
+  )
+}
+
+export function wrapJqueryUmdAsDefaultEsm(umdSource: string): string {
+  return `'use strict';
+${umdSource}
+const __jquery =
+  (typeof jQuery !== 'undefined' && typeof jQuery.Deferred === 'function')
+    ? jQuery
+    : (typeof globalThis !== 'undefined' &&
+        typeof globalThis.jQuery !== 'undefined' &&
+        typeof globalThis.jQuery.Deferred === 'function')
+      ? globalThis.jQuery
+      : undefined;
+if (typeof __jquery === 'undefined' || typeof __jquery.Deferred !== 'function') {
+  throw new Error('jQuery Deferred is not a function');
+}
+if (typeof globalThis !== 'undefined') {
+  globalThis.jQuery = __jquery;
+  globalThis.$ = __jquery;
+}
+export default __jquery;
+`
+}
+
+function jqueryUmdPath(): string {
+  const require = createRequire(import.meta.url)
+  return require.resolve('jquery/dist/jquery.js')
+}
 
 export function isKnockoutModuleId(id: string): boolean {
   const file = id.split('?')[0].replaceAll('\\', '/')
@@ -56,25 +100,37 @@ function knockoutUmdPath(): string {
 
 export function reportingCjsDefaultExportPlugin(): Plugin {
   return {
-    name: 'reporting-knockout-default-esm',
+    name: 'reporting-knockout-jquery-default-esm',
     enforce: 'pre',
     resolveId(id) {
       if (isKnockoutModuleId(id) && id !== KNOCKOUT_VIRTUAL_ID) {
         return KNOCKOUT_VIRTUAL_ID
       }
+      if (isJqueryModuleId(id) && id !== JQUERY_VIRTUAL_ID) {
+        return JQUERY_VIRTUAL_ID
+      }
       return null
     },
     load(id) {
-      if (id !== KNOCKOUT_VIRTUAL_ID) {
-        return null
+      if (id === KNOCKOUT_VIRTUAL_ID) {
+        return wrapKnockoutUmdAsDefaultEsm(fs.readFileSync(knockoutUmdPath(), 'utf8'))
       }
-      return wrapKnockoutUmdAsDefaultEsm(fs.readFileSync(knockoutUmdPath(), 'utf8'))
+      if (id === JQUERY_VIRTUAL_ID) {
+        return wrapJqueryUmdAsDefaultEsm(fs.readFileSync(jqueryUmdPath(), 'utf8'))
+      }
+      return null
     },
     transform(code, id) {
-      if (id === KNOCKOUT_VIRTUAL_ID || !code.includes("from") || !code.includes('knockout')) {
+      if (id === KNOCKOUT_VIRTUAL_ID || id === JQUERY_VIRTUAL_ID) {
         return null
       }
-      const next = rewriteKnockoutNamespaceImport(code)
+      let next = code
+      if (code.includes('knockout')) {
+        next = rewriteKnockoutNamespaceImport(next)
+      }
+      if (code.includes('jquery')) {
+        next = rewriteJqueryNamespaceImport(next)
+      }
       if (next === code) {
         return null
       }

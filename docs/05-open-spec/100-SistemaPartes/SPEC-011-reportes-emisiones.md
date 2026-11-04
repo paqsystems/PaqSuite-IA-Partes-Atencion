@@ -11,7 +11,7 @@ Jira: PIAPARTES-11
 | Título | Reportes / emisiones — diseñar informes y emitir desde Consulta detallada (adopción GEN-15) |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Finalizado |
-| Última actualización | 2026-10-29 (CC ST #1: emisión por filas tildadas) |
+| Última actualización | 2026-11-03 (Parte I CC-PQ #13: diseñador Paquete de horas) |
 | Revisión A1 | Apto con observaciones — ambigüedades críticas de universo/MONO cerradas (2026-08-25) |
 | HU relacionada(s) | [HU-011-reportes-emisiones](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) |
 | TR relacionada(s) | [TR-011-reportes-emisiones](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
@@ -346,6 +346,7 @@ Ninguna bloqueante tras A1. Refinamientos → B/C / TR:
 | 2026-10-29 | Parte I: **Finalizado**. R-EM-05 = minutos sin `hh:mm` automático. R-EM-24 = Emitir solo el diseño guardado (no la plantilla estándar); un control suelto en el detalle se repite por fila. |
 | 2026-10-29 | CC ST #1: emisión recortada por `hostContext.selectedTareaIds`; Emitir deshabilitado sin tildes; Parte I desde SPEC-011-update. |
 | 2026-11-02 | CC-PQ #12: segundo proceso emisible **Paquete de Horas** (`partes.informes.paqueteHoras`); mismo criterio de filas tildadas. |
+| 03/11/2026 | CC-PQ #13: diseñador — Field List del proceso Paquete de horas expone columnas de negocio (schemas sidecar + layout host). Parte I acotada; TR-011 §18; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 
 ---
 
