@@ -1,6 +1,6 @@
 import { Suspense, lazy, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { ReportDesignerContext } from '@paqsuite/react-core'
+import { buildDxGetDesignerModelAction, type ReportDesignerContext } from '@paqsuite/react-core'
 import { readDxReportingConfig, resolveDxDesignerReportUrl } from './dxReportingConfig'
 
 const LazyDxReportDesignerApp = lazy(() => import('./DxReportDesignerApp'))
@@ -39,6 +39,10 @@ export function DxReportDesignerPanel({ context }: DxReportDesignerPanelProps) {
     reportUrlDefault: config.reportUrl,
     processCode: context.processCode,
   })
+  const getDesignerModelAction = buildDxGetDesignerModelAction(
+    context.processCode,
+    config.getDesignerModelAction,
+  )
 
   return (
     <div
@@ -50,7 +54,7 @@ export function DxReportDesignerPanel({ context }: DxReportDesignerPanelProps) {
           key={reportUrl}
           reportUrl={reportUrl}
           host={config.host}
-          getDesignerModelAction={config.getDesignerModelAction}
+          getDesignerModelAction={getDesignerModelAction}
           knownReportCodes={context.knownReportCodes ?? []}
           onDxReportSaved={context.onDxReportSaved}
         />
