@@ -14,7 +14,7 @@ Jira: [PIAPARTES-56](https://paqsystems.atlassian.net/browse/PIAPARTES-56)
 | SPEC base | [SPEC-005-supervision-proceso-masivo](../../100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) |
 | HU relacionada(s) | [HU-005-update](../../../03-historias-usuario/updates/100-SistemaPartes/HU-005-supervision-proceso-masivo-update.md) · Jira [PIAPARTES-57](https://paqsystems.atlassian.net/browse/PIAPARTES-57) |
 | TR relacionada(s) | [TR-005-update](../../../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md) · Jira [PIAPARTES-45](https://paqsystems.atlassian.net/browse/PIAPARTES-45) |
-| Origen | `00-ControlCalidad-PQ` · CC #7 · 19/10/2026 · CC #14 · 03/11/2026 (refino i18n, URL, guard salida, v1 hardcode) |
+| Origen | `00-ControlCalidad-PQ` · CC #7 · 19/10/2026 · CC #15 · 04/11/2026 (refino i18n, URL, guard salida, v1 hardcode; no confundir con CC #14 ABM Clientes) |
 | A1 | [Apto con observaciones](./SPEC-005-supervision-proceso-masivo-update-A1-ambiguity-review.md) |
 | Depende de | SPEC-005 (filtros/grilla) · SPEC-003 (`PQ_PARTES_CLIENTES.user_id`) · Mail Engine GEN / futuro GEN-30 |
 
@@ -51,7 +51,7 @@ Este mail **no** es la línea de «auditoría Excel + mails selectivos» de `07-
 - Auditoría Excel + mails selectivos (evolución distinta).
 - Enviar a asistentes (salvo que el mismo `users.id` sea el usuario del cliente).
 - Cambio de atributos / cierre masivo (sigue SPEC-005 original).
-- **Editor / catálogo de plantillas de mail predefinidas** (evolución posterior; deuda documentada CC #14).
+- **Editor / catálogo de plantillas de mail predefinidas** (evolución posterior; deuda documentada CC #15).
 
 ---
 
@@ -109,4 +109,5 @@ Este mail **no** es la línea de «auditoría Excel + mails selectivos» de `07-
 | 2026-10-20 | Parte G CC-PQ #7 19/10/2026 |
 | 2026-10-20 | Sin destinatarios «distribuidor» (atributo desactivado en esta versión). A1. |
 | 2026-10-20 | Decisión humana: universo = **todo lo que deje el filtro**; sin filtro extra por cerrado. |
-| 2026-11-03 | Parte G CC-PQ #14: URL canónica tenant; i18n por `users.locale`; guard salida; v1 hardcode; Epic Jira PIAPARTES-56. |
+| 2026-11-03 | Refino documentado (luego renumerado CC #15): URL canónica tenant; i18n por `users.locale`; guard salida; v1 hardcode; Epic Jira PIAPARTES-56. |
+| 2026-11-04 | Registro formal **CC #15** en `00-ControlCalidad-PQ` (CC #14 queda ABM Clientes usuario/mail). |

@@ -14,7 +14,7 @@ Jira: [PIAPARTES-57](https://paqsystems.atlassian.net/browse/PIAPARTES-57)
 | Última actualización | 2026-11-03 |
 | SPEC origen | [SPEC-005-update](../../../05-open-spec/updates/100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) · [PIAPARTES-56](https://paqsystems.atlassian.net/browse/PIAPARTES-56) |
 | TR relacionada(s) | [TR-005-update](../../../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md) · [PIAPARTES-45](https://paqsystems.atlassian.net/browse/PIAPARTES-45) |
-| Origen | `00-ControlCalidad-PQ` · CC #7 · 19/10/2026 · CC #14 · 03/11/2026 |
+| Origen | `00-ControlCalidad-PQ` · CC #7 · 19/10/2026 · CC #15 · 04/11/2026 |
 
 ## Estado de alcance
 
@@ -59,7 +59,7 @@ para que sepan que la empresa registró asistencias a su entidad, puedan revisar
 - [ ] **CA-CC7-M05** No incluye contraseña; menciona recupero en login.
 - [ ] **CA-CC7-M06** Sin destinatarios → no envía; mensaje i18n.
 - [ ] **CA-CC7-M07** Asistente no supervisor no ve / 403.
-- [ ] **CA-CC14-M01** Cuerpo incluye razón social / nombre empresa emisora (CC #14).
-- [ ] **CA-CC14-M02** URL canónica tenant + código usuario; mail en idioma del destinatario (5 locales).
-- [ ] **CA-CC14-M03** Al abandonar pantalla con cambios sin persistir, diálogo ofrece enviar mails a clientes.
-- [ ] **CA-CC14-M04** Plantillas v1 fijas i18n; sin ABM de plantillas.
+- [ ] **CA-CC15-M01** Cuerpo incluye razón social / nombre empresa emisora (CC #15).
+- [ ] **CA-CC15-M02** URL canónica tenant + código usuario; mail en idioma del destinatario (5 locales).
+- [ ] **CA-CC15-M03** Al abandonar pantalla con cambios sin persistir, diálogo ofrece enviar mails a clientes.
+- [ ] **CA-CC15-M04** Plantillas v1 fijas i18n; sin ABM de plantillas.

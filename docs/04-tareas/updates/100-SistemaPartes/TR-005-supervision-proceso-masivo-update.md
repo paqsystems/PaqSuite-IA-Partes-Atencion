@@ -10,7 +10,7 @@ Jira: [PIAPARTES-45](https://paqsystems.atlassian.net/browse/PIAPARTES-45)
 | **Prioridad** | MUST-HAVE |
 | **Estado** | Pendiente de Revisión |
 | **Última actualización** | 2026-11-03 |
-| **Origen** | `00-ControlCalidad-PQ` · CC #7 · 19/10/2026 · CC #14 · 03/11/2026 |
+| **Origen** | `00-ControlCalidad-PQ` · CC #7 · 19/10/2026 · CC #15 · 04/11/2026 |
 
 ---
 
@@ -34,10 +34,10 @@ Jira: [PIAPARTES-45](https://paqsystems.atlassian.net/browse/PIAPARTES-45)
 | AC-CC7-M06 | 422/clave i18n si 0 destinatarios |
 | AC-CC7-M07 | 403 no supervisor |
 | AC-CC7-M08 | SQL sin `whereIn` de N incierto (JOIN/EXISTS) |
-| AC-CC14-M01 | Mail con empresa emisora + URL `https://{tenant}.partesatencion.paqsystems.com` |
-| AC-CC14-M02 | Render por destinatario según `users.locale` |
-| AC-CC14-M03 | `beforeunload` + blocker router; diálogo enviar mails |
-| AC-CC14-M04 | Claves `partes.masivo.mailInformarClientes.*` en 5 JSON |
+| AC-CC15-M01 | Mail con empresa emisora + URL `https://{tenant}.partesatencion.paqsystems.com` |
+| AC-CC15-M02 | Render por destinatario según `users.locale` |
+| AC-CC15-M03 | `beforeunload` + blocker router; diálogo enviar mails |
+| AC-CC15-M04 | Claves `partes.masivo.mailInformarClientes.*` en 5 JSON |
 
 ---
 
@@ -49,9 +49,9 @@ Jira: [PIAPARTES-45](https://paqsystems.atlassian.net/browse/PIAPARTES-45)
 | RN-CC7-M02 | Recolección **en servidor** vía SP (p. ej. `pq_sp_partes_masivo_destinatarios_novedad`). JOIN clientes del universo filtrado `es_tarea = 1`. |
 | RN-CC7-M03 | Deduplicar `user_id`. Omitir sin email / inhabilitado. |
 | RN-CC7-M04 | Mail Engine GEN; plantilla v1 vía `partes.masivo.mailInformarClientes.*` (asunto/cuerpo HTML); locale = `normalizeLocale(users.locale)` por destinatario. |
-| RN-CC14-M01 | URL acceso: `https://{tenant}.partesatencion.paqsystems.com` con `{tenant}` = código cliente instalación (header/sesión); incluir `users.codigo` en cuerpo. |
-| RN-CC14-M02 | Empresa emisora: razón social / nombre desde catálogo empresa MONO (SP o sesión; TR documenta fuente). |
-| RN-CC14-M03 | FE: flag `sessionDirty` masivo (ediciones no guardadas); al navegar/`beforeunload`, `confirm` i18n `partes.masivo.leaveConfirmInformarClientes` con acciones Enviar / Salir sin enviar / Cancelar. |
+| RN-CC15-M01 | URL acceso: `https://{tenant}.partesatencion.paqsystems.com` con `{tenant}` = código cliente instalación (header/sesión); incluir `users.codigo` en cuerpo. |
+| RN-CC15-M02 | Empresa emisora: razón social / nombre desde catálogo empresa MONO (SP o sesión; TR documenta fuente). |
+| RN-CC15-M03 | FE: flag `sessionDirty` masivo (ediciones no guardadas); al navegar/`beforeunload`, `confirm` i18n `partes.masivo.leaveConfirmInformarClientes` con acciones Enviar / Salir sin enviar / Cancelar. |
 | RN-CC7-M05 | Confirmación FE con N antes del POST. |
 | RN-CC7-M06 | Tope: reutilizar `PartesMasivoMaxIds` sobre cantidad de **destinatarios** o param `PartesMasivoNotifyMax`; 422 si excede. |
 | RN-CC7-M07 | UI: `Button` ícono mail en toolbar del masivo (no DataGrid crudo nuevo). |

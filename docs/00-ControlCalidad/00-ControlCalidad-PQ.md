@@ -60,6 +60,68 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 12 | 02/11/2026 | Especificado | ABM maestros paginación · menú sin agrupadas · Emitir Paquete de Horas — **F1/F Aprobado** · **Preview OK** · **Prod OK** (PR #123 → `main`) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
 | 13 | 02/11/2026 | Especificado | Diseñador Paquete de Horas (dataset) · FilterRow maestros + Proceso masivo — **F1/F Aprobado** · **Parte I** · **Preview OK** 03/11/2026 (`88c46ea`) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md) |
 | 14 | 03/11/2026 | Especificado | ABM Clientes — columnas usuario/mail + FilterRow usuario — **F1/F Aprobado** · **Parte I** · manual DEV OK — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md) |
+| 15 | 04/11/2026 | Pendiente | Informar por mail a clientes desde Proceso masivo (asistencias / revisar / observaciones) — refino CC #7 (URL tenant, i18n destinatario, guard salida, plantilla v1 hardcode) |
+
+---
+
+## Control de Calidad #15
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 04/11/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Pendiente |
+| **Origen** | Mejora solicitada — anuncio a clientes de asistencias registradas; refino operativo del ítem «Envio mail a clientes…» de **CC #7** (19/10/2026) |
+| **Proceso** | **Proceso masivo** — `partes.masivo` · ruta `/partes/masivo` · `ProcesoMasivoPage` |
+| **Cola previa** | [SPEC-005-update](../05-open-spec/updates/100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) · [HU-005-update](../03-historias-usuario/updates/100-SistemaPartes/HU-005-supervision-proceso-masivo-update.md) · [TR-005-update](../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md) · Jira [PIAPARTES-56](https://paqsystems.atlassian.net/browse/PIAPARTES-56) / [57](https://paqsystems.atlassian.net/browse/PIAPARTES-57) / [45](https://paqsystems.atlassian.net/browse/PIAPARTES-45) |
+| **Relación** | Extiende / precisa CC #7 § «Envio mail a clientes para informar existencia de novedades»; no sustituye el mail de acceso ABM Usuarios (HU-002-update). **No** confundir con **CC #14** (columnas usuario/mail en ABM Clientes). |
+
+### Resumen del hito
+
+Enviar a clientes mails anunciando que la **empresa emisora** registró **asistencias** en su entidad, para que puedan **revisarlas**, estar al tanto y/o **realizar observaciones**.
+
+### Objetivo / mejora solicitada
+
+#### Mail «Informar a clientes» desde Proceso masivo
+
+1. **Disparo:** botón/ícono específico en el proceso **Proceso masivo** (no desde otros procesos).
+2. **Contenido del mail (MUST):**
+   - Identificar la **empresa que lo envía** (razón social / nombre de la empresa emisora).
+   - Recordar el **link de acceso** canónico: `{tenant}.partesatencion.paqsystems.com` (URL completa `https://{tenant}.partesatencion.paqsystems.com`) y el **código de usuario** de acceso (`users.codigo`).
+   - **No** incluir contraseña; si no la recuerda, recupero vía login (GEN-04).
+   - Invitar a revisar las asistencias y, si corresponde, formular observaciones.
+3. **i18n:** asunto y cuerpo respetan el idioma del sitio / destinatario (`users.locale`, catálogo producto en los 5 locales del host). El envío no debe quedar fijo en el idioma del supervisor.
+4. **Destinatarios (MUST):** todos los clientes que cumplan **ambas** condiciones:
+   - a) tengan **usuario** de la tabla `users` asociado (vía vínculo cliente ↔ usuario del producto);
+   - b) **aparezcan en al menos un registro** de la grilla del proceso masivo en el universo filtrado actual (**no importa** si el renglón fue modificado o no; no se exige tilde).
+5. **Plantilla v1:** texto **hardcodeado** (claves i18n fijas). **Fuera de alcance de este hito:** componente/ABM de armado de plantillas de mails predefinidos (evolución posterior).
+
+#### Guard al abandonar el proceso
+
+Si el supervisor **abandona la pestaña** (cambio de pestaña del shell, cambio de opción de menú, intento de cierre/recarga) **y** se realizaron **cambios** en el proceso masivo, **avisar** y **preguntar** si quiere **enviar** el mail a clientes antes de salir (diálogo i18n; cancelar debe conservar el trabajo en pantalla).
+
+### Criterios de aceptación preliminares
+
+- [ ] **CA-15-01** En Proceso masivo hay un botón/ícono específico para informar a clientes (`data-testid` estable; tooltip i18n).
+- [ ] **CA-15-02** El mail identifica la empresa emisora.
+- [ ] **CA-15-03** El mail incluye URL `https://{tenant}.partesatencion.paqsystems.com` y el código de usuario; sin contraseña.
+- [ ] **CA-15-04** Asunto/cuerpo en el locale del destinatario (5 locales).
+- [ ] **CA-15-05** Destinatarios = clientes con `users` asociado **y** presentes en ≥1 fila del universo filtrado (todas las páginas; sin exigir modificación ni selección).
+- [ ] **CA-15-06** Al salir con cambios pendientes, diálogo ofrece enviar / salir sin enviar / cancelar.
+- [ ] **CA-15-07** Texto v1 hardcodeado vía i18n; sin editor de plantillas.
+
+### Notas para Parte G
+
+- Reutilizar / alinear la cola **SPEC/HU/TR-005-update** (origen CC #7); no abrir épica paralela salvo ambigüedad A1.
+- Motor de envío: Mail Engine GEN / futuro **GEN-30** (no SMTP ad-hoc en el host).
+- Acceso datos: MUST SP; sin `WHERE IN` de N incierto (regla 77).
+- Excluido mobile (Proceso masivo ya fuera de MVP native).
+
+### Derivación SDD
+
+Pendiente Parte G (`Corrige los errores del 04/11/2026 de PQ` / *Procesa las solicitudes…*). Cola existente a confirmar/completar: SPEC/HU/TR-005-update + [D-VERIFICACION-005-update-masivo-informar-clientes](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-005-update-masivo-informar-clientes.md).
 
 ---
 
