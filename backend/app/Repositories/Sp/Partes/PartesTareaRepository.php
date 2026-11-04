@@ -91,6 +91,15 @@ final class PartesTareaRepository
     }
 
     /**
+     * @param  array<string, mixed>  $params
+     * @return list<array<string, mixed>>
+     */
+    public function listMasivoDestinatariosNovedad(array $params): array
+    {
+        return $this->call('pq_sp_partes_masivo_destinatarios_novedad', $params);
+    }
+
+    /**
      * @param  array<string, mixed>  $row
      * @return array<string, mixed>
      */

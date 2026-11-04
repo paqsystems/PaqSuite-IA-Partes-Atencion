@@ -15,12 +15,14 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev:e2e',
     url: 'http://localhost:3101',
-    reuseExistingServer: false,
-    timeout: 120_000,
+    reuseExistingServer: !process.env.CI,
+    timeout: 180_000,
     env: {
       ...process.env,
       VITE_API_PROXY_TARGET: process.env.VITE_API_PROXY_TARGET ?? 'http://127.0.0.1:8010',
       VITE_DX_REPORTING_HOST: process.env.VITE_DX_REPORTING_HOST ?? 'http://127.0.0.1:5055',
+      VITE_TENANT_DEFAULT_CLIENT:
+        process.env.VITE_TENANT_DEFAULT_CLIENT ?? process.env.PW_TENANT ?? 'DEMO',
     },
   },
 })

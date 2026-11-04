@@ -100,10 +100,6 @@ final class PartesPaqueteHorasEmissionPort implements EmissionDatasetPort
             $datasetRows[] = $this->pickColumns($camel);
         }
 
-        if ($datasetRows === []) {
-            throw EmissionException::fromCode(4701);
-        }
-
         $schema = [];
         foreach (self::DATASET_COLUMNS as $column) {
             if (in_array($column, ['duracionMinutos', 'saldo'], true)) {

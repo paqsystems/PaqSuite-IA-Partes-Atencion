@@ -478,6 +478,14 @@
             "dependsOn": []
         },
         {
+            "id": "partes-sp-pq_sp_partes_masivo_destinatarios_novedad",
+            "kind": "sql",
+            "target": "dictionary",
+            "path": "scripts/sql/partes/pq_sp_partes_masivo_destinatarios_novedad.sql",
+            "checksum": "77dba026382b42ee05631ad43f919c7aee5b6d554990964a9bb19f30058f0f59",
+            "dependsOn": []
+        },
+        {
             "id": "partes-sp-pq_sp_partes_paquete_delete",
             "kind": "sql",
             "target": "dictionary",

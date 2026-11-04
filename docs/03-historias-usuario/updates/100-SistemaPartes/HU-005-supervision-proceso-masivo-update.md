@@ -1,6 +1,6 @@
 # HU-005-update – Informar novedades a clientes (proceso masivo)
 
-Jira: PIAPARTES-45
+Jira: [PIAPARTES-57](https://paqsystems.atlassian.net/browse/PIAPARTES-57)
 
 ## Metadatos
 
@@ -10,17 +10,17 @@ Jira: PIAPARTES-45
 | Título | Informar por mail a clientes desde Proceso masivo |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Pendiente |
-| Última actualización | 2026-10-20 |
-| SPEC origen | [SPEC-005-update](../../../05-open-spec/updates/100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) |
-| TR relacionada(s) | [TR-005-update](../../../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md) |
-| Origen | `00-ControlCalidad-PQ` · CC #7 · 19/10/2026 · ítem mail novedades en Partes masivos |
+| Estado | Especificado |
+| Última actualización | 2026-11-03 |
+| SPEC origen | [SPEC-005-update](../../../05-open-spec/updates/100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) · [PIAPARTES-56](https://paqsystems.atlassian.net/browse/PIAPARTES-56) |
+| TR relacionada(s) | [TR-005-update](../../../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md) · [PIAPARTES-45](https://paqsystems.atlassian.net/browse/PIAPARTES-45) |
+| Origen | `00-ControlCalidad-PQ` · CC #7 · 19/10/2026 · CC #14 · 03/11/2026 |
 
 ## Estado de alcance
 
 | Campo | Valor |
 |-------|--------|
-| Estado | Pendiente |
+| Estado | Especificado |
 
 ---
 
@@ -28,7 +28,7 @@ Jira: PIAPARTES-45
 
 Como supervisor  
 quiero informar por mail a los clientes (con usuario) que aparecen en el proceso masivo filtrado  
-para avisarles que hay novedades de atención en el período, con el enlace y su usuario, sin enviar la contraseña.
+para que sepan que la empresa registró asistencias a su entidad, puedan revisarlas en el sitio y realizar observaciones, con el enlace, su código de usuario e idioma del destinatario, sin enviar la contraseña.
 
 ---
 
@@ -36,8 +36,9 @@ para avisarles que hay novedades de atención en el período, con el enlace y su
 
 - Ícono mail + tooltip «Informar a clientes» en Proceso masivo.
 - Destinatarios: usuarios únicos de clientes del resultado filtrado con email.
-- Mail: asunto con código empresa; cuerpo con período, URL, usuario; forgot si no recuerda clave.
-- Confirmación con N; Mail Engine GEN.
+- Mail: asunto con empresa emisora; cuerpo v1 hardcode i18n con período, URL `https://{tenant}.partesatencion.paqsystems.com`, `users.codigo`; locale = `users.locale`; forgot si no recuerda clave.
+- Confirmación con N destinatarios y rango de fechas; Mail Engine GEN.
+- Guard al salir con cambios pendientes: ofrecer enviar mails a clientes.
 
 ## Fuera de alcance
 
@@ -45,6 +46,7 @@ para avisarles que hay novedades de atención en el período, con el enlace y su
 - GEN-15 / PDF.
 - Mobile.
 - Password en el mail (eso es HU-002-update).
+- Editor de plantillas de correo (futuro).
 
 ---
 
@@ -57,3 +59,7 @@ para avisarles que hay novedades de atención en el período, con el enlace y su
 - [ ] **CA-CC7-M05** No incluye contraseña; menciona recupero en login.
 - [ ] **CA-CC7-M06** Sin destinatarios → no envía; mensaje i18n.
 - [ ] **CA-CC7-M07** Asistente no supervisor no ve / 403.
+- [ ] **CA-CC14-M01** Cuerpo incluye razón social / nombre empresa emisora (CC #14).
+- [ ] **CA-CC14-M02** URL canónica tenant + código usuario; mail en idioma del destinatario (5 locales).
+- [ ] **CA-CC14-M03** Al abandonar pantalla con cambios sin persistir, diálogo ofrece enviar mails a clientes.
+- [ ] **CA-CC14-M04** Plantillas v1 fijas i18n; sin ABM de plantillas.
