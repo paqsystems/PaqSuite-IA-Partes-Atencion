@@ -27,6 +27,17 @@ final class HostMenuProcedimientoChecker implements MenuProcedimientoChecker
             return false;
         }
 
+        // GEN-15: emission.design es capacidad/permiso, no fila de menú.
+        // El ancla visible es el proceso del diseñador (partes_disenador_emisiones).
+        if ($codigo === 'emission.design') {
+            return $this->menuHasProcedimiento('partes_disenador_emisiones');
+        }
+
+        return $this->menuHasProcedimiento($codigo);
+    }
+
+    private function menuHasProcedimiento(string $codigo): bool
+    {
         foreach ($this->menuQueryRepository->listEnabled() as $row) {
             if (trim((string) ($row['procedimiento'] ?? '')) === $codigo) {
                 return true;

@@ -80,6 +80,20 @@ export function reportingProxyTarget(env: Record<string, string>): string {
   return trimSlash(raw)
 }
 
+/** Sidecar lee processCode en query del POST a GetDesignerModel (contrato GEN-15). */
+export function buildDxGetDesignerModelAction(
+  processCode: string,
+  baseAction: string = DEFAULT_DX_GET_DESIGNER_MODEL_ACTION,
+): string {
+  const action = baseAction.trim() || DEFAULT_DX_GET_DESIGNER_MODEL_ACTION
+  const code = processCode.trim()
+  if (code === '') {
+    return action
+  }
+  const separator = action.includes('?') ? '&' : '?'
+  return `${action}${separator}processCode=${encodeURIComponent(code)}`
+}
+
 /**
  * URL que consume DXXRD. El sidecar indexa layouts/schemas por código
  * (`partes.consultaDetallada.principal`), no por id numérico del catálogo GEN.

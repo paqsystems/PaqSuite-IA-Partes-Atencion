@@ -502,6 +502,31 @@ class ApiV1EmissionsPartesTest extends TestCase
             ->assertJsonPath('resultado.items.0.isStandard', true);
     }
 
+    public function test_field_schema_con_token_no_revienta_en_401(): void
+    {
+        $this->getJson(
+            '/api/v1/emissions/design/field-schema?processCode=partes.informes.consultaDetallada',
+            $this->tenantHeaders()
+        )->assertStatus(401);
+
+        $token = $this->login();
+        $response = $this->getJson(
+            '/api/v1/emissions/design/field-schema?processCode=partes.informes.consultaDetallada',
+            $this->authHeaders($token)
+        );
+
+        // Antes del cableado designerSchemaMiddleware+Sanctum, con Bearer devolvía 401 y el FE
+        // cerraba sesión (auth.sessionUnauthorized). Con token válido no debe ser 401.
+        $this->assertNotSame(
+            401,
+            $response->status(),
+            'field-schema no debe devolver 401 autenticado: '.$response->getContent()
+        );
+        if ($response->status() === 200) {
+            $response->assertJsonPath('resultado.processCode', 'partes.informes.consultaDetallada');
+        }
+    }
+
     public function test_emit_sin_reporte_no_estandar_422(): void
     {
         $token = $this->login();

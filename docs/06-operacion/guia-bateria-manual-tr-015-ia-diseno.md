@@ -3,6 +3,8 @@
 Para operadores con permiso **`emission.design`**. Registrá resultados en  
 [`D-VERIFICACION-TR-015-2026-10-30.md`](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-2026-10-30.md).
 
+**Lab 2026-11-04:** smoke Prompt-to-Report en D-VERIFICACION § Lab; detalle sidecar en Framework `services/dx-reporting/docs/evidence/LAB-2026-11-04-prompt-to-report.md`.
+
 Referencias: [SPEC-015 §4.4](../05-open-spec/100-SistemaPartes/SPEC-015-ia-diseno-informes.md) · [ops sidecar](./adopcion-tr-015-piloto-ia-diseno-sidecar.md) · Framework [runbook §6](../../../PaqSuite-IA-FRAMEWORK/docs/06-operacion/runbook-dx-reporting-sidecar.md).
 
 ---

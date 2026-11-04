@@ -152,8 +152,21 @@ return [
     | Emisiones documentales GEN-15 — motor DevExpress (sidecar .NET)
     |--------------------------------------------------------------------------
     | mode: fake = MinimalDxReportingEngine (CI/tests); remote = sidecar /render
+    |
+    | designerSchemaMiddleware: obligatorio anteponer instalacion + Sanctum.
+    | Sin auth:sanctum, GET /emissions/design/field-schema responde 401 y el FE
+    | dispara expireSession (mensaje «sesión no válida para esta empresa»).
     */
     'emissions' => [
+        'designerSchemaRoutesEnabled' => filter_var(
+            env('PAQSUITE_EMISSION_DESIGNER_SCHEMA_ROUTES_ENABLED', true),
+            FILTER_VALIDATE_BOOLEAN,
+        ),
+        'designerSchemaMiddleware' => [
+            'paqsuite.instalacion',
+            'paqsuite.instalacion.db',
+            'auth:sanctum',
+        ],
         'dxReporting' => [
             'mode' => env('PAQSUITE_EMISSION_DX_MODE', 'fake'),
             'serviceUrl' => env(
@@ -172,6 +185,7 @@ return [
     */
     'companyHeaderAllowlist' => [
         '/api/v1/health',
+        '/api/v1/emissions/design/field-schema',
         '/api/v1/auth/login',
         '/api/v1/auth/logout',
         '/api/v1/auth/forgot-password',
