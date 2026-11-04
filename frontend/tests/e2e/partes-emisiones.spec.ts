@@ -1,7 +1,9 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { partesEmissionMenuEntries } from '../../src/features/partes/informes/partesEmissionMenuCatalog'
 
 const e2eUser = process.env.PW_LOGIN_USER ?? 'admin'
 const e2ePassword = process.env.PW_LOGIN_PASSWORD ?? 'Paqsystems'
+const e2eTenant = process.env.PW_TENANT ?? process.env.VITE_TENANT_DEFAULT_CLIENT ?? 'DEMO'
 
 /** Un retry si php -S / sqlite rechazan el login bajo carga; los casos siguen independientes. */
 test.describe.configure({ retries: 1 })
@@ -9,7 +11,7 @@ test.describe.configure({ retries: 1 })
 async function loginPartes(page: Page) {
   let lastError: unknown
   for (let attempt = 1; attempt <= 3; attempt++) {
-    await page.goto('/login?cliente=DEMO')
+    await page.goto(`/login?cliente=${encodeURIComponent(e2eTenant)}`)
     await page.getByTestId('loginUsuario').locator('input').fill(e2eUser)
     await page.getByTestId('loginPassword').locator('input').fill(e2ePassword)
     await page.getByTestId('loginSubmit').click()
@@ -105,19 +107,21 @@ async function confirmDesignerProcess(page: Page) {
   await confirm.click()
 }
 
-test('consulta detallada muestra emitir y abre el dialogo', async ({ page }) => {
-  test.setTimeout(90_000)
-  await loginPartes(page)
+for (const entry of partesEmissionMenuEntries) {
+  test(`${entry.processCode} — navegación menú y diálogo Emitir`, async ({ page }) => {
+    test.setTimeout(90_000)
+    await loginPartes(page)
 
-  await page.goto('/partes/informes/consulta-detallada')
-  await expect(page.getByTestId('partesConsultaDetalladaPage')).toBeVisible({ timeout: 20_000 })
-  const emit = page.getByTestId('partesConsultaDetalladaEmit')
-  await expect(emit).toBeVisible({ timeout: 15_000 })
-  if (await emit.isEnabled()) {
-    await emit.click()
-    await expect(page.getByTestId('emission.dialog')).toBeVisible({ timeout: 10_000 })
-  }
-})
+    await page.goto(`${entry.routePath}?cliente=${encodeURIComponent(e2eTenant)}`)
+    await expect(page.getByTestId(entry.pageTestId)).toBeVisible({ timeout: 20_000 })
+    const emit = page.getByTestId(entry.emitTestId)
+    await expect(emit).toBeVisible({ timeout: 15_000 })
+    if (await emit.isEnabled()) {
+      await emit.click()
+      await expect(page.getByTestId('emission.dialog')).toBeVisible({ timeout: 10_000 })
+    }
+  })
+}
 
 test('disenador llega al diseño del reporte sin errores', async ({ page }) => {
   test.setTimeout(120_000)
@@ -128,7 +132,7 @@ test('disenador llega al diseño del reporte sin errores', async ({ page }) => {
 
   await loginPartes(page)
 
-  await page.goto('/emisiones/disenador?cliente=DEMO')
+  await page.goto(`/emisiones/disenador?cliente=${encodeURIComponent(e2eTenant)}`)
   await expect(page).toHaveURL(/\/emisiones\/disenador/, { timeout: 20_000 })
   await expect(page.getByTestId('partesEmisionesDisenadorPage')).toBeVisible({ timeout: 20_000 })
   await expect(page.getByTestId('emission.design.process')).toBeVisible({ timeout: 20_000 })

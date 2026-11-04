@@ -3,8 +3,10 @@
 namespace Tests\Feature\Partes;
 
 use App\Models\User;
+use App\Notifications\PartesMasivoInformarClientesNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class ApiV1PartesMasivoTest extends TestCase
@@ -452,5 +454,106 @@ class ApiV1PartesMasivoTest extends TestCase
         $rv = DB::table('PQ_PARTES_REGISTRO_TAREA')->where('id', $id)->value('row_version');
 
         return \App\Services\Partes\PartesTareaOperations::encodeRowVersion($rv);
+    }
+
+    private function linkClienteToUser(int $clienteId, array $userAttrs = []): User
+    {
+        $user = User::factory()->create(array_merge([
+            'activo' => true,
+            'inhabilitado' => false,
+            'email' => 'cliente.dest@test.com',
+            'locale' => 'en',
+            'usuario' => 'cliusr1',
+        ], $userAttrs));
+        DB::table('PQ_PARTES_CLIENTES')->where('id', $clienteId)->update(['user_id' => $user->id]);
+
+        return $user;
+    }
+
+    public function test_informar_clientes_preview_y_envio(): void
+    {
+        Notification::fake();
+        $token = $this->loginAdmin();
+        $cat = $this->seedCatalogos();
+        $clienteUser = $this->linkClienteToUser($cat['clienteId']);
+        $this->createTarea($token, $cat, 'Mail informar');
+        $hoy = now()->toDateString();
+        $qs = 'fechaDesde='.$hoy.'&fechaHasta='.$hoy;
+
+        $preview = $this->getJson(
+            '/api/v1/partes/masivo/informar-clientes/preview?'.$qs,
+            $this->authHeaders($token)
+        );
+        $preview->assertStatus(200)->assertJsonPath('resultado.destinatarioCount', 1);
+
+        $send = $this->postJson(
+            '/api/v1/partes/masivo/informar-clientes?'.$qs,
+            [],
+            $this->authHeaders($token)
+        );
+        $send->assertStatus(200)
+            ->assertJsonPath('resultado.item.enviados', 1)
+            ->assertJsonPath('resultado.item.destinatarios', 1);
+
+        Notification::assertSentTo($clienteUser, PartesMasivoInformarClientesNotification::class);
+    }
+
+    public function test_informar_clientes_sin_destinatarios(): void
+    {
+        $token = $this->loginAdmin();
+        $cat = $this->seedCatalogos();
+        $this->createTarea($token, $cat, 'Sin mail');
+        $hoy = now()->toDateString();
+        $qs = 'fechaDesde='.$hoy.'&fechaHasta='.$hoy;
+
+        $this->postJson(
+            '/api/v1/partes/masivo/informar-clientes?'.$qs,
+            [],
+            $this->authHeaders($token)
+        )
+            ->assertStatus(422)
+            ->assertJsonPath('respuesta', 'partes.masivo.sinDestinatarios');
+    }
+
+    public function test_informar_clientes_forbidden_no_supervisor(): void
+    {
+        $token = $this->loginAdmin();
+        $cat = $this->seedCatalogos();
+        $this->linkClienteToUser($cat['clienteId']);
+        $this->createTarea($token, $cat, 'Forbidden mail');
+        $hoy = now()->toDateString();
+        $qs = 'fechaDesde='.$hoy.'&fechaHasta='.$hoy;
+
+        $user = User::factory()->create([
+            'usuario' => 'asstmail',
+            'password' => bcrypt('Secret123!'),
+            'activo' => true,
+            'inhabilitado' => false,
+        ]);
+        DB::table('PQ_PARTES_USUARIOS')->insert([
+            'user_id' => $user->id,
+            'code' => 'AM2',
+            'nombre' => 'Asistente',
+            'email' => null,
+            'supervisor' => false,
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $this->app['auth']->forgetGuards();
+        $login = $this->postJson('/api/v1/auth/login', [
+            'usuario' => 'asstmail',
+            'password' => 'Secret123!',
+        ], $this->tenantHeaders());
+        $asstToken = (string) $login->json('resultado.token');
+
+        $this->postJson(
+            '/api/v1/partes/masivo/informar-clientes?'.$qs,
+            [],
+            $this->authHeaders($asstToken)
+        )
+            ->assertStatus(403)
+            ->assertJsonPath('respuesta', 'partes.masivo.forbidden');
     }
 }

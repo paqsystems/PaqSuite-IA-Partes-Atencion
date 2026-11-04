@@ -78,3 +78,44 @@ export async function masivoActualizar(
     }
   )
 }
+
+export type MasivoInformarFilters = Omit<TareaListQuery, 'page' | 'pageSize'>
+
+function buildMasivoFilterParams(query: MasivoInformarFilters): URLSearchParams {
+  const params = new URLSearchParams({
+    fechaDesde: query.fechaDesde,
+    fechaHasta: query.fechaHasta,
+    estadoCerrado: query.estadoCerrado ?? 'todas',
+  })
+  if (query.clienteId) {
+    params.set('clienteId', String(query.clienteId))
+  }
+  if (query.usuarioId) {
+    params.set('usuarioId', String(query.usuarioId))
+  }
+  return params
+}
+
+export async function previewInformarClientes(query: MasivoInformarFilters) {
+  const params = buildMasivoFilterParams(query)
+  return apiRequest<{ destinatarioCount: number; fechaDesde: string; fechaHasta: string }>(
+    `/api/v1/partes/masivo/informar-clientes/preview?${params.toString()}`,
+    {
+      method: 'GET',
+      headers: authHeaders(),
+      platform: platform(),
+    }
+  )
+}
+
+export async function informarClientes(query: MasivoInformarFilters) {
+  const params = buildMasivoFilterParams(query)
+  return apiRequest<{ item: { destinatarios: number; enviados: number; errores: number } }>(
+    `/api/v1/partes/masivo/informar-clientes?${params.toString()}`,
+    {
+      method: 'POST',
+      headers: authHeaders(),
+      platform: platform(),
+    }
+  )
+}

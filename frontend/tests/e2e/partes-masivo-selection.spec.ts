@@ -37,4 +37,5 @@ test('tilde de fila en proceso masivo permanece', async ({ page }) => {
   await expect(page.getByTestId('partesMasivoSelectionCount')).toContainText('1', { timeout: 5_000 })
   await page.waitForTimeout(400)
   await expect(page.getByTestId('partesMasivoSelectionCount')).toContainText('1')
+  await expect(page.getByTestId('partesMasivoInformarClientes')).toBeVisible()
 })

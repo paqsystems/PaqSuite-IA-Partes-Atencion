@@ -26,6 +26,7 @@ final class PartesTareaOperations
             'pq_sp_partes_tarea_set_cerrado' => self::setCerrado($params),
             'pq_sp_partes_tarea_masivo_set_cerrado' => self::masivoSetCerrado($params),
             'pq_sp_partes_tarea_masivo_actualizar' => self::masivoActualizar($params),
+            'pq_sp_partes_masivo_destinatarios_novedad' => self::masivoDestinatariosNovedad($params),
             default => throw new PartesTareaException('partes.tarea.procedureUnknown', 500),
         };
     }
@@ -397,6 +398,53 @@ final class PartesTareaOperations
                 'fecha' => $hasFecha,
             ])),
         ]];
+    }
+
+    /** @param array<string, mixed> $params @return list<object> */
+    private static function masivoDestinatariosNovedad(array $params): array
+    {
+        self::assertActorAsistente($params);
+        if (! (bool) ($params['p_actor_es_supervisor'] ?? false)) {
+            self::fail('partes.masivo.forbidden', 403);
+        }
+
+        $clienteIdsSub = (clone self::filteredQuery($params))
+            ->select('r.cliente_id')
+            ->distinct();
+
+        $rows = DB::table('PQ_PARTES_CLIENTES as c')
+            ->joinSub($clienteIdsSub, 'filt', 'filt.cliente_id', '=', 'c.id')
+            ->join('users as fu', 'fu.id', '=', 'c.user_id')
+            ->whereNotNull('c.user_id')
+            ->where('c.activo', 1)
+            ->where('c.inhabilitado', 0)
+            ->where('fu.activo', 1)
+            ->where('fu.inhabilitado', 0)
+            ->whereNotNull('fu.email')
+            ->where('fu.email', '!=', '')
+            ->select([
+                'fu.id as user_id',
+                'fu.email',
+                'fu.usuario as codigo',
+                'fu.locale',
+                'fu.name',
+            ])
+            ->distinct()
+            ->orderBy('fu.id')
+            ->get();
+
+        $out = [];
+        foreach ($rows as $row) {
+            $out[] = (object) [
+                'user_id' => (int) $row->user_id,
+                'email' => (string) $row->email,
+                'codigo' => (string) $row->codigo,
+                'locale' => (string) ($row->locale ?? 'es'),
+                'name' => (string) ($row->name ?? ''),
+            ];
+        }
+
+        return $out;
     }
 
     /** @param array<string, mixed> $params @return list<object> */

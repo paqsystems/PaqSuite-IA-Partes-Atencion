@@ -119,7 +119,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(MenuQueryRepository::class, function ($app): SpMenuQueryRepository {
             $connection = (string) config('database.default', 'sqlsrv');
 
-            return new SpMenuQueryRepository($connection);
+            return new SpMenuQueryRepository($connection, $app->make(SpCaller::class));
         });
         $this->app->singleton(UserEffectiveMenuPermissions::class, SpUserEffectiveMenuPermissions::class);
         $this->app->singleton(MenuAuthorizationService::class, function ($app) {
