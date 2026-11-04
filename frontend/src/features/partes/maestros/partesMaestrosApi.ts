@@ -17,6 +17,8 @@ export type PartesResourceListQuery = {
   code?: string
   nombre?: string
   descripcion?: string
+  usuario?: string
+  email?: string
 }
 
 export async function listPartesResource(path: string, query: PartesResourceListQuery = {}) {
@@ -35,6 +37,12 @@ export async function listPartesResource(path: string, query: PartesResourceList
   }
   if (query.descripcion) {
     params.set('descripcion', query.descripcion)
+  }
+  if (query.usuario) {
+    params.set('usuario', query.usuario)
+  }
+  if (query.email) {
+    params.set('email', query.email)
   }
   const qs = params.toString()
   return apiRequest<{ items: Record<string, unknown>[]; total?: number }>(

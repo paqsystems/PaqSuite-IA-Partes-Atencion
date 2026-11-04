@@ -8,6 +8,8 @@ function filterMaestroItems(items: MaestroListItem[], url: URL): { items: Maestr
   const code = url.searchParams.get('code')
   const nombre = url.searchParams.get('nombre')
   const descripcion = url.searchParams.get('descripcion')
+  const usuario = url.searchParams.get('usuario')
+  const email = url.searchParams.get('email')
   if (code) {
     rows = rows.filter((row) => String(row.code ?? '').includes(code))
   }
@@ -16,6 +18,12 @@ function filterMaestroItems(items: MaestroListItem[], url: URL): { items: Maestr
   }
   if (descripcion) {
     rows = rows.filter((row) => String(row.descripcion ?? '').includes(descripcion))
+  }
+  if (usuario) {
+    rows = rows.filter((row) => String(row.usuarioCodigo ?? '').includes(usuario))
+  }
+  if (email) {
+    rows = rows.filter((row) => String(row.email ?? '').includes(email))
   }
   const page = Math.max(1, Number(url.searchParams.get('page') ?? 1))
   const pageSize = Math.max(1, Number(url.searchParams.get('pageSize') ?? 20))

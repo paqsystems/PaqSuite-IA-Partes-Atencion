@@ -12,7 +12,7 @@ Jira: PIAPARTES-17
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
 | Estado | Finalizado |
-| Última actualización | 2026-11-03 (Parte I CC-PQ #13) |
+| Última actualización | 2026-11-03 (Parte I CC-PQ #14) |
 | SPEC origen | [SPEC-003-maestros-y-catalogos](../../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) |
 | TR relacionada(s) | [TR-003-maestros-y-catalogos](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |
 
@@ -68,6 +68,7 @@ La carga diaria y el gate post-login dependen de maestros administrables: asiste
 - Acceso condicionado por permiso de menú Framework; cliente funcional no administra maestros.
 - Persistencia de negocio vía SP (MUST; firmas en TR).
 - Maestro de clientes: capturar y mostrar `erpCliente` / `erpArticulo` (opcionales, máx. 15 caracteres) en listado y modal de alta/edición; persisten en get/list/upsert.
+- Grilla **Clientes**: columnas usuario de acceso (`usuarioCodigo`) y mail; FilterRow remoto en **usuario** (Asistentes y Clientes) y **mail** (Clientes) con paginación remota (CC #14).
 
 ---
 
@@ -132,6 +133,10 @@ Criterio “usable” en selectores: `activo = 1` **y** `inhabilitado = 0`.
 - [x] **CA-U02** El selector de asistentes y el de clientes no ofrecen inactivos, inhabilitados ni ya asignados; en edición sí ofrece el usuario de esa fila.
 - [x] **CA-U03** Persistir un `user_id` ya usado en otro asistente o en un cliente responde 422 `partes.maestros.exclusividadUserId`.
 - [x] **CA-U04** Persistir un usuario inactivo o inhabilitado responde 422 `partes.maestros.usuarioNoVinculable`.
+- [x] **CA-14-01** ABM Clientes muestra columnas **usuario** y **mail** en la grilla, coherentes con el modal.
+- [x] **CA-14-02** ABM Asistentes: FilterRow en columna **usuario** reduce filas (paginación remota).
+- [x] **CA-14-03** ABM Clientes: FilterRow en **usuario** y **mail** equivalente a nombre/código.
+- [x] **CA-14-04** Sin regresión paginación remota ni FilterRow CC #12/#13 en otros maestros.
 
 ---
 
@@ -241,3 +246,4 @@ Feature: ABM maestros y catálogos Partes
 | 2026-08-01 | Parte I: fusionado HU-003-update (CC-PQ #2, 01/08) en esta HU; update eliminado. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4: código de usuario, selector vinculable y unicidad (CA-U01…U04); update eliminado. Estado → Finalizado. |
 | 03/11/2026 | CC-PQ #13: FilterRow remoto en listados ABM (nombre/código/descripción). Parte I acotada; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
+| 03/11/2026 | CC-PQ #14: grilla Clientes usuario/mail + FilterRow usuario/mail. Parte I; [D-VERIFICACION-CC-PQ-14](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md). |

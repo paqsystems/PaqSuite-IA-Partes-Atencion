@@ -57,6 +57,8 @@ export function ClientesPage() {
         { dataField: 'code', caption: t('partes.informe.field.ejeCodigo') },
         { dataField: 'nombre', caption: t('partes.maestros.field.nombre') },
         { dataField: 'tipoClienteCode', caption: t('partes.maestros.field.tipo') },
+        { dataField: 'usuarioCodigo', caption: t('partes.maestros.field.usuarioCodigo') },
+        { dataField: 'email', caption: t('partes.maestros.field.email') },
         { dataField: 'erpCliente', caption: t('partes.informe.field.erpCliente') },
         { dataField: 'erpArticulo', caption: t('partes.informe.field.erpArticulo') },
         { dataField: 'activo', caption: t('admin.common.activo') },
