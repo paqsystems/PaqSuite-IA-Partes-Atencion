@@ -421,3 +421,14 @@ Verificación: [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICA
 
 Deuda plataforma: pipeline GEN-34 unificado de schemas — [Framework CC #13](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/00-ControlCalidad/00-ControlCalidad-PQ.md#control-de-calidad-13).
 
+---
+
+## 19) Save As — lista del diálogo DX acotada al proceso (2026-11-05)
+
+| Capa | Cambio |
+|------|--------|
+| Sidecar Framework | `FileReportStorage.GetUrls()` filtra por `processCode` (cookie `paq_design_process_code` en `GetDesignerModel`, form/query o inferencia). Catálogo: `GET /api/v1/emissions/design/report-storage-urls?processCode=` + `X-Paq-Sidecar-Schema-Token`. |
+| Partes BE | Ruta `GET /api/v1/emissions/design/report-storage-urls` (mismo auth que field-schema: sidecar token o `emission.design`). Helper `EmissionReportDxStorageUrl`. |
+| Ops | Sidecar `PaqSuite:BackendBaseUrl` + `PaqSuite:SidecarSchemaToken` alineados a `EMISSION_DESIGNER_SIDECAR_TOKEN` del host. Sin backend: fallback heurístico (solo nombres inferibles). |
+| Producto | D-EM-13 en `docs/02-producto/Sistema-Partes-IA/15-reportes-emisiones.md`; prueba manual TR-015 #8. |
+
