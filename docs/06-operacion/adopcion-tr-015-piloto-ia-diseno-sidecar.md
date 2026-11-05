@@ -33,6 +33,7 @@ PAQSUITE_EMISSION_DX_SERVICE_URL=https://<sidecar-host>/api/v1/dx-reporting
 - Pin `devexpress-reporting*` **26.1.4** (`frontend/package.json`).
 - `developmentMode` del widget DX solo en `import.meta.env.DEV` (`DxReportDesignerApp.tsx`).
 - Proxy Vite `/DXXRD` → sidecar (igual TR-011).
+- **Dónde queda el REPX (BD vs sidecar):** [persistencia-layouts-emisiones-dx.md](./persistencia-layouts-emisiones-dx.md).
 
 ## Smoke mínimo post-deploy
 
