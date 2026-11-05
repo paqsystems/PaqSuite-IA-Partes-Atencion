@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Emissions;
 
 use App\Http\Controllers\Api\V1\CapabilityEnvelopeController;
 use App\Repositories\Sp\Emissions\SpEmissionRepository;
+use App\Support\Emissions\EmissionReportDxStorageUrl;
 use DateTimeInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ use PaqSuite\LaravelCore\Emissions\EmissionOrchestrator;
 use PaqSuite\LaravelCore\Emissions\EmissionPreviewService;
 use PaqSuite\LaravelCore\Http\Responses\ApiResponse;
 use PaqSuite\LaravelCore\Http\Responses\PaqSuiteEnvelopeCatalog;
+use PaqSuite\LaravelCore\Http\Middleware\EmissionDesignerSchemaAuthMiddleware;
 use PaqSuite\LaravelCore\Security\AccesoTotalChecker;
 use PaqSuite\LaravelCore\Tenancy\MenuProcedimientoChecker;
 
@@ -231,6 +233,48 @@ final class EmissionsController extends CapabilityEnvelopeController
             'designer' => DxReportingMode::designerLabel(
                 (string) config('paqsuite.emissions.dxReporting.mode', 'fake'),
             ),
+        ]);
+    }
+
+    /**
+     * Sidecar DX: lista Urls REPX del proceso (filtra diálogo Save As). Auth: sidecar token o emission.design.
+     */
+    public function designReportStorageUrls(Request $request): JsonResponse
+    {
+        $disabled = $this->disabledResponse();
+        if ($disabled !== null) {
+            return $disabled;
+        }
+
+        if ($request->attributes->get(EmissionDesignerSchemaAuthMiddleware::REQUEST_ATTRIBUTE) !== 'sidecar') {
+            $designForbidden = $this->designForbiddenResponse();
+            if ($designForbidden !== null) {
+                return $designForbidden;
+            }
+        }
+
+        $processCode = trim((string) $request->query('processCode', ''));
+        if ($processCode === '') {
+            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::EMISSION_VALIDATION_FAILED);
+        }
+
+        $process = $this->repository->findProcess($processCode);
+        if ($process === null || ! $process->active) {
+            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::EMISSION_PROCESS_NOT_FOUND);
+        }
+
+        $urls = [];
+        foreach ($this->repository->reportsForDesignCatalog($processCode) as $item) {
+            $code = is_string($item['code'] ?? null) ? trim($item['code']) : '';
+            if ($code === '') {
+                continue;
+            }
+            $urls[] = EmissionReportDxStorageUrl::fromCatalogCode($code);
+        }
+
+        return ApiResponse::success([
+            'processCode' => $processCode,
+            'urls' => array_values(array_unique($urls)),
         ]);
     }
 

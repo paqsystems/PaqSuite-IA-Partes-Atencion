@@ -32,9 +32,13 @@ use App\Http\Controllers\Api\V1\User\EmpresasController;
 use App\Http\Controllers\Api\V1\User\MenuController;
 use App\Http\Controllers\Api\V1\User\PreferencesController;
 use Illuminate\Support\Facades\Route;
+use PaqSuite\LaravelCore\Http\Middleware\EmissionDesignerSchemaAuthMiddleware;
 
 Route::prefix('v1')->group(function () {
     Route::get('/health', HealthController::class);
+
+    Route::middleware(['paqsuite.instalacion', 'paqsuite.instalacion.db', EmissionDesignerSchemaAuthMiddleware::class])
+        ->get('/emissions/design/report-storage-urls', [EmissionsController::class, 'designReportStorageUrls']);
 
     Route::middleware(['paqsuite.instalacion', 'paqsuite.instalacion.db'])->prefix('auth')->group(function () {
         Route::post('/login', LoginController::class);

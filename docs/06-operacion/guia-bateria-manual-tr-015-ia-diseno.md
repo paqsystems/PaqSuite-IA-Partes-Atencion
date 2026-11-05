@@ -205,8 +205,8 @@ Captura **antes** y **después**.
 
 | | |
 |---|---|
-| **Éxito mínimo** | Save As sin error; código nuevo en catálogo; sidecar tiene `.repx` bajo `data/layouts/` (ops). |
-| **Fallo** | `emission.design.saveAsFailed` o diseño no registrado. |
+| **Éxito mínimo** | Save As sin error; código nuevo en catálogo; sidecar tiene `.repx` bajo `data/layouts/` (ops). El diálogo **Save Report** lista solo diseños del proceso activo (no reportes de Consulta detallada u otro proceso). |
+| **Fallo** | `emission.design.saveAsFailed` o diseño no registrado; o la lista Save As muestra layouts de **todos** los procesos. |
 
 ---
 

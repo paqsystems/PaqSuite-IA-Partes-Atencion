@@ -527,6 +527,27 @@ class ApiV1EmissionsPartesTest extends TestCase
         }
     }
 
+    public function test_report_storage_urls_filtra_por_proceso(): void
+    {
+        $this->seed();
+        config(['emissions.designer.sidecarToken' => 'partes-test-sidecar-token']);
+
+        $response = $this->getJson(
+            '/api/v1/emissions/design/report-storage-urls?processCode=partes.informes.paqueteHoras',
+            array_merge($this->tenantHeaders(), [
+                'X-Paq-Sidecar-Schema-Token' => 'partes-test-sidecar-token',
+            ]),
+        );
+
+        $response->assertStatus(200)
+            ->assertJsonPath('resultado.processCode', 'partes.informes.paqueteHoras');
+
+        $urls = $response->json('resultado.urls');
+        $this->assertIsArray($urls);
+        $this->assertContains('partes_paqueteHoras_principal', $urls);
+        $this->assertNotContains('partes_consultaDetallada_principal', $urls);
+    }
+
     public function test_emit_sin_reporte_no_estandar_422(): void
     {
         $token = $this->login();
