@@ -58,11 +58,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cliente de instalación (CLI / GEN-13)
+    | Cliente de instalación (CLI / fallback GEN-13)
     |--------------------------------------------------------------------------
-    | En HTTP llega por X-Paq-Cliente. tasks:run-due no tiene header: usar este
-    | código de EMPRESAS_CONEXION. Debe vivir en config para sobrevivir a
-    | config:cache (env() queda vacío).
+    | En HTTP llega por X-Paq-Cliente. El scheduler recorre EMPRESAS_CONEXION
+    | (SQL directo del proyecto) y usa este código solo como fallback si el
+    | catálogo central no responde. Debe vivir en config (config:cache).
     */
     'clienteCodigo' => env('PAQSUITE_CLIENTE', ''),
 
@@ -121,6 +121,8 @@ return [
             'auth:sanctum',
         ],
         'scheduleTimezone' => env('PAQSUITE_TASKS_SCHEDULE_TIMEZONE', 'America/Argentina/Buenos_Aires'),
+        // Lista CSV opcional (PAQ,DEMO). Vacío = todos los SQL directo de EMPRESAS_CONEXION.
+        'schedulerClientes' => env('PAQSUITE_TASKS_CLIENTES', ''),
         'execution' => [
             // Cierra EN_EJECUCION huérfanas antes de overlap / scheduler (CC PQ #10).
             'overlapRecoveryMaxAgeSeconds' => (int) env(

@@ -45,7 +45,8 @@
 
 | Variable | Ejemplo preview |
 |----------|-----------------|
-| `PAQSUITE_CLIENTE` | `DEV` (Forge dev; mismo código que `EMPRESAS_CONEXION` / `X-Paq-Cliente`) |
+| `PAQSUITE_CLIENTE` | Fallback CLI / un-tenant (`DEV` en Forge dev). El scheduler GEN-13 recorre todos los SQL directo del proyecto; no usar este valor como único tenant de prod |
+| `PAQSUITE_TASKS_CLIENTES` | Opcional. CSV `PAQ,DEMO` para acotar el cron; vacío = `EMPRESAS_CONEXION` |
 | `PAQSUITE_PROYECTO` | `partesatencion` |
 | `PAQSUITE_INSTALACION_RESOLVER` | `sql` |
 | `PAQSUITE_HOST_MANIFEST` | (opcional) ruta absoluta al JSON si no usa default en config |

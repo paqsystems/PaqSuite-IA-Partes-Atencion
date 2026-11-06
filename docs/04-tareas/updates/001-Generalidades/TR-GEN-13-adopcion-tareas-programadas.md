@@ -22,8 +22,10 @@ motor y la UI pertenecen a los paquetes SDK.
 - Perfil: `tenancy=single`, backend `rds`.
 - Objetivo: empresa vigente y base resuelta por el contexto de instalación.
 - Destino: `TASKS_BACKUP_S3_ARN_PREFIX` con key normalizada.
-- CLI: `PAQSUITE_CLIENTE` (código `EMPRESAS_CONEXION`) mapeado a
-  `config('paqsuite.clienteCodigo')` para `tasks:run-due`.
+- CLI: `partes:tasks-run-due` recorre instalaciones SQL directo del proyecto
+  (`SchedulerClienteResolver`). `PAQSUITE_CLIENTE` es fallback; `--cliente=`
+  o `PAQSUITE_TASKS_CLIENTES` acotan. Tras `applyForCliente` se actualiza
+  `paqsuite.clienteCodigo` (lock RDS).
 - Agenda: al crear/editar definición el host completa `nextRunAt` si falta
   (`SchedulingTaskDefinitionRepository`). El SP due exige `next_run_at`.
 - Repositorios: Must implementar **todos** los métodos de
