@@ -78,3 +78,72 @@ export async function masivoActualizar(
     }
   )
 }
+
+export type MasivoInformarFilters = Omit<TareaListQuery, 'page' | 'pageSize'>
+
+export type MasivoInformarDestinatario = {
+  clienteId: number
+  clienteCode: string
+  clienteNombre: string
+  email: string
+  nombre: string
+  codigo: string
+}
+
+export type MasivoInformarPreview = {
+  destinatarioCount: number
+  fechaDesde: string
+  fechaHasta: string
+  destinatarios: MasivoInformarDestinatario[]
+}
+
+function buildMasivoFilterParams(query: MasivoInformarFilters): URLSearchParams {
+  const params = new URLSearchParams({
+    fechaDesde: query.fechaDesde,
+    fechaHasta: query.fechaHasta,
+    estadoCerrado: query.estadoCerrado ?? 'todas',
+  })
+  if (query.clienteId) {
+    params.set('clienteId', String(query.clienteId))
+  }
+  if (query.usuarioId) {
+    params.set('usuarioId', String(query.usuarioId))
+  }
+  if (query.clienteCode) {
+    params.set('clienteCode', query.clienteCode)
+  }
+  if (query.clienteNombre) {
+    params.set('clienteNombre', query.clienteNombre)
+  }
+  if (query.tipoTareaCode) {
+    params.set('tipoTareaCode', query.tipoTareaCode)
+  }
+  if (query.tipoTareaDescripcion) {
+    params.set('tipoTareaDescripcion', query.tipoTareaDescripcion)
+  }
+  return params
+}
+
+export async function previewInformarClientes(query: MasivoInformarFilters) {
+  const params = buildMasivoFilterParams(query)
+  return apiRequest<MasivoInformarPreview>(
+    `/api/v1/partes/masivo/informar-clientes/preview?${params.toString()}`,
+    {
+      method: 'GET',
+      headers: authHeaders(),
+      platform: platform(),
+    }
+  )
+}
+
+export async function informarClientes(query: MasivoInformarFilters) {
+  const params = buildMasivoFilterParams(query)
+  return apiRequest<{ item: { destinatarios: number; enviados: number; errores: number } }>(
+    `/api/v1/partes/masivo/informar-clientes?${params.toString()}`,
+    {
+      method: 'POST',
+      headers: authHeaders(),
+      platform: platform(),
+    }
+  )
+}

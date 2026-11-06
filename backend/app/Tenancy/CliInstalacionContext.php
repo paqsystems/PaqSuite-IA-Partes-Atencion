@@ -49,6 +49,9 @@ final class CliInstalacionContext
             return null;
         }
 
+        // El profile RDS / lock GEN-13 lee paqsuite.clienteCodigo (no el header HTTP).
+        config(['paqsuite.clienteCodigo' => $record->cliente]);
+
         return $record;
     }
 

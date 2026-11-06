@@ -1,0 +1,22 @@
+{
+  "fieldNames": [
+    "fecha",
+    "clienteCode",
+    "clienteNombre",
+    "usuarioCode",
+    "usuarioNombre",
+    "tipoClienteCode",
+    "tipoClienteDescripcion",
+    "tipoTareaCode",
+    "tipoTareaDescripcion",
+    "duracionMinutos",
+    "saldo",
+    "esTarea",
+    "observacion",
+    "erpCliente",
+    "erpArticulo",
+    "sinCargo",
+    "presencial",
+    "cerrado"
+  ]
+}

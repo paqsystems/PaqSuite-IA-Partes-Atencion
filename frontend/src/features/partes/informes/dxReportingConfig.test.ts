@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  buildDxGetDesignerModelAction,
   readDxReportingConfig,
   resolveDxReportingClientHost,
   reportingProxyTarget,
@@ -39,6 +40,12 @@ describe('dxReportingConfig', () => {
     expect(config.configured).toBe(true)
     expect(config.getDesignerModelAction).toBe('DXXRD/GetDesignerModel')
     expect(config.reportUrl).toBe('partes_consultaDetallada_principal')
+  })
+
+  it('buildDxGetDesignerModelAction agrega processCode en query', () => {
+    expect(buildDxGetDesignerModelAction('partes.informes.consultaDetallada')).toBe(
+      'DXXRD/GetDesignerModel?processCode=partes.informes.consultaDetallada',
+    )
   })
 
   it('reportingProxyTarget quita slash final', () => {

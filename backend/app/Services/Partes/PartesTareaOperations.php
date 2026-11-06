@@ -26,6 +26,7 @@ final class PartesTareaOperations
             'pq_sp_partes_tarea_set_cerrado' => self::setCerrado($params),
             'pq_sp_partes_tarea_masivo_set_cerrado' => self::masivoSetCerrado($params),
             'pq_sp_partes_tarea_masivo_actualizar' => self::masivoActualizar($params),
+            'pq_sp_partes_masivo_destinatarios_novedad' => self::masivoDestinatariosNovedad($params),
             default => throw new PartesTareaException('partes.tarea.procedureUnknown', 500),
         };
     }
@@ -399,6 +400,70 @@ final class PartesTareaOperations
         ]];
     }
 
+    /**
+     * Destinatarios de novedades: users vinculados (`PQ_PARTES_CLIENTES.user_id`) activos
+     * con `users.email`. El To del aviso es siempre `users.email` — nunca `PQ_PARTES_CLIENTES.email`.
+     *
+     * @param  array<string, mixed>  $params
+     * @return list<object>
+     */
+    private static function masivoDestinatariosNovedad(array $params): array
+    {
+        self::assertActorAsistente($params);
+        if (! (bool) ($params['p_actor_es_supervisor'] ?? false)) {
+            self::fail('partes.masivo.forbidden', 403);
+        }
+
+        $clienteIdsSub = (clone self::filteredQuery($params))
+            ->select('r.cliente_id')
+            ->distinct();
+
+        $rows = DB::table('PQ_PARTES_CLIENTES as c')
+            ->joinSub($clienteIdsSub, 'filt', 'filt.cliente_id', '=', 'c.id')
+            ->join('users as fu', 'fu.id', '=', 'c.user_id')
+            ->whereNotNull('c.user_id')
+            ->where('c.activo', 1)
+            ->where('c.inhabilitado', 0)
+            ->where('fu.activo', 1)
+            ->where('fu.inhabilitado', 0)
+            ->whereNotNull('fu.email')
+            ->whereRaw("TRIM(fu.email) <> ''")
+            ->select([
+                'fu.id as user_id',
+                'fu.email',
+                'fu.usuario as codigo',
+                'fu.locale',
+                'fu.name',
+                'c.id as cliente_id',
+                'c.code as cliente_code',
+                'c.nombre as cliente_nombre',
+            ])
+            ->distinct()
+            ->orderBy('c.nombre')
+            ->orderBy('fu.id')
+            ->get();
+
+        $out = [];
+        foreach ($rows as $row) {
+            $email = trim((string) $row->email);
+            if ($email === '') {
+                continue;
+            }
+            $out[] = (object) [
+                'user_id' => (int) $row->user_id,
+                'email' => $email,
+                'codigo' => (string) $row->codigo,
+                'locale' => (string) ($row->locale ?? 'es'),
+                'name' => (string) ($row->name ?? ''),
+                'cliente_id' => (int) $row->cliente_id,
+                'cliente_code' => (string) ($row->cliente_code ?? ''),
+                'cliente_nombre' => (string) ($row->cliente_nombre ?? ''),
+            ];
+        }
+
+        return $out;
+    }
+
     /** @param array<string, mixed> $params @return list<object> */
     private static function get(array $params): array
     {
@@ -610,7 +675,21 @@ final class PartesTareaOperations
             $q->where('r.cerrado', 1);
         }
 
+        self::applyContainsFilter($q, $params['p_cliente_code'] ?? null, 'c.code');
+        self::applyContainsFilter($q, $params['p_cliente_nombre'] ?? null, 'c.nombre');
+        self::applyContainsFilter($q, $params['p_tipo_tarea_code'] ?? null, 't.code');
+        self::applyContainsFilter($q, $params['p_tipo_tarea_descripcion'] ?? null, 't.descripcion');
+
         return $q;
+    }
+
+    private static function applyContainsFilter($query, mixed $value, string $column): void
+    {
+        $needle = trim((string) ($value ?? ''));
+        if ($needle === '') {
+            return;
+        }
+        $query->where($column, 'like', '%'.$needle.'%');
     }
 
     /** @param array<string, mixed> $params */

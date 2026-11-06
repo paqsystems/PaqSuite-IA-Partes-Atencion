@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Partes\PartesInformeController;
 use App\Http\Controllers\Api\V1\Partes\PartesIntegracionMaestrosController;
 use App\Http\Controllers\Api\V1\Partes\PartesMaestrosController;
+use App\Http\Controllers\Api\V1\Partes\PartesMasivoController;
 use App\Http\Controllers\Api\V1\Partes\PartesPaqueteController;
 use App\Http\Controllers\Api\V1\Partes\PartesTareaController;
 use App\Http\Controllers\Api\V1\Partes\PartesTareasAsistenteTurnController;
@@ -31,9 +32,13 @@ use App\Http\Controllers\Api\V1\User\EmpresasController;
 use App\Http\Controllers\Api\V1\User\MenuController;
 use App\Http\Controllers\Api\V1\User\PreferencesController;
 use Illuminate\Support\Facades\Route;
+use PaqSuite\LaravelCore\Http\Middleware\EmissionDesignerSchemaAuthMiddleware;
 
 Route::prefix('v1')->group(function () {
     Route::get('/health', HealthController::class);
+
+    Route::middleware(['paqsuite.instalacion', 'paqsuite.instalacion.db', EmissionDesignerSchemaAuthMiddleware::class])
+        ->get('/emissions/design/report-storage-urls', [EmissionsController::class, 'designReportStorageUrls']);
 
     Route::middleware(['paqsuite.instalacion', 'paqsuite.instalacion.db'])->prefix('auth')->group(function () {
         Route::post('/login', LoginController::class);
@@ -194,6 +199,9 @@ Route::prefix('v1')->group(function () {
             Route::get('/tareas/ids', [$t, 'listIds']);
             Route::post('/tareas/masivo/set-cerrado', [$t, 'masivoSetCerrado']);
             Route::post('/tareas/masivo/actualizar', [$t, 'masivoActualizar']);
+            $m = PartesMasivoController::class;
+            Route::get('/masivo/informar-clientes/preview', [$m, 'previewInformarClientes']);
+            Route::post('/masivo/informar-clientes', [$m, 'informarClientes']);
             Route::post('/tareas/asistente/turn', PartesTareasAsistenteTurnController::class);
 
             $p = PartesPaqueteController::class;

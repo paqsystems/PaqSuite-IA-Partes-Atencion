@@ -11,7 +11,7 @@ Jira: PIAPARTES-5
 | Título | Supervisión: terceros y proceso masivo sobre tareas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Finalizado |
-| Última actualización | 01/11/2026 |
+| Última actualización | 04/11/2026 (Parte I CC-PQ #15 — informar clientes) |
 | HU relacionada(s) | [HU-005-supervision-proceso-masivo](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md) |
@@ -43,6 +43,7 @@ Jira: PIAPARTES-5
     - **Must — estado:** cerrar / reabrir (`cerrado`) (§4.5–4.5b);
   - rechazo si selección vacía o inválida; atomicidad del lote (§4.5);
   - actualización de atributos **permitida también sobre tareas cerradas** (el masivo es el circuito supervisor; no exige reabrir primero).
+  - **Informar a clientes (CC #7 / #15):** ícono mail; aviso i18n a usuarios de clientes del **universo filtrado** (todas las páginas; sin exigir tilde ni modificación); URL `https://{tenant}.partesatencion.paqsystems.com` + código usuario; sin password; guard al salir con cambios pendientes (§4.7).
 - Delimitación implícita por `es_tarea = true`: listado, `list_ids`/«seleccionar todos» y acciones de lote (cerrar/reabrir, atributos) operan **únicamente** sobre registros de tarea (SPEC-001 R-MD-12); las compras/movimientos de paquete de horas no participan del masivo.
 - Delimitación API: no confiar solo en UI; denegar a asistente no supervisor y a cliente.
 - i18n + `data-testid`; UI web DevExtreme.
@@ -53,7 +54,8 @@ Jira: PIAPARTES-5
 - Consultas agrupadas / dashboard / pivots de informes (SPEC-006).
 - Mobile del proceso masivo (excluido; SPEC-007).
 - Atributos **excluidos** de edición masiva: **cliente**, **duración/minutos**, **descripción/observación**.
-- “Auditoría de partes” con **importación Excel** y **mails selectivos** (`07-fuera-de-alcance`) — evolución distinta (no confundir con export Excel de la grilla del masivo ni con la edición masiva de atributos de este SPEC).
+- “Auditoría de partes” con **importación Excel** y **mails selectivos** (`07-fuera-de-alcance`) — evolución distinta (no confundir con export Excel de la grilla del masivo, con la edición masiva de atributos, ni con **Informar a clientes** §4.7).
+- Editor / catálogo de **plantillas de mail** predefinidas (evolución; v1 hardcode i18n).
 - Aprobación formal / workflow de estados más allá de `cerrado`.
 - ABM maestros (SPEC-003).
 
@@ -103,6 +105,14 @@ La supervisión **reutiliza** las mismas reglas de `cerrado`, tipos, marcas e in
 4. Elige **una acción de lote** (§4.5b / §4.6): cerrar, reabrir, o actualizar atributo(s) permitidos.
 5. Confirmación con: acción, cantidad, valores a aplicar (si hay), y resumen visible.
 6. Confirma → API de lote → resultado reflejado de inmediato (refresh grilla).
+
+### 4.7 Informar novedades a clientes (CC #7 / #15) — Must
+
+1. Toolbar: ícono mail + tooltip i18n `partes.masivo.informarClientes` + `data-testid` `partesMasivoInformarClientes` (solo supervisor; excluido native).
+2. Destinatarios: `users.id` únicos de clientes del resultado filtrado (`es_tarea = 1`) con `PQ_PARTES_CLIENTES.user_id` → `USERS` usable (`activo`, no inhabilitado) y **`users.email`** no vacío. To del mail = **`users.email`** (**prohibido** `PQ_PARTES_CLIENTES.email`). Recolección en servidor (SP JOIN; sin `whereIn` N); sin exigir selección ni modificación de filas.
+3. Mail v1 (Mail Engine GEN / futuro GEN-30): empresa emisora; período filtros; URL portal tenant; `users.usuario` / código; forgot GEN-04; **sin** contraseña; asunto/cuerpo en `users.locale` (5 locales host).
+4. Confirmación previa con N destinatarios y rango fechas; 422 sin destinatarios / tope.
+5. **Guard salida:** si hay cambios/selección pendientes y el supervisor abandona (menú / pestaña / `beforeunload`), diálogo i18n ofrece Enviar correos y salir / Salir sin enviar / Cancelar.
 
 ### 4.3b Grilla del proceso (capacidades Framework) — Must
 
@@ -282,6 +292,9 @@ La UI debe dejar claro **qué atributo(s)** y **qué valor** se aplicarán antes
 | 2026-08-01 | Parte I: fusionado SPEC-005-update (CC-PQ #1, 31/07) en este original; update eliminado. Estado → Finalizado. |
 | 01/11/2026 | CC-PQ #11: paginación remota grilla masivo ↔ `GET /partes/tareas`; Parte I fusionó SPEC-005-update-cc-pq-11. [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md). |
 | 01/11/2026 | CC-PQ #11 prod: `RemoteOperations` solo paging; verificado preview + prod (PR #117/#118). Parte I acotada en SPEC base. |
+| 03/11/2026 | CC-PQ #13: FilterRow remoto en grilla masivo (`clienteNombre`, `tipoTareaDescripcion`). Parte I acotada; F1/F Preview OK; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
+| 04/11/2026 | CC-PQ #15: Informar a clientes (§4.7 — URL tenant, i18n destinatario, guard salida, plantilla v1). Parte I fusionó SPEC-005-update; [D-VERIFICACION-CC-PQ-15](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md). |
+| 04/11/2026 | Corrección PQ: destinatario = **`users.email`** del usuario vinculado; nunca `PQ_PARTES_CLIENTES.email`. |
 
 ---
 

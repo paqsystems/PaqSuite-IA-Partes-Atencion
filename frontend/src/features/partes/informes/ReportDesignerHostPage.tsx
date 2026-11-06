@@ -1,7 +1,10 @@
 import { EmissionReportDesignerPage, isNativeApp, ProcessPageLayout } from '@paqsuite/react-core'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 import { useSearchParams } from 'react-router-dom'
+import { getAuthToken } from '../../auth/authSessionStore'
+import { buildAuthPlatformHeaders } from '../../auth/platformContext'
+import { useProcessMenuTitle } from '../../auth/useProcessMenuTitle'
 import { DxReportDesignerPanel } from './DxReportDesignerPanel'
 import { readInitialProcessCodeFromSearch } from './reportDesignerInitialProcess'
 
@@ -15,6 +18,8 @@ export function ReportDesignerHostPage() {
   const initialProcessCode = readInitialProcessCodeFromSearch(searchParams)
   const native = isNativeApp()
   const pageTitle = useProcessMenuTitle(t('emissions.designer.title'), '/emisiones/disenador')
+  const accessToken = getAuthToken() ?? undefined
+  const platform = useMemo(() => buildAuthPlatformHeaders(), [])
 
   return (
     <ProcessPageLayout title={pageTitle}>
@@ -23,6 +28,8 @@ export function ReportDesignerHostPage() {
         initialProcessCode={initialProcessCode}
         hasDesignPermission={!native}
         isNative={native}
+        accessToken={accessToken}
+        platform={platform}
         t={(key) => t(key)}
         renderDesigner={(context) => <DxReportDesignerPanel context={context} />}
       />

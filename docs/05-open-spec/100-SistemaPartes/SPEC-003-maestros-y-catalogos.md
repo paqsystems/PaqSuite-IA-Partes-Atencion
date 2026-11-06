@@ -11,7 +11,7 @@ Jira: PIAPARTES-3
 | Título | Maestros y catálogos del módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Finalizado |
-| Última actualización | 2026-10-11 |
+| Última actualización | 2026-11-03 (Parte I CC-PQ #14) |
 | HU relacionada(s) | [HU-003-maestros-y-catalogos](../../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) |
 | TR relacionada(s) | [TR-003-maestros-y-catalogos](../../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md) |
 | Depende de | [SPEC-001](./SPEC-001-modelo-datos-modulo.md), [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md) (quién opera; exclusividad `user_id`) |
@@ -79,6 +79,7 @@ Jira: PIAPARTES-3
 - En listados y selectores de catálogo: mostrar **código + descripción/nombre**, no IDs al usuario.
 - Acciones típicas por fila: Editar; Inhabilitar / Rehabilitar (o toggle de estado); Eliminar solo si aplica §4.8.
 - i18n obligatorio; `data-testid` estables por pantalla (`partesMaestros*`).
+- Con **paginación remota** en listados (CC #12), **FilterRow** en columnas de texto Must enviar filtros **contains** al API antes de `page` / `pageSize`: como mínimo `code`, `nombre`, `descripcion` (tipos catálogo), **`usuario`** (columna `usuarioCodigo`) y **`email`** donde esas columnas existen en la grilla (CC #13/#14).
 
 ### 4.2 Asistentes (`PQ_PARTES_USUARIOS`)
 
@@ -110,6 +111,7 @@ Jira: PIAPARTES-3
 | `activo` / `inhabilitado` | Estado operativo |
 
 - Campos `erp_cliente` / `erp_articulo` (API `erpCliente` / `erpArticulo`): visibles como columnas en el listado y como campos del formulario modal (caption a la izquierda, sin cambios en el patrón de catálogo código+descripción). Referencia externa a ERP; sin integración activa ni sincronización.
+- Listado grilla: columnas **`usuarioCodigo`** (login Framework del `user_id` vinculado; vacío si sin acceso) y **`email`**, mismo payload del list API (R-MA-19).
 
 - Cliente **sin** `user_id`: entidad de negocio válida; no ingresa al módulo.
 - Cliente **con** `user_id`: acceso según SPEC-002 (activo y no inhabilitado).
@@ -212,6 +214,8 @@ Contrato de lectura: `GET /api/v1/partes/catalogos/usuarios-vinculables?exceptoU
 | R-MA-16 | El selector de usuario de asistentes y de clientes lista solo el universo §4.9. |
 | R-MA-17 | Un `users.id` no puede quedar en dos asistentes, en dos clientes, ni a la vez en asistente y cliente. La edición del propio registro no dispara el rechazo. |
 | R-MA-18 | No se puede vincular un usuario inactivo o inhabilitado. |
+| R-MA-19 | Listado **Clientes** Must exponer `usuarioCodigo` y `email` en grilla web. |
+| R-MA-20 | FilterRow remoto Must soportar filtro por `usuarioCodigo` en **Asistentes** y **Clientes**; por `email` en **Clientes**. |
 
 R-MA-05 permanece: la exclusividad cruzada sigue vigente y queda cubierta por R-MA-17.
 
@@ -234,6 +238,7 @@ R-MA-05 permanece: la exclusividad cruzada sigue vigente y queda cubierta por R-
 - [x] El selector de asistentes y el de clientes omiten inactivos, inhabilitados y ya asignados; en edición el usuario actual de la fila sigue en el selector.
 - [x] Alta de un segundo asistente o cliente con el mismo `user_id` responde 422 `partes.maestros.exclusividadUserId`.
 - [x] Alta con usuario inactivo o inhabilitado responde 422 `partes.maestros.usuarioNoVinculable`.
+- [x] Grilla **Clientes** muestra usuario de acceso y mail; FilterRow remoto en usuario (Asistentes/Clientes) y mail (Clientes) coherente con paginación remota (CC #14).
 
 ---
 
@@ -279,6 +284,8 @@ R-MA-05 permanece: la exclusividad cruzada sigue vigente y queda cubierta por R-
 | 2026-08-01 | Parte I: fusionado SPEC-003-update (CC-PQ #2, 01/08) en este original; update eliminado. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4 (04/10/2026): código de usuario en asistentes, universo vinculable y unicidad R-MA-15…18; update eliminado. Estado → Finalizado. |
 | 2026-11-02 | CC-PQ #12: listados ABM (`MaestroCrudPage`) con paginación remota alineada a `page` / `pageSize` / `total` del API maestros. |
+| 03/11/2026 | CC-PQ #13: FilterRow remoto en maestros (filtros parciales vía API). Parte I acotada; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
+| 03/11/2026 | CC-PQ #14: columnas usuario/mail en grilla Clientes; FilterRow usuario/mail (R-MA-19/20). Parte I; [D-VERIFICACION-CC-PQ-14](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md). |
 
 ---
 

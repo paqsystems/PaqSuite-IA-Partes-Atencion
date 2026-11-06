@@ -58,11 +58,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cliente de instalación (CLI / GEN-13)
+    | Cliente de instalación (CLI / fallback GEN-13)
     |--------------------------------------------------------------------------
-    | En HTTP llega por X-Paq-Cliente. tasks:run-due no tiene header: usar este
-    | código de EMPRESAS_CONEXION. Debe vivir en config para sobrevivir a
-    | config:cache (env() queda vacío).
+    | En HTTP llega por X-Paq-Cliente. El scheduler recorre EMPRESAS_CONEXION
+    | (SQL directo del proyecto) y usa este código solo como fallback si el
+    | catálogo central no responde. Debe vivir en config (config:cache).
     */
     'clienteCodigo' => env('PAQSUITE_CLIENTE', ''),
 
@@ -121,6 +121,8 @@ return [
             'auth:sanctum',
         ],
         'scheduleTimezone' => env('PAQSUITE_TASKS_SCHEDULE_TIMEZONE', 'America/Argentina/Buenos_Aires'),
+        // Lista CSV opcional (PAQ,DEMO). Vacío = todos los SQL directo de EMPRESAS_CONEXION.
+        'schedulerClientes' => env('PAQSUITE_TASKS_CLIENTES', ''),
         'execution' => [
             // Cierra EN_EJECUCION huérfanas antes de overlap / scheduler (CC PQ #10).
             'overlapRecoveryMaxAgeSeconds' => (int) env(
@@ -152,8 +154,21 @@ return [
     | Emisiones documentales GEN-15 — motor DevExpress (sidecar .NET)
     |--------------------------------------------------------------------------
     | mode: fake = MinimalDxReportingEngine (CI/tests); remote = sidecar /render
+    |
+    | designerSchemaMiddleware: obligatorio anteponer instalacion + Sanctum.
+    | Sin auth:sanctum, GET /emissions/design/field-schema responde 401 y el FE
+    | dispara expireSession (mensaje «sesión no válida para esta empresa»).
     */
     'emissions' => [
+        'designerSchemaRoutesEnabled' => filter_var(
+            env('PAQSUITE_EMISSION_DESIGNER_SCHEMA_ROUTES_ENABLED', true),
+            FILTER_VALIDATE_BOOLEAN,
+        ),
+        'designerSchemaMiddleware' => [
+            'paqsuite.instalacion',
+            'paqsuite.instalacion.db',
+            'auth:sanctum',
+        ],
         'dxReporting' => [
             'mode' => env('PAQSUITE_EMISSION_DX_MODE', 'fake'),
             'serviceUrl' => env(
@@ -172,6 +187,8 @@ return [
     */
     'companyHeaderAllowlist' => [
         '/api/v1/health',
+        '/api/v1/emissions/design/field-schema',
+        '/api/v1/emissions/design/report-storage-urls',
         '/api/v1/auth/login',
         '/api/v1/auth/logout',
         '/api/v1/auth/forgot-password',

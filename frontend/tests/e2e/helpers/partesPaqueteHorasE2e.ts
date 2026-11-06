@@ -176,8 +176,11 @@ export async function selectDevExtremeSelectByText(page: Page, testId: string, o
   await expect(root).toBeVisible({ timeout: 20_000 })
   await root.click()
   const input = root.locator('input.dx-texteditor-input')
-  await input.fill(optionText.split(' — ')[0] ?? optionText)
-  const item = page.locator('.dx-overlay-content .dx-list-item').filter({ hasText: optionText })
+  const searchToken = optionText.split(' — ')[0]?.trim() ?? optionText
+  await input.fill(searchToken)
+  const item = page
+    .locator('.dx-overlay-content .dx-list-item')
+    .filter({ hasText: new RegExp(searchToken.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) })
   await expect(item.first()).toBeVisible({ timeout: 10_000 })
   await item.first().click()
 }

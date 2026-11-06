@@ -14,39 +14,54 @@ final class PqTaskProcessFrameworkSeeder extends Seeder
         $connection = DB::connection();
         $schema = Schema::connection($connection->getName());
 
-        if (! $schema->hasTable('PQ_TASK_PROCESS')) {
+        $processTable = $this->resolveTable($schema, ['pq_task_process', 'PQ_TASK_PROCESS']);
+        if ($processTable === null) {
             $this->command?->warn('GEN-13: ejecutar la provisión del esquema/SP de tareas antes del seed.');
 
             return;
         }
 
-        $definition = TaskProcessBackupSeeder::processDefinition();
-        $now = DB::raw($connection->getDriverName() === 'sqlsrv' ? 'GETDATE()' : 'CURRENT_TIMESTAMP');
+        $parameterTable = $this->resolveTable($schema, ['pq_task_process_parameter', 'PQ_TASK_PROCESS_PARAMETER']);
+        if ($parameterTable === null) {
+            $this->command?->warn('GEN-13: falta tabla de parámetros de proceso.');
 
-        $connection->table('PQ_TASK_PROCESS')->updateOrInsert(
+            return;
+        }
+
+        $definition = TaskProcessBackupSeeder::processDefinition();
+        $now = $connection->getDriverName() === 'sqlsrv'
+            ? DB::raw('GETDATE()')
+            : now();
+
+        $notes = $definition['notes'] ?? null;
+
+        $processPayload = $this->filterToExistingColumns($schema, $processTable, [
+            'process_name' => $definition['processName'],
+            'process_description' => $notes,
+            'notes' => $notes,
+            'module_code' => $definition['moduleCode'],
+            'module_name' => 'Framework',
+            'handler_class' => $definition['handlerClass'],
+            'is_active' => $definition['isActive'],
+            'supports_manual_execution' => $definition['supportsManualExecution'],
+            'supports_scheduled_execution' => $definition['supportsScheduledExecution'],
+            'supports_simulation' => $definition['supportsSimulation'],
+            'works_by_company' => $definition['worksByCompany'],
+            'selection_strategy_auto' => $definition['selectionStrategyAuto'],
+            'selection_strategy_manual' => $definition['selectionStrategyManual'],
+            'idempotency_strategy' => $definition['idempotencyStrategy'],
+            'created_at' => $now,
+            'updated_at' => $now,
+            'created_by' => self::class,
+            'updated_by' => self::class,
+        ]);
+
+        $connection->table($processTable)->updateOrInsert(
             ['process_code' => $definition['processCode']],
-            [
-                'process_name' => $definition['processName'],
-                'process_description' => $definition['notes'],
-                'module_code' => $definition['moduleCode'],
-                'module_name' => 'Framework',
-                'handler_class' => $definition['handlerClass'],
-                'is_active' => $definition['isActive'],
-                'supports_manual_execution' => $definition['supportsManualExecution'],
-                'supports_scheduled_execution' => $definition['supportsScheduledExecution'],
-                'supports_simulation' => $definition['supportsSimulation'],
-                'works_by_company' => $definition['worksByCompany'],
-                'selection_strategy_auto' => $definition['selectionStrategyAuto'],
-                'selection_strategy_manual' => $definition['selectionStrategyManual'],
-                'idempotency_strategy' => $definition['idempotencyStrategy'],
-                'created_at' => $now,
-                'updated_at' => $now,
-                'created_by' => self::class,
-                'updated_by' => self::class,
-            ],
+            $processPayload,
         );
 
-        $process = $connection->table('PQ_TASK_PROCESS')
+        $process = $connection->table($processTable)
             ->where('process_code', $definition['processCode'])
             ->first();
 
@@ -54,30 +69,74 @@ final class PqTaskProcessFrameworkSeeder extends Seeder
             throw new \RuntimeException('GEN-13: no se pudo resolver BACKUP_DATABASE.');
         }
 
+        $processId = $process->process_id;
+
         foreach ($definition['parameters'] as $parameter) {
-            $connection->table('PQ_TASK_PROCESS_PARAMETER')->updateOrInsert(
+            $parameterPayload = $this->filterToExistingColumns($schema, $parameterTable, [
+                'parameter_name' => $parameter['parameterName'],
+                'parameter_description' => $parameter['parameterName'],
+                'data_type' => $parameter['dataType'],
+                'ui_control_type' => $parameter['uiControlType'] ?? null,
+                'is_required' => $parameter['isRequired'],
+                'default_value_text' => isset($parameter['defaultValue'])
+                    ? (is_array($parameter['defaultValue'])
+                        ? json_encode($parameter['defaultValue'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                        : (string) $parameter['defaultValue'])
+                    : null,
+                'allowed_values_source' => $parameter['allowedValuesSource'] ?? null,
+                'display_order' => $parameter['displayOrder'],
+                'is_user_editable' => $parameter['isUserEditable'],
+                'is_multivalue' => $parameter['isMultivalue'],
+                'metadata_json' => $parameter['metadataJson'] ?? null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+            $connection->table($parameterTable)->updateOrInsert(
                 [
-                    'process_id' => $process->process_id,
+                    'process_id' => $processId,
                     'parameter_code' => $parameter['parameterCode'],
                 ],
-                [
-                    'parameter_name' => $parameter['parameterName'],
-                    'parameter_description' => $parameter['parameterName'],
-                    'data_type' => $parameter['dataType'],
-                    'is_required' => $parameter['isRequired'],
-                    'default_value_text' => isset($parameter['defaultValue'])
-                        ? (is_array($parameter['defaultValue'])
-                            ? json_encode($parameter['defaultValue'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
-                            : (string) $parameter['defaultValue'])
-                        : null,
-                    'display_order' => $parameter['displayOrder'],
-                    'is_user_editable' => $parameter['isUserEditable'],
-                    'is_multivalue' => $parameter['isMultivalue'],
-                    'metadata_json' => $parameter['metadataJson'] ?? null,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ],
+                $parameterPayload,
             );
         }
+    }
+
+    /**
+     * @param  list<string>  $candidates
+     */
+    private function resolveTable(\Illuminate\Database\Schema\Builder $schema, array $candidates): ?string
+    {
+        foreach ($candidates as $name) {
+            if ($schema->hasTable($name)) {
+                return $name;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private function filterToExistingColumns(
+        \Illuminate\Database\Schema\Builder $schema,
+        string $table,
+        array $row,
+    ): array {
+        $columns = array_map(
+            static fn (string $column): string => strtolower($column),
+            $schema->getColumnListing($table),
+        );
+
+        $filtered = [];
+        foreach ($row as $key => $value) {
+            if (in_array(strtolower($key), $columns, true)) {
+                $filtered[$key] = $value;
+            }
+        }
+
+        return $filtered;
     }
 }

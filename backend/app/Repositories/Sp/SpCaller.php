@@ -26,6 +26,10 @@ final class SpCaller
             return PartesIntegracionMaestrosOperations::dispatch($procedure, $params);
         }
 
+        if ($procedure === 'pq_sp_partes_masivo_destinatarios_novedad') {
+            return PartesTareaOperations::dispatch($procedure, $params);
+        }
+
         if ($this->isPartesTareaProcedure($procedure)) {
             return PartesTareaOperations::dispatch($procedure, $params);
         }
@@ -220,6 +224,16 @@ final class SpCaller
                 'SELECT m.id, m.parent_id AS parentId, m.codigo AS menuKey, m.titulo AS text,
                         m.ruta AS routeName, m.orden AS "order", m.procedimiento,
                         m.process_type AS processType, m.icon_name AS iconName
+                 FROM pq_menus m
+                 WHERE m.activo = 1 AND m.enabled = 1
+                 ORDER BY m.orden, m.id'
+            ),
+            'pq_sp_admin_menu_list_enabled' => DB::select(
+                'SELECT m.id, m.parent_id AS parentId, m.codigo AS menuKey,
+                        NULLIF(TRIM(m.label_key), \'\') AS labelKey,
+                        m.titulo AS text, m.ruta AS routeName, m.orden AS "order",
+                        m.procedimiento, m.process_type AS processType, m.icon_name AS iconName,
+                        m.enabled AS enabled
                  FROM pq_menus m
                  WHERE m.activo = 1 AND m.enabled = 1
                  ORDER BY m.orden, m.id'

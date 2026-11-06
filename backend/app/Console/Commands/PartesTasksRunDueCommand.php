@@ -4,40 +4,65 @@ namespace App\Console\Commands;
 
 use App\Tasks\StaleTaskExecutionRecovery;
 use App\Tenancy\CliInstalacionContext;
+use App\Tenancy\SchedulerClienteResolver;
 use Illuminate\Console\Command;
 use PaqSuite\LaravelCore\Tasks\Repositories\TaskDefinitionRepository;
 use PaqSuite\LaravelCore\Tasks\TaskExecutionService;
 
 /**
- * GEN-13 host: resuelve tenant (PAQSUITE_CLIENTE), recupera zombies y ejecuta due.
+ * GEN-13 host: recorre instalaciones SQL del proyecto, recupera zombies y ejecuta due.
  */
 final class PartesTasksRunDueCommand extends Command
 {
     protected $signature = 'partes:tasks-run-due
                             {--dry-run : Lista definiciones due sin ejecutar}
-                            {--cliente= : Código tenant (default config paqsuite.clienteCodigo)}
+                            {--cliente= : Un solo tenant (si se omite, todos los SQL directo del proyecto)}
                             {--skip-recover : No cerrar ejecuciones EN_EJECUCION expiradas}';
 
-    protected $description = 'Ejecuta tareas programadas due en la BD del tenant (PAQSUITE_CLIENTE)';
+    protected $description = 'Ejecuta tareas programadas due en cada BD tenant SQL directo del proyecto';
 
     public function handle(
         CliInstalacionContext $cliInstalacion,
+        SchedulerClienteResolver $clienteResolver,
         StaleTaskExecutionRecovery $staleRecovery,
         TaskDefinitionRepository $definitionRepository,
         TaskExecutionService $executionService,
     ): int {
-        $cliente = trim((string) ($this->option('cliente') ?: $cliInstalacion->defaultClienteCodigo()));
-        if ($cliente === '') {
-            $this->error('Definí PAQSUITE_CLIENTE en el entorno del sitio (Forge) o usá --cliente=');
+        $clientes = $clienteResolver->resolve($this->option('cliente') ? (string) $this->option('cliente') : null);
+        if ($clientes === []) {
+            $this->error('No hay tenants para el scheduler: definí --cliente=, PAQSUITE_TASKS_CLIENTES, EMPRESAS_CONEXION o PAQSUITE_CLIENTE.');
 
             return self::FAILURE;
         }
 
+        $exit = self::SUCCESS;
+        foreach ($clientes as $cliente) {
+            if (! $this->runForCliente(
+                $cliente,
+                $cliInstalacion,
+                $staleRecovery,
+                $definitionRepository,
+                $executionService,
+            )) {
+                $exit = self::FAILURE;
+            }
+        }
+
+        return $exit;
+    }
+
+    private function runForCliente(
+        string $cliente,
+        CliInstalacionContext $cliInstalacion,
+        StaleTaskExecutionRecovery $staleRecovery,
+        TaskDefinitionRepository $definitionRepository,
+        TaskExecutionService $executionService,
+    ): bool {
         $record = $cliInstalacion->applyForCliente($cliente);
         if ($record === null) {
             $this->error("No se pudo resolver/aplicar instalación para cliente «{$cliente}».");
 
-            return self::FAILURE;
+            return false;
         }
 
         $this->line(sprintf(
@@ -69,7 +94,7 @@ final class PartesTasksRunDueCommand extends Command
                 ));
             }
 
-            return self::SUCCESS;
+            return true;
         }
 
         $batches = $executionService->runDue($asOf);
@@ -82,6 +107,6 @@ final class PartesTasksRunDueCommand extends Command
             ));
         }
 
-        return self::SUCCESS;
+        return true;
     }
 }

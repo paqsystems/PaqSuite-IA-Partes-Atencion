@@ -3,6 +3,8 @@
 Para operadores con permiso **`emission.design`**. Registrá resultados en  
 [`D-VERIFICACION-TR-015-2026-10-30.md`](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-2026-10-30.md).
 
+**Lab 2026-11-04:** smoke Prompt-to-Report en D-VERIFICACION § Lab; detalle sidecar en Framework `services/dx-reporting/docs/evidence/LAB-2026-11-04-prompt-to-report.md`.
+
 Referencias: [SPEC-015 §4.4](../05-open-spec/100-SistemaPartes/SPEC-015-ia-diseno-informes.md) · [ops sidecar](./adopcion-tr-015-piloto-ia-diseno-sidecar.md) · Framework [runbook §6](../../../PaqSuite-IA-FRAMEWORK/docs/06-operacion/runbook-dx-reporting-sidecar.md).
 
 ---
@@ -12,7 +14,7 @@ Referencias: [SPEC-015 §4.4](../05-open-spec/100-SistemaPartes/SPEC-015-ia-dise
 | # | Requisito | Cómo comprobarlo |
 |---|-----------|------------------|
 | 1 | Sidecar FW **26.1.4** con build post–Parte D | `GET http://localhost:5055/health` → `{ "status": "ok" }` |
-| 2 | **LLM en el proceso sidecar** (no Laravel) | En la terminal/servicio donde corre `dotnet run`: `$env:OPENAI_API_KEY` definido (o Azure completo). Al arrancar debe verse `[PaqSuite.DxReporting.AI] Reporting AI habilitado` |
+| 2 | **LLM en el proceso sidecar** (no Laravel) | En la **misma** terminal donde corre `dotnet run`: `$env:OPENAI_API_KEY` definido (o Azure completo). Al arrancar: log `[PaqSuite.DxReporting.AI] Reporting AI habilitado`. **`GET /health`** → `reportingAiEnabled: true` (si es `false`, el wizard no muestra IA aunque compiles con key en otra ventana). |
 | 3 | Backend Partes en **remote** | `PAQSUITE_EMISSION_DX_MODE=remote` y URL del sidecar |
 | 4 | Frontend web (escritorio), no móvil | Navegador de escritorio |
 | 5 | Usuario con **diseño de emisiones** | Menú **Soporte Técnico → Diseñador de emisiones** visible |
@@ -27,15 +29,42 @@ Referencias: [SPEC-015 §4.4](../05-open-spec/100-SistemaPartes/SPEC-015-ia-dise
 
 ### 2.1 Sidecar
 
+**Recomendado (una sola vez, evita perder la key entre terminales):**
+
+```powershell
+cd C:\Programacion\PaqSuite-IA-FRAMEWORK\services\dx-reporting\scripts
+.\setup-openai-user-secrets.ps1 -OpenAiApiKey '<tu-key>'
+```
+
+Alternativa: copiar `appsettings.Local.json.example` → `appsettings.Local.json` en `src/PaqSuite.DxReporting/` (gitignored vía `.gitignore` del servicio).
+
+**Cada sesión de lab (una sola terminal con el sidecar):**
+
+```powershell
+cd C:\Programacion\PaqSuite-IA-FRAMEWORK\services\dx-reporting\scripts
+.\start-lab-sidecar.ps1
+```
+
+O manual con variable de sesión:
+
 ```powershell
 $env:OPENAI_API_KEY = '<tu-key>'   # variable de sesión o usuario Windows
 $env:OPENAI_MODEL = 'gpt-4o-mini'  # opcional
+
+# Si ves "address already in use" en :5055, hay OTRO sidecar (a menudo sin IA) atendiendo el diseñador:
+# Preferir script (mata por nombre + por PID del puerto):
+# & C:\Programacion\PaqSuite-IA-FRAMEWORK\services\dx-reporting\scripts\stop-sidecar-port-5055.ps1
+Get-Process -Name PaqSuite.DxReporting -ErrorAction SilentlyContinue | Stop-Process -Force
+$5055Pid = (Get-NetTCPConnection -LocalPort 5055 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess)
+if ($5055Pid) { Stop-Process -Id $5055Pid -Force -ErrorAction SilentlyContinue }
 
 cd C:\Programacion\PaqSuite-IA-FRAMEWORK\services\dx-reporting\src\PaqSuite.DxReporting
 dotnet run
 ```
 
-Dejá esta ventana abierta. Si un sidecar viejo bloquea la DLL, cerralo antes de `dotnet run`.
+Dejá **esta** ventana abierta (única instancia en :5055). Comprobá: `Invoke-RestMethod http://127.0.0.1:5055/health` → `reportingAiEnabled` debe ser **true**.
+
+Script alternativo: `PaqSuite-IA-FRAMEWORK/services/dx-reporting/scripts/restart-lab-sidecar.ps1` (libera puerto + `dotnet run`).
 
 ### 2.2 Backend Partes
 
@@ -73,7 +102,7 @@ Abrí la URL que muestre Vite (p. ej. `http://localhost:5173`) con `?cliente=DEM
 **Smoke previo a la batería**
 
 - **Field List** (lista de campos): deben figurar las **14** columnas del dataset (`fecha`, `clienteCode`, `clienteNombre`, `usuarioNombre`, `duracionMinutos`, `sinCargo`, etc.).
-- Entrada al **asistente IA / Prompt-to-Report** (nombre puede variar según DX 26.1): suele estar en el asistente de **nuevo informe** o menú relacionado con **AI**. Si tu build muestra un campo de **prompt en lenguaje natural**, usalo para #1–#7.
+- **Prompt-to-Report** no aparece al abrir un REPX existente: hay que abrir el **Asistente de informes (Report Wizard)** para un **informe nuevo** (menú **Archivo → Nuevo informe** / icono equivalente en la barra del diseñador). En el primer paso del wizard debe figurar una tarjeta **IA / Prompt-to-Report** (además de Vacío, Estándar, etc.). Si solo ves Empty/Standard/Vertical/Label/CrossTab → el sidecar activo **no** tiene IA (`/health` → `reportingAiEnabled: false`).
 
 Captura obligatoria: pantalla con Field List + evidencia de que IA está activa (captura `00-fieldlist-ia.png`).
 
@@ -176,8 +205,8 @@ Captura **antes** y **después**.
 
 | | |
 |---|---|
-| **Éxito mínimo** | Save As sin error; código nuevo en catálogo; sidecar tiene `.repx` bajo `data/layouts/` (ops). |
-| **Fallo** | `emission.design.saveAsFailed` o diseño no registrado. |
+| **Éxito mínimo** | Save As sin error; código nuevo en catálogo; sidecar tiene `.repx` bajo `data/layouts/` (ops). El diálogo **Save Report** lista solo diseños del proceso activo (no reportes de Consulta detallada u otro proceso). |
+| **Fallo** | `emission.design.saveAsFailed` o diseño no registrado; o la lista Save As muestra layouts de **todos** los procesos. |
 
 ---
 
@@ -202,7 +231,7 @@ Captura **antes** y **después**.
 | Síntoma | Qué revisar |
 |---------|-------------|
 | Diseñador no carga | Sidecar caído, CORS, proxy `/DXXRD`, `hostMissing` en UI |
-| Field List genérico (`id`, `label`) | Schema JSON no resuelve: `reportUrl` vs archivos en `data/schemas/` |
+| Field List genérico (`id`, `label`) | Sincronizar `backend/resources/emissions/schemas/` al sidecar: local `scripts/dev/sync-dx-reporting-schemas.ps1`; Forge `scripts/forge/sync-dx-reporting-schemas.sh` (post-deploy). Claves: `partes_paqueteHoras_principal` y `partes.informes.paqueteHoras`. Smoke: `php backend/scripts/dev/smoke-paquete-horas-designer-schema.php` |
 | Sin IA | Env LLM solo en sidecar; reiniciar sidecar; licencia DX IA |
 | PDF en blanco al emitir | `PAQSUITE_EMISSION_DX_MODE=fake` en Forge (ver TR-011 F1) |
 | Guardar no actualiza combo Emitir | Callback catálogo Laravel; ver consola red `POST/PUT .../reports` |

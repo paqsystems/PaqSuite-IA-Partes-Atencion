@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "datasetDisplayName": "Consulta detallada",
+  "fields": [
+    { "name": "fecha", "type": "date" },
+    { "name": "clienteCode", "type": "string" },
+    { "name": "clienteNombre", "type": "string" },
+    { "name": "usuarioCode", "type": "string" },
+    { "name": "usuarioNombre", "type": "string" },
+    { "name": "tipoTareaCode", "type": "string" },
+    { "name": "tipoTareaDescripcion", "type": "string" },
+    { "name": "duracionMinutos", "type": "number" },
+    { "name": "sinCargo", "type": "boolean" },
+    { "name": "presencial", "type": "boolean" },
+    { "name": "cerrado", "type": "boolean" },
+    { "name": "observacion", "type": "string" },
+    { "name": "erpCliente", "type": "string" },
+    { "name": "erpArticulo", "type": "string" }
+  ]
+}

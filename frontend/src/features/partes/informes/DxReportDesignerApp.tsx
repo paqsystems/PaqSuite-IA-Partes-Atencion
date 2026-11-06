@@ -12,6 +12,7 @@ import 'ace-builds/css/theme/dreamweaver.css'
 import 'ace-builds/css/theme/ambiance.css'
 import type { PartesDxReportSavedEvent } from './DxReportDesignerPanel'
 import { isUnknownEmissionReportCode } from './emissionReportCatalog'
+import { enableReportDesignerAiServices } from './enableReportDesignerAi'
 import { parseDxReportSavedArgs } from './parseDxReportSavedArgs'
 
 export type DxReportDesignerAppProps = {
@@ -43,6 +44,9 @@ export default function DxReportDesignerApp({
     >
       <RequestOptions host={host} getDesignerModelAction={getDesignerModelAction} />
       <Callbacks
+        BeforeRender={() => {
+          enableReportDesignerAiServices()
+        }}
         ReportSaving={(...callbackArgs: unknown[]) => {
           const parsed = parseDxReportSavedArgs(callbackArgs)
           if (parsed.layoutDefinition) {

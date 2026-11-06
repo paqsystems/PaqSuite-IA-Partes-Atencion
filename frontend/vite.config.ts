@@ -24,6 +24,9 @@ export default defineConfig(({ mode }) => {
   const repoLabEnv = (env.PAQ_REPO_LAB ?? process.env.PAQ_REPO_LAB ?? '').toLowerCase()
   const useRepoLabSdk = repoLabEnv === '1' || repoLabEnv === 'true'
 
+  const aceShim = path.resolve(__dirname, 'src/features/partes/informes/aceViteShim.ts')
+  const aceReal = path.resolve(__dirname, 'node_modules/ace-builds/src-noconflict/ace.js')
+
   const resolveAlias: Record<string, string> = {
         react: path.resolve(__dirname, 'node_modules/react'),
         'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
@@ -38,6 +41,9 @@ export default defineConfig(({ mode }) => {
           __dirname,
           'node_modules/@paqsuite/react-core/src/features/emissions/normalizeEmissionReportCode.ts',
         )]: path.resolve(__dirname, 'src/features/partes/informes/emissionReportCatalog.ts'),
+        'ace-builds/src-noconflict/ace': aceShim,
+        'ace-builds/src-noconflict/ace.js': aceShim,
+        'ace-builds-internal/ace.js': aceReal,
   }
 
   if (useRepoLabSdk) {

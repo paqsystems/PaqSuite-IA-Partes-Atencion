@@ -56,9 +56,9 @@ final class PartesMaestrosOperations
     {
         $q = DB::table('PQ_PARTES_USUARIOS as u')
             ->leftJoin('users as fu', 'fu.id', '=', 'u.user_id');
-        if (! empty($params['p_code'])) {
-            $q->where('u.code', 'like', '%'.$params['p_code'].'%');
-        }
+        self::applyContainsFilter($q, $params['p_code'] ?? null, 'u.code');
+        self::applyContainsFilter($q, $params['p_nombre'] ?? null, 'u.nombre');
+        self::applyContainsFilter($q, $params['p_usuario'] ?? null, 'fu.usuario');
         $page = max(1, (int) ($params['p_page'] ?? 1));
         $pageSize = max(1, min(200, (int) ($params['p_page_size'] ?? 50)));
         $total = (clone $q)->count();
@@ -159,10 +159,12 @@ final class PartesMaestrosOperations
     private static function clientesList(array $params): array
     {
         $q = DB::table('PQ_PARTES_CLIENTES as c')
-            ->leftJoin('PQ_PARTES_TIPOS_CLIENTE as t', 't.id', '=', 'c.tipo_cliente_id');
-        if (! empty($params['p_code'])) {
-            $q->where('c.code', 'like', '%'.$params['p_code'].'%');
-        }
+            ->leftJoin('PQ_PARTES_TIPOS_CLIENTE as t', 't.id', '=', 'c.tipo_cliente_id')
+            ->leftJoin('users as fu', 'fu.id', '=', 'c.user_id');
+        self::applyContainsFilter($q, $params['p_code'] ?? null, 'c.code');
+        self::applyContainsFilter($q, $params['p_nombre'] ?? null, 'c.nombre');
+        self::applyContainsFilter($q, $params['p_usuario'] ?? null, 'fu.usuario');
+        self::applyContainsFilter($q, $params['p_email'] ?? null, 'c.email');
         $page = max(1, (int) ($params['p_page'] ?? 1));
         $pageSize = max(1, min(200, (int) ($params['p_page_size'] ?? 50)));
         $total = (clone $q)->count();
@@ -170,6 +172,7 @@ final class PartesMaestrosOperations
             'c.id', 'c.user_id', 'c.code', 'c.nombre', 'c.email', 'c.tipo_cliente_id',
             'c.erp_cliente', 'c.erp_articulo',
             't.code as tipo_cliente_code', 't.descripcion as tipo_cliente_descripcion',
+            'fu.usuario as usuario_codigo',
             'c.activo', 'c.inhabilitado',
         ]);
 
@@ -632,9 +635,9 @@ final class PartesMaestrosOperations
     private static function simpleCatalogList(string $table, array $params, bool $withFlags = false): array
     {
         $q = DB::table($table);
-        if (! empty($params['p_code'])) {
-            $q->where('code', 'like', '%'.$params['p_code'].'%');
-        }
+        self::applyContainsFilter($q, $params['p_code'] ?? null, 'code');
+        $descripcionFilter = $params['p_descripcion'] ?? $params['p_nombre'] ?? null;
+        self::applyContainsFilter($q, $descripcionFilter, 'descripcion');
         $page = max(1, (int) ($params['p_page'] ?? 1));
         $pageSize = max(1, min(200, (int) ($params['p_page_size'] ?? 50)));
         $total = (clone $q)->count();
@@ -733,5 +736,14 @@ final class PartesMaestrosOperations
     private static function fail(string $respuesta): never
     {
         throw new PartesMaestrosException($respuesta);
+    }
+
+    private static function applyContainsFilter($query, mixed $value, string $column): void
+    {
+        $needle = trim((string) ($value ?? ''));
+        if ($needle === '') {
+            return;
+        }
+        $query->where($column, 'like', '%'.$needle.'%');
     }
 }

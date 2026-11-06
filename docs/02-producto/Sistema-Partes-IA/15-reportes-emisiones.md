@@ -84,6 +84,8 @@ El diseñador opera **sobre el dataset del proceso elegido**: no se agregan camp
 
 **D-EM-12.** Al emitir, sale el diseño guardado para ese reporte. Un control puesto en el detalle del diseño sin vincularlo a un campo del dataset se imprime en cada fila.
 
+**D-EM-13.** En el diseñador DX, el diálogo **Guardar como** del sidecar Must listar solo layouts del **proceso confirmado** (catálogo `GET .../design/report-storage-urls?processCode=` vía token sidecar; ver README sidecar Framework). No mezclar reportes de otros procesos emisibles del tenant.
+
 ### 3.3 Definir salidas disponibles por proceso
 
 Las salidas de **presentación** que el Framework ofrece (MVP GEN):

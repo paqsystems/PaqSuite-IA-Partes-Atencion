@@ -220,6 +220,67 @@ class ApiV1PartesMaestrosTest extends TestCase
             ->assertJsonPath('respuesta', 'partes.maestros.validationFailed');
     }
 
+    public function test_maestros_list_filtra_por_usuario_y_email_cc_pq_14(): void
+    {
+        $token = $this->loginAdmin();
+        $tipoId = DB::table('PQ_PARTES_TIPOS_CLIENTE')->insertGetId([
+            'code' => 'TC14',
+            'descripcion' => 'CC14',
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $frameworkUser = User::factory()->create([
+            'usuario' => 'cc14-cli-user',
+            'activo' => true,
+            'inhabilitado' => false,
+        ]);
+        $this->postJson('/api/v1/partes/clientes', [
+            'code' => 'C14A',
+            'nombre' => 'Cliente CC14',
+            'tipoClienteId' => $tipoId,
+            'userId' => $frameworkUser->id,
+            'email' => 'cc14@acme.test',
+        ], $this->authHeaders($token))->assertStatus(201);
+
+        $this->postJson('/api/v1/partes/clientes', [
+            'code' => 'C14B',
+            'nombre' => 'Otro cliente',
+            'tipoClienteId' => $tipoId,
+            'email' => 'otro@example.test',
+        ], $this->authHeaders($token))->assertStatus(201);
+
+        $asstUser = User::factory()->create([
+            'usuario' => 'cc14-asst-user',
+            'activo' => true,
+            'inhabilitado' => false,
+        ]);
+        $this->postJson('/api/v1/partes/asistentes', [
+            'userId' => $asstUser->id,
+            'code' => 'A14',
+            'nombre' => 'Asist CC14',
+        ], $this->authHeaders($token))->assertStatus(201);
+
+        $this->getJson('/api/v1/partes/clientes?usuario=cc14-cli', $this->authHeaders($token))
+            ->assertStatus(200)
+            ->assertJsonPath('resultado.total', 1)
+            ->assertJsonPath('resultado.items.0.code', 'C14A')
+            ->assertJsonPath('resultado.items.0.usuarioCodigo', 'cc14-cli-user')
+            ->assertJsonPath('resultado.items.0.email', 'cc14@acme.test');
+
+        $this->getJson('/api/v1/partes/clientes?email=@acme', $this->authHeaders($token))
+            ->assertStatus(200)
+            ->assertJsonPath('resultado.total', 1)
+            ->assertJsonPath('resultado.items.0.code', 'C14A');
+
+        $this->getJson('/api/v1/partes/asistentes?usuario=cc14-asst', $this->authHeaders($token))
+            ->assertStatus(200)
+            ->assertJsonPath('resultado.total', 1)
+            ->assertJsonPath('resultado.items.0.code', 'A14')
+            ->assertJsonPath('resultado.items.0.usuarioCodigo', 'cc14-asst-user');
+    }
+
     public function test_cliente_funcional_forbidden_en_maestros(): void
     {
         $this->seed();

@@ -86,11 +86,12 @@ export function MaestroCrudPage({
     setLoading(true)
     setListError(null)
     try {
-      const { page, pageSize } = maestroGridLoadOptionsToQuery({
+      const query = maestroGridLoadOptionsToQuery({
         skip: loadOptions.skip,
         take: loadOptions.take,
+        filter: loadOptions.filter,
       })
-      const result = await listPartesResource(resourcePathRef.current, { page, pageSize })
+      const result = await listPartesResource(resourcePathRef.current, query)
       if (result.kind === 'ok') {
         const items = result.envelope.resultado.items ?? []
         const totalCount = result.envelope.resultado.total ?? items.length
@@ -238,7 +239,7 @@ export function MaestroCrudPage({
         >
           <RemoteOperations
             paging
-            filtering={false}
+            filtering
             sorting={false}
             grouping={false}
             summary={false}

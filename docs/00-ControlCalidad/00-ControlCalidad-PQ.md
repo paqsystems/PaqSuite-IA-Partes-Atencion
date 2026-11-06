@@ -58,6 +58,206 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 10 | 30/10/2026 | Especificado | Tareas programadas (historial / próxima ejecución) + saldo informe Paquete de horas — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
 | 11 | 01/11/2026 | Especificado | Proceso masivo paginación grilla — **F1/F Aprobado** · **Parte I unificada** · **Prod OK** (PR #117/#118) ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md)) |
 | 12 | 02/11/2026 | Especificado | ABM maestros paginación · menú sin agrupadas · Emitir Paquete de Horas — **F1/F Aprobado** · **Preview OK** · **Prod OK** (PR #123 → `main`) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-12-2026-11-02.md) |
+| 13 | 02/11/2026 | Especificado | Diseñador Paquete de Horas (dataset) · FilterRow maestros + Proceso masivo — **F1/F Aprobado** · **Parte I** · **Preview OK** 03/11/2026 (`88c46ea`) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md) |
+| 14 | 03/11/2026 | Especificado | ABM Clientes — columnas usuario/mail + FilterRow usuario — **F1/F Aprobado** · **Parte I** · manual DEV OK — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md) |
+| 15 | 04/11/2026 | Especificado · **F1/F Aprobado** · **Parte I** cerrada | Informar por mail a clientes desde Proceso masivo (asistencias / revisar / observaciones) — refino CC #7 (URL tenant, i18n destinatario, guard salida, plantilla v1 hardcode) |
+
+---
+
+## Control de Calidad #15
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 04/11/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado · **F1/F Aprobado** · **Parte I** cerrada |
+| **Parte G** | 04/11/2026 — confirmado/alineado SPEC/HU/TR-005-update (CC #7 + refino #15); sin épica paralela |
+| **Parte D/E/F** | 04/11/2026 — [D-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-15-2026-11-04.md) · [E-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-15-2026-11-04.md) · [D-VERIFICACION-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md) |
+| **F1/F** | **Aprobado** 04/11/2026 — F1 código ↔ TR + PHPUnit/Vitest OK |
+| **Parte I** | 04/11/2026 — fusionado en SPEC/HU/TR-005 base; updates 005 eliminados |
+| **Origen** | Mejora solicitada — anuncio a clientes de asistencias registradas; refino operativo del ítem «Envio mail a clientes…» de **CC #7** (19/10/2026) |
+| **Proceso** | **Proceso masivo** — `partes.masivo` · ruta `/partes/masivo` · `ProcesoMasivoPage` |
+| **Jira** | [PIAPARTES-56](https://paqsystems.atlassian.net/browse/PIAPARTES-56) / [57](https://paqsystems.atlassian.net/browse/PIAPARTES-57) / [45](https://paqsystems.atlassian.net/browse/PIAPARTES-45) |
+| **Relación** | Extiende / precisa CC #7 § «Envio mail a clientes para informar existencia de novedades»; no sustituye el mail de acceso ABM Usuarios (HU-002-update). **No** confundir con **CC #14** (columnas usuario/mail en ABM Clientes). |
+
+### Resumen del hito
+
+Enviar a clientes mails anunciando que la **empresa emisora** registró **asistencias** en su entidad, para que puedan **revisarlas**, estar al tanto y/o **realizar observaciones**.
+
+### Objetivo / mejora solicitada
+
+#### Mail «Informar a clientes» desde Proceso masivo
+
+*Procesado* · cola **SPEC/HU/TR-005-update** (sin `-update-01`; mismo alcance formalizado)
+
+1. **Disparo:** botón/ícono específico en el proceso **Proceso masivo** (no desde otros procesos).
+2. **Contenido del mail (MUST):**
+   - Identificar la **empresa que lo envía** (razón social / nombre de la empresa emisora).
+   - Recordar el **link de acceso** canónico: `{tenant}.partesatencion.paqsystems.com` (URL completa `https://{tenant}.partesatencion.paqsystems.com`) y el **código de usuario** de acceso (`users.codigo`).
+   - **No** incluir contraseña; si no la recuerda, recupero vía login (GEN-04).
+   - Invitar a revisar las asistencias y, si corresponde, formular observaciones.
+3. **i18n:** asunto y cuerpo respetan el idioma del sitio / destinatario (`users.locale`, catálogo producto en los 5 locales del host). El envío no debe quedar fijo en el idioma del supervisor.
+4. **Destinatarios (MUST):** todos los clientes que cumplan **ambas** condiciones:
+   - a) tengan **usuario** de la tabla `users` asociado (vía vínculo cliente ↔ usuario del producto);
+   - b) **aparezcan en al menos un registro** de la grilla del proceso masivo en el universo filtrado actual (**no importa** si el renglón fue modificado o no; no se exige tilde).
+5. **Plantilla v1:** texto **hardcodeado** (claves i18n fijas). **Fuera de alcance de este hito:** componente/ABM de armado de plantillas de mails predefinidos (evolución posterior).
+
+#### Guard al abandonar el proceso
+
+*Procesado* · mismo TR-005-update (RN-CC15-M03)
+
+Si el supervisor **abandona la pestaña** (cambio de pestaña del shell, cambio de opción de menú, intento de cierre/recarga) **y** se realizaron **cambios** en el proceso masivo, **avisar** y **preguntar** si quiere **enviar** el mail a clientes antes de salir (diálogo i18n; cancelar debe conservar el trabajo en pantalla).
+
+### Criterios de aceptación preliminares
+
+- [x] **CA-15-01** En Proceso masivo hay un botón/ícono específico para informar a clientes (`data-testid` estable; tooltip i18n). *(F1/F 04/11/2026)*
+- [x] **CA-15-02** El mail identifica la empresa emisora. *(F1/F)*
+- [x] **CA-15-03** El mail incluye URL `https://{tenant}.partesatencion.paqsystems.com` y el código de usuario; sin contraseña. *(F1/F)*
+- [x] **CA-15-04** Asunto/cuerpo en el locale del destinatario (5 locales). *(F1/F)*
+- [x] **CA-15-05** Destinatarios = clientes con `users` asociado **y** presentes en ≥1 fila del universo filtrado (todas las páginas; sin exigir modificación ni selección). *(F1/F)*
+- [x] **CA-15-06** Al salir con cambios pendientes, diálogo ofrece enviar / salir sin enviar / cancelar. *(F1/F código + Vitest; smoke UI opcional post-deploy)*
+- [x] **CA-15-07** Texto v1 hardcodeado vía i18n; sin editor de plantillas. *(F1/F)*
+
+### Notas para Parte G
+
+- Reutilizar / alinear la cola **SPEC/HU/TR-005-update** (origen CC #7); no abrir épica paralela salvo ambigüedad A1.
+- Motor de envío: Mail Engine GEN / futuro **GEN-30** (no SMTP ad-hoc en el host).
+- Acceso datos: MUST SP; sin `WHERE IN` de N incierto (regla 77).
+- Excluido mobile (Proceso masivo ya fuera de MVP native).
+
+### Derivación SDD
+
+| Paso | Artefacto |
+|------|-----------|
+| **G** | 04/11/2026 — cola confirmada (sin update-01) |
+| **D/E/F** | [D-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-15-2026-11-04.md) · [E-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-15-2026-11-04.md) · [D-VERIFICACION-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md) |
+| **I** | Fusionado en [SPEC-005](../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) / [HU-005](../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) / [TR-005](../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
+
+**Cierre:** F1/F **Aprobado**, **Parte I** 04/11/2026. Smoke UI preview opcional post-deploy.
+
+---
+
+## Control de Calidad #14
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 03/11/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado · **F1/F Aprobado** · **Parte I** cerrada |
+| **Parte G** | 03/11/2026 — SPEC/HU/TR-update CC #14 (003) |
+| **Parte D/E/F** | 03/11/2026 — [D-CC-PQ-14](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-14-2026-11-03.md) · [E-CC-PQ-14](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-14-2026-11-03.md) · [D-VERIFICACION-CC-PQ-14](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md) |
+| **F1/F** | **Aprobado** 03/11/2026 — smoke manual DEV (tenant **DEV**); regresión E OK |
+| **Parte I** | 03/11/2026 — fusionado en SPEC/HU/TR-003 base |
+| **Origen** | Prueba manual post **CC #13** (preview): ABM **Clientes** y **Asistentes** — visibilidad de usuario en listado y FilterRow |
+| **Proceso** | Maestros Partes — `partes.maestros.clientes` · `partes.maestros.asistentes` ([HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md)) |
+
+### Resumen del hito
+
+| # | Ítem | Notas |
+|---|------|--------|
+| 1 | **ABM Clientes** — columnas **usuario** y **mail** en la grilla | Hoy el modal incluye `userId` y `email`; la grilla no los muestra (solo código, nombre, tipo, ERP, activo). |
+| 2 | **ABM Asistentes** — FilterRow no filtra por **usuario** | El resto de columnas con FilterRow responden; la columna de usuario (`usuarioCodigo`) no acota filas. |
+| 3 | **ABM Clientes** — FilterRow **usuario** al incorporar columna | Misma corrección que ítem 2: al exponer usuario en grilla, verificar filtro remoto coherente con paginación (CC #12/#13). |
+
+### Hallazgos
+
+#### 1) ABM Clientes — usuario y mail ausentes en grilla
+
+Desde la grilla no se identifica qué **usuario de acceso** ni qué **mail** tiene cada cliente sin abrir el modal de edición.
+
+**Expectativa:** columnas visibles alineadas al formulario (código de usuario vinculado y correo), con i18n existente (`partes.maestros.field.*`).
+
+#### 2) ABM Asistentes — FilterRow en columna usuario
+
+Tras **CC #13**, FilterRow en nombre/código/supervisor/activo funciona; al filtrar por **usuario** la grilla no reduce resultados (comportamiento distinto al resto).
+
+**Triage preliminar (código host):**
+
+| Capa | Observación |
+|------|-------------|
+| **FE** | `maestroGridLoadOptionsToQuery` (`maestroListPaging.ts`) mapea FilterRow solo a query `code`, `nombre`, `descripcion` — no incluye `usuarioCodigo` / `email`. |
+| **API** | Revisar si `GET /api/v1/partes/asistentes` (y `clientes`) acepta filtro por usuario/mail en listado remoto; extender SP/list si falta contrato. |
+
+#### 3) ABM Clientes — FilterRow usuario (regresión explícita)
+
+Al agregar la columna de usuario en Clientes, **obligatorio** validar FilterRow sobre ese campo (y, si aplica, mail) en entorno con paginación remota — no repetir el gap del ítem 2.
+
+### Mejoras solicitadas
+
+#### HU-003-maestros-y-catalogos — ABM Clientes (grilla) + FilterRow usuario
+
+*Procesado* · **Parte I** → [SPEC-003](../05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md) · [HU-003](../03-historias-usuario/100-SistemaPartes/HU-003-maestros-y-catalogos.md) · [TR-003](../04-tareas/100-SistemaPartes/TR-003-maestros-y-catalogos.md)
+
+- Agregar a la grilla del ABM **Clientes** las columnas **usuario** (código/login vinculado) y **mail** (mismo payload list API).
+- Corregir FilterRow remoto para la columna **usuario** en **Asistentes**.
+- Al incorporar usuario/mail en **Clientes**, FilterRow equivalente (contains / query API).
+- Tests de regresión en `maestroListPaging` + integración list API si cambia query.
+
+### Criterios de aceptación
+
+- [x] **CA-14-01** ABM Clientes muestra columnas **usuario** y **mail** en la grilla, con valores coherentes al modal. *(F1/F manual DEV 03/11/2026)*
+- [x] **CA-14-02** ABM Asistentes: FilterRow en columna **usuario** reduce filas según texto ingresado (paginación remota). *(F1/F manual DEV)*
+- [x] **CA-14-03** ABM Clientes: FilterRow en columna **usuario** (y **mail** si es filtrable) funciona igual que nombre/código. *(F1/F manual DEV)*
+- [x] **CA-14-04** Sin regresión de paginación remota ni FilterRow de CC #12/#13 en otros maestros. *(F1/F manual DEV)*
+
+### Derivación SDD
+
+| Ítem | Updates |
+|------|---------|
+| Columnas + filtros maestros | Unificado Parte I en SPEC/HU/TR-003 (updates CC #14 eliminados) |
+
+**Cierre:** F1/F **Aprobado**, **Parte I** 03/11/2026 — [D-VERIFICACION-CC-PQ-14 §1–§4](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md). **Prod/preview** pendiente de deploy del código host.
+
+---
+
+## Control de Calidad #13
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 02/11/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado |
+| **Parte G** | 02/11/2026 — SPEC/HU/TR-update CC #13 (003 / 005 / 011) |
+| **Parte D/E/F** | 03/11/2026 — [D-CC-PQ-13](../04-tareas/updates/100-SistemaPartes/D-CC-PQ-13-2026-11-03.md) · [E-CC-PQ-13](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-13-2026-11-03.md) · [D-VERIFICACION-CC-PQ-13](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md) |
+| **F1/F** | **Aprobado** 03/11/2026 — F1 §1.1 + regresión E OK; smoke §4 **OK** DEV + **preview** (`v1.3.0-CLOUDSMITH` @ `88c46ea`, PQ) |
+| **Parte I** | 03/11/2026 — fusionado en SPEC/HU/TR-003, 005, 011 base (cierre acotado) |
+| **Origen** | Prueba manual post **CC #12** (prod tenant **PQ**): diseñador Paquete de horas, maestros, Proceso masivo |
+| **Evidencia** | Capturas CC #13: Field List `id`/`label`; FilterRow **ANKAS** en Clientes sin acotar filas |
+
+### Resumen del hito
+
+| # | Ítem | Notas |
+|---|------|--------|
+| 1 | Diseñador **Paquete de horas** — dataset negocio en Field List | `partes.informes.paqueteHoras` |
+| 2 | **FilterRow** remoto maestros + **Proceso masivo** | Sin regresión paginación CC #11/#12 |
+
+### Criterios de aceptación
+
+- [x] **CA-13-01** Field List Paquete de horas con columnas de negocio *(F1/F preview 03/11/2026)*
+- [x] **CA-13-02** Clientes FilterRow nombre/código *(F1/F preview)*
+- [x] **CA-13-03** Asistentes FilterRow *(F1/F preview)*
+- [x] **CA-13-04** Proceso masivo FilterRow cliente/tipo tarea *(F1/F preview)*
+- [x] **CA-13-05** Tests regresión *(ver E-CC-PQ-13)*
+
+### Derivación SDD
+
+| Ítem | Updates |
+|------|---------|
+| Diseñador | [SPEC-011-update](../05-open-spec/updates/100-SistemaPartes/SPEC-011-update-cc-pq-13-2026-11-02-designer-paquete-horas-dataset.md) · [TR-011-update](../04-tareas/updates/100-SistemaPartes/TR-011-update-cc-pq-13-2026-11-02-designer-paquete-horas-dataset.md) |
+| FilterRow maestros | [SPEC-003-update](../05-open-spec/updates/100-SistemaPartes/SPEC-003-update-cc-pq-13-2026-11-02-filterrow-maestros.md) · [TR-003-update](../04-tareas/updates/100-SistemaPartes/TR-003-update-cc-pq-13-2026-11-02-filterrow-maestros.md) |
+| FilterRow masivo | [SPEC-005-update](../05-open-spec/updates/100-SistemaPartes/SPEC-005-update-cc-pq-13-2026-11-02-filterrow-masivo.md) · [TR-005-update](../04-tareas/updates/100-SistemaPartes/TR-005-update-cc-pq-13-2026-11-02-filterrow-masivo.md) |
+
+Plan D1: [D1-TR-003-005-011-update-cc-pq-13](../04-tareas/updates/100-SistemaPartes/d1/D1-TR-003-005-011-update-cc-pq-13.md).
+
+**Hito FRAMEWORK (causa raíz):** el Field List del diseñador no debe depender de despliegue manual al sidecar ni de hardcode C# por producto. Seguimiento en [PaqSuite-IA-FRAMEWORK — Control de Calidad #13](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/00-ControlCalidad/00-ControlCalidad-PQ.md#control-de-calidad-13) (**GEN-15 + GEN-34:** definición del dataset de reportes nuevos/modificados en **instalación/actualización**).
+
+**Cierre:** F1/F **Aprobado**, **Parte I** y **Preview OK** 03/11/2026 — [D-VERIFICACION §1.1, §6, §8](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). **Prod** pendiente (PR → `develop` → `main`). Hito FRAMEWORK (schema en GEN-34) sigue en [Framework CC #13](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/00-ControlCalidad/00-ControlCalidad-PQ.md#control-de-calidad-13).
 
 ---
 
@@ -451,14 +651,17 @@ en el Abm de Usuarios, agregar un botón "Notificación", por el cual :
 
 #### Envio mail a clientes para informar existencia de novedades
 
-*Procesado* (Parte G 20/10/2026) → [SPEC-005-update](../05-open-spec/updates/100-SistemaPartes/SPEC-005-supervision-proceso-masivo-update.md) · [HU-005-update](../03-historias-usuario/updates/100-SistemaPartes/HU-005-supervision-proceso-masivo-update.md) · [TR-005-update](../04-tareas/updates/100-SistemaPartes/TR-005-supervision-proceso-masivo-update.md)
+*Procesado* (Parte G 20/10/2026) · refino **CC #15** · **Parte I** 04/11/2026 → [SPEC-005](../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) §4.7 · [HU-005](../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) · [TR-005](../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md)
 
 En el proceso de "Partes Masivos":
 - habilitar un ícono con la imagen de mail, y tooltip "Informar a clientes", con el cual.
-- se determinan todos los clientes que figuran en la grilla en ese momento, y que tengan asociado un usuario.
-- Enviar un mail a todos los usuarios recolectados.
+- se determinan todos los clientes que figuran en la grilla en ese momento y que tengan asociado un código/usuario de la tabla `USERS` (`PQ_PARTES_CLIENTES.user_id`).
+- ese usuario debe estar **activo** (usable: activo y no inhabilitado) y tener **mail en `USERS`**.
+- enviar el aviso a **`users.email`** de cada usuario recolectado (destinatarios únicos). **No** usar el mail que eventualmente figure en el maestro cliente (`PQ_PARTES_CLIENTES.email`).
 - Asunto : Codigo de la empresa y algo así como : "Existen novedades de atención a su empresa".
 - Mensaje : informar que hubo novedades de servicios prestados en el periodod (desde y hasta con se filtró el procesó), recordando la URL de aviso y el codigo de usuario para acceder, y que si no recuerda su contraseña podrá solicitar una nueva en el login.
+
+> **Corrección conceptual (04/11/2026):** el destinatario del aviso es siempre `users.email` del usuario vinculado al cliente; nunca `PQ_PARTES_CLIENTES.email`.
 
 ---
 

@@ -42,6 +42,14 @@ final class PartesPaqueteHorasEmissionPort implements EmissionDatasetPort
     ) {
     }
 
+    /**
+     * @return list<string>
+     */
+    public static function designDatasetColumnNames(): array
+    {
+        return self::DATASET_COLUMNS;
+    }
+
     public function resolveDataset(EmissionContext $context): EmissionDataset
     {
         $hostContext = $this->resolveHostContext($context);
@@ -90,10 +98,6 @@ final class PartesPaqueteHorasEmissionPort implements EmissionDatasetPort
                 continue;
             }
             $datasetRows[] = $this->pickColumns($camel);
-        }
-
-        if ($datasetRows === []) {
-            throw EmissionException::fromCode(4701);
         }
 
         $schema = [];

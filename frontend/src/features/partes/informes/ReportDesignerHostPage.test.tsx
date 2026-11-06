@@ -93,6 +93,8 @@ describe('ReportDesignerHostPage — selección de proceso GEN', () => {
     )
     expect(source).toContain('EmissionReportDesignerPage')
     expect(source).toContain("from '@paqsuite/react-core'")
+    expect(source).toContain('accessToken={accessToken}')
+    expect(source).toContain('platform={platform}')
     expect(source).not.toMatch(/processCode=\{['"]partes\.informes\.consultaDetallada['"]\}/)
     expect(source).not.toMatch(/const PROCESS_CODE\s*=/)
   })

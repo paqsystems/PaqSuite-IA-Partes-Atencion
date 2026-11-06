@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Tasks\StaleTaskExecutionRecovery;
 use App\Tenancy\CliInstalacionContext;
+use App\Tenancy\SchedulerClienteResolver;
 use Illuminate\Console\Command;
 
 /**
@@ -12,37 +13,46 @@ use Illuminate\Console\Command;
 final class PartesTasksRecoverStaleCommand extends Command
 {
     protected $signature = 'partes:tasks-recover-stale
-                            {--cliente= : Código tenant (default config paqsuite.clienteCodigo)}
+                            {--cliente= : Un solo tenant (si se omite, todos los SQL directo del proyecto)}
                             {--full : Usar umbral largo (backup RDS) en lugar de overlap}';
 
-    protected $description = 'Recupera ejecuciones GEN-13 EN_EJECUCION expiradas en la BD del tenant';
+    protected $description = 'Recupera ejecuciones GEN-13 EN_EJECUCION expiradas en cada BD tenant SQL directo';
 
     public function handle(
         CliInstalacionContext $cliInstalacion,
+        SchedulerClienteResolver $clienteResolver,
         StaleTaskExecutionRecovery $staleRecovery,
     ): int {
-        $cliente = trim((string) ($this->option('cliente') ?: $cliInstalacion->defaultClienteCodigo()));
-        if ($cliente === '') {
-            $this->error('Definí PAQSUITE_CLIENTE en el entorno del sitio (Forge) o usá --cliente=');
+        $clientes = $clienteResolver->resolve($this->option('cliente') ? (string) $this->option('cliente') : null);
+        if ($clientes === []) {
+            $this->error('No hay tenants: definí --cliente=, PAQSUITE_TASKS_CLIENTES, EMPRESAS_CONEXION o PAQSUITE_CLIENTE.');
 
             return self::FAILURE;
         }
 
-        $record = $cliInstalacion->applyForCliente($cliente);
-        if ($record === null) {
-            $this->error("No se pudo resolver/aplicar instalación para cliente «{$cliente}».");
+        $exit = self::SUCCESS;
+        $total = 0;
+        foreach ($clientes as $cliente) {
+            $record = $cliInstalacion->applyForCliente($cliente);
+            if ($record === null) {
+                $this->error("No se pudo resolver/aplicar instalación para cliente «{$cliente}».");
+                $exit = self::FAILURE;
+                continue;
+            }
 
-            return self::FAILURE;
+            $this->line(sprintf('Tenant %s → BD %s', $record->cliente, (string) $record->databaseName));
+
+            $recovered = $this->option('full')
+                ? $staleRecovery->recover()
+                : $staleRecovery->recoverOverlaps();
+            $total += $recovered;
+            $this->info("Recuperadas {$recovered} ejecución(es).");
         }
 
-        $this->line(sprintf('Tenant %s → BD %s', $record->cliente, (string) $record->databaseName));
+        if (count($clientes) > 1) {
+            $this->info("Total recuperadas: {$total}.");
+        }
 
-        $recovered = $this->option('full')
-            ? $staleRecovery->recover()
-            : $staleRecovery->recoverOverlaps();
-
-        $this->info("Recuperadas {$recovered} ejecución(es).");
-
-        return self::SUCCESS;
+        return $exit;
     }
 }

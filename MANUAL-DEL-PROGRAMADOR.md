@@ -315,7 +315,7 @@ El FE en Vercel **siempre** llama al BE por URL absoluta (`VITE_API_BASE_URL`). 
 | **`PAQSUITE_TENANCY`** | `single` | `single` | `single` |
 | **`PAQSUITE_DB`** | `unified` | `unified` | `unified` |
 | **`PAQSUITE_INSTALACION_RESOLVER`** | `config` (PHPUnit / sin PAQSYSTEMS) o `sql` (igual que Forge; lab RDS) | **`sql`** | **`sql`** |
-| **`PAQSUITE_CLIENTE`** | Código default CLI (`DEV` / `DEMO` / `PAQ`); en HTTP manda `X-Paq-Cliente` | Obligatorio en `.env` del sitio (post-deploy lo lee si Forge no exporta la var) | Idem |
+| **`PAQSUITE_CLIENTE`** | Fallback CLI (`DEV` / `DEMO` / `PAQ`); HTTP usa `X-Paq-Cliente`. El scheduler GEN-13 recorre `EMPRESAS_CONEXION`, no solo este valor | Obligatorio como fallback; no sustituye el loop multi-tenant | Idem |
 | **`DB_*`** (`sqlsrv`) | Instancia alcanzable (ej. `PAQSYSTEMS_PARTESATENCION_DEMO`) o **sqlite** en tests | Credenciales del sitio; la BD **por tenant** la resuelve `EMPRESAS_CONEXION` | Idem prod |
 | **`PAQSUITE_CENTRAL_*`** | Host/catálogo `PAQSYSTEMS` si `resolver=sql` | Obligatorio con multidominio | Obligatorio |
 | **`FRONTEND_URL`** | `http://localhost:3000` | URL del SPA dev (Vercel develop) | URL operativa o custom domain |

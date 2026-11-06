@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\DB;
 use PaqSuite\LaravelCore\Tenancy\InstalacionInfraException;
 use PaqSuite\LaravelCore\Tenancy\InstalacionRecord;
 use PaqSuite\LaravelCore\Tenancy\InstalacionResolver;
@@ -48,36 +47,17 @@ function resolveForgePostDeployInstallationTargets(string $proyecto): array
         return [['cliente' => $cliente, 'proyecto' => $proyecto]];
     }
 
-    $centralConnection = (string) config('paqsuite.instalacion.centralConnection', 'paqsuite_central');
-    $rows = DB::connection($centralConnection)->select(
-        'SELECT ec.cliente
-         FROM dbo.EMPRESAS_CONEXION AS ec WITH (NOLOCK)
-         WHERE ec.proyecto = ?
-           AND ec.activo = 1
-           AND (ec.agent_id IS NULL OR LTRIM(RTRIM(ec.agent_id)) = N\'\')
-           AND (ec.client_id IS NULL OR LTRIM(RTRIM(ec.client_id)) = N\'\')
-         ORDER BY ec.cliente',
-        [$proyecto],
-    );
+    $clientes = app(\App\Tenancy\EmpresasConexionSqlDirectClienteCatalog::class)
+        ->listActiveClienteCodigos($proyecto);
 
-    if ($rows === []) {
+    if ($clientes === []) {
         throw new RuntimeException("Sin instalaciones SQL directo en EMPRESAS_CONEXION para proyecto {$proyecto}.");
     }
 
-    $targets = [];
-    foreach ($rows as $row) {
-        $cliente = trim((string) ($row->cliente ?? ''));
-        if ($cliente === '') {
-            continue;
-        }
-        $targets[] = ['cliente' => $cliente, 'proyecto' => $proyecto];
-    }
-
-    if ($targets === []) {
-        throw new RuntimeException("Instalaciones inválidas en EMPRESAS_CONEXION para {$proyecto}.");
-    }
-
-    return $targets;
+    return array_map(
+        static fn (string $cliente): array => ['cliente' => $cliente, 'proyecto' => $proyecto],
+        $clientes,
+    );
 }
 
 function bootstrapTenantSqlsrvForInstallation(string $cliente, string $proyecto): InstalacionRecord

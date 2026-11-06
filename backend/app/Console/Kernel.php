@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('partes:tasks-run-due')->everyMinute()->withoutOverlapping(5);
+        // Mutex 15 min: el comando recorre todos los tenants SQL y un backup RDS ~2 min.
+        $schedule->command('partes:tasks-run-due')->everyMinute()->withoutOverlapping(15);
         $schedule->command('tasks:purge-history')->daily();
     }
 

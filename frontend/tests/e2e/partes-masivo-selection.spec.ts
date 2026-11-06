@@ -37,4 +37,31 @@ test('tilde de fila en proceso masivo permanece', async ({ page }) => {
   await expect(page.getByTestId('partesMasivoSelectionCount')).toContainText('1', { timeout: 5_000 })
   await page.waitForTimeout(400)
   await expect(page.getByTestId('partesMasivoSelectionCount')).toContainText('1')
+  await expect(page.getByTestId('partesMasivoInformarClientes')).toBeVisible()
+})
+
+test('diálogo informar clientes lista destinatarios y no muestra jerga técnica', async ({
+  page,
+}) => {
+  test.setTimeout(60_000)
+  await mockMasivoSupervisorApis(page, () => ({
+    items: [tareaItem(11), tareaItem(12)],
+    total: 2,
+  }))
+  await loginAsSupervisor(page)
+  await page.goto('/partes/proceso-masivo')
+  await expect(page.getByTestId('partesMasivoPage')).toBeVisible({ timeout: 20_000 })
+  const mailBtn = page.getByTestId('partesMasivoInformarClientes')
+  await expect(mailBtn).toBeEnabled({ timeout: 15_000 })
+  await mailBtn.click()
+  const dialog = page.getByTestId('partesMasivoInformarConfirmDialog')
+  await expect(dialog).toBeVisible()
+  await expect(page.getByTestId('partesMasivoInformarConfirmBody')).toContainText('2 avisos')
+  await expect(page.getByTestId('partesMasivoInformarRecipientList')).toContainText('Crilen')
+  await expect(page.getByTestId('partesMasivoInformarRecipientList')).toContainText(
+    'crilen@test.com',
+  )
+  await expect(page.getByTestId('partesMasivoInformarRecipientList')).toContainText('Golo Tap')
+  await expect(dialog).not.toContainText('users.email')
+  await expect(page.getByTestId('partesMasivoInformarOk')).toBeEnabled()
 })

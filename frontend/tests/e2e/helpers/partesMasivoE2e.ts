@@ -101,6 +101,34 @@ export async function mockMasivoSupervisorApis(
       await fulfill(envelope({ items: [], total: 0 }))
       return
     }
+    if (url.includes('/partes/masivo/informar-clientes/preview')) {
+      await fulfill(
+        envelope({
+          destinatarioCount: 2,
+          fechaDesde: '2026-01-01',
+          fechaHasta: '2026-01-31',
+          destinatarios: [
+            {
+              clienteId: 1,
+              clienteCode: 'CRI',
+              clienteNombre: 'Crilen',
+              email: 'crilen@test.com',
+              nombre: 'Crilen',
+              codigo: 'CRILEN',
+            },
+            {
+              clienteId: 2,
+              clienteCode: 'GOLO',
+              clienteNombre: 'Golo Tap',
+              email: 'golotap@test.com',
+              nombre: 'Golo Tap',
+              codigo: 'GOLOTAP',
+            },
+          ],
+        }),
+      )
+      return
+    }
     if (url.includes('/partes/tareas') && method === 'GET') {
       const parsed = new URL(url)
       const { items, total } = listTareas(parsed)
