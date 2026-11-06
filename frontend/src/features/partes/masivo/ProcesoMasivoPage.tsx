@@ -43,8 +43,11 @@ import {
   masivoSetCerrado,
   previewInformarClientes,
   type MasivoCamposUpdate,
+  type MasivoInformarDestinatario,
+  type MasivoInformarFilters,
   type TareaIdItem,
 } from './partesMasivoApi'
+import { MasivoInformarConfirmDialog } from './MasivoInformarConfirmDialog'
 import { computeMasivoSessionDirty } from './masivoSessionDirty'
 import { useMasivoLeaveGuard } from './useMasivoLeaveGuard'
 import { buildMasivoApplyPreview, type MasivoApplyPreview } from './masivoApplyPreview'
@@ -140,10 +143,20 @@ function ProcesoMasivoView() {
     items: TareaIdItem[]
   } | null>(null)
   const [destinatarioCount, setDestinatarioCount] = useState(0)
+  const [informarDestinatarios, setInformarDestinatarios] = useState<MasivoInformarDestinatario[]>(
+    [],
+  )
   const [informarConfirmOpen, setInformarConfirmOpen] = useState(false)
   const [informarSubmitting, setInformarSubmitting] = useState(false)
+  const [informarPreviewLoading, setInformarPreviewLoading] = useState(false)
   const [informarError, setInformarError] = useState<string | null>(null)
   const [informarSentThisSession, setInformarSentThisSession] = useState(false)
+  const gridColumnFiltersRef = useRef<
+    Pick<
+      MasivoInformarFilters,
+      'clienteCode' | 'clienteNombre' | 'tipoTareaCode' | 'tipoTareaDescripcion'
+    >
+  >({})
 
   const sessionDirty = useMemo(
     () =>
@@ -193,6 +206,14 @@ function ProcesoMasivoView() {
         take: loadOptions.take,
         filter: loadOptions.filter,
       })
+      gridColumnFiltersRef.current = {
+        ...(pagingQuery.clienteCode ? { clienteCode: pagingQuery.clienteCode } : {}),
+        ...(pagingQuery.clienteNombre ? { clienteNombre: pagingQuery.clienteNombre } : {}),
+        ...(pagingQuery.tipoTareaCode ? { tipoTareaCode: pagingQuery.tipoTareaCode } : {}),
+        ...(pagingQuery.tipoTareaDescripcion
+          ? { tipoTareaDescripcion: pagingQuery.tipoTareaDescripcion }
+          : {}),
+      }
       const result = await listTareas({
         fechaDesde: desde,
         fechaHasta: hasta,
@@ -247,32 +268,16 @@ function ProcesoMasivoView() {
     refreshGrid()
   }, [fechaDesde, fechaHasta, filtroClienteId, filtroUsuarioId, estadoCerrado, refreshGrid])
 
-  useEffect(() => {
-    if (nativeApp || !fechaDesde || !fechaHasta) {
-      setDestinatarioCount(0)
-      return
-    }
-    let cancelled = false
-    void previewInformarClientes({
+  function currentInformarFilters(): MasivoInformarFilters {
+    return {
       fechaDesde,
       fechaHasta,
       clienteId: filtroClienteId,
       usuarioId: filtroUsuarioId,
       estadoCerrado,
-    }).then((result) => {
-      if (cancelled) {
-        return
-      }
-      if (result.kind === 'ok') {
-        setDestinatarioCount(result.envelope.resultado.destinatarioCount ?? 0)
-        return
-      }
-      setDestinatarioCount(0)
-    })
-    return () => {
-      cancelled = true
+      ...gridColumnFiltersRef.current,
     }
-  }, [nativeApp, fechaDesde, fechaHasta, filtroClienteId, filtroUsuarioId, estadoCerrado])
+  }
 
   useEffect(() => {
     void listCatalogo('clientes').then((result) => {
@@ -501,13 +506,7 @@ function ProcesoMasivoView() {
     setInformarSubmitting(true)
     setInformarError(null)
     try {
-      const result = await informarClientes({
-        fechaDesde,
-        fechaHasta,
-        clienteId: filtroClienteId,
-        usuarioId: filtroUsuarioId,
-        estadoCerrado,
-      })
+      const result = await informarClientes(currentInformarFilters())
       if (result.kind === 'ok') {
         setInformarSentThisSession(true)
         setInformarConfirmOpen(false)
@@ -527,9 +526,39 @@ function ProcesoMasivoView() {
     }
   }
 
+  async function loadInformarPreview() {
+    setInformarPreviewLoading(true)
+    setInformarError(null)
+    try {
+      const result = await previewInformarClientes(currentInformarFilters())
+      if (result.kind === 'ok') {
+        const preview = result.envelope.resultado
+        setDestinatarioCount(preview.destinatarioCount ?? 0)
+        setInformarDestinatarios(preview.destinatarios ?? [])
+        return
+      }
+      setDestinatarioCount(0)
+      setInformarDestinatarios([])
+      if (result.kind === 'envelopeError') {
+        setInformarError(resolveAuthMessage(result.envelope.respuesta))
+        return
+      }
+      setInformarError(resolveAuthMessage(result.i18nKey || 'infra.transport'))
+    } catch {
+      setDestinatarioCount(0)
+      setInformarDestinatarios([])
+      setInformarError(resolveAuthMessage('infra.unexpected'))
+    } finally {
+      setInformarPreviewLoading(false)
+    }
+  }
+
   function openInformarConfirm() {
     setInformarError(null)
+    setInformarDestinatarios([])
+    setDestinatarioCount(0)
     setInformarConfirmOpen(true)
+    void loadInformarPreview()
   }
 
   async function confirmInformarClientes() {
@@ -687,7 +716,7 @@ function ProcesoMasivoView() {
           <Button
             icon="email"
             hint={t('partes.masivo.informarClientes')}
-            disabled={destinatarioCount <= 0 || informarSubmitting}
+            disabled={informarSubmitting || total <= 0}
             onClick={() => openInformarConfirm()}
             elementAttr={{ 'data-testid': 'partesMasivoInformarClientes' }}
           />
@@ -807,44 +836,23 @@ function ProcesoMasivoView() {
         </div>
       ) : null}
 
-      <Popup
+      <MasivoInformarConfirmDialog
         visible={informarConfirmOpen}
-        onHiding={() => setInformarConfirmOpen(false)}
-        title={t('partes.masivo.mailInformarClientes.confirmTitle')}
-        showCloseButton
-        width={480}
-        wrapperAttr={{ 'data-testid': 'partesMasivoInformarConfirmDialog' }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {informarError ? (
-            <div role="alert" data-testid="partesMasivoInformarError">
-              {informarError}
-            </div>
-          ) : null}
-          <p data-testid="partesMasivoInformarConfirmBody">
-            {t('partes.masivo.mailInformarClientes.confirmBody', {
-              count: destinatarioCount,
-              desde: fechaDesde,
-              hasta: fechaHasta,
-            })}
-          </p>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <Button
-              text={t('parametros.modal.cancel')}
-              onClick={() => setInformarConfirmOpen(false)}
-              disabled={informarSubmitting}
-              elementAttr={{ 'data-testid': 'partesMasivoInformarCancel' }}
-            />
-            <Button
-              text={t('partes.masivo.mailInformarClientes.confirmSend')}
-              type="default"
-              onClick={() => void confirmInformarClientes()}
-              disabled={informarSubmitting || destinatarioCount <= 0}
-              elementAttr={{ 'data-testid': 'partesMasivoInformarOk' }}
-            />
-          </div>
-        </div>
-      </Popup>
+        loading={informarPreviewLoading}
+        submitting={informarSubmitting}
+        error={informarError}
+        destinatarioCount={destinatarioCount}
+        destinatarios={informarDestinatarios}
+        fechaDesde={fechaDesde}
+        fechaHasta={fechaHasta}
+        onCancel={() => {
+          if (!informarSubmitting) {
+            setInformarConfirmOpen(false)
+            setInformarError(null)
+          }
+        }}
+        onSend={() => void confirmInformarClientes()}
+      />
 
       <Popup
         visible={leaveDialogOpen}
@@ -871,7 +879,7 @@ function ProcesoMasivoView() {
               text={t('partes.masivo.leaveConfirmInformarClientes.send')}
               type="default"
               onClick={() => void leaveDialogSendInformar()}
-              disabled={destinatarioCount <= 0 || informarSubmitting}
+              disabled={informarSubmitting}
               elementAttr={{ 'data-testid': 'partesMasivoLeaveInformarSend' }}
             />
           </div>

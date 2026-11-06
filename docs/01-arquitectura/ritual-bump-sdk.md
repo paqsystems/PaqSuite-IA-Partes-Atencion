@@ -17,7 +17,7 @@ Plan de adopción sin forks GEN: [plan-partes-adopcion-sdk-sin-fork-gen.md](./pl
 | Paquete | Pin / lock | Nota |
 |---------|------------|------|
 | `paqsuite/laravel-core` | **1.3.15-beta.1** | Cloudsmith en `backend/composer.json` (lock). Bump con `composer update` y `CLOUDSMITH_READ_TOKEN`. |
-| `@paqsuite/react-core` | **2.4.30-beta.8** | Cloudsmith; `frontend/package-lock.json` resuelve tarball `npm.cloudsmith.io` |
+| `@paqsuite/react-core` | **2.4.30-beta.9** | Cloudsmith; `frontend/package-lock.json` resuelve tarball `npm.cloudsmith.io`. GEN-06: FilterRow, alta por «+» de grilla, alta individual de Permisos. |
 
 Vercel: `scripts/vercel-install.sh` + `CLOUDSMITH_READ_TOKEN`. Vite **no** alias al monorepo salvo `PAQ_REPO_LAB=1`.
 
@@ -41,7 +41,7 @@ composer show paqsuite/laravel-core
 ```bash
 cd frontend
 # Modo registry (release empaquetado / Cloudsmith):
-npm install @paqsuite/react-core@2.4.29-beta.1
+npm install @paqsuite/react-core@2.4.30-beta.9
 npm list @paqsuite/react-core
 
 # Vercel: CLOUDSMITH_READ_TOKEN (docs/06-operacion/adopcion-gen-35-cloudsmith.md).

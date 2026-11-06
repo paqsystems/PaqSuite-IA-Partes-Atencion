@@ -434,8 +434,12 @@ final class PartesTareaOperations
                 'fu.usuario as codigo',
                 'fu.locale',
                 'fu.name',
+                'c.id as cliente_id',
+                'c.code as cliente_code',
+                'c.nombre as cliente_nombre',
             ])
             ->distinct()
+            ->orderBy('c.nombre')
             ->orderBy('fu.id')
             ->get();
 
@@ -451,6 +455,9 @@ final class PartesTareaOperations
                 'codigo' => (string) $row->codigo,
                 'locale' => (string) ($row->locale ?? 'es'),
                 'name' => (string) ($row->name ?? ''),
+                'cliente_id' => (int) $row->cliente_id,
+                'cliente_code' => (string) ($row->cliente_code ?? ''),
+                'cliente_nombre' => (string) ($row->cliente_nombre ?? ''),
             ];
         }
 

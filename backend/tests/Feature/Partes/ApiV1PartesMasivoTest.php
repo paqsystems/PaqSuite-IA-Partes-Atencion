@@ -484,7 +484,10 @@ class ApiV1PartesMasivoTest extends TestCase
             '/api/v1/partes/masivo/informar-clientes/preview?'.$qs,
             $this->authHeaders($token)
         );
-        $preview->assertStatus(200)->assertJsonPath('resultado.destinatarioCount', 1);
+        $preview->assertStatus(200)
+            ->assertJsonPath('resultado.destinatarioCount', 1)
+            ->assertJsonPath('resultado.destinatarios.0.clienteNombre', 'Cliente Masivo')
+            ->assertJsonPath('resultado.destinatarios.0.email', 'cliente.dest@test.com');
 
         $send = $this->postJson(
             '/api/v1/partes/masivo/informar-clientes?'.$qs,
@@ -496,6 +499,55 @@ class ApiV1PartesMasivoTest extends TestCase
             ->assertJsonPath('resultado.item.destinatarios', 1);
 
         Notification::assertSentTo($clienteUser, PartesMasivoInformarClientesNotification::class);
+    }
+
+    public function test_informar_clientes_preview_dos_clientes_distintos(): void
+    {
+        Notification::fake();
+        $token = $this->loginAdmin();
+        $cat = $this->seedCatalogos();
+        $this->linkClienteToUser($cat['clienteId'], [
+            'email' => 'crilen.test@paqsystems.com.ar',
+            'usuario' => 'CRILENTEST',
+            'name' => 'Crilen Test',
+        ]);
+        $cliente2Id = DB::table('PQ_PARTES_CLIENTES')->insertGetId([
+            'user_id' => null,
+            'code' => 'GOLOTEST',
+            'nombre' => 'Golo Tap Test',
+            'tipo_cliente_id' => (int) DB::table('PQ_PARTES_CLIENTES')->where('id', $cat['clienteId'])->value('tipo_cliente_id'),
+            'email' => null,
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $this->linkClienteToUser($cliente2Id, [
+            'email' => 'golotap.test@paqsystems.com.ar',
+            'usuario' => 'GOLOTEST',
+            'name' => 'Golo Tap Test',
+        ]);
+        $this->createTarea($token, $cat, 'Mail Crilen');
+        $this->createTarea($token, array_merge($cat, ['clienteId' => $cliente2Id]), 'Mail Golo');
+        $hoy = now()->toDateString();
+        $qs = 'fechaDesde='.$hoy.'&fechaHasta='.$hoy;
+
+        $preview = $this->getJson(
+            '/api/v1/partes/masivo/informar-clientes/preview?'.$qs,
+            $this->authHeaders($token)
+        );
+        $preview->assertStatus(200)->assertJsonPath('resultado.destinatarioCount', 2);
+        $nombres = collect($preview->json('resultado.destinatarios'))->pluck('clienteNombre')->all();
+        $this->assertEqualsCanonicalizing(['Cliente Masivo', 'Golo Tap Test'], $nombres);
+
+        $send = $this->postJson(
+            '/api/v1/partes/masivo/informar-clientes?'.$qs,
+            [],
+            $this->authHeaders($token)
+        );
+        $send->assertStatus(200)
+            ->assertJsonPath('resultado.item.enviados', 2)
+            ->assertJsonPath('resultado.item.destinatarios', 2);
     }
 
     public function test_informar_clientes_usa_users_email_no_maestro_cliente(): void

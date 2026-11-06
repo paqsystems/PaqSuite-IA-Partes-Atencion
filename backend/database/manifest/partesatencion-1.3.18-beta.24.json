@@ -508,7 +508,7 @@
             "kind": "sql",
             "target": "dictionary",
             "path": "scripts/sql/partes/pq_sp_partes_masivo_destinatarios_novedad.sql",
-            "checksum": "5afc00ec0fd480f1c762e45730f3861200d7e461e930287e84ee95c6cb4c547c",
+            "checksum": "61aa483c6e1f7eb345b095ea2561a439e1c927266c33c7f16124fb29256c87a8",
             "dependsOn": []
         },
         {

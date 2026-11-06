@@ -57,7 +57,10 @@ BEGIN
         fu.email,
         fu.usuario AS codigo,
         fu.locale,
-        fu.name
+        fu.name,
+        c.id AS cliente_id,
+        c.code AS cliente_code,
+        c.nombre AS cliente_nombre
     FROM filtro f
     INNER JOIN dbo.PQ_PARTES_CLIENTES c WITH (NOLOCK) ON c.id = f.cliente_id
     INNER JOIN dbo.users fu WITH (NOLOCK) ON fu.id = c.user_id
@@ -65,6 +68,6 @@ BEGIN
       AND c.activo = 1 AND c.inhabilitado = 0
       AND fu.activo = 1 AND fu.inhabilitado = 0
       AND fu.email IS NOT NULL AND LTRIM(RTRIM(fu.email)) <> N''
-    ORDER BY fu.id;
+    ORDER BY c.nombre, fu.id;
 END
 GO
