@@ -140,6 +140,13 @@ export async function deleteAdminUsuario(id: number) {
   })
 }
 
+export async function notifyAdminUsuarioAccess(id: number) {
+  return request<{ item: { id: number; notified: boolean } }>(
+    `/api/v1/admin/usuarios/${id}/notify-access`,
+    { method: 'POST', body: JSON.stringify({}) },
+  )
+}
+
 // ---- Empresas (MONO: sin alta/baja) ----
 
 export async function listAdminEmpresas() {

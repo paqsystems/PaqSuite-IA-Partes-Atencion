@@ -49,6 +49,17 @@ namespace App\OpenApi;
  *   @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope"))
  * )
  *
+ * @OA\Post(
+ *   path="/api/v1/admin/usuarios/{id}/notify-access",
+ *   operationId="adminUsuariosNotifyAccess",
+ *   tags={"Admin"},
+ *   summary="Notificar acceso: genera clave, marca firstLogin y envía mail",
+ *   security={{"sanctum":{}},{"tenant":{}}},
+ *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *   @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope")),
+ *   @OA\Response(response=422, description="Sin email", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope"))
+ * )
+ *
  * @OA\Get(
  *   path="/api/v1/admin/empresas",
  *   operationId="adminEmpresasIndex",

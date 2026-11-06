@@ -111,6 +111,7 @@ const authMessageMap: Record<string, string> = {
   'mailEngine.sendFailed':
     'No se pudo enviar el correo de recuperación. Verifique la configuración de mail del servidor.',
   'mailEngine.configMissing': 'Falta configuración de correo en el servidor.',
+  'admin.usuarios.notify.emailRequired': 'El usuario no tiene correo para notificar el acceso.',
   ok: 'Operación exitosa.',
 }
 
