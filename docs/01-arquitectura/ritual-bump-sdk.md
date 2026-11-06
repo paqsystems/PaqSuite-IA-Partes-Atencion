@@ -17,7 +17,7 @@ Plan de adopción sin forks GEN: [plan-partes-adopcion-sdk-sin-fork-gen.md](./pl
 | Paquete | Pin / lock | Nota |
 |---------|------------|------|
 | `paqsuite/laravel-core` | **1.3.15-beta.1** | Cloudsmith en `backend/composer.json` (lock). Bump con `composer update` y `CLOUDSMITH_READ_TOKEN`. |
-| `@paqsuite/react-core` | **2.4.29-beta.1** | Cloudsmith; `frontend/package-lock.json` resuelve tarball `npm.cloudsmith.io` |
+| `@paqsuite/react-core` | **2.4.30-beta.8** | Cloudsmith; `frontend/package-lock.json` resuelve tarball `npm.cloudsmith.io` |
 
 Vercel: `scripts/vercel-install.sh` + `CLOUDSMITH_READ_TOKEN`. Vite **no** alias al monorepo salvo `PAQ_REPO_LAB=1`.
 
