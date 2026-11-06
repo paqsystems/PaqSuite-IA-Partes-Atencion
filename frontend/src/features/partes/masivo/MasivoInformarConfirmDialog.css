@@ -1,0 +1,151 @@
+.pqMasivoInformar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 2px 0;
+}
+
+.pqMasivoInformarHero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--pq-shell-accent, #337ab7) 10%, var(--pq-process-surface, #fff));
+  border: 1px solid color-mix(in srgb, var(--pq-shell-accent, #337ab7) 22%, transparent);
+}
+
+.pqMasivoInformarHeroIcon {
+  font-size: 28px;
+  color: var(--pq-shell-accent, #337ab7);
+  line-height: 1;
+}
+
+.pqMasivoInformarCountRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pqMasivoInformarCount {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--pq-shell-accent, #337ab7);
+}
+
+.pqMasivoInformarCountLabel {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.pqMasivoInformarEmpty,
+.pqMasivoInformarLoading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 72px;
+  margin: 0;
+  line-height: 1.45;
+  font-size: 15px;
+}
+
+.pqMasivoInformarError {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--dx-color-danger, #fde7e9);
+  color: var(--dx-color-danger, #d13438);
+}
+
+.pqMasivoInformarPeriod {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  background: var(--pq-process-surface-alt, var(--dx-component-color-bg, #f5f7fa));
+  border: 1px solid var(--pq-process-border, var(--dx-color-border, #e3e7ee));
+}
+
+.pqMasivoInformarRecipients {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pqMasivoInformarRecipientsTitle {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.pqMasivoInformarRecipientList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.pqMasivoInformarRecipient {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--pq-process-border, var(--dx-color-border, #e3e7ee));
+  background: var(--pq-process-surface, var(--dx-component-color-bg, #fff));
+}
+
+.pqMasivoInformarAvatar {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--pq-shell-accent, #337ab7);
+  background: color-mix(in srgb, var(--pq-shell-accent, #337ab7) 16%, transparent);
+}
+
+.pqMasivoInformarRecipientMeta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pqMasivoInformarRecipientName {
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.pqMasivoInformarRecipientEmail {
+  font-size: 13px;
+  opacity: 0.78;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pqMasivoInformarMore {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.pqMasivoInformarActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}

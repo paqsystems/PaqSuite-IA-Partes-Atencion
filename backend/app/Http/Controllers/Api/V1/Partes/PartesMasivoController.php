@@ -22,13 +22,8 @@ final class PartesMasivoController extends Controller
     {
         try {
             $params = $this->masivoFilterParams($request);
-            $count = $this->informarService->countDestinatarios($params);
 
-            return ApiResponse::success([
-                'destinatarioCount' => $count,
-                'fechaDesde' => (string) ($params['p_fecha_desde'] ?? ''),
-                'fechaHasta' => (string) ($params['p_fecha_hasta'] ?? ''),
-            ]);
+            return ApiResponse::success($this->informarService->preview($params));
         } catch (PartesTareaException $e) {
             return $this->fromException($e);
         }

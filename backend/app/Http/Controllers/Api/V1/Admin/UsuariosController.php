@@ -73,9 +73,10 @@ final class UsuariosController extends Controller
 
         $passwordCheck = $this->passwordPolicy->evaluate((string) $request->input('password'));
         if ($passwordCheck['ok'] !== true) {
-            return ApiResponse::errorFromCatalog(
+            return ApiResponse::error(
                 PaqSuiteEnvelopeCatalog::VALIDATION_FAILED,
-                ['respuesta' => $passwordCheck['errorKey']]
+                $passwordCheck['errorKey'],
+                422
             );
         }
 
@@ -126,9 +127,10 @@ final class UsuariosController extends Controller
         if (isset($data['password'])) {
             $passwordCheck = $this->passwordPolicy->evaluate((string) $data['password']);
             if ($passwordCheck['ok'] !== true) {
-                return ApiResponse::errorFromCatalog(
+                return ApiResponse::error(
                     PaqSuiteEnvelopeCatalog::VALIDATION_FAILED,
-                    ['respuesta' => $passwordCheck['errorKey']]
+                    $passwordCheck['errorKey'],
+                    422
                 );
             }
         }
