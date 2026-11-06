@@ -204,7 +204,7 @@ function ProcesoMasivoView() {
       if (result.kind === 'ok') {
         const items = result.envelope.resultado.items ?? []
         const totalCount = result.envelope.resultado.total ?? 0
-        const mapped = items.slice(0, pageSize).map((item) => ({
+        const mapped = items.map((item) => ({
           ...item,
           duracionHoras: minutosToHorasDecimal(item.duracionMinutos),
         }))
@@ -218,6 +218,7 @@ function ProcesoMasivoView() {
       currentPageIdsRef.current = []
       return { data: [] as MasivoGridRow[], totalCount: 0 }
     } catch {
+      setError(resolveAuthMessage('infra.unexpected'))
       currentPageIdsRef.current = []
       return { data: [] as MasivoGridRow[], totalCount: 0 }
     }
