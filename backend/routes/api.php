@@ -105,6 +105,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/usuarios/{id}', [AdminUsuariosController::class, 'update'])->whereNumber('id');
             Route::patch('/usuarios/{id}', [AdminUsuariosController::class, 'update'])->whereNumber('id');
             Route::delete('/usuarios/{id}', [AdminUsuariosController::class, 'destroy'])->whereNumber('id');
+            Route::post('/usuarios/{id}/notify-access', [AdminUsuariosController::class, 'notifyAccess'])->whereNumber('id');
 
             // MONO: empresas sin alta/baja — solo consulta y edición.
             Route::get('/empresas', [AdminEmpresasController::class, 'index']);

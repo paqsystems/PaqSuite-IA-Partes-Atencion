@@ -34,6 +34,17 @@ final class PasswordResetLinkBuilder
         return $base.'/reset-password?'.http_build_query($query);
     }
 
+    public function buildAccessUrl(?string $cliente = null): string
+    {
+        $base = rtrim($this->resolveSpaBaseUrl(), '/');
+        $clienteCode = strtoupper(trim((string) $cliente));
+        if ($clienteCode === '') {
+            return $base.'/';
+        }
+
+        return $base.'/?cliente='.rawurlencode($clienteCode);
+    }
+
     public function resolveSpaBaseUrl(): string
     {
         $explicit = rtrim((string) config('app.frontend_spa_url', ''), '/');
