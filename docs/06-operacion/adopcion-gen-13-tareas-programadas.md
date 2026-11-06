@@ -26,10 +26,14 @@ Este archivo documenta **perfil Partes** (MONO/RDS, backup, env, scheduler) e **
 
 - `PAQSUITE_TASKS_BACKUP_BACKEND=rds`
 - `PAQSUITE_CLIENTE` es el código de `EMPRESAS_CONEXION` (el mismo que
-  `X-Paq-Cliente`). Obligatorio en Forge para `tasks:run-due`, porque el CLI
-  no envía header HTTP. En **Forge dev** del producto: `DEV` (preview Vercel
-  suele usar el mismo código en query `?cliente=`). En plantilla local:
-  `DEMO`.
+  `X-Paq-Cliente`). Sigue siendo fallback CLI y post-deploy. **El scheduler
+  `partes:tasks-run-due` no se limita a ese valor:** recorre todas las
+  instalaciones SQL directo del proyecto (incidente PAQ 2026-11-06: Forge
+  prod tenía `PAQSUITE_CLIENTE=DEMO` y el backup de PAQ nunca corría).
+  En **Forge dev**: `DEV`. En plantilla local: `DEMO`.
+- `PAQSUITE_TASKS_CLIENTES` — CSV opcional (`PAQ,DEMO`) para acotar el
+  scheduler. Vacío = catálogo `EMPRESAS_CONEXION`. Un tenant puntual:
+  `php artisan partes:tasks-run-due --cliente=PAQ`.
 - `TASKS_BACKUP_S3_ARN_PREFIX` — prefijo S3 autorizado para backups RDS (ver
   § «Backup RDS → S3»). Obligatorio cuando `PAQSUITE_TASKS_BACKUP_BACKEND=rds`.
 - `TASKS_BACKUP_POLL_SECONDS` controla el intervalo de consulta al estado RDS.
@@ -40,9 +44,9 @@ Este archivo documenta **perfil Partes** (MONO/RDS, backup, env, scheduler) e **
 - El lock global usa la instalación `{cliente}` y cubre todas las ejecuciones
   RDS concurrentes.
 - No se documentan ni almacenan credenciales AWS en este repositorio.
-- `PAQSUITE_CLIENTE` debe mapearse en `config/paqsuite.php` (`clienteCodigo`).
-  Tras `config:cache`, `env()` queda vacío: el resolver de perfil CLI lee
-  `config()`, no `env()`.
+- `PAQSUITE_CLIENTE` vive en `config/paqsuite.php` (`clienteCodigo`) para
+  `config:cache`. El scheduler, al aplicar cada tenant, pisa ese valor con el
+  código de la instalación activa (lock RDS `tasks:backup:rds:{cliente}`).
 - El SP `pq_sp_task_definition_list_due` solo toma definiciones con
   `is_active = 1`, `next_run_at IS NOT NULL` y `next_run_at <= @as_of`. El
   host completa `nextRunAt` al crear/editar vía
@@ -117,6 +121,7 @@ manual o programado puede fallar con **Backup company target not found**.
 | *Could not parse the amazon resource name* con ARN repetido | Destino S3 mal formado (doble prefijo) | Verificar `TASKS_BACKUP_S3_ARN_PREFIX` (solo carpeta) y gateway host actualizado |
 | Backup omitido / ventana RDS | Mantenimiento o backup concurrente en RDS | Reintentar fuera de ventana; revisar `TASKS_BACKUP_LOCK_LEASE_SECONDS` |
 | Ejecución FALLIDA sin texto en UI | Snapshot/log sqlsrv o mensaje no hidratado | Deploy repositorio ejecuciones CC #10; SP `append_log` / `get` en tenant |
+| Backup de un tenant (p. ej. PAQ) no corre; cron `schedule:run` sí | Scheduler limitado a `PAQSUITE_CLIENTE` (otro tenant, p. ej. DEMO) | Pin con `SchedulerClienteResolver`; dry-run sin `--cliente` debe listar due de **todos** los SQL directo; no cambiar el `.env` a un solo cliente |
 
 ### CC PQ #10 — seguimiento deploy (30/10/2026)
 
@@ -132,11 +137,24 @@ Tras merge a `develop`: Forge `installation:update`, redeploy SP tenant, backfil
 
 ## Disparador del scheduler
 
-El host registra **`partes:tasks-run-due`** cada minuto (resuelve tenant vía
-`PAQSUITE_CLIENTE` + `EMPRESAS_CONEXION`, recupera ejecuciones
-`EN_EJECUCION` expiradas y luego ejecuta due) y `tasks:purge-history`
-diariamente en `backend/app/Console/Kernel.php`. Para que la agenda opere en
-un ambiente, una tarea externa debe ejecutar:
+El host registra **`partes:tasks-run-due`** cada minuto y `tasks:purge-history`
+diariamente en `backend/app/Console/Kernel.php`. El comando due:
+
+1. Resuelve la lista de tenants (`SchedulerClienteResolver`: `--cliente` →
+   `PAQSUITE_TASKS_CLIENTES` → `EMPRESAS_CONEXION` SQL directo del proyecto →
+   fallback `PAQSUITE_CLIENTE`).
+2. Por cada tenant aplica la BD (`CliInstalacionContext`, y actualiza
+   `paqsuite.clienteCodigo` para el lock RDS).
+3. Recupera ejecuciones `EN_EJECUCION` expiradas y ejecuta due.
+
+Un Forge que atiende **varios** `{cliente}` del mismo proyecto (PAQ, DEMO,
+DEV) **Must** recorrerlos todos. No alcanza con `PAQSUITE_CLIENTE=DEMO` en el
+`.env` del sitio: la UI de `paq.…` usa `X-Paq-Cliente` y el cron no.
+
+Mutex `withoutOverlapping(15)`: un tick puede incluir más de un backup RDS
+(~2 min c/u).
+
+Para que la agenda opere en un ambiente, una tarea externa debe ejecutar:
 
 ```text
 php artisan schedule:run
@@ -146,10 +164,10 @@ En Forge, habilitar por sitio la integración **Laravel Scheduler** (Scheduled
 Job minutely → `…/current/backend/artisan schedule:run`). Ver skill
 `vercel-github-deployment-standard` §3 al dar de alta un host nuevo.
 
-Cada sitio (p. ej. preview **dev**) debe tener **`PAQSUITE_CLIENTE`** igual al
-código de `EMPRESAS_CONEXION` que usa la UI (`dev`, `paq`, …). Sin eso,
-`partes:tasks-run-due` no conmuta la BD tenant y la agenda no corre sobre
-`paqsystems_partesatencion_dev`.
+`PAQSUITE_CLIENTE` sigue siendo el fallback y el default de post-deploy /
+lab. Un sitio **un-tenant** (preview `dev`) funciona igual: el catálogo
+devuelve un solo código o cae al `.env`. Para forzar un tenant en ops:
+`php artisan partes:tasks-run-due --cliente=PAQ`.
 
 Tras desplegar SP del host, ejecutar `php scripts/deploy-sp.php` (o al menos
 `database/sp/pq_sp_task_execution_append_log.sql`) en **cada** base tenant con
@@ -217,10 +235,12 @@ de reintentar el seed.
    `OMITIDA`.
 5. Repetir en ambiente autorizado con RDS/S3 e IAM reales.
 6. Comprobar que una definición activa tenga `next_run_at` y que
-   `php artisan partes:tasks-run-due --dry-run` la liste cuando esa fecha ya
-   venció (mismo tenant que `PAQSUITE_CLIENTE` del sitio).
-7. En CLI, `BackupInstallationProfileResolver` debe resolver `PAQSUITE_CLIENTE`
-   (sin header HTTP).
+   `php artisan partes:tasks-run-due --dry-run --cliente={tenant}` la liste
+   cuando esa fecha ya venció. Sin `--cliente`, el dry-run debe visitar
+   **todos** los SQL directo (no solo `PAQSUITE_CLIENTE`).
+7. En CLI, `BackupInstallationProfileResolver` debe resolver el tenant
+   **aplicado** (`paqsuite.clienteCodigo` tras `applyForCliente`), no un
+   header HTTP.
 8. **Ejecución colgada (backup RDS OK, UI «En curso»):** usar botón **Liberar colgadas**
    en Monitoreo/Historial (SDK) o `php artisan partes:tasks-recover-stale --cliente={PAQSUITE_CLIENTE}`.
    Modo `--full` si la corrida supera ~2 h (timeout RDS). Nota incidente PAQ 2026-11-03:
@@ -261,6 +281,8 @@ timeout → migrate + seed + `installation:update` + `deploy-sp.php`.
 | Agenda `nextRunAt` | `backend/app/Tasks/SchedulingTaskDefinitionRepository.php` |
 | Ejecuciones sqlsrv | `backend/app/Tasks/PartesTaskExecutionRepository.php` |
 | Scheduler CLI | `backend/app/Console/Commands/PartesTasksRunDueCommand.php`, `PartesTasksRecoverStaleCommand.php`, `PartesTasksBackfillNextRunAtCommand.php` |
+| Tenant CLI | `backend/app/Tenancy/CliInstalacionContext.php` (aplica BD + `clienteCodigo` para lock RDS) |
+| Tenants scheduler | `backend/app/Tenancy/SchedulerClienteResolver.php`, `EmpresasConexionSqlDirectClienteCatalog.php` |
 | Recuperación UI/API | `POST /api/v1/task-executions/recover-stale` · `PartesTaskExecutionStaleRecovery` |
 | Backup RDS | `backend/app/Tasks/Backup/*` |
 | Override SP parámetros definición | `backend/database/sp/pq_sp_task_definition_parameter_set.sql` |
