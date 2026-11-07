@@ -79,7 +79,7 @@ export function NotifyUsuarioAccessDialog({ visible, onClose }: DialogProps) {
     try {
       const result = await listAdminUsuariosFull('0')
       if (result.kind === 'ok') {
-        setUsers(result.data.items ?? [])
+        setUsers(result.envelope.resultado.items ?? [])
         return
       }
       if (result.kind === 'envelopeError') {
