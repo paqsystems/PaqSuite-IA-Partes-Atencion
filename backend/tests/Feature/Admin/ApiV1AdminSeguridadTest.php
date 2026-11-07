@@ -364,6 +364,26 @@ class ApiV1AdminSeguridadTest extends TestCase
         $response->assertStatus(403);
     }
 
+    public function test_usuarios_store_genera_password_si_omite_campo(): void
+    {
+        $token = $this->loginAdmin();
+        $headers = $this->authHeaders($token);
+
+        $create = $this->postJson('/api/v1/admin/usuarios', [
+            'usuario' => 'autopw1',
+            'name' => 'Auto Password',
+            'email' => 'autopw1@partes.local',
+            'activo' => true,
+        ], $headers);
+        $create->assertStatus(201)
+            ->assertJsonPath('resultado.item.usuario', 'autopw1');
+
+        $userId = (int) $create->json('resultado.item.id');
+        $user = User::query()->find($userId);
+        $this->assertNotNull($user);
+        $this->assertNotSame('', (string) $user->password);
+    }
+
     public function test_usuarios_acepta_contrato_sdk_name_y_usuario(): void
     {
         $token = $this->loginAdmin();

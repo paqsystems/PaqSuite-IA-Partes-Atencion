@@ -370,6 +370,7 @@
   "partes.notifyAccess.confirm": "Notifica",
   "partes.notifyAccess.cancel": "Annulla",
   "partes.notifyAccess.hint": "Verrà inviata un'email con l'URL del sito, l'utente e una password iniziale. Al primo accesso dovrà cambiarla.",
+  "partes.notifyAccess.emailIconHint": "Reinvia email di accesso (URL, utente e password iniziale)",
   "admin.common.add": "Nuovo",
   "admin.common.edit": "Modifica",
   "admin.common.delete": "Elimina",

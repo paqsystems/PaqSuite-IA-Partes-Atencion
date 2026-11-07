@@ -387,6 +387,7 @@
   "partes.notifyAccess.confirm": "Notify",
   "partes.notifyAccess.cancel": "Cancel",
   "partes.notifyAccess.hint": "An email will be sent with the site URL, username and an initial password. The user must change it on first sign-in.",
+  "partes.notifyAccess.emailIconHint": "Resend access email (URL, username and initial password)",
   "admin.common.add": "New",
   "admin.common.edit": "Edit",
   "admin.common.delete": "Delete",
