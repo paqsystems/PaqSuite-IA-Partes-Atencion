@@ -73,8 +73,9 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 |-------|--------|
 | **Fecha** | 07/11/2026 |
 | **Responsable** | Pablo Quarracino (PQ) |
-| **Estado** | Especificado · **F1/F Aprobado con observaciones** 07/11/2026 |
-| **Parte G** | 07/11/2026 — [SPEC-002-update-02](../05-open-spec/updates/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update-02.md) · [HU-002-update-02](../03-historias-usuario/updates/100-SistemaPartes/HU-002-identidad-funcional-y-acceso-update-02.md) · [TR-002-update-02](../04-tareas/updates/100-SistemaPartes/TR-002-identidad-funcional-y-acceso-update-02.md) |
+| **Estado** | **Finalizado** · F1/F 07/11/2026 · **Parte I** 07/11/2026 |
+| **Parte G** | 07/11/2026 — updates CC #16 (fusionados en Parte I) |
+| **Parte I** | 07/11/2026 — [SPEC-002](../05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md) §9 · [HU-002](../03-historias-usuario/100-SistemaPartes/HU-002-identidad-funcional-y-acceso.md) · [TR-002](../04-tareas/100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md) §13 · manual usuario actualizado |
 | **F1/F** | [D-VERIFICACION-CC-PQ-16](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-16-2026-11-07.md) · [E-CC-PQ-16](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-16-2026-11-07.md) |
 | **Origen** | Prueba manual preview (`partesatencion-dev`) post implementación **TR-002-update** / PR #143–#145: el operador esperaba notificación **en el contexto del usuario** (alta/edición), no un proceso aparte tipo “masivo”. |
 | **Proceso** | Seguridad — ABM **Usuarios** (`/admin/usuarios`) · **GEN-06** `UsuariosAdminPage` (SDK) + wrapper host |
@@ -89,7 +90,7 @@ La notificación de acceso **no** es un envío masivo ni un segundo proceso con 
 
 #### ABM Usuarios — notificar acceso por usuario (refino CC #7 ítem 1)
 
-*Procesado* (Parte G 07/11/2026) → [SPEC-002-update-02](../05-open-spec/updates/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update-02.md) · [HU-002-update-02](../03-historias-usuario/updates/100-SistemaPartes/HU-002-identidad-funcional-y-acceso-update-02.md) · [TR-002-update-02](../04-tareas/updates/100-SistemaPartes/TR-002-identidad-funcional-y-acceso-update-02.md)
+*Cerrado* (Parte G + D + F + **I** 07/11/2026) → SPEC-002 §9 / HU-002 / TR-002 §13 (rutas base; updates eliminados)
 
 1. **Quitar el modo masivo:** eliminar el botón superior **«Notificar acceso»** y el diálogo que lista todos los usuarios para elegir uno. No debe existir un flujo “seleccionar usuario y notificar” desacoplado del ABM.
 2. **Ícono de envío junto al mail:** en el popup de **alta** y **edición** (y consulta si el SDK la expone), un control de acción (ícono tipo *mail/send*) **al lado del campo Email**, habilitado **solo** si `email` no está vacío (tras trim). Deshabilitado sin mail; tooltip i18n (p. ej. “Notificar acceso por correo”).
@@ -120,9 +121,12 @@ La notificación de acceso **no** es un envío masivo ni un segundo proceso con 
 | **D** | Implementado 07/11/2026 — TR-002-update-02 |
 | **E** | [E-CC-PQ-16](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-16-2026-11-07.md) |
 | **F / F1** | **Aprobado con observaciones** — [D-VERIFICACION-CC-PQ-16](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-16-2026-11-07.md) |
+| **N** | PR [#146](https://github.com/paqsystems/PaqSuite-IA-Partes-Atencion/pull/146) → `develop` **mergeado** (`d21ec851`); fix URL PR [#147](https://github.com/paqsystems/PaqSuite-IA-Partes-Atencion/pull/147) (`c57d047`) |
+| **I** | 07/11/2026 — Unificación OpenSpec notify ABM (CC #7 + #16) en SPEC/HU/TR-002 base |
+| **Preview** | Vercel `develop` **OK** — [partesatencion-dev.paqsystems.com](https://partesatencion-dev.paqsystems.com/) |
 | **Jira** | [PIAPARTES-44](https://paqsystems.atlassian.net/browse/PIAPARTES-44) |
 
-**Siguiente:** Parte **N** (PR `develop`) + smoke preview manual; Parte **I** unificación SPEC-002 cuando corresponda.
+**Cierre:** CC #16 cerrado (código en `develop` + documentación unificada). Smoke manual ABM usuarios en preview: opcional residual.
 
 ---
 
@@ -708,7 +712,7 @@ Envios de mails a clientes y asistentes antes dos eventos : 1) aviso desde ABM d
 
 #### Envio mail a usuario para acceder al sitio
 
-*Procesado* (Parte G 20/10/2026) → [SPEC-002-update](../05-open-spec/updates/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update.md) · [HU-002-update](../03-historias-usuario/updates/100-SistemaPartes/HU-002-identidad-funcional-y-acceso-update.md) · [TR-002-update](../04-tareas/updates/100-SistemaPartes/TR-002-identidad-funcional-y-acceso-update.md)
+*Cerrado* (Parte G 20/10/2026 · D/F CC #7 · refino **CC #16** · **Parte I** 07/11/2026) → [SPEC-002](../05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md) §9 · [HU-002](../03-historias-usuario/100-SistemaPartes/HU-002-identidad-funcional-y-acceso.md) · [TR-002](../04-tareas/100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md) §13
 
 en el Abm de Usuarios, agregar un botón "Notificación", por el cual : 
 - se envia un mail al usuario (en ALTA; se habilita después de haber ingresado un mail)

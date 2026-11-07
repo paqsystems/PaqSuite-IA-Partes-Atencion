@@ -11,8 +11,8 @@ Jira: PIAPARTES-16
 | Título | Identidad funcional y acceso al módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-10-20 |
+| Estado | Finalizado |
+| Última actualización | 2026-11-07 |
 | SPEC origen | [SPEC-002-identidad-funcional-y-acceso](../../05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md) |
 | TR relacionada(s) | [TR-002-identidad-funcional-y-acceso](../../04-tareas/100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md) |
 
@@ -31,6 +31,7 @@ Jira: PIAPARTES-16
 | Revalidación sesión viva §4.8 / R-ID-11 | CA-10 |
 | Sin `users.supervisor` como fuente | CA-08; R-ID-06 |
 | Fuera de alcance login GEN / ABM maestros | Fuera de alcance |
+| Notificación de acceso ABM Usuarios §9 | CA-NOTIFY-01…06 (abajo) |
 
 ---
 
@@ -196,6 +197,25 @@ Feature: Gate de identidad funcional Partes
 
 ---
 
+## Notificación de acceso (ABM Usuarios — CC #7 / #16)
+
+Como operador del ABM Usuarios quiero notificar por correo el acceso al sitio **en el contexto del usuario** que estoy dando de alta o editando, sin un proceso masivo ni contraseña manual en el alta, para que el destinatario reciba URL y credenciales iniciales y deba cambiar la clave en el primer ingreso (GEN-04).
+
+**Incluye:** ícono junto a Email en edición; alta sin campo contraseña + envío automático tras guardar con email; mismo mail y política que CC #7; i18n y errores en el popup (regla 36).
+
+**Excluye:** toolbar/diálogo masivo; fork GEN-06; mobile admin; mail del proceso masivo (HU-005).
+
+| CA | Criterio |
+|----|----------|
+| CA-NOTIFY-01 | Sin flujo masivo desacoplado del ABM. |
+| CA-NOTIFY-02 | Ícono en edición (`adminUsuariosNotifyEmail`); deshabilitado sin mail; alta notifica al guardar. |
+| CA-NOTIFY-03 | Alta: contraseña generada server-side según política. |
+| CA-NOTIFY-04 | Alta con email: mail enviado o error visible en modal. |
+| CA-NOTIFY-05 | Edición: reenvío vía `notify-access`. |
+| CA-NOTIFY-06 | 5 locales; regresión de tests notify. |
+
+---
+
 ## Historial
 
 | Fecha | Cambio |
@@ -205,3 +225,4 @@ Feature: Gate de identidad funcional Partes
 | 2026-07-30 | Batch: perfil = mínimo + email + `users.usuario`. |
 | 2026-07-30 | Batch: post-login = criterio PedidosWeb (`firstLogin` → change-password antes del shell). |
 | 2026-07-30 | Parte C+C1: enlazada TR-002; restaurado CA-10 en lista. |
+| 2026-11-07 | Parte I CC #16: sección notify ABM Usuarios fusionada desde updates CC #7/#16. |

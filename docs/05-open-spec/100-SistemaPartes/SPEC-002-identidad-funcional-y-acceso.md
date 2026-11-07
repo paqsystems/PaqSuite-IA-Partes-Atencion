@@ -10,8 +10,8 @@ Jira: PIAPARTES-2
 | ID | SPEC-002 |
 | Título | Identidad funcional y acceso al módulo Sistema Partes |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | En revisión |
-| Última actualización | 2026-10-20 |
+| Estado | Especificado |
+| Última actualización | 2026-11-07 |
 | HU relacionada(s) | [HU-002-identidad-funcional-y-acceso](../../03-historias-usuario/100-SistemaPartes/HU-002-identidad-funcional-y-acceso.md) |
 | TR relacionada(s) | [TR-002-identidad-funcional-y-acceso](../../04-tareas/100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md) |
 | Depende de | [SPEC-001-modelo-datos-modulo](./SPEC-001-modelo-datos-modulo.md) |
@@ -194,6 +194,7 @@ Si tras el login el perfil deja de ser usable (revocación `user_id` en cliente,
 - [ ] No se lee `users.supervisor` para el flag de supervisión.
 - [ ] i18n: claves `partes.auth.noFunctionalProfile` y `partes.auth.inconsistentProfile` presentes (locales del producto).
 - [ ] Tras revocar/`inhabilitar` con token aún válido: `/auth/me` y APIs de dominio responden 403 (no siguen operando).
+- [x] **ABM Usuarios — notify (CC #7 / #16):** sin toolbar masivo; ícono junto a Email en edición; alta sin contraseña manual + mail automático tras guardar con email; `firstLogin` tras notificar; mail con URL tenant, usuario y clave (solo en correo); i18n 5 locales.
 
 ---
 
@@ -206,6 +207,7 @@ Si tras el login el perfil deja de ser usable (revocación `user_id` en cliente,
 | Frontend | Consumir contexto en session store; perfil lectura vía avatar; mensajes de gate. |
 | Seed | Vincular **`admin`** y **`PQ`** a filas `PQ_PARTES_USUARIOS` con `supervisor = 1` **y** asignarles rol Framework **supervisor** (permisos ABM + menú seguridad GEN). Asistentes comunes y clientes con acceso se crean vía maestros / seguridad; no van en seed Must. |
 | Tests | Feature: casos §5 (sin perfil, asistente, supervisor, cliente, inconsistente, revalidación mid-session). |
+| Admin usuarios | `POST .../notify-access`; create con `password` opcional + generación policy; Mail Engine / notificación host; extensión formulario GEN-06 (`partesUsuariosFormPopup`) sin fork de `UsuariosAdminPage`. |
 
 ---
 
@@ -232,6 +234,37 @@ Si tras el login el perfil deja de ser usable (revocación `user_id` en cliente,
 | 2026-07-30 | Batch HU: perfil = mínimo + email dominio + `users.usuario`. |
 | 2026-07-30 | Batch HU: orden post-login = PedidosWeb (gate → token → firstLogin/change-password → shell). |
 | 2026-07-30 | Parte C+C1: enlazada [TR-002](../../04-tareas/100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md). |
+| 2026-10-20 | CC #7: notificación de acceso ABM Usuarios (mail + `notify-access`). |
+| 2026-11-07 | Parte I CC #16: §9 UI en formulario; fusionados updates en SPEC base. |
+
+---
+
+## 9. Notificación de acceso (ABM Usuarios — CC #7 / CC #16)
+
+Extiende el circuito de identidad: el operador con permiso de **ABM Usuarios** (GEN-06, wrapper host) puede enviar por correo la URL del sitio y credenciales iniciales, con `firstLogin` forzando cambio de clave en el primer ingreso (GEN-04).
+
+### 9.1 Alcance
+
+- **Mail:** asunto con código de empresa + texto i18n de ingreso a Partes; cuerpo con propósito, hipervínculo a URL pública del tenant (`https://{cliente}.partesatencion.paqsystems.com`), usuario y contraseña generada (**solo en el mail**, no en `resultado` JSON).
+- **Motor:** mismo canal de notificación que recuperación de clave en el host (sin SMTP paralelo). Envelope GEN-20.
+- **UI (vigente CC #16):** **no** existe toolbar ni diálogo masivo con selector de usuarios. En el popup de usuario: **ícono** junto al campo **Email** en **edición** (habilitado solo con email; `adminUsuariosNotifyEmail`). En **alta**, el operador **no** ingresa contraseña; el servidor genera clave conforme `PasswordPolicy`; tras **Guardar** exitoso con email, se dispara el envío de acceso (misma semántica que `notify-access`). Errores en el popup (regla 36; `adminUsuariosNotifyFormError`).
+- **Excluido:** mobile native (admin seguridad); mail del proceso masivo (SPEC-005).
+
+### 9.2 Backend
+
+- `POST /api/v1/admin/usuarios/{id}/notify-access` — genera clave, persiste hash + `firstLogin=true`, envía mail.
+- `POST` create admin: `password` opcional; si falta, generación policy-compliant antes de persistir.
+
+### 9.3 Criterios verificables (notify)
+
+- [x] **CA-16-01** Sin flujo masivo desacoplado del ABM.
+- [x] **CA-16-02** Ícono en edición; disabled sin mail; testids estables.
+- [x] **CA-16-03** Alta sin contraseña en UI; generación server-side.
+- [x] **CA-16-04** Alta con email → mail enviado o error en modal.
+- [x] **CA-16-05** Edición → reenvío vía `notify-access`.
+- [x] **CA-16-06** i18n 5 locales; regla 36; tests.
+
+**Trazabilidad CC:** #7 19/10/2026 (contrato mail + endpoint); #16 07/11/2026 (UI en formulario). Evidencia: `D-VERIFICACION-CC-PQ-16`, `E-CC-PQ-16`; PR [#146](https://github.com/paqsystems/PaqSuite-IA-Partes-Atencion/pull/146), [#147](https://github.com/paqsystems/PaqSuite-IA-Partes-Atencion/pull/147).
 
 ---
 
