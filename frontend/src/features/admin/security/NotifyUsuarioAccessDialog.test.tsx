@@ -77,25 +77,30 @@ vi.mock('@paqsuite/react-core', async (importOriginal) => {
 vi.mock('./adminSecurityApi', () => ({
   listAdminUsuariosFull: vi.fn(async () => ({
     kind: 'ok' as const,
-    data: {
-      items: [
-        {
-          id: 1,
-          usuario: 'conmail',
-          nombre: 'Con Mail',
-          email: 'conmail@partes.local',
-          activo: true,
-          inhabilitado: false,
-        } satisfies AdminUsuario,
-        {
-          id: 2,
-          usuario: 'sinmail',
-          nombre: 'Sin Mail',
-          email: '',
-          activo: true,
-          inhabilitado: false,
-        } satisfies AdminUsuario,
-      ],
+    httpStatus: 200,
+    envelope: {
+      error: 0,
+      respuesta: 'ok',
+      resultado: {
+        items: [
+          {
+            id: 1,
+            usuario: 'conmail',
+            nombre: 'Con Mail',
+            email: 'conmail@partes.local',
+            activo: true,
+            inhabilitado: false,
+          } satisfies AdminUsuario,
+          {
+            id: 2,
+            usuario: 'sinmail',
+            nombre: 'Sin Mail',
+            email: '',
+            activo: true,
+            inhabilitado: false,
+          } satisfies AdminUsuario,
+        ],
+      },
     },
   })),
   notifyAdminUsuarioAccess: vi.fn(),
