@@ -23,7 +23,10 @@ function userHasEmail(user: AdminUsuario | null): boolean {
   return Boolean(user?.email && user.email.trim() !== '')
 }
 
-function userDisplay(user: AdminUsuario): string {
+function userDisplay(user: AdminUsuario | null | undefined): string {
+  if (!user) {
+    return ''
+  }
   const code = user.usuario || user.codigo || ''
   return user.nombre ? `${code} — ${user.nombre}` : code
 }
