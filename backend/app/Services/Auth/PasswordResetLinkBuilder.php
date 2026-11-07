@@ -36,13 +36,16 @@ final class PasswordResetLinkBuilder
 
     public function buildAccessUrl(?string $cliente = null): string
     {
-        $base = rtrim($this->resolveSpaBaseUrl(), '/');
-        $clienteCode = strtoupper(trim((string) $cliente));
+        $clienteCode = trim((string) $cliente);
         if ($clienteCode === '') {
+            $base = rtrim($this->resolveSpaBaseUrl(), '/');
+
             return $base.'/';
         }
 
-        return $base.'/?cliente='.rawurlencode($clienteCode);
+        $tenant = strtolower($clienteCode);
+
+        return 'https://'.$tenant.'.partesatencion.paqsystems.com';
     }
 
     public function resolveSpaBaseUrl(): string

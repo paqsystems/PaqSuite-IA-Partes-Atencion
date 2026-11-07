@@ -12,7 +12,7 @@ final class NotifyUsuarioAccessNotificationTest extends TestCase
         $notification = new NotifyUsuarioAccessNotification(
             'es',
             'DEMO',
-            'http://localhost:5173/?cliente=DEMO',
+            'https://demo.partesatencion.paqsystems.com',
             'juan.perez',
             'ClaveInicial1!',
         );
@@ -23,7 +23,7 @@ final class NotifyUsuarioAccessNotificationTest extends TestCase
             'DEMO - ingreso a nuestro sistema de Partes de Atención',
             $mail->subject
         );
-        $this->assertSame('http://localhost:5173/?cliente=DEMO', $mail->actionUrl);
+        $this->assertSame('https://demo.partesatencion.paqsystems.com', $mail->actionUrl);
         $rendered = implode("\n", array_merge($mail->introLines, $mail->outroLines));
         $this->assertStringContainsString('Usuario: juan.perez', $rendered);
         $this->assertStringContainsString('Contraseña inicial: ClaveInicial1!', $rendered);

@@ -119,7 +119,10 @@ final class ApiV1AdminUsuariosNotifyAccessTest extends TestCase
                 $plain = $notification->plainPassword;
                 $this->assertSame('DEMO', $notification->empresaCodigo);
                 $this->assertSame($target['usuario'], $notification->usuario);
-                $this->assertStringContainsString('cliente=DEMO', $notification->portalUrl);
+                $this->assertSame(
+                    'https://demo.partesatencion.paqsystems.com',
+                    $notification->portalUrl
+                );
 
                 return $plain !== null && $plain !== '';
             }
