@@ -53,14 +53,36 @@ async function applyThemeWithFallback(themeKey: string): Promise<void> {
  * Licencia: `src/init-devextreme-license.ts` (importado primero en `main.tsx`).
  * Prioridad: preview pendiente (reload de grupo) → sesión empresa → default SDK (`paqsuite.light.generic`).
  */
+/** Si `themes.init` / `themesReady` no responde (red, CSP, 404 en `/dx-themes`), sin esto la SPA queda en blanco para siempre. */
+const THEME_BOOTSTRAP_TIMEOUT_MS = 10_000
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [themeReady, setThemeReady] = useState(false)
 
   useLayoutEffect(() => {
+    let mounted = true
     const themeKey = resolveInitialThemeKey()
-    void applyThemeWithFallback(themeKey).finally(() => {
+    const timeoutId = window.setTimeout(() => {
+      if (!mounted) {
+        return
+      }
+      console.warn(
+        '[ThemeProvider] Tiempo de espera del tema DevExtreme agotado; se monta la UI igual. Revisá red / /dx-themes / consola.',
+      )
       setThemeReady(true)
+    }, THEME_BOOTSTRAP_TIMEOUT_MS)
+
+    void applyThemeWithFallback(themeKey).finally(() => {
+      window.clearTimeout(timeoutId)
+      if (mounted) {
+        setThemeReady(true)
+      }
     })
+
+    return () => {
+      mounted = false
+      window.clearTimeout(timeoutId)
+    }
   }, [])
 
   if (!themeReady) {

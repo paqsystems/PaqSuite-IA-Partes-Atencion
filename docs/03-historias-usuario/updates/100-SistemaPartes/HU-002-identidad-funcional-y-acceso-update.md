@@ -16,6 +16,7 @@ Jira: PIAPARTES-44
 | SPEC base | [SPEC-002](../../../05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md) |
 | TR relacionada(s) | [TR-002-update](../../../04-tareas/updates/100-SistemaPartes/TR-002-identidad-funcional-y-acceso-update.md) |
 | Origen | `00-ControlCalidad-PQ` · CC #7 · 19/10/2026 · ítem «Envio mail a usuario para acceder al sitio» |
+| Refino UI | CC #16 07/11/2026 → [HU-002-update-02](./HU-002-identidad-funcional-y-acceso-update-02.md) |
 
 ## Estado de alcance
 

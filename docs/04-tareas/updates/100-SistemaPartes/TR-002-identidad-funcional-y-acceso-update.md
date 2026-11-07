@@ -8,8 +8,8 @@ Jira: PIAPARTES-44
 | **SPEC relacionada** | [SPEC-002-update](../../../05-open-spec/updates/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update.md) |
 | **Épica** | 100 — Sistema Partes |
 | **Prioridad** | MUST-HAVE |
-| **Estado** | Pendiente |
-| **Última actualización** | 2026-10-20 |
+| **Estado** | Pendiente de Revisión (UI superseded por [TR-002-update-02](./TR-002-identidad-funcional-y-acceso-update-02.md)) |
+| **Última actualización** | 2026-11-06 |
 | **Origen** | `00-ControlCalidad-PQ` · CC #7 · 19/10/2026 · ítem mail ABM Usuarios |
 
 ---
@@ -68,3 +68,27 @@ Jira: PIAPARTES-44
 2. UI acción GEN-06.
 3. i18n 5 locales.
 4. Tests.
+
+---
+
+## 6) Implementación D (2026-11-06)
+
+- Backend: `POST /api/v1/admin/usuarios/{id}/notify-access` (gate `paqsuite.seguridadAdmin`). Genera clave con `PolicyCompliantPasswordGenerator` + `PasswordPolicy`, persiste hash vía SP `pq_sp_admin_usuarios_update` (`@password_hash` + `first_login=1`) y envía `NotifyUsuarioAccessNotification` (mismo camino Laravel Notification que forgot/masivo). MailEngine GEN no está bound en el host y redactaría la clave: no se usa. Envelope 422 `admin.usuarios.notify.emailRequired`; fallo SMTP `mailEngine.sendFailed`. `resultado` no incluye password. URL portal = `https://{cliente}.partesatencion.paqsystems.com` vía `PasswordResetLinkBuilder::buildAccessUrl` (`X-Paq-Cliente`, mismo patrón que CC #15 / masivo).
+- Frontend: toolbar host junto al wrapper SDK (`NotifyUsuarioAccessDialog`); `data-testid` `adminUsuariosNotify`; error en el Popup (`adminUsuariosNotifyFormError`, regla 36). Excluido native (`isNativeApp()`).
+- i18n host 5 locales `partes.notifyAccess.*` + `admin.usuarios.notify.emailRequired`; copy mail `lang/*/partes_notify_access.php`.
+- OpenAPI: `adminUsuariosNotifyAccess`.
+- Tests: Feature notify + 422 + 403 + login `firstLogin`; unit generador/asunto/URL; Vitest wrapper sin fork + diálogo.
+
+### Gap SDK (RN-CC7-U08)
+
+`UsuariosAdminPage` de `@paqsuite/react-core` no expone slot/prop de acción extra ni vista consulta RO. Notificar vive en toolbar host al lado del wrapper, **sin** copiar GEN-06. No se inventó vista RO.
+
+---
+
+## 7) Historial
+
+| Fecha | Cambio |
+|-------|--------|
+| 2026-10-20 | Parte C: TR-update CC-PQ #7. |
+| 2026-11-06 | Parte D: endpoint notify-access, mail Laravel Notification, toolbar host, tests; Estado → Pendiente de Revisión. |
+| 2026-11-07 | CC-PQ #16 Parte G: corrección UI → **TR-002-update-02**; retirar toolbar en próximo D. |

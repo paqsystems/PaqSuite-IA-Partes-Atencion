@@ -74,7 +74,8 @@ CREATE OR ALTER PROCEDURE dbo.pq_sp_admin_usuarios_update
     @nombre NVARCHAR(255) = NULL,
     @email NVARCHAR(255) = NULL,
     @activo BIT = NULL,
-    @inhabilitado BIT = NULL
+    @inhabilitado BIT = NULL,
+    @password_hash NVARCHAR(255) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -86,6 +87,8 @@ BEGIN
         email = COALESCE(@email, email),
         activo = COALESCE(@activo, activo),
         inhabilitado = COALESCE(@inhabilitado, inhabilitado),
+        password = COALESCE(@password_hash, password),
+        first_login = CASE WHEN @password_hash IS NULL THEN first_login ELSE 1 END,
         updated_at = SYSUTCDATETIME()
     WHERE id = @id;
 

@@ -53,4 +53,24 @@ final class PasswordResetLinkBuilderTest extends TestCase
 
         $this->assertSame('https://partesatencionpaqsystemsdev.vercel.app', $base);
     }
+
+    public function test_build_access_url_usa_host_tenant_canonico(): void
+    {
+        config()->set('app.frontend_url', 'http://localhost:5173');
+        config()->set('app.frontend_spa_url', '');
+
+        $url = (new PasswordResetLinkBuilder)->buildAccessUrl('demo');
+
+        $this->assertSame('https://demo.partesatencion.paqsystems.com', $url);
+    }
+
+    public function test_build_access_url_sin_cliente_usa_spa_local(): void
+    {
+        config()->set('app.frontend_url', 'http://localhost:5173');
+        config()->set('app.frontend_spa_url', '');
+
+        $url = (new PasswordResetLinkBuilder)->buildAccessUrl(null);
+
+        $this->assertSame('http://localhost:5173/', $url);
+    }
 }

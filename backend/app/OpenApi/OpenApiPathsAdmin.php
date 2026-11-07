@@ -24,7 +24,7 @@ namespace App\OpenApi;
  *     @OA\Property(property="usuario", type="string"),
  *     @OA\Property(property="email", type="string"),
  *     @OA\Property(property="name", type="string"),
- *     @OA\Property(property="password", type="string", format="password")
+ *     @OA\Property(property="password", type="string", format="password", description="Opcional: si se omite o viene vacío el servidor genera una contraseña conforme a la política.")
  *   )),
  *   @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope"))
  * )
@@ -47,6 +47,17 @@ namespace App\OpenApi;
  *   security={{"sanctum":{}},{"tenant":{}}},
  *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
  *   @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope"))
+ * )
+ *
+ * @OA\Post(
+ *   path="/api/v1/admin/usuarios/{id}/notify-access",
+ *   operationId="adminUsuariosNotifyAccess",
+ *   tags={"Admin"},
+ *   summary="Notificar acceso: genera clave, marca firstLogin y envía mail",
+ *   security={{"sanctum":{}},{"tenant":{}}},
+ *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *   @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope")),
+ *   @OA\Response(response=422, description="Sin email", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope"))
  * )
  *
  * @OA\Get(
