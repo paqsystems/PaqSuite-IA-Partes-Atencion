@@ -118,3 +118,4 @@ El host **no** forkea la página. Parte D: usar slot/prop oficial del SDK si exi
 | 2026-10-20 | Parte G CC-PQ #7 19/10/2026 |
 | 2026-10-20 | A1: Notificación acotada a **alta** (el CC no pide edición). |
 | 2026-10-20 | Decisión humana: Notificar también en **edición** y **consulta** (si hubiere). |
+| 2026-11-07 | CC-PQ **#16**: UI toolbar masiva **obsoleta** — alcance UI reemplazado por [SPEC-002-update-02](./SPEC-002-identidad-funcional-y-acceso-update-02.md). Backend `notify-access` se mantiene. |

@@ -53,7 +53,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 5 | 05/10/2026 | Especificado | Errores de validación en modal — **F1/F Aprobado 11/10/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/001-Generalidades/D-VERIFICACION-CC-PQ-05-2026-10-05.md)) |
 | 6 | 11/10/2026 | Especificado | Deuda cableado SDK — PA-01…14 **F+I** (PA-03/04/14: 12/10/2026, pin 2.4.25-beta.1) |
 | 7 | 19/10/2026 | Especificado | Mail acceso ABM Usuarios + informar clientes desde Proceso masivo (GEN Mail Engine; cola updates 002/005) |
-| 8 | 25/10/2026 | Especificado | Carga de paquetes desde 1 hora + destaque de paquetes + cálculo de saldo por renglón · [PIAPARTES-52](https://paqsystems.atlassian.net/browse/PIAPARTES-52) |
+| 8 | 25/10/2026 | Especificado · **F1/F Aprobado** · **Parte I** | Carga de paquetes desde 1 hora + destaque de paquetes + cálculo de saldo por renglón · [PIAPARTES-52](https://paqsystems.atlassian.net/browse/PIAPARTES-52) · [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-8-2026-10-25.md) |
 | 9 | 30/10/2026 | Especificado | **Hito FRAMEWORK** — compatibilizar tablas de seguridad MONO vs MULTI (`users`, `pq_empresa`, roles, permisos) + GEN-34 |
 | 10 | 30/10/2026 | Especificado | Tareas programadas (historial / próxima ejecución) + saldo informe Paquete de horas — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
 | 11 | 01/11/2026 | Especificado | Proceso masivo paginación grilla — **F1/F Aprobado** · **Parte I unificada** · **Prod OK** (PR #117/#118) ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md)) |
@@ -61,6 +61,68 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 13 | 02/11/2026 | Especificado | Diseñador Paquete de Horas (dataset) · FilterRow maestros + Proceso masivo — **F1/F Aprobado** · **Parte I** · **Preview OK** 03/11/2026 (`88c46ea`) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md) |
 | 14 | 03/11/2026 | Especificado | ABM Clientes — columnas usuario/mail + FilterRow usuario — **F1/F Aprobado** · **Parte I** · manual DEV OK — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md) |
 | 15 | 04/11/2026 | Especificado · **F1/F Aprobado** · **Parte I** cerrada | Informar por mail a clientes desde Proceso masivo (asistencias / revisar / observaciones) — refino CC #7 (URL tenant, i18n destinatario, guard salida, plantilla v1 hardcode) |
+| 16 | 07/11/2026 | Especificado · **F1/F Aprobado con observaciones** | ABM Usuarios — notificar acceso **por usuario** (no masivo): ícono junto al mail, alta sin contraseña manual + envío automático, reenvío en edición — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-16-2026-11-07.md) |
+
+---
+
+## Control de Calidad #16
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 07/11/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | Especificado · **F1/F Aprobado con observaciones** 07/11/2026 |
+| **Parte G** | 07/11/2026 — [SPEC-002-update-02](../05-open-spec/updates/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update-02.md) · [HU-002-update-02](../03-historias-usuario/updates/100-SistemaPartes/HU-002-identidad-funcional-y-acceso-update-02.md) · [TR-002-update-02](../04-tareas/updates/100-SistemaPartes/TR-002-identidad-funcional-y-acceso-update-02.md) |
+| **F1/F** | [D-VERIFICACION-CC-PQ-16](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-16-2026-11-07.md) · [E-CC-PQ-16](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-16-2026-11-07.md) |
+| **Origen** | Prueba manual preview (`partesatencion-dev`) post implementación **TR-002-update** / PR #143–#145: el operador esperaba notificación **en el contexto del usuario** (alta/edición), no un proceso aparte tipo “masivo”. |
+| **Proceso** | Seguridad — ABM **Usuarios** (`/admin/usuarios`) · **GEN-06** `UsuariosAdminPage` (SDK) + wrapper host |
+| **Relación** | **Corrige conceptualmente** el ítem «Envio mail a usuario para acceder al sitio» de **CC #7** §19/10/2026 y alinea SPEC-002-update / HU-002-update / TR-002-update con la intención original (botón en alta/edición, no selector masivo). **No** confundir con mail Proceso masivo (**CC #15**). |
+| **Implementación actual (revertir / sustituir)** | Toolbar host `NotifyUsuarioAccessToolbar` + popup con `SelectBox` de usuarios (`NotifyUsuarioAccessDialog.tsx`); `data-testid` `adminUsuariosNotify`. |
+
+### Resumen del error conceptual
+
+La notificación de acceso **no** es un envío masivo ni un segundo proceso con combo de usuarios. Es una acción **por fila / por usuario en curso de alta o edición**: dar de alta (o reenviar en cualquier momento) las credenciales iniciales por mail, con contraseña generada por el sistema según `PasswordPolicy` parametrizada.
+
+### Objetivo / mejora solicitada
+
+#### ABM Usuarios — notificar acceso por usuario (refino CC #7 ítem 1)
+
+*Procesado* (Parte G 07/11/2026) → [SPEC-002-update-02](../05-open-spec/updates/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update-02.md) · [HU-002-update-02](../03-historias-usuario/updates/100-SistemaPartes/HU-002-identidad-funcional-y-acceso-update-02.md) · [TR-002-update-02](../04-tareas/updates/100-SistemaPartes/TR-002-identidad-funcional-y-acceso-update-02.md)
+
+1. **Quitar el modo masivo:** eliminar el botón superior **«Notificar acceso»** y el diálogo que lista todos los usuarios para elegir uno. No debe existir un flujo “seleccionar usuario y notificar” desacoplado del ABM.
+2. **Ícono de envío junto al mail:** en el popup de **alta** y **edición** (y consulta si el SDK la expone), un control de acción (ícono tipo *mail/send*) **al lado del campo Email**, habilitado **solo** si `email` no está vacío (tras trim). Deshabilitado sin mail; tooltip i18n (p. ej. “Notificar acceso por correo”).
+3. **Alta sin contraseña manual:** en **alta**, el operador **no** ingresa contraseña. El backend (o el guardar del alta) genera clave aleatoria conforme a la política parametrizada (`PasswordPolicy` / generador ya usado en `notify-access`), persiste hash y `firstLogin=true`. El campo contraseña del formulario GEN-06 no se muestra en create (host +/o extensión SDK acordada; **no** fork completo de `UsuariosAdminPage`).
+4. **Alta — envío automático:** al confirmar **Guardar** en alta con email válido, tras persistir el usuario, **disparar automáticamente** el mismo contrato que `POST .../notify-access` (un solo usuario recién creado). Si el mail falla: envelope de error en el **mismo contexto** del modal (regla 36); **no** cerrar sin aviso si el fallo es del envío post-guardado (criterio A1).
+5. **Edición — reenvío bajo demanda:** con usuario ya persistido, el ícono junto al mail invoca `notify-access` para ese `id`. Habilitado solo con email; errores en el popup (regla 36).
+
+**Contrato backend (mantener / extender):** `POST /api/v1/admin/usuarios/{id}/notify-access`; alta puede reutilizar notify post-`create` o unificar en un solo endpoint de alta+notify si el SPEC lo documenta. Envelope **GEN-20**. Mail con URL tenant + usuario + contraseña generada (vía notificación host actual). Sin exponer password en `resultado` JSON.
+
+**GEN / Cloudsmith:** preferir **extensión** del SDK (`UsuariosFormPopup` / props `renderEmailActions`, ocultar password en create, callbacks `onNotify`) sobre fork de pantalla. Si el export no existe en el pin vigente, documentar bump Framework + ritual bump host; el CC **no** exige subir Cloudsmith por sí solo.
+
+**Excluido:** mobile native (admin seguridad).
+
+### Criterios de aceptación preliminares
+
+- [x] **CA-16-01** No existe toolbar/diálogo masivo `adminUsuariosNotify` con selector de usuario. *(F1/F 07/11/2026)*
+- [x] **CA-16-02** Ícono junto a **Email** en edición (disabled sin mail; `adminUsuariosNotifyEmail`). Alta: envío automático al guardar (sin ícono — ver D-VERIFICACION obs.). *(F1/F)*
+- [x] **CA-16-03** Alta sin campo contraseña visible; clave generada server-side según política. *(F1/F)*
+- [x] **CA-16-04** Tras **Guardar** en alta con email, se envía mail de acceso automáticamente (éxito o error visible en modal). *(F1/F)*
+- [x] **CA-16-05** En edición, el ícono reenvía credenciales vía `notify-access` para el usuario abierto. *(F1/F)*
+- [x] **CA-16-06** i18n 5 locales; errores regla 36; tests Vitest + Playwright + PHPUnit. *(F1/F)*
+
+### Derivación SDD
+
+| Paso | Artefacto |
+|------|-----------|
+| **G** | 07/11/2026 — SPEC/HU/TR-002-**update-02** (corrección UI CC #16) |
+| **D** | Implementado 07/11/2026 — TR-002-update-02 |
+| **E** | [E-CC-PQ-16](../04-tareas/updates/100-SistemaPartes/E-CC-PQ-16-2026-11-07.md) |
+| **F / F1** | **Aprobado con observaciones** — [D-VERIFICACION-CC-PQ-16](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-16-2026-11-07.md) |
+| **Jira** | [PIAPARTES-44](https://paqsystems.atlassian.net/browse/PIAPARTES-44) |
+
+**Siguiente:** Parte **N** (PR `develop`) + smoke preview manual; Parte **I** unificación SPEC-002 cuando corresponda.
 
 ---
 
@@ -425,13 +487,13 @@ Parte G **01/11/2026** — volcado updates CC #11. Implementación en `ProcesoMa
 | **Estado** | Especificado |
 | **Origen** | Verificación post-deploy **beta.14** (`laravel-core` 1.3.18-beta.14, Forge **81700511**, PR #98–#102): el usuario reporta dos síntomas que **persisten** y **no** se explican por el alcance del release. |
 | **Conclusión de triage (30/10/2026)** | **No causados por esta actualización** — ver §Hallazgos. |
-| **F1/F** | Aprobado con observaciones → [D-VERIFICACION-CC-PQ-10](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
+| **F1/F** | GEN-13 **Aprobado** (Parte I 06/11/2026) · saldo informe **CC #8 Parte I** 06/11/2026 → [D-VERIFICACION-CC-PQ-8](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-8-2026-10-25.md) |
 
 ### Hallazgos
 
 #### 1) Tareas programadas — historial y columna «Próxima ejecución» vacíos o ausentes
 
-**Alcance del deploy beta.14 (Partes):** manifiesto/post-deploy, SP integración maestros (collation/cursor), pin `laravel-core`, fix CI Cloudsmith. **Sin cambios** en `frontend/src/features/tareasProgramadas/**` ni en `@paqsuite/react-core` (sigue **2.4.30-beta.1**).
+**Alcance del deploy beta.14 (Partes):** manifiesto/post-deploy, SP integración maestros (collation/cursor), pin `laravel-core`, fix CI Cloudsmith. **Sin cambios** en `frontend/src/features/tareasProgramadas/**` respecto de la causa de este ítem; el pin FE vigente del host quedó evolucionando tras beta.14 (p. ej. **2.4.30-beta.9** al 2026-11 — ver `ritual-bump-sdk.md`).
 
 **Alcance `laravel-core` beta.14 vs beta.13:** un único commit — `StoredProcedureTaskExecutionRepository`: SP **sin result set** (`save_snapshot`, `append_log`) vía `statement` (fix sqlsrv IMSSP). **No** altera `listExecutions` ni APIs de definiciones / `nextRunAt`.
 
@@ -441,13 +503,13 @@ Parte G **01/11/2026** — volcado updates CC #11. Implementación en `ProcesoMa
 
 **Alcance del deploy:** se reaplicó el mismo `pq_sp_partes_informe_paquete_horas.sql` (checksum sin cambio desde commit **f66a3a6**, CC #8). PR #98–#101 **no** modificaron ese SP ni `PaqueteHorasPage.tsx`.
 
-**Trazabilidad:** ítem original **CC #8** (PIAPARTES-52) — saldo por renglón; updates **TR-006-update** pendientes de cierre **F** (CA-05…CA-07 del CC #8 siguen abiertos en checklist deploy).
+**Trazabilidad:** ítem original **CC #8** (PIAPARTES-52) — saldo por renglón; **Parte I 06/11/2026** en [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md).
 
 ### Mejoras solicitadas / seguimiento
 
 #### Tareas programadas — historial y próxima ejecución
 
-*Procesado* (Parte G 30/10/2026) → [SPEC-001-13-update](../05-open-spec/updates/001-Generalidades/SPEC-001-13-update-cc-pq-10-2026-10-30-tareas-programadas.md) · [HU-GEN-13-update](../03-historias-usuario/updates/001-Generalidades/HU-GEN-13-update-cc-pq-10-2026-10-30-tareas-programadas.md) · [TR-GEN-13-update](../04-tareas/updates/001-Generalidades/TR-GEN-13-update-cc-pq-10-2026-10-30-tareas-programadas.md)
+*Procesado* (Parte G 30/10/2026) · **Parte I 06/11/2026 — Finalizado** → [SPEC-001-13](../05-open-spec/001-Generalidades/SPEC-001-13-host-adopcion-tareas-programadas.md) · [HU-GEN-13](../03-historias-usuario/001-Generalidades/HU-GEN-13-adopcion-tareas-programadas.md) · [TR-GEN-13](../04-tareas/001-Generalidades/TR-GEN-13-adopcion-tareas-programadas.md)
 
 - Adapter host sqlsrv: drenado de rowsets en listados de definiciones y ejecuciones.
 - Comando `partes:tasks-backfill-next-run-at` para definiciones legacy sin `next_run_at`.
@@ -455,18 +517,20 @@ Parte G **01/11/2026** — volcado updates CC #11. Implementación en `ProcesoMa
 
 #### Informe Paquete de horas — saldo
 
-*Procesado* (Parte G 30/10/2026) → cola **TR-006-update** CC #8 · SP `pq_sp_partes_informe_paquete_horas` (window `PARTITION BY cliente_id`); ver [D-VERIFICACION-CC-PQ-10](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md).
+*Procesado* (Parte G 30/10/2026) · **Parte I 06/11/2026** → [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) · SP `pq_sp_partes_informe_paquete_horas` (window `PARTITION BY cliente_id`); [D-VERIFICACION-CC-PQ-8](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-8-2026-10-25.md).
 
 ### Criterios de aceptación preliminares
 
-- [ ] **CA-10-01** Tras fix, historial lista ejecuciones cuando existen filas en BD; sin error silencioso en red.
-- [ ] **CA-10-02** Definiciones activas muestran `nextRunAt` coherente con cron/schedule (o mensaje explícito si no aplica).
-- [ ] **CA-10-03** Informe Paquete de horas: saldo inicial + running por cliente cumple CC #8 / doc 18.
-- [ ] **CA-10-04** Evidencia en D-VERIFICACION de que el síntoma **no** era regresión de beta.14 (referencia a este triage).
+- [x] **CA-10-01** Tras fix, historial lista ejecuciones cuando existen filas en BD; sin error silencioso en red.
+- [x] **CA-10-02** Definiciones activas muestran `nextRunAt` coherente con cron/schedule (o mensaje explícito si no aplica).
+- [x] **CA-10-03** Informe Paquete de horas: saldo inicial + running por cliente cumple CC #8 / doc 18. *(cerrado Parte I CC #8 06/11/2026)*
+- [x] **CA-10-04** Evidencia en D-VERIFICACION de que el síntoma **no** era regresión de beta.14 (referencia a este triage).
 
 ### Derivación SDD
 
-Parte G **30/10/2026** — cola `updates/` (GEN-13 CC #10 + TR-006-update saldo). Implementación host en `develop`; smoke sqlsrv Forge post-deploy.
+Parte G **30/10/2026** — cola `updates/` (GEN-13 CC #10 + saldo TR-006 / CC #8). Implementación host en `develop`; smoke sqlsrv Forge post-deploy.
+
+Parte I **06/11/2026** — familia GEN-13 unificada a ruta base y **Finalizado** (backup RDS verificado). CA-10-03 (saldo informe) cerrado con CC #8 Parte I el mismo día.
 
 ---
 
@@ -548,15 +612,15 @@ Validación mínima post-cambio en Partes: conteo de filas estable, login con us
 - [ ] **CA-FW-02** `paqsuite:installation:update` en instalación **MONO** de Partes **no falla** por columnas Tango inexistentes.
 - [ ] **CA-FW-03** SP de admin empresas/seguridad invocados por SDK y host comparten **misma familia de nombres** o adapter documentado sin `DROP` cruzado.
 - [ ] **CA-FW-04** Manifiesto permite al host **omitir o sustituir** pasos Framework incompatibles con `single`.
-- [ ] **CA-FW-05** Smoke post-deploy: migrate + installation update + `deploy-sp` + login + menú + ABM empresas (MONO).
-- [ ] **CA-FW-06** Host Partes actualizado (migración/SP/manifiesto) según guía del release Framework.
-- [ ] **CA-FW-07** En Partes, migraciones de adopción **preservan** `id`, `codigo`, `nombre` y hashes de contraseña; smoke de login y permisos sin pérdida de accesos.
+- [ ] **CA-FW-05** Smoke post-deploy: migrate + installation update + `deploy-sp` + login + menú + ABM empresas (MONO). *(lado host cubierto en CA-H01…H03; contrato Framework abierto)*
+- [x] **CA-FW-06** Host Partes actualizado (migración/SP/manifiesto) según guía del release Framework. *(omit + pin; Parte I 06/11/2026)*
+- [x] **CA-FW-07** En Partes, migraciones de adopción **preservan** `id`, `codigo`, `nombre` y hashes de contraseña; smoke de login y permisos sin pérdida de accesos.
 
 ### Derivación SDD
 
-*Procesado* (Parte G 30/10/2026) → Framework ([repo `PaqSuite-IA-FRAMEWORK`](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK)): [SPEC-001-06-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/05-open-spec/updates/001-Generalidades/SPEC-001-06-update-cc-pq-9-2026-10-30-seguridad-mono-multi.md) · [SPEC-001-34-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/05-open-spec/updates/001-Generalidades/SPEC-001-34-update-cc-pq-9-2026-10-30-install-single-tenancy.md) · [HU-GEN-06-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/03-historias-usuario/updates/001-Generalidades/HU-GEN-06-seguridad-mono-multi-update.md) · [HU-GEN-34-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/03-historias-usuario/updates/001-Generalidades/HU-GEN-34-install-single-tenancy-update.md) · [TR-GEN-06-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/04-tareas/updates/001-Generalidades/TR-GEN-06-seguridad-mono-multi-update.md) · [TR-GEN-34-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/04-tareas/updates/001-Generalidades/TR-GEN-34-install-single-tenancy-update.md) · Partes host: [TR-adopcion-host-cc-pq-9](../04-tareas/updates/001-Generalidades/TR-adopcion-host-cc-pq-9-seguridad-mono-multi-update.md)
+*Procesado* (Parte G 30/10/2026) → Framework ([repo `PaqSuite-IA-FRAMEWORK`](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK)): [SPEC-001-06-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/05-open-spec/updates/001-Generalidades/SPEC-001-06-update-cc-pq-9-2026-10-30-seguridad-mono-multi.md) · [SPEC-001-34-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/05-open-spec/updates/001-Generalidades/SPEC-001-34-update-cc-pq-9-2026-10-30-install-single-tenancy.md) · [HU-GEN-06-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/03-historias-usuario/updates/001-Generalidades/HU-GEN-06-seguridad-mono-multi-update.md) · [HU-GEN-34-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/03-historias-usuario/updates/001-Generalidades/HU-GEN-34-install-single-tenancy-update.md) · [TR-GEN-06-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/04-tareas/updates/001-Generalidades/TR-GEN-06-seguridad-mono-multi-update.md) · [TR-GEN-34-update](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/04-tareas/updates/001-Generalidades/TR-GEN-34-install-single-tenancy-update.md)
 
-*Sugerencia:* ítem Jira / epic Framework «Seguridad MONO-MULTI unificación» enlazado desde Partes tras crear ticket.
+**Parte I 06/11/2026 — host PARTES Finalizado** → [TR-adopcion-host CC #9](../04-tareas/001-Generalidades/TR-adopcion-host-cc-pq-9-seguridad-mono-multi.md) (omit `fw-sp-pq_sp_admin_empresa_tango_dictionary` + pin `1.3.18-beta.24`). CA-FW-01…07 siguen en Framework.
 
 ---
 
@@ -568,9 +632,11 @@ Validación mínima post-cambio en Partes: conteo de filas estable, login con us
 |-------|--------|
 | **Fecha** | 25/10/2026 |
 | **Responsable** | Pablo Quarracino (PQ) |
-| **Estado** | Especificado |
+| **Estado** | Especificado · **F1/F Aprobado** · **Parte I** cerrada |
 | **Origen** | Prueba manual de Paquete de horas e indicación en [`18-obtencion-saldo-por-renglon.md`](../02-producto/Sistema-Partes-IA/18-obtencion-saldo-por-renglon.md) |
 | **Jira** | [PIAPARTES-52](https://paqsystems.atlassian.net/browse/PIAPARTES-52) |
+| **F1/F** | **Aprobado** 06/11/2026 — smoke PQ informe + rango duración |
+| **Parte I** | 06/11/2026 — fusionado en SPEC/HU/TR-006 y SPEC/HU/TR-013 base; updates eliminados |
 
 ### Hallazgos
 
@@ -584,14 +650,14 @@ En la prueba manual del informe **Paquete de horas** se detectaron tres ajustes:
 
 #### Carga de paquetes — duración de 1 a 240 horas
 
-*Procesado* (Parte G 30/10/2026) → [SPEC-013-update](../05-open-spec/updates/100-SistemaPartes/SPEC-013-update-cc-pq-8-2026-10-25-duracion-paquetes.md) · [HU-013-update](../03-historias-usuario/updates/100-SistemaPartes/HU-013-update-cc-pq-8-2026-10-25-duracion-paquetes.md) · [TR-013-update](../04-tareas/updates/100-SistemaPartes/TR-013-update-cc-pq-8-2026-10-25-duracion-paquetes.md)
+*Procesado* (Parte G 30/10/2026) · **Parte I** 06/11/2026 → [SPEC-013](../05-open-spec/100-SistemaPartes/SPEC-013-carga-paquetes-horas.md) · [HU-013](../03-historias-usuario/100-SistemaPartes/HU-013-carga-paquetes-horas.md) · [TR-013](../04-tareas/100-SistemaPartes/TR-013-carga-paquetes-horas.md)
 
 - Ajustar el rango permitido de duración para la carga de paquetes para aceptar horas enteras de **1 a 240**, inclusive.
 - Alinear validación frontend, backend/SP, Smart Capture, mensajes i18n y tests.
 
 #### Informe Paquete de horas — destaque de paquetes
 
-*Procesado* (Parte G 30/10/2026) → [SPEC-006-update](../05-open-spec/updates/100-SistemaPartes/SPEC-006-update-cc-pq-8-2026-10-25-paquete-horas-informe.md) · [HU-006-update](../03-historias-usuario/updates/100-SistemaPartes/HU-006-update-cc-pq-8-2026-10-25-paquete-horas-informe.md) · [TR-006-update](../04-tareas/updates/100-SistemaPartes/TR-006-update-cc-pq-8-2026-10-25-paquete-horas-informe.md)
+*Procesado* (Parte G 30/10/2026) · **Parte I** 06/11/2026 → [SPEC-006](../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) · [HU-006](../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) · [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md)
 
 - Para cada fila con `es_tarea = 0`, destacar el valor de la columna **Duración**.
 - El resultado puede expresarse como duración negativa y/o color rojo, siempre que sea visible y consistente en grilla, exportación si corresponde e informe.
@@ -599,7 +665,7 @@ En la prueba manual del informe **Paquete de horas** se detectaron tres ajustes:
 
 #### Informe Paquete de horas — saldo por renglón
 
-*Procesado* (Parte G 30/10/2026) → mismo volcado SPEC/HU/TR-006-update (ítem saldo + orden fecha/id).
+*Procesado* (Parte G 30/10/2026) · fusionado Parte I en SPEC/HU/TR-006 (ítem saldo + orden fecha/id).
 
 - Calcular el saldo acumulado por cliente y mostrarlo en la columna **Saldo**.
 - Aplicar la convención indicada en [`18-obtencion-saldo-por-renglon.md`](../02-producto/Sistema-Partes-IA/18-obtencion-saldo-por-renglon.md): los registros con `es_tarea = 1` suman duración y los registros con `es_tarea = 0` restan duración.
@@ -608,17 +674,19 @@ En la prueba manual del informe **Paquete de horas** se detectaron tres ajustes:
 
 ### Criterios de aceptación preliminares
 
-- [ ] **CA-01** La carga de paquetes acepta duraciones enteras de 1 a 240 horas y rechaza valores fuera del rango.
-- [ ] **CA-02** La regla de duración es consistente en UI, API/SP, Smart Capture, i18n y tests.
-- [ ] **CA-03** Las filas con `es_tarea = 0` muestran la duración destacada en el informe Paquete de horas.
-- [ ] **CA-04** Las filas con `es_tarea = 1` mantienen la presentación normal de duración.
-- [ ] **CA-05** El saldo inicial se obtiene sumando/restando los movimientos anteriores al período por cliente.
-- [ ] **CA-06** El saldo de cada renglón continúa el acumulado del cliente según `es_tarea`.
-- [ ] **CA-07** La solución funciona para clientes distintos sin mezclar sus saldos.
+- [x] **CA-01** La carga de paquetes acepta duraciones enteras de 1 a 240 horas y rechaza valores fuera del rango.
+- [x] **CA-02** La regla de duración es consistente en UI, API/SP, Smart Capture, i18n y tests.
+- [x] **CA-03** Las filas con `es_tarea = 0` muestran la duración destacada en el informe Paquete de horas.
+- [x] **CA-04** Las filas con `es_tarea = 1` mantienen la presentación normal de duración.
+- [x] **CA-05** El saldo inicial se obtiene sumando/restando los movimientos anteriores al período por cliente.
+- [x] **CA-06** El saldo de cada renglón continúa el acumulado del cliente según `es_tarea`.
+- [x] **CA-07** La solución funciona para clientes distintos sin mezclar sus saldos.
 
 ### Derivación SDD
 
 Parte G **30/10/2026** — cola `updates/` lista para **D → E → F** (PIAPARTES-52).
+
+Parte I **06/11/2026** — familia 006 + 013 unificada a ruta base y **Finalizado**. Smoke PQ (informe + rango duración). [D-VERIFICACION-CC-PQ-8](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-8-2026-10-25.md).
 
 ---
 
@@ -678,7 +746,7 @@ En el proceso de "Partes Masivos":
 | **Parte I** | PA-01 (012); PA-02…14 unificados en SPEC/HU/TR-002 originales. Updates 002 **eliminados** 12/10/2026. |
 | **Cierre updates** | Familia 002 **Finalizado**. F1+F+I 12/10/2026. |
 | **Origen** | [deuda-cableado-sdk-por-gen.md](../06-operacion/deuda-cableado-sdk-por-gen.md) · relevamiento Framework 11/10/2026 |
-| **Pin de referencia** | `@paqsuite/react-core` **2.4.29-beta.1** · `paqsuite/laravel-core` **1.3.15-beta.1** |
+| **Pin de referencia** | Histórico relevamiento 2026-10: **2.4.29-beta.1** / **1.3.15-beta.1**. **Pin vigente en repo (2026-11):** **2.4.30-beta.9** · **1.3.18-beta.24** (`ritual-bump-sdk.md`). |
 
 ### Hallazgos
 

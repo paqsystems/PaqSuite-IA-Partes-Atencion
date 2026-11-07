@@ -8,7 +8,7 @@ Jira: PIAPARTES-44
 | **SPEC relacionada** | [SPEC-002-update](../../../05-open-spec/updates/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update.md) |
 | **Épica** | 100 — Sistema Partes |
 | **Prioridad** | MUST-HAVE |
-| **Estado** | Pendiente de Revisión |
+| **Estado** | Pendiente de Revisión (UI superseded por [TR-002-update-02](./TR-002-identidad-funcional-y-acceso-update-02.md)) |
 | **Última actualización** | 2026-11-06 |
 | **Origen** | `00-ControlCalidad-PQ` · CC #7 · 19/10/2026 · ítem mail ABM Usuarios |
 
@@ -91,3 +91,4 @@ Jira: PIAPARTES-44
 |-------|--------|
 | 2026-10-20 | Parte C: TR-update CC-PQ #7. |
 | 2026-11-06 | Parte D: endpoint notify-access, mail Laravel Notification, toolbar host, tests; Estado → Pendiente de Revisión. |
+| 2026-11-07 | CC-PQ #16 Parte G: corrección UI → **TR-002-update-02**; retirar toolbar en próximo D. |

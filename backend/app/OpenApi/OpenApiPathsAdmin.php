@@ -24,7 +24,7 @@ namespace App\OpenApi;
  *     @OA\Property(property="usuario", type="string"),
  *     @OA\Property(property="email", type="string"),
  *     @OA\Property(property="name", type="string"),
- *     @OA\Property(property="password", type="string", format="password")
+ *     @OA\Property(property="password", type="string", format="password", description="Opcional: si se omite o viene vacío el servidor genera una contraseña conforme a la política.")
  *   )),
  *   @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope"))
  * )

@@ -71,7 +71,7 @@ final class UsuariosController extends Controller
             'nombre' => ['required_without:name', 'string', 'max:255'],
             'name' => ['required_without:nombre', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
-            'password' => ['required', 'string'],
+            'password' => ['sometimes', 'nullable', 'string'],
             'activo' => ['sometimes', 'boolean'],
         ]);
 
@@ -82,7 +82,15 @@ final class UsuariosController extends Controller
             );
         }
 
-        $passwordCheck = $this->passwordPolicy->evaluate((string) $request->input('password'));
+        $data = $validator->validated();
+        $plainPassword = $data['password'] ?? null;
+        if ($plainPassword === null || trim((string) $plainPassword) === '') {
+            $plainPassword = $this->passwordGenerator->generate();
+        } else {
+            $plainPassword = (string) $plainPassword;
+        }
+
+        $passwordCheck = $this->passwordPolicy->evaluate($plainPassword);
         if ($passwordCheck['ok'] !== true) {
             return ApiResponse::error(
                 PaqSuiteEnvelopeCatalog::VALIDATION_FAILED,
@@ -91,7 +99,7 @@ final class UsuariosController extends Controller
             );
         }
 
-        $data = $validator->validated();
+        $data['password'] = $plainPassword;
         if (!isset($data['codigo']) && isset($data['usuario'])) {
             $data['codigo'] = $data['usuario'];
         }
