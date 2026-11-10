@@ -166,6 +166,8 @@ La grilla del proceso masivo debe reutilizar las capacidades comunes de grilla d
 En particular debe incorporar:
 
 - **fila de filtrado** bajo los titulos de columna;
+- **filtro de encabezado** (embudo): valores unicos del universo filtrado, no solo de la pagina visible;
+- **orden por columna** sobre el universo filtrado (todas las paginas);
 - **totalizacion** (sumatorias / agregados que aporten valor en el pie, tipicamente sobre duracion cuando la columna este presente);
 - **seleccion de campos** (column chooser): mostrar u ocultar columnas;
 - **plantillas** de layout de grilla (guardar / aplicar / ultimo usado, segun el contrato comun);
@@ -210,10 +212,24 @@ La UI debe dejar claro **que atributo(s)** se van a modificar y con **que valor*
 
 Sigue siendo una accion valida del proceso masivo: marcar o desmarcar `cerrado` sobre la seleccion, con las mismas reglas de supervision y consistencia del dominio.
 
+#### C) Informar novedades a clientes
+
+Accion **aparte de la seleccion**: el supervisor informa por correo a los clientes del **universo filtrado** (todas las paginas; no exige tilde). Destinatario = usuario vinculado con correo (no el mail del maestro cliente).
+
+La confirmacion previa debe:
+
+- reconsultar destinatarios con los filtros vigentes al abrir el dialogo;
+- mostrar cantidad de avisos y periodo en `dd/MM/yyyy`;
+- listar **todos** los destinatarios en **tarjetas** (nombre y correo; copy de negocio, sin jerga tecnica);
+- mostrar como maximo **cinco tarjetas** a la vez y permitir **scroll** para el resto (no paginar ni recortar con «Y N mas»);
+- mantener fijos el titulo y las acciones Cancelar / Enviar.
+
+Patron visual transversal: Framework SPEC-001-01 §17. Detalle de producto: SPEC-005 §4.7.
+
 ### Rasgos transversales
 
 - solo corresponde a **supervisores**;
-- trabaja sobre una **seleccion explicita** de registros;
+- trabaja sobre una **seleccion explicita** de registros (salvo **informar a clientes**, que usa el universo filtrado);
 - requiere **filtros previos** (periodo obligatorio) para acotar el conjunto;
 - debe mostrar con claridad **que se va a procesar** (cantidad, accion, valores);
 - no debe ejecutarse sobre seleccion vacia o invalida;

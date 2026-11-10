@@ -1,7 +1,7 @@
 # PROVISORIO — Checklist deploy beta.12 + CC PQ #8 / #9
 
 > **Uso:** controlar deploy en preview/develop, prueba local en otra base y producción.  
-> **Borrar este archivo** cuando CC #8 y adopción host CC #9 queden verificados y cerrados.
+> **Borrar este archivo** cuando CC #8 quede verificado y cerrado. Adopción host CC #9: **Finalizado** 06/11/2026 ([TR](../04-tareas/001-Generalidades/TR-adopcion-host-cc-pq-9-seguridad-mono-multi.md)).
 
 | Campo | Valor |
 |-------|--------|
@@ -183,28 +183,30 @@ Ticket / CC cerrado:
 
 | ☐ | Acción |
 |---|--------|
-| ☐ | CC PQ **#9** — CA-H01…H03 verificados → actualizar `00-ControlCalidad-PQ.md` / TR adopción |
-| ☐ | CC PQ **#8** — PIAPARTES-52 verificado en prod |
-| ☐ | **Eliminar** este archivo (`docs/06-operacion/PROVISORIO-checklist-deploy-beta12-cc8-cc9.md`) |
+| [x] | CC PQ **#9** — CA-H01…H03 verificados → [TR-adopcion-host](../04-tareas/001-Generalidades/TR-adopcion-host-cc-pq-9-seguridad-mono-multi.md) **Finalizado** 06/11/2026 |
+| [x] | CC PQ **#8** — PIAPARTES-52 F1/F + Parte I 06/11/2026 (smoke PQ informe + rango duración) → [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-8-2026-10-25.md) |
+| ☐ | **Eliminar** este archivo (`docs/06-operacion/PROVISORIO-checklist-deploy-beta12-cc8-cc9.md`) cuando no haga falta el inventario SQL beta.12 |
 
 ---
 
 ## Anexo — CC PQ #10 (GEN-13, post PR #108)
 
-| ☐ | Paso |
-|---|------|
-| ☐ | Forge: `PAQSUITE_CLIENTE=DEV`, `TASKS_BACKUP_S3_ARN_PREFIX` = prefijo S3 (sin `.bak`) |
-| ☐ | `php artisan partes:tasks-backfill-next-run-at --dry-run` → luego sin dry-run si aplica |
-| ☐ | Vercel preview: `@paqsuite/react-core` ≥ `2.4.30-beta.2` |
-| ☐ | Smoke: historial con filas + columna motivo; backup manual SUCCESS en S3 |
-| ☐ | Runbook: [adopcion-gen-13-tareas-programadas.md](./adopcion-gen-13-tareas-programadas.md) |
+Cerrado Parte I **06/11/2026** (backup RDS verificado). Artefacto: [TR-GEN-13](../04-tareas/001-Generalidades/TR-GEN-13-adopcion-tareas-programadas.md).
+
+| OK | Paso |
+|----|------|
+| [x] | Forge: `TASKS_BACKUP_S3_ARN_PREFIX` = prefijo S3 (sin `.bak`); scheduler recorre SQL directo |
+| [x] | `php artisan partes:tasks-backfill-next-run-at --dry-run` → luego sin dry-run si aplica |
+| [x] | Vercel: `@paqsuite/react-core` ≥ `2.4.30-beta.2` |
+| [x] | Smoke: historial + backup manual SUCCESS en S3 (usuario 06/11/2026) |
+| [x] | Runbook: [adopcion-gen-13-tareas-programadas.md](./adopcion-gen-13-tareas-programadas.md) |
 
 ---
 
 ## Referencias
 
-- [TR-adopcion-host-cc-pq-9](../04-tareas/updates/001-Generalidades/TR-adopcion-host-cc-pq-9-seguridad-mono-multi-update.md)
-- [TR-GEN-13-update CC #10](../04-tareas/updates/001-Generalidades/TR-GEN-13-update-cc-pq-10-2026-10-30-tareas-programadas.md)
-- [TR-006-update CC #8](../04-tareas/updates/100-SistemaPartes/TR-006-update-cc-pq-8-2026-10-25-paquete-horas-informe.md)
-- [TR-013-update CC #8](../04-tareas/updates/100-SistemaPartes/TR-013-update-cc-pq-8-2026-10-25-duracion-paquetes.md)
+- [TR-adopcion-host CC #9](../04-tareas/001-Generalidades/TR-adopcion-host-cc-pq-9-seguridad-mono-multi.md)
+- [TR-GEN-13 adopción GEN-13](../04-tareas/001-Generalidades/TR-GEN-13-adopcion-tareas-programadas.md)
+- [TR-006](../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) (CC #8 unificado)
+- [TR-013](../04-tareas/100-SistemaPartes/TR-013-carga-paquetes-horas.md) (CC #8 unificado)
 - `scripts/forge/post-deploy.sh`

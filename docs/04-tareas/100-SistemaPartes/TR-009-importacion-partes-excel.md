@@ -14,7 +14,7 @@ Jira: PIAPARTES-37
 | **Dependencias** | [TR-004](./TR-004-operacion-carga-diaria.md) (carga + `pq_sp_partes_tarea_upsert`); [TR-002](./TR-002-identidad-funcional-y-acceso.md); [TR-003](./TR-003-maestros-y-catalogos.md); paquetes `@paqsuite/react-core` + `paqsuite/laravel-core`; GEN-14 (SPEC-001-14 / TR-GEN-14-*) |
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Finalizado |
-| **Última actualización** | 2026-10-11 |
+| **Última actualización** | 2026-11-07 (Parte I: evidencia E absorbida) |
 | **Revisión C1** | Apto con observaciones (ver §11) |
 
 **Origen:** [HU-009](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md)  
@@ -190,16 +190,16 @@ Códigos Must a respetar (GEN): **4603** forbidden; **4604** capability off; **4
 
 ## 10) Checklist DoD
 
-- [ ] CA-01…12 HU
-- [ ] Proceso seed `partes.tareas.import` + columnas
-- [ ] Handler registrado + rutas excel-import
-- [ ] Upsert vía `pq_sp_partes_tarea_upsert` / ops TR-004
-- [ ] Toolbar solo Carga diaria; fila exclusiva
-- [ ] Partial + txn processBatch
-- [ ] Refresh filtros; no refresh en queued
-- [ ] Sin menú nuevo; sin native/cliente
-- [ ] Manual + tests
-- [ ] `ExcelImportEnabled` documentado
+- [x] CA-01…12 HU (Parte E 2026-08-02 + F1 i18n 2026-10-11)
+- [x] Proceso seed `partes.tareas.import` + columnas
+- [x] Handler registrado + rutas excel-import
+- [x] Upsert vía `pq_sp_partes_tarea_upsert` / ops TR-004
+- [x] Toolbar solo Carga diaria; fila exclusiva
+- [x] Partial + txn processBatch
+- [x] Refresh filtros; no refresh en queued
+- [x] Sin menú nuevo; sin native/cliente
+- [x] Manual + tests
+- [x] `ExcelImportEnabled` documentado
 
 ---
 
@@ -252,5 +252,39 @@ Ninguna bloqueante.
 | 2026-08-02 | Parte C: TR-009 desde SPEC-009 / HU-009; adopción GEN-14; decisiones processCode/atomicidad/async. |
 | 2026-08-02 | Parte C1: apto con obs.; cierre props FE, códigos 4603/4604/4607, queued sin GEN-17 Must. |
 | 2026-08-02 | Parte D: adopción host (DB Excel, handler, rutas, toolbar Carga diaria, tests). |
-| 2026-08-02 | Parte E: suite OK — [E-TR-009](../updates/100-SistemaPartes/E-TR-009-importacion-excel-2026-08-02.md). |
+| 2026-08-02 | Parte E: suite OK (detalle absorbido en §13). |
 | 2026-10-11 | Parte I: i18n hoja + `partes.import.*`. F1/F Aprobado — [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-TR-009-update-i18n-2026-10-11.md). Update eliminado. Estado → Finalizado. |
+| 2026-11-07 | Parte I: evidencia `E-TR-009-importacion-excel-2026-08-02.md` fusionada en §13 y archivo eliminado. |
+
+---
+
+## 13) Parte E — evidencia de tests (2026-08-02)
+
+Resultado E: **OK** (suite TR + E2E smoke). F1/F i18n posterior: [D-VERIFICACION-TR-009-update-i18n](../updates/100-SistemaPartes/D-VERIFICACION-TR-009-update-i18n-2026-10-11.md).
+
+### Comandos / resultados
+
+| Capa | Comando | Resultado |
+|------|---------|-----------|
+| Feature BE | `php artisan test --filter=ApiV1ExcelImportPartesTest` | **4 passed** (25 assertions) |
+| Regresión carga | `php artisan test --filter=ApiV1PartesTareaTest` | **6 passed** |
+| Vitest | `npx vitest run src/features/partes/carga` | **9 passed** (2 files) |
+| E2E | `npx playwright test tests/e2e/partes-excel-import.spec.ts` (+ login dashboard) | **1 + 1 passed** |
+
+### Casos Feature cubiertos
+
+- Template 200 + capability off → **4604**
+- Upload mixto → `validRows=1` / `errorRows=1` → process **partial** + `es_tarea=1` / `cerrado=0`
+- Proceso sin menú → **4603**
+- Asistente no supervisor con `asistente` ≠ sesión → error fila `partes.import.asistenteDistintoSesion`
+
+### E2E
+
+- Login admin → `/partes/carga-diaria` → visible `excelImport.toolbar` + `excelImport.template`
+- Backend local: sqlite `e2e.sqlite` en `:8010`; `ExcelImportEnabled=1` para smoke UI
+
+### Observaciones operativas
+
+- Tras manipular env `DB_*` en shell, **limpiar** antes de PHPUnit (si no, apunta a e2e.sqlite y puede fallar capability).
+- Prod/local: activar `ExcelImportEnabled` (param BD) para plantilla/import reales.
+- Native / actor cliente: sin toolbar.

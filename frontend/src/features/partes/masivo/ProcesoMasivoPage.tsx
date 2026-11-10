@@ -63,7 +63,7 @@ import { usePartesTareaGridCaptions } from '../partesTareaGridI18n'
 import {
   usePartesDuracionHorasSummaryItems,
 } from '../partesGridSummary'
-import { masivoGridLoadOptionsToQuery } from './masivoTareasPaging'
+import { coerceHeaderFilterKey, masivoGridLoadOptionsToQuery } from './masivoTareasPaging'
 
 const PAGE_SIZE = 20
 
@@ -154,7 +154,7 @@ function ProcesoMasivoView() {
   const gridColumnFiltersRef = useRef<
     Pick<
       MasivoInformarFilters,
-      'clienteCode' | 'clienteNombre' | 'tipoTareaCode' | 'tipoTareaDescripcion'
+      'clienteCode' | 'clienteNombre' | 'tipoTareaCode' | 'tipoTareaDescripcion' | 'eq'
     >
   >({})
 
@@ -205,6 +205,8 @@ function ProcesoMasivoView() {
         skip: loadOptions.skip,
         take: loadOptions.take,
         filter: loadOptions.filter,
+        sort: loadOptions.sort,
+        group: loadOptions.group,
       })
       gridColumnFiltersRef.current = {
         ...(pagingQuery.clienteCode ? { clienteCode: pagingQuery.clienteCode } : {}),
@@ -213,6 +215,7 @@ function ProcesoMasivoView() {
         ...(pagingQuery.tipoTareaDescripcion
           ? { tipoTareaDescripcion: pagingQuery.tipoTareaDescripcion }
           : {}),
+        ...(pagingQuery.eq ? { eq: pagingQuery.eq } : {}),
       }
       const result = await listTareas({
         fechaDesde: desde,
@@ -225,6 +228,16 @@ function ProcesoMasivoView() {
       if (result.kind === 'ok') {
         const items = result.envelope.resultado.items ?? []
         const totalCount = result.envelope.resultado.total ?? 0
+        if (pagingQuery.distinctField) {
+          return {
+            data: items.map((item) => ({
+              key: coerceHeaderFilterKey(pagingQuery.distinctField as string, item.value),
+              items: null,
+              count: Number(item.count ?? 1),
+            })),
+            totalCount,
+          }
+        }
         const mapped = items.map((item) => ({
           ...item,
           duracionHoras: minutosToHorasDecimal(item.duracionMinutos),
@@ -332,6 +345,7 @@ function ProcesoMasivoView() {
       clienteId: filtroClienteId,
       usuarioId: filtroUsuarioId,
       estadoCerrado,
+      ...gridColumnFiltersRef.current,
     })
     if (result.kind !== 'ok') {
       if (result.kind === 'envelopeError') {
@@ -997,7 +1011,6 @@ function ProcesoMasivoView() {
             GridPageSize2: 40,
             GridPageSize3: 80,
           }}
-          layoutsEnabled={false}
           onRefresh={() => refreshGrid()}
           proceso="partes.masivo"
           gridId="procesoMasivo"
@@ -1010,7 +1023,7 @@ function ProcesoMasivoView() {
           <RemoteOperations
             paging
             filtering
-            sorting={false}
+            sorting
             grouping={false}
             summary={false}
           />

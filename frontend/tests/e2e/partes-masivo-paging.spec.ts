@@ -37,6 +37,9 @@ test('proceso masivo pagina el listado cuando total supera pageSize', async ({ p
   await page.goto('/partes/proceso-masivo')
   await expect(page.getByTestId('partesMasivoPage')).toBeVisible({ timeout: 20_000 })
   await expect(page.getByTestId('partesMasivoGrid')).toBeVisible()
+  await expect(page.getByTestId('gridLayoutsToolbar')).toBeVisible()
+  await expect(page.getByTestId('gridLayouts.select')).toBeVisible()
+  await expect(page.getByTestId('gridLayouts.saveAs')).toBeVisible()
 
   const grid = page.getByTestId('partesMasivoGrid')
   const dataRows = grid.locator('.dx-data-row')

@@ -45,7 +45,8 @@ Validar de punta a punta:
 | M-06 | Tope destinatarios | Manual / Feature | Param bajo + muchos clientes con user | 422 `partes.masivo.topeExcedido` |
 | M-07 | Mail locale EN | Manual | Cliente user `locale=en` | Asunto/cuerpo EN en log |
 | M-08 | URL tenant | Manual | Cuerpo mail | `https://{tenant}.partesatencion.paqsystems.com` |
-| M-09 | Confirmación N | E2E / Manual | Clic ícono | Popup `partesMasivoInformarConfirmDialog` |
+| M-09 | Confirmación N | E2E / Manual | Clic ícono | Popup `partesMasivoInformarConfirmDialog`: N avisos + periodo `dd/MM/yyyy`; tarjetas nombre+mail |
+| M-15 | Lista 5 + scroll | Vitest / Manual | ≥6 destinatarios | Todas las tarjetas en DOM; viewport de 5; scroll; sin «Y N más»; pie fijo |
 | M-10 | Guard salida | Manual | Selección sin aplicar + link menú | `partesMasivoLeaveInformarDialog` |
 | M-11 | beforeunload | Manual | Recarga con dirty | Prompt navegador |
 | M-12 | i18n 5 locales | Vitest / Manual | Cambiar idioma shell | Claves `partes.masivo.mailInformarClientes.*` |
@@ -56,7 +57,7 @@ Validar de punta a punta:
 
 1. Login supervisor → **Proceso masivo**.
 2. Filtro fechas (hoy–hoy); cliente con `user_id` + email en Framework.
-3. Ícono mail habilitado; confirmar N y rango; enviar → envelope OK.
+3. Ícono mail habilitado; el diálogo reconsulta destinatarios; confirmar N, periodo y tarjetas (hasta 5 visibles, scroll si hay más); enviar → envelope OK.
 4. Revisar log mail: empresa, periodo, código usuario, enlace forgot **sin** password.
 5. Marcar filas / tocar campos lote **sin** aplicar → intentar ir a Carga diaria → diálogo guard.
 6. **Enviar correos y salir** → navegación OK; **Salir sin enviar** → navegación sin mail.

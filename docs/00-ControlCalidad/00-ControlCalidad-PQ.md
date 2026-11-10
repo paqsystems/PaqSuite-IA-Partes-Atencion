@@ -478,6 +478,8 @@ Decisión documentada en SPEC-update: **paginación remota** DevExtreme ↔ `GET
 
 Parte G **01/11/2026** — volcado updates CC #11. Implementación en `ProcesoMasivoPage` (`CustomStore`, `remoteOperations`). Parte E/F **01/11/2026** — tests + manual PQ. Parte I **01/11/2026** — SPEC/HU/TR-005 base **Finalizado**. Follow-up prod **01/11/2026** — PR #117/#118, `<RemoteOperations paging … summary={false} />`; Parte I acotada + cierre PQ prod en [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md).
 
+**Extensión 09/11/2026 (docs + código, sin nuevo CC):** `filtering`/`sorting` remotos (sort de columna + HeaderFilter unique/`eq`) y plantillas GEN-11 reactivadas. `grouping`/`summary` siguen locales. Contrato vivo: SPEC/HU/TR-005.
+
 ---
 
 ## Control de Calidad #10

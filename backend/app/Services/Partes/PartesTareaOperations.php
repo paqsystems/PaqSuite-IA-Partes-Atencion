@@ -33,6 +33,24 @@ final class PartesTareaOperations
 
     public const MASIVO_TECH_MAX = 5000;
 
+    public const HEADER_FILTER_MAX_VALUES = 500;
+
+    /** @var array<string, string> */
+    private const GRID_COLUMNS = [
+        'fecha' => 'r.fecha',
+        'usuarioCode' => 'u.code',
+        'clienteNombre' => 'c.nombre',
+        'tipoTareaDescripcion' => 't.descripcion',
+        'duracionHoras' => 'r.duracion_minutos',
+        'duracionMinutos' => 'r.duracion_minutos',
+        'sinCargo' => 'r.sin_cargo',
+        'presencial' => 'r.presencial',
+        'observacion' => 'r.observacion',
+        'cerrado' => 'r.cerrado',
+        'clienteCode' => 'c.code',
+        'tipoTareaCode' => 't.code',
+    ];
+
     public static function resolveTramoMinutos(): int
     {
         $row = DB::table('pq_parametros_gral')
@@ -90,11 +108,14 @@ final class PartesTareaOperations
     private static function list(array $params): array
     {
         self::assertActorAsistente($params);
+        if (trim((string) ($params['p_distinct_field'] ?? '')) !== '') {
+            return self::listDistinct($params);
+        }
         $q = self::filteredQuery($params);
         $page = max(1, (int) ($params['p_page'] ?? 1));
         $rawPageSize = (int) ($params['p_page_size'] ?? 50);
         $total = (clone $q)->count();
-        $ordered = $q->orderByDesc('r.fecha')->orderByDesc('r.id');
+        $ordered = self::applyGridOrder($q, $params);
         // Sentinel 0 = todas las filas (emisión TR-011); el GET de pantalla sigue 1…200.
         $rows = $rawPageSize === 0
             ? $ordered->get(self::selectColumns())
@@ -679,8 +700,152 @@ final class PartesTareaOperations
         self::applyContainsFilter($q, $params['p_cliente_nombre'] ?? null, 'c.nombre');
         self::applyContainsFilter($q, $params['p_tipo_tarea_code'] ?? null, 't.code');
         self::applyContainsFilter($q, $params['p_tipo_tarea_descripcion'] ?? null, 't.descripcion');
+        self::applyEqualsFilters($q, $params['p_eq_json'] ?? null);
 
         return $q;
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return list<object>
+     */
+    private static function listDistinct(array $params): array
+    {
+        $field = trim((string) ($params['p_distinct_field'] ?? ''));
+        $column = self::GRID_COLUMNS[$field] ?? null;
+        if ($column === null) {
+            return [];
+        }
+
+        $q = self::filteredQuery($params)
+            ->selectRaw($column.' as value')
+            ->selectRaw('COUNT(*) as cnt')
+            ->groupBy(DB::raw($column))
+            ->orderBy('value')
+            ->limit(self::HEADER_FILTER_MAX_VALUES);
+
+        $rows = $q->get();
+        $total = $rows->count();
+        $out = [];
+        foreach ($rows as $row) {
+            $value = $row->value;
+            if ($field === 'fecha' && $value !== null && $value !== '') {
+                $value = substr((string) $value, 0, 10);
+            }
+            if ($field === 'duracionHoras' && is_numeric($value)) {
+                $value = ((int) $value) / 60;
+            }
+            if (in_array($field, ['sinCargo', 'presencial', 'cerrado'], true)) {
+                $value = (bool) $value;
+            }
+            $out[] = (object) [
+                'value' => $value,
+                'count' => (int) $row->cnt,
+                '_total' => $total,
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array<string, mixed>  $params
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private static function applyGridOrder($query, array $params)
+    {
+        $field = trim((string) ($params['p_sort_field'] ?? ''));
+        $column = self::GRID_COLUMNS[$field] ?? null;
+        if ($column === null) {
+            return $query->orderByDesc('r.fecha')->orderByDesc('r.id');
+        }
+        $order = strtolower(trim((string) ($params['p_sort_order'] ?? 'asc'))) === 'desc' ? 'desc' : 'asc';
+        $query->orderBy($column, $order);
+        if ($column !== 'r.id') {
+            $query->orderByDesc('r.id');
+        }
+
+        return $query;
+    }
+
+    private static function applyEqualsFilters($query, mixed $raw): void
+    {
+        $decoded = $raw;
+        if (is_string($raw) && trim($raw) !== '') {
+            $decoded = json_decode($raw, true);
+        }
+        if (! is_array($decoded)) {
+            return;
+        }
+        foreach ($decoded as $field => $values) {
+            if (! is_string($field)) {
+                continue;
+            }
+            $column = self::GRID_COLUMNS[$field] ?? null;
+            if ($column === null) {
+                continue;
+            }
+            self::applyEqualsFilter($query, $values, $column, $field);
+        }
+    }
+
+    private static function applyEqualsFilter($query, mixed $values, string $column, string $field): void
+    {
+        $list = is_array($values) ? $values : [$values];
+        $normalized = [];
+        foreach ($list as $value) {
+            if (count($normalized) >= 100) {
+                break;
+            }
+            if ($value === null || $value === '') {
+                $normalized[] = null;
+                continue;
+            }
+            if (in_array($field, ['sinCargo', 'presencial', 'cerrado'], true)) {
+                $normalized[] = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? (bool) $value;
+                continue;
+            }
+            if ($field === 'fecha') {
+                $normalized[] = substr((string) $value, 0, 10);
+                continue;
+            }
+            if ($field === 'duracionHoras' && is_numeric($value)) {
+                $normalized[] = (int) round(((float) $value) * 60);
+                continue;
+            }
+            $normalized[] = $value;
+        }
+        if ($normalized === []) {
+            return;
+        }
+
+        $query->where(function ($inner) use ($normalized, $column, $field) {
+            foreach ($normalized as $index => $value) {
+                $apply = function ($builder) use ($value, $column, $field): void {
+                    if ($value === null) {
+                        $builder->where(function ($empty) use ($column) {
+                            $empty->whereNull($column)->orWhere($column, '');
+                        });
+
+                        return;
+                    }
+                    if ($field === 'fecha') {
+                        $builder->whereDate($column, '=', (string) $value);
+
+                        return;
+                    }
+                    $builder->where($column, '=', $value);
+                };
+                if ($index === 0) {
+                    $apply($inner);
+                } else {
+                    $inner->orWhere(function ($or) use ($apply) {
+                        $apply($or);
+                    });
+                }
+            }
+        });
     }
 
     private static function applyContainsFilter($query, mixed $value, string $column): void

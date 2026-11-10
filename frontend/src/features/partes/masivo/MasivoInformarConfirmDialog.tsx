@@ -7,8 +7,6 @@ import { masivoRecipientInitials } from './masivoRecipientInitials'
 import type { MasivoInformarDestinatario } from './partesMasivoApi'
 import './MasivoInformarConfirmDialog.css'
 
-const MAX_VISIBLE_RECIPIENTS = 20
-
 type Props = {
   visible: boolean
   loading: boolean
@@ -35,8 +33,6 @@ export function MasivoInformarConfirmDialog({
   onSend,
 }: Props) {
   const { t } = useTranslation()
-  const hiddenCount = Math.max(0, destinatarios.length - MAX_VISIBLE_RECIPIENTS)
-  const visibleRecipients = destinatarios.slice(0, MAX_VISIBLE_RECIPIENTS)
   const busy = loading || submitting
   const canSend = !busy && destinatarioCount > 0
 
@@ -83,7 +79,7 @@ export function MasivoInformarConfirmDialog({
               </span>
             </div>
 
-            {visibleRecipients.length > 0 ? (
+            {destinatarios.length > 0 ? (
               <div className="pqMasivoInformarRecipients">
                 <strong className="pqMasivoInformarRecipientsTitle">
                   {t('partes.masivo.mailInformarClientes.recipientsTitle')}
@@ -92,7 +88,7 @@ export function MasivoInformarConfirmDialog({
                   className="pqMasivoInformarRecipientList"
                   data-testid="partesMasivoInformarRecipientList"
                 >
-                  {visibleRecipients.map((item) => {
+                  {destinatarios.map((item) => {
                     const displayName = item.clienteNombre || item.nombre
                     return (
                       <div
@@ -111,11 +107,6 @@ export function MasivoInformarConfirmDialog({
                     )
                   })}
                 </div>
-                {hiddenCount > 0 ? (
-                  <span className="pqMasivoInformarMore">
-                    {t('partes.masivo.mailInformarClientes.moreRecipients', { count: hiddenCount })}
-                  </span>
-                ) : null}
               </div>
             ) : null}
           </>

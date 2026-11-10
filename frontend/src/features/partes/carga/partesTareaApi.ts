@@ -43,6 +43,10 @@ export type TareaListQuery = {
   clienteNombre?: string
   tipoTareaCode?: string
   tipoTareaDescripcion?: string
+  sortField?: string
+  sortOrder?: 'asc' | 'desc'
+  distinctField?: string
+  eq?: Record<string, Array<string | number | boolean | null>>
 }
 
 export async function fetchDuracionTramo() {
@@ -53,14 +57,7 @@ export async function fetchDuracionTramo() {
   })
 }
 
-export async function listTareas(query: TareaListQuery) {
-  const params = new URLSearchParams({
-    fechaDesde: query.fechaDesde,
-    fechaHasta: query.fechaHasta,
-    estadoCerrado: query.estadoCerrado ?? 'todas',
-    page: String(query.page ?? 1),
-    pageSize: String(query.pageSize ?? 50),
-  })
+export function appendTareaListParams(params: URLSearchParams, query: TareaListQuery) {
   if (query.clienteId) {
     params.set('clienteId', String(query.clienteId))
   }
@@ -79,7 +76,28 @@ export async function listTareas(query: TareaListQuery) {
   if (query.tipoTareaDescripcion) {
     params.set('tipoTareaDescripcion', query.tipoTareaDescripcion)
   }
-  return apiRequest<{ items: PartesTareaItem[]; total: number }>(
+  if (query.sortField) {
+    params.set('sortField', query.sortField)
+    params.set('sortOrder', query.sortOrder === 'desc' ? 'desc' : 'asc')
+  }
+  if (query.distinctField) {
+    params.set('distinctField', query.distinctField)
+  }
+  if (query.eq && Object.keys(query.eq).length > 0) {
+    params.set('eq', JSON.stringify(query.eq))
+  }
+}
+
+export async function listTareas(query: TareaListQuery) {
+  const params = new URLSearchParams({
+    fechaDesde: query.fechaDesde,
+    fechaHasta: query.fechaHasta,
+    estadoCerrado: query.estadoCerrado ?? 'todas',
+    page: String(query.page ?? 1),
+    pageSize: String(query.pageSize ?? 50),
+  })
+  appendTareaListParams(params, query)
+  return apiRequest<{ items: Array<PartesTareaItem & { value?: unknown; count?: number }>; total: number }>(
     `/api/v1/partes/tareas?${params.toString()}`,
     {
       method: 'GET',

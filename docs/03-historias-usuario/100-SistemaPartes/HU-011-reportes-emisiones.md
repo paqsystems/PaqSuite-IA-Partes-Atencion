@@ -12,7 +12,7 @@ Jira: PIAPARTES-25
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
 | Estado | Finalizado |
-| Última actualización | 2026-10-29 (CC ST #1 + Parte I) |
+| Última actualización | 2026-11-07 |
 | SPEC origen | [SPEC-011-reportes-emisiones](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) |
 | TR relacionada(s) | [TR-011-reportes-emisiones](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
 
@@ -298,7 +298,8 @@ Ninguna bloquea Parte C.
 | 2026-08-25 | CC Q13: CA-15 deja proceso fijo; monta `EmissionReportDesignerPage` con lista GEN (N=1 visible) + confirmación. |
 | 2026-08-25 | Parte C: enlazada TR-011; preguntas abiertas cerradas en la TR. |
 | 2026-08-25 | Parte C1: TR-011 apta con observaciones (hostContext/jobId, pageSize 0, 4704). |
-| 2026-10-16 | Parte E: evidencia tests en `docs/04-tareas/updates/100-SistemaPartes/E-TR-011-reportes-emisiones-2026-10-16.md`. |
+| 2026-10-16 | Parte E: evidencia tests absorbida en [TR-011 §16](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md). |
 | 2026-10-29 | Parte I: **Finalizado**. Duración en minutos (sin `hh:mm` automático). Emitir usa el diseño guardado. |
 | 2026-10-29 | CC ST #1: emisión acotada a filas tildadas; `selectedTareaIds` en hostContext; CA-CC1-11-01…04. |
 | 03/11/2026 | CC-PQ #13: Field List diseñador **Paquete de horas** con dataset de negocio (schemas sidecar + REPX host). Parte I acotada; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
+| 2026-11-07 | Parte I: archivo `E-TR-011-reportes-emisiones-2026-10-16.md` fusionado en TR-011 §16 y eliminado. |

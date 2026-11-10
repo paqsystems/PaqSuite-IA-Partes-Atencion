@@ -143,4 +143,69 @@ test.describe('CC PQ #13 — FilterRow remoto', () => {
     await expect(grid.getByText('obs-ank')).toBeVisible({ timeout: 15_000 })
     await expect(grid.getByText('obs-otro')).not.toBeVisible()
   })
+
+  test('proceso masivo — ordenar cliente envía sortField al API', async ({ page }) => {
+    test.setTimeout(90_000)
+    const all = [
+      {
+        id: 1,
+        usuarioId: 1,
+        clienteId: 2,
+        tipoTareaId: 1,
+        fecha: '2026-11-07',
+        duracionMinutos: 15,
+        sinCargo: false,
+        presencial: false,
+        observacion: 'obs-zebra',
+        cerrado: false,
+        rowVersion: '1',
+        usuarioCode: 'PQ',
+        clienteNombre: 'Zebra SA',
+        tipoTareaDescripcion: 'General',
+      },
+      {
+        id: 2,
+        usuarioId: 1,
+        clienteId: 1,
+        tipoTareaId: 1,
+        fecha: '2026-11-07',
+        duracionMinutos: 15,
+        sinCargo: false,
+        presencial: false,
+        observacion: 'obs-alpha',
+        cerrado: false,
+        rowVersion: '1',
+        usuarioCode: 'PQ',
+        clienteNombre: 'Alpha SA',
+        tipoTareaDescripcion: 'General',
+      },
+    ]
+
+    await mockMasivoSupervisorApis(page, (url) => {
+      let rows = [...all]
+      const sortField = url.searchParams.get('sortField')
+      const sortOrder = url.searchParams.get('sortOrder') === 'desc' ? -1 : 1
+      if (sortField === 'clienteNombre') {
+        rows.sort((a, b) => a.clienteNombre.localeCompare(b.clienteNombre) * sortOrder)
+      }
+      return { items: rows, total: rows.length }
+    })
+
+    await loginAsSupervisor(page)
+    await page.goto('/partes/proceso-masivo')
+    const grid = page.getByTestId('partesMasivoGrid')
+    await expect(grid).toBeVisible({ timeout: 20_000 })
+    await expect(grid.getByText('obs-zebra')).toBeVisible({ timeout: 15_000 })
+
+    const sortReq = page.waitForRequest(
+      (req) =>
+        req.url().includes('/partes/tareas') &&
+        new URL(req.url()).searchParams.get('sortField') === 'clienteNombre',
+    )
+    await grid.locator('.dx-header-row').getByText('Cliente', { exact: true }).click()
+    await sortReq
+
+    const firstObs = grid.locator('.dx-data-row').first()
+    await expect(firstObs.getByText('obs-alpha')).toBeVisible({ timeout: 15_000 })
+  })
 })

@@ -107,6 +107,7 @@ class PqEmissionSeeder extends Seeder
         ], JSON_UNESCAPED_UNICODE);
 
         $standardReportCode = 'partes_consultaDetallada_principal';
+        /** Caption del reporte de base (GEN-15): nunca el nombre del proceso. */
         $standardDisplayName = '<Original>';
 
         DB::table('pq_emission_reports')->updateOrInsert(

@@ -13,7 +13,7 @@ Jira: PIAPARTES-33
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-004](./TR-004-operacion-carga-diaria.md) (listado/tareas/`rowVersion`/tipos), GEN layouts/export grilla |
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Finalizado |
-| **Última actualización** | 04/11/2026 (Parte I CC-PQ #15 — informar clientes) |
+| **Última actualización** | 09/11/2026 (sort/HeaderFilter remotos + plantillas GEN-11) |
 
 **Origen:** [HU-005](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md)  
 **Referencia SPEC:** [SPEC-005](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md)  
@@ -33,7 +33,7 @@ Jira: PIAPARTES-33
 - Tope `PartesMasivoMaxIds`; i18n `partes.masivo.*` + testids.
 - **(CC-PQ #1, 31/07)** Listado/`list_ids` y lotes (`masivo_set_cerrado`, `masivo_actualizar`) operan solo sobre `es_tarea = 1`; id con `es_tarea = 0` en un lote → 422 atómico (`partes.masivo.noEsTarea`).
 - **(CC-PQ #3, 09/08)** Selección estable: `reduceMasivoSelection` + `isSpuriousMasivoClear`; conservar tildes ante re-render / `dataSource` / layout GEN.
-- **(CC-PQ #11, 01/11/2026)** Paginación **remota** en grilla masivo: `CustomStore` + `<RemoteOperations paging … />` (solo paging remoto) ↔ `GET /partes/tareas` (`page`, `pageSize`, `total`); helper `masivoTareasPaging.ts`. Follow-up prod **01/11/2026** (PR #117/#118): desactivar summary/filtro/sort/group remoto sin implementar en `CustomStore`.
+- **(CC-PQ #11, 01/11/2026)** Paginación **remota** en grilla masivo: `CustomStore` ↔ `GET /partes/tareas` (`page`, `pageSize`, `total`); helper `masivoTareasPaging.ts`. Follow-up prod **01/11/2026** (PR #117/#118): `summary` y `grouping` **locales** (evitar pager bloqueado por pie de duración). **Extensión 09/11/2026:** `filtering` + `sorting` remotos (FilterRow contains, HeaderFilter unique/`eq`, sort de columna sobre el universo filtrado) y plantillas GEN-11 **activas** (el `layoutsEnabled={false}` del CC #11 contradecía AC-15 / R-SU-03c; no hay excepción HU/TR).
 
 ### Out of scope
 - Atributos: cliente, duración/minutos, descripción.
@@ -60,10 +60,14 @@ Jira: PIAPARTES-33
 | AC-CC11-03 | Requests con `pageSize` 20/40/80 (selector grilla; manual PQ preview + prod). |
 | AC-CC11-04 | Group panel sin error silencioso (manual PQ). |
 | AC-CC11-05 | Selección + masivo API sin regresión (E2E + manual PQ). |
+| AC-CC11-06 | Clic en título de columna (p. ej. Cliente) → `sortField`/`sortOrder` al API; el orden aplica al universo filtrado (Vitest + Feature + E2E filterrow). |
+| AC-CC11-07 | HeaderFilter: `distinctField` devuelve `{key,items,count}`; aplicar valor → query `eq` JSON (igualdad; OR de pocos valores). Opciones no vacías. |
+| AC-15 (plantillas) | Toolbar GEN-11 visible (`gridLayoutsToolbar`); `proceso=partes.masivo` / `gridId=procesoMasivo`; sin `layoutsEnabled={false}`. |
 | AC-CC15-M01 | Ícono mail + tooltip + testid `partesMasivoInformarClientes`. |
 | AC-CC15-M02 | Mail empresa + URL tenant + `users.codigo`; locale destinatario; sin password. |
 | AC-CC15-M03 | Destinatarios SP: `user_id` → `USERS` usable + `users.email` (nunca mail del maestro cliente); 403 no supervisor; 422 sin destinatarios. |
 | AC-CC15-M04 | Guard salida + i18n 5 locales plantilla v1. |
+| AC-CC15-M08 | `MasivoInformarConfirmDialog`: re-preview al abrir; N + período `dd/MM/yyyy`; tarjetas (nombre + mail, sin jerga); lista completa; **5 visibles** + scroll; pie fijo. |
 
 ---
 
@@ -91,13 +95,16 @@ R-SU-01…10 (SPEC/HU).
 | RN-TR-CC3-12 | Vitest `masivoSelection.test.ts`; E2E humo tilde (opcional). |
 | RN-TR-CC11-01 | `ProcesoMasivoPage.tsx`: `DataSource` + `CustomStore.load` → `listTareas`. |
 | RN-TR-CC11-02 | `masivoGridLoadOptionsToQuery` (`masivoTareasPaging.ts`): `page = floor(skip/take)+1`. |
-| RN-TR-CC11-03 | `ProcessDataGrid` con `remoteOperations` + hijo DevExtreme `<RemoteOperations paging filtering={false} sorting={false} grouping={false} summary={false} />` (Must: no summary remoto con totalizadores de pie); `pageSizes` 20/40/80; `Pager` full; `ref` + `refresh()` tras filtros/acciones. |
+| RN-TR-CC11-03 | `ProcessDataGrid` con `remoteOperations` + hijo `<RemoteOperations paging filtering sorting grouping={false} summary={false} />`. Must: **no** summary remoto (pie duración). `pageSizes` 20/40/80; `Pager` full; `ref` + `refresh()` tras filtros/acciones. |
 | RN-TR-CC11-04 | Cambio filtros pantalla: `clearSelection()` + `refreshGrid()`. |
-| RN-TR-CC11-05 | Mantener `listTareaIds` para select-all universo (sin cambio). |
+| RN-TR-CC11-05 | Mantener `listTareaIds` para select-all universo (respeta FilterRow/`eq` de columna). |
+| RN-TR-CC11-06 | `masivoGridLoadOptionsToQuery`: `sort` → `sortField`/`sortOrder`; `group` → `distinctField` (respuesta `{ key, items, count }`); contains FilterRow + HeaderFilter `eq` JSON (igualdad; OR de valores; tope 100 equals / 500 distincts). Whitelist columnas `GRID_COLUMNS`. Sin `WHERE IN` de N incierto (OR de equals). |
+| RN-TR-CC11-07 | Plantillas GEN-11 **ON** (default SDK): `proceso="partes.masivo"` + `gridId="procesoMasivo"` + token/platform. **Prohibido** `layoutsEnabled={false}` (no hay excepción HU/TR). Toolbar `gridLayoutsToolbar`. |
 | RN-TR-CC15-01 | `POST/GET /api/v1/partes/masivo/informar-clientes[/preview]`; filtros = listado. |
 | RN-TR-CC15-02 | SP `pq_sp_partes_masivo_destinatarios_novedad` (JOIN clientes→`users` por `user_id`; proyectar `users.email`; sin `whereIn` N). |
 | RN-TR-CC15-03 | Mail Engine + locale `users.locale`; URL `https://{tenant}.partesatencion.paqsystems.com`. |
 | RN-TR-CC15-04 | FE `sessionDirty` + `useMasivoLeaveGuard`; diálogo Enviar / Salir / Cancelar. |
+| RN-TR-CC15-05 | Confirmación informar (`MasivoInformarConfirmDialog`, GEN-01 §17): al abrir se vuelve a pedir preview con los filtros vigentes; copy de negocio (prohibido `users.email` en UI); destinatarios = universo filtrado; **todas** las tarjetas en DOM; viewport CSS `--pq-masivo-recipient-visible: 5` + `overflow-y: auto`; **no** truncar con «Y N más»; **no** paginar; título y `DialogActionButton` Cancelar/Enviar fijos. Distinto de RN-TR-06 (preview de lote con muestras). |
 
 ---
 
@@ -138,7 +145,7 @@ Menú: `partes_proceso_masivo` → `/partes/proceso-masivo` (existente).
 
 | Método | Path | Notas |
 |--------|------|-------|
-| GET | `/partes/tareas` | Reuso TR-004 |
+| GET | `/partes/tareas` | Reuso TR-004 + query masivo: `clienteNombre`/`tipoTareaDescripcion` (contains), `sortField`/`sortOrder`, `distinctField`, `eq` (JSON igualdad) |
 | GET | `/partes/tareas/ids` | Select-all |
 | POST | `/partes/tareas/masivo/set-cerrado` | Existente |
 | POST | `/partes/tareas/masivo/actualizar` | Nuevo; body RN-TR-03b; solo supervisor |
@@ -154,13 +161,14 @@ Errores: 403 `partes.masivo.forbidden`; 422 empty/tope/inválido/`partes.masivo.
 | Ruta | `/partes/proceso-masivo` |
 | Atajo carga | Link → misma ruta, sin search params |
 | Filtros | Fechas obligatorias; cliente/asistente/estado opcionales |
-| Grid | **`ProcessDataGrid`**: selection, filterRow, summary duración, columnChooser, templates GEN, export Excel; **paginación remota** (CC-PQ #11) vía `CustomStore`; **FilterRow remoto** (CC-PQ #13) vía `masivoTareasPaging` → query `clienteNombre` / `tipoTareaDescripcion` |
+| Grid | **`ProcessDataGrid`**: selection, filterRow, HeaderFilter, summary duración (local), columnChooser, **templates GEN-11**, export Excel; `CustomStore` con `paging`+`filtering`+`sorting` remotos; `grouping`/`summary` locales. `masivoTareasPaging` → `clienteNombre` / `tipoTareaDescripcion` / `sortField` / `distinctField` / `eq` |
 | Select all | `/tareas/ids` + modal N |
 | Acciones Must | Cerrar / Reabrir (existente); **Actualizar tipo de tarea**; **Actualizar sin cargo** (puede unificarse en un panel «Aplicar cambios» con campos opcionales) |
 | Acciones Should | Presencial / Asistente / Fecha en el mismo panel cuando T7 |
-| Confirm | Preview RN-TR-06 → POST |
+| Confirm lote | Preview RN-TR-06 → POST (cerrar/reabrir/atributos; hasta 5 muestras) |
+| Informar clientes | Ícono `partesMasivoInformarClientes` → `MasivoInformarConfirmDialog` (RN-TR-CC15-05) → POST; testid `partesMasivoInformarConfirmDialog` |
 | Refresh | Reload list tras 200 |
-| testids | `partesMasivoGrid`, `partesMasivoSelectAll`, `partesMasivoConfirmN`, `partesMasivoConfirmAction`, `partesMasivoApplyCampos`, `partesMasivoTipoTarea`, `partesMasivoSinCargo`, … |
+| testids | `partesMasivoGrid`, `partesMasivoSelectAll`, `partesMasivoConfirmN`, `partesMasivoConfirmAction`, `partesMasivoApplyCampos`, `partesMasivoTipoTarea`, `partesMasivoSinCargo`, `partesMasivoInformarClientes`, `partesMasivoInformarConfirmDialog`, `partesMasivoLeaveInformarDialog`, … |
 | Mobile | No |
 
 Presentación columnas alineada a carga/informes donde aplique (descripciones cliente/tipo; duración `hh:mm` en celda/pie).
@@ -195,7 +203,9 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 **Regresión:** Feature cerrar/reabrir / 403 / tope / 409 / idempotencia.  
 **Nuevos:** actualizar `sinCargo`; actualizar `tipoTareaId` OK; tipo inválido multi-cliente → 422 y 0 cambios; actualizar sobre fila cerrada; (Should) presencial/fecha/asistente.  
 **E2E:** supervisor aplica sin cargo a 2 filas; smoke ProcessDataGrid export/chooser si el harness lo permite.  
-**CC-PQ #11 (01/11/2026):** Vitest `masivoTareasPaging.test.ts`; E2E `partes-masivo-paging.spec.ts`, `partes-masivo-selection.spec.ts`; helper `partesMasivoE2e.ts`. Manual PQ preview develop OK — [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md).
+**CC-PQ #11 (01/11/2026):** Vitest `masivoTareasPaging.test.ts`; E2E `partes-masivo-paging.spec.ts`, `partes-masivo-selection.spec.ts`; helper `partesMasivoE2e.ts`. Manual PQ preview develop OK — [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-11-2026-11-01.md).  
+**Sort / HeaderFilter / plantillas (09/11/2026):** Vitest `masivoTareasPaging` + `devExtremeFilterContains`; Feature `ApiV1PartesMasivoGridSortFilterTest`; E2E filterrow (sort Cliente) + paging (`gridLayoutsToolbar`).  
+**Informar clientes (06/11/2026):** Vitest `MasivoInformarConfirmDialog.test.tsx` — lista completa (≥6 destinatarios en DOM, sin «más»); smoke UI: 5 tarjetas visibles + scroll.
 
 ---
 
@@ -220,6 +230,7 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 - [x] Tests Feature + unit FE; OpenAPI/manual pendientes menores
 - [x] AC-CC11-01…05 (CC-PQ #11, paginación remota; F1/F 01/11/2026)
 - [x] AC-CC15-M01…04 (CC-PQ #15 informar clientes; F1/F 04/11/2026)
+- [x] AC-CC15-M08 (confirmación 5 tarjetas + scroll; 06/11/2026)
 
 ---
 
@@ -251,6 +262,8 @@ Presentación columnas alineada a carga/informes donde aplique (descripciones cl
 | 01/11/2026 | CC-PQ #11 follow-up prod: `RemoteOperations` solo paging (PR #117 → #118 `main`); Parte I acotada en base + D. |
 | 03/11/2026 | CC-PQ #13: FilterRow remoto en grilla masivo (`masivoTareasPaging.ts`, Vitest + E2E filterrow). Parte I acotada; F1/F **Preview OK** (`88c46ea`); [D-VERIFICACION-CC-PQ-13](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 | 04/11/2026 | CC-PQ #15: Informar a clientes (RN-TR-CC15-*, AC-CC15-M01…04). Parte I fusionó TR-005-update; [D-VERIFICACION-CC-PQ-15](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md). |
+| 06/11/2026 | RN-TR-CC15-05 / AC-CC15-M08: diálogo informar con tarjetas, lista completa, viewport de 5 + scroll (GEN-01 §17). |
+| 09/11/2026 | CustomStore: sort + HeaderFilter (`distinctField`/`eq`) remotos; plantillas GEN-11 ON (RN-TR-CC11-06/07). OpenAPI `GET /partes/tareas` alineado. |
 
 ---
 

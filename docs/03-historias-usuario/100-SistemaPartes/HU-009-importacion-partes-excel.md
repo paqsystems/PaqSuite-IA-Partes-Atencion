@@ -13,7 +13,7 @@ Jira: PIAPARTES-23
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
 | Estado | Finalizado |
-| Última actualización | 2026-10-11 |
+| Última actualización | 2026-11-07 |
 | SPEC origen | [SPEC-009-importacion-partes-excel](../../05-open-spec/100-SistemaPartes/SPEC-009-importacion-partes-excel.md) |
 | TR relacionada(s) | [TR-009-importacion-partes-excel](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) |
 
@@ -256,3 +256,4 @@ Cerradas en Parte C (TR-009). Ninguna bloquea C1/D1.
 | 2026-08-02 | Parte B1: enriquecimiento desde SPEC (actores, CA-07b/12, supuestos, riesgos, Gherkin). |
 | 2026-08-02 | Parte C: enlace TR-009; preguntas B1 cerradas en TR. |
 | 2026-10-11 | Parte I: i18n modal/hoja y `partes.import.*` (F1/F Aprobado). Update eliminado. Estado → Finalizado. |
+| 2026-11-07 | Parte I: evidencia E absorbida en [TR-009 §13](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md); archivo `E-TR-009` eliminado. |

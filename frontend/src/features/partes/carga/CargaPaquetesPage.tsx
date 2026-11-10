@@ -41,7 +41,7 @@ import {
   minutosToHorasDecimal,
   todayIsoDate,
 } from './partesTareaDuration'
-import { buildPaqueteDuracionOptions } from './partesPaqueteDuration'
+import { buildPaqueteDuracionOptions, PAQUETE_MIN_MINUTOS } from './partesPaqueteDuration'
 import { normalizeCatalogItems } from './catalogItems'
 import { usePartesTareaGridCaptions } from '../partesTareaGridI18n'
 import { usePartesDuracionHorasSummaryItems } from '../partesGridSummary'
@@ -55,7 +55,7 @@ type PaqueteGridRow = PartesPaqueteItem & {
 const emptyForm = (): PaqueteFormState => ({
   clienteId: null,
   fecha: todayIsoDate(),
-  duracionMinutos: 60,
+  duracionMinutos: PAQUETE_MIN_MINUTOS,
   observacion: '',
 })
 
@@ -432,7 +432,7 @@ export function CargaPaquetesPage() {
                 onValueChanged={(e) =>
                   setForm((prev) => ({
                     ...prev,
-                    duracionMinutos: Number(e.value ?? 8 * 60),
+                    duracionMinutos: Number(e.value ?? PAQUETE_MIN_MINUTOS),
                   }))
                 }
               />

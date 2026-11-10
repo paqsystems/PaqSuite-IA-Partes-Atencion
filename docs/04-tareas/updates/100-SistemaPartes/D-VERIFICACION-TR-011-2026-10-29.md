@@ -45,7 +45,7 @@ Las observaciones quedaron escritas en producto, SPEC, HU, TR y manual. No queda
 
 ## Advertencias
 
-1. **Tests de esta corrida:** no se reejecutó PHPUnit, Vitest ni Playwright el 2026-10-29. La evidencia de suite sigue siendo la Parte E del 2026-10-16 (`E-TR-011-reportes-emisiones-2026-10-16.md`). Esos tests cubren contrato y humo; no renderizan un PDF DevExpress real (`Http::fake`).
+1. **Tests de esta corrida:** no se reejecutó PHPUnit, Vitest ni Playwright el 2026-10-29. La evidencia de suite sigue siendo la Parte E del 2026-10-16 ([TR-011 §16](../../100-SistemaPartes/TR-011-reportes-emisiones.md)). Esos tests cubren contrato y humo; no renderizan un PDF DevExpress real (`Http::fake`).
 2. **Mail SMTP:** no se verificó un envío real.
 3. **Hay que volver a emitir** para ver el PDF sin el medidor. El archivo `fb47f29d` queda como estaba (33 páginas).
 4. **`fake` en un Forge nuevo** vuelve a dar PDF en blanco. El default de `.env.example` sigue en `fake` a propósito (local/CI). DEV y el sitio productivo que ya emitía quedaron en `remote`.
@@ -54,12 +54,13 @@ Las observaciones quedaron escritas en producto, SPEC, HU, TR y manual. No queda
 
 | Comando | Resultado |
 |---------|-----------|
-| Suite Parte E (2026-10-16) | Documentada en `E-TR-011-reportes-emisiones-2026-10-16.md` |
+| Suite Parte E (2026-10-16) | Absorbida en [TR-011 §16](../../100-SistemaPartes/TR-011-reportes-emisiones.md) (Parte I 2026-11-07) |
 | Esta verificación (2026-10-29) | No se relanzó la suite. Evidencia = job DEV, render del sidecar sin medidor y lectura del código de puerto/catálogo |
 
 ## Pendientes
 
-- Parte **I** en esta misma fecha: documentos base en **Finalizado**. No había archivos `*-update` que fusionar.
+- Parte **I** 2026-10-29: documentos base en **Finalizado**. No había archivos `*-update` que fusionar.
+- Parte **I** 2026-11-07: evidencia `E-TR-011-reportes-emisiones-2026-10-16.md` fusionada en TR-011 §16 y eliminada.
 
 ## Recomendación final
 

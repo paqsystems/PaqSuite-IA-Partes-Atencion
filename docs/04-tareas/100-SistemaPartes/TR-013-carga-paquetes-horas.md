@@ -11,9 +11,9 @@ Jira: PIAPARTES-48
 | **Roles** | **Solo supervisor** (`resultado.partes.esSupervisor = true`); asistente no supervisor y cliente **403** |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-003](./TR-003-maestros-y-catalogos.md), [TR-004](./TR-004-operacion-carga-diaria.md) (tramo, modal, `rowVersion`, fecha futura), [TR-006](./TR-006-consultas-dashboard-navegacion.md) (informe verificación), [TR-008](./TR-008-asistente-ia-chat-documental.md) (BYOK/timeout), [TR-010](./TR-010-smart-capture-carga-diaria.md) (turno GEN-03 base) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Pendiente de Revisión |
+| **Estado** | Finalizado |
 | **Revisión C1** | Apto (ver §11) |
-| **Última actualización** | 2026-10-21 |
+| **Última actualización** | 2026-11-06 (Parte I CC-PQ #8) |
 
 **Origen:** [HU-013](../../03-historias-usuario/100-SistemaPartes/HU-013-carga-paquetes-horas.md)  
 **Referencia SPEC:** [SPEC-013](../../05-open-spec/100-SistemaPartes/SPEC-013-carga-paquetes-horas.md) · A1 [review](../../05-open-spec/100-SistemaPartes/SPEC-013-carga-paquetes-horas-A1-ambiguity-review.md)
@@ -35,7 +35,7 @@ Como supervisor quiero ABM de compras de horas (`es_tarea = false`) en pantalla 
 - `filterMenuForNonSupervisor` + `partesMobilePolicy` excluyen ruta mobile.
 - GEN-11: `proceso=partes.carga.paquetes`, `gridId=cargaPaquetes`; layouts compartidos (TR-004).
 - SC: **mismo** `POST /api/v1/partes/tareas/asistente/turn` con `draftContext.processKind = 'paquete'`; rama en `PartesTareaSmartCaptureTurnService` (o servicio dedicado invocado desde el mismo controller).
-- Duración de paquete: horas enteras de 8 a 240 inclusive; persistencia en minutos equivalentes (`480` a `14400`).
+- Duración de paquete: horas enteras de **1 a 240** inclusive; persistencia en minutos equivalentes (`60` a `14400`); default alta **1 h**.
 - i18n `partes.paquete.*`, hint SC `partes.paquete.smartCapture.hint`.
 - Tests Feature + Vitest + E2E humo; OpenAPI.
 
@@ -73,7 +73,7 @@ Mapeo HU CA-01…20:
 | AC-02 | Vitest/E2E: al montar página, `fechaDesde`/`fechaHasta` = mes en curso |
 | AC-03 | Feature list sin fechas → 422 `partes.paquete.fechasRequeridas`; con fechas solo `es_tarea=0` |
 | AC-04 | Feature store: flags forzados + `usuarioId` = asistente supervisor |
-| AC-05 | Feature/Vitest: validación obligatorios y horas enteras 8–240 |
+| AC-05 | Feature/Vitest: validación obligatorios y horas enteras **1–240** |
 | AC-06 | Feature: fecha futura sin flag → 422 `partes.paquete.fechaFuturaConfirmacion` |
 | AC-07 | Feature update con cliente inhabilitado histórico OK; cambio a inhabilitado → 422 catálogo |
 | AC-08 | Vitest: `formError` en Popup; limpia al cancelar |
@@ -121,7 +121,7 @@ R-PH-01…19 y R-PH-SC-01…05 del SPEC aplican en SP/FE.
 |----|-----|
 | `pq_sp_partes_paquete_list` | Filtro fechas + cliente opcional; solo `es_tarea=0`; paginación; actor supervisor |
 | `pq_sp_partes_paquete_get` | Por `@p_id`; 422 lógico si no paquete |
-| `pq_sp_partes_paquete_upsert` | Insert/update; valida obligatorios, horas enteras 8–240, cliente usable (alta/cambio); optimistic lock |
+| `pq_sp_partes_paquete_upsert` | Insert/update; valida obligatorios, horas enteras **1–240**, cliente usable (alta/cambio); optimistic lock |
 | `pq_sp_partes_paquete_delete` | Solo paquete; `row_version` |
 
 Parámetros actor (como tareas): `@p_actor_usuario_id`, `@p_actor_asistente_id`, `@p_actor_es_supervisor`, `@p_actor_tipo_funcional`, …
@@ -185,7 +185,7 @@ OpenAPI: `OpenApiPathsPartesOperacion` — tag **Partes Paquetes** + ampliar des
 | Filtros | `DateBox` `dd/MM/yyyy` + máscara (regla 35); cliente `SelectBox` catálogo TR-003 |
 | Grid | `ProcessDataGrid` `proceso="partes.carga.paquetes"` `gridId="cargaPaquetes"`; duración en horas enteras; **sin** `canExport` Must |
 | Modal | Popup ABM; `listError` / `formError` separados (regla 36); `data-testid` `partesCargaPaquetesFormError` |
-| Duración | Selector propio de horas enteras 8–240; API/SP persisten minutos equivalentes |
+| Duración | Selector propio de horas enteras **1–240** (default alta 1 h); API/SP persisten minutos equivalentes |
 | SC | `SmartCapturePanel` en Popup; `buildSmartCaptureTurnRequest` con `processKind`; `applyPartesPaqueteAction` (mapper campos reducido) |
 | i18n | `partes.paquete.*`, `menu.partes_carga_paquetes` en `productI18n` |
 
@@ -246,7 +246,7 @@ Plan detallado: [D1-TR-013-carga-paquetes-horas](./d1/D1-TR-013-carga-paquetes-h
 
 ### Entregado
 
-- Backend: middleware `partes.supervisor`, controller/repository/operations de paquetes, rutas CRUD `/api/v1/partes/paquetes`, dispatcher SP y validaciones de `es_tarea`, propietario, fecha futura, horas enteras 8–240 y `rowVersion`.
+- Backend: middleware `partes.supervisor`, controller/repository/operations de paquetes, rutas CRUD `/api/v1/partes/paquetes`, dispatcher SP y validaciones de `es_tarea`, propietario, fecha futura, horas enteras **1–240** y `rowVersion`.
 - Datos: scripts `backend/scripts/sql/partes/pq_sp_partes_paquete_{list,get,upsert,delete}.sql`.
 - Frontend: `CargaPaquetesPage`, ruta, filtros mensuales, grilla/modal, menú 30300, i18n, policy mobile y Smart Capture `processKind=paquete`.
 - Smart Capture: rama backend y adapters frontend; `save` queda delegado al ABM de paquetes.
@@ -311,3 +311,4 @@ Plan detallado: [D1-TR-013-carga-paquetes-horas](./d1/D1-TR-013-carga-paquetes-h
 | 2026-10-21 | Parte C + C1: TR-013 desde SPEC/HU; contratos API/SP/menú/SC cerrados. |
 | 2026-10-21 | Jira catch-up: Task **PIAPARTES-48** (columna Especificado). |
 | 2026-10-21 | Parte D1: [D1-TR-013](./d1/D1-TR-013-carga-paquetes-horas.md). |
+| 2026-11-06 | Parte I CC-PQ #8: duración **1–240 h**. Update eliminado. [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-8-2026-10-25.md). Estado → **Finalizado**. |

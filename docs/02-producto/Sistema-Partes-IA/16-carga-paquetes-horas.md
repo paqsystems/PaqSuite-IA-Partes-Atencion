@@ -130,7 +130,7 @@ La tabla exige FKs que este proceso **no** pide al usuario. El sistema las compl
 
 **D-PH-02.** El tipo de tarea por defecto es un **detalle técnico de integridad**, no un dato de negocio del paquete. No se elige en UI.
 
-**D-PH-03.** Duración = horas **compradas** (crédito). El signo en el informe (resta de minutos cuando `es_tarea = false`) ya está definido en `06`; este proceso no redefine la cuenta corriente.
+**D-PH-03.** Duración = horas **compradas** (crédito), enteras de **1 a 240** inclusive (default en alta = **1 h**). El signo en el informe (resta de minutos cuando `es_tarea = false`) ya está definido en `06`; este proceso no redefine la cuenta corriente.
 
 ### 4.3 Fecha
 
@@ -204,7 +204,7 @@ No hay GEN de “paquetes de horas”: es **dominio Partes**.
 |----|----------|
 | **D-PH-01** | Alta/edición desde este proceso fuerza `es_tarea = false`. |
 | **D-PH-02** | `tipo_tarea_id` = tipo por defecto; no se muestra en UI. |
-| **D-PH-03** | Duración = horas compradas; el informe conserva la convención de signo de `06`. |
+| **D-PH-03** | Duración = horas compradas **1–240** (default alta 1 h); el informe conserva la convención de signo de `06`. |
 | **D-PH-04** | El proceso solo opera registros-paquete; no toca tareas. |
 | **D-PH-05** | Solo **supervisor**; asistente y cliente no cargan paquetes. |
 | **D-PH-06** | Ítem de menú propio en Carga de Partes; no embebido en Carga diaria. |

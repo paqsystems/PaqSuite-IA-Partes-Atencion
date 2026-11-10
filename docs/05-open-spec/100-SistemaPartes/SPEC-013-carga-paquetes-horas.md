@@ -9,8 +9,8 @@ Jira: PIAPARTES-43
 | ID | SPEC-013 |
 | Título | Carga de paquetes de horas — ABM de compras (`es_tarea = false`) |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Especificado |
-| Última actualización | 2026-10-20 |
+| Estado | Finalizado |
+| Última actualización | 2026-11-06 (Parte I CC-PQ #8: duración 1–240 h) |
 | **A1** | [`SPEC-013-carga-paquetes-horas-A1-ambiguity-review.md`](./SPEC-013-carga-paquetes-horas-A1-ambiguity-review.md) — **Apto con observaciones** (2026-10-20) |
 | HU relacionada(s) | [HU-013-carga-paquetes-horas](../../03-historias-usuario/100-SistemaPartes/HU-013-carga-paquetes-horas.md) |
 | TR relacionada(s) | [TR-013-carga-paquetes-horas](../../04-tareas/100-SistemaPartes/TR-013-carga-paquetes-horas.md) |
@@ -35,7 +35,7 @@ Jira: PIAPARTES-43
 - Pantalla web **Paquetes de horas** / **Carga de paquetes**: `ProcessPageLayout` + filtros de contexto + `ProcessDataGrid` + alta/edición en **Popup** (regla ABM modal §30).
 - Filtros **Must** antes/durante listado: **fecha desde / fecha hasta** (periodo de la compra) y **cliente** (selector catálogo usable).
 - Listado implícito **`es_tarea = false`**; alta/edición desde este proceso **fuerza** `es_tarea = false` (D-PH-01).
-- Campos visibles de captura: **cliente**, **fecha**, **duración** (horas enteras de 8 a 240 inclusive), **observación** (obligatoria).
+- Campos visibles de captura: **cliente**, **fecha**, **duración** (horas enteras de **1 a 240** inclusive; default alta **1 h**), **observación** (obligatoria).
 - Campos técnicos completados por el sistema al grabar (D-PH-02): `tipo_tarea_id` = tipo con `is_default`; `usuario_id` = asistente funcional del **supervisor que registra**; `sin_cargo`, `presencial`, `cerrado` = `false`.
 - Alta, edición y eliminación con confirmación en baja; **sin** circuito `cerrado` que bloquee edición (D-PH-10).
 - Errores de guardado **dentro del Popup** (regla 36 / SPEC-001 UI errores modal).
@@ -104,7 +104,7 @@ Jira: PIAPARTES-43
 |-------|--------|
 | Cliente | Obligatorio; selector código + descripción. **Alta:** solo cliente usable. **Edición:** puede conservar `cliente_id` actual aunque el cliente esté inhabilitado; si cambia cliente, solo usables (A1). |
 | Fecha | Obligatoria; fecha **funcional** del movimiento (no solo timestamp técnico). Si `fecha` > hoy → **advertencia** confirmable; **no** bloqueo duro en v1 (alineado producto §4.3; SC aplica confirmación antes de draft — §4.8) |
-| Duración | Obligatoria; cantidad entera de horas entre **8 y 240 inclusive**; persistida como minutos equivalentes (`480` a `14400`), en múltiplos de 60; UI selector de horas enteras |
+| Duración | Obligatoria; cantidad entera de horas entre **1 y 240 inclusive**; persistida como minutos equivalentes (`60` a `14400`), en múltiplos de 60; UI selector de horas enteras; **default en alta = 1 h** |
 | Observación | Obligatoria; no vacía ni solo whitespace |
 
 **No** se muestran ni capturan: tipo de tarea, asistente propietario, sin cargo, presencial, cerrado.
@@ -202,6 +202,8 @@ Reglas numeradas Smart Capture paquete (especialización; el resto hereda SPEC-0
 | R-PH-17 | Default filtros fecha = mes calendario en curso al abrir (§4.2). |
 | R-PH-18 | `usuario_id` solo en alta; update conserva registrador original (§4.4). |
 | R-PH-19 | Id de tarea en API paquete → 422 `notPaquete` (§4.7). |
+| R-PH-20 | Duración Must ∈ **1…240** h (60…14400 min, step 60) en UI, API, SP y Smart Capture (CC-PQ #8). |
+| R-PH-21 | Default de duración en alta = **1 h** (CC-PQ #8). |
 
 ### 4.10 Plantillas de grilla (GEN-11 — A1)
 
@@ -223,7 +225,7 @@ Carga de paquetes: adoptar GEN-11 como Carga diaria (SPEC-004 §4.10). UI/motor 
 - [ ] Alta persiste `es_tarea = false`, tipo default, `usuario_id` = asistente del supervisor, bits en false.
 - [ ] Editar/eliminar rechazados para `id` de tarea (`es_tarea = true`) con **422** envelope.
 - [ ] Tras editar paquete, `usuario_id` del registrador original **no** cambia.
-- [ ] Campos obligatorios: cliente, fecha, duración válida, observación no vacía.
+- [x] Campos obligatorios: cliente, fecha, duración válida (**1–240 h**), observación no vacía.
 - [ ] Fecha futura: advertencia en UI manual; SC confirma antes de aplicar al draft.
 - [ ] Error de guardado visible **dentro** del Popup; se limpia al cancelar.
 - [ ] Tras alta, el informe Paquete de Horas muestra movimiento que **resta** minutos (misma convención SPEC-006).
@@ -240,7 +242,7 @@ Carga de paquetes: adoptar GEN-11 como Carga diaria (SPEC-004 §4.10). UI/motor 
 | Capa | Impacto |
 |------|---------|
 | Backend | SP list/filter/upsert/delete paquetes (`es_tarea = 0`); validación espejo §4.3–4.7; gate supervisor; turno SC = **mismo** endpoint SPEC-010 + rama `processKind` paquete en servicio de turno |
-| Frontend | Feature `cargaPaquetes` (filtros + `ProcessDataGrid` + Popup); validador propio de horas enteras 8–240 y fecha; `SmartCapturePanel` + draft mapper paquete; ruta p. ej. `/partes/carga-paquetes` |
+| Frontend | Feature `cargaPaquetes` (filtros + `ProcessDataGrid` + Popup); validador propio de horas enteras **1–240** y fecha; `SmartCapturePanel` + draft mapper paquete; ruta p. ej. `/partes/carga-paquetes` |
 | Menú | Nuevo ítem bajo Carga de Partes; `labelKey` p. ej. `menu.partes.cargaPaquetes`; `proceso` p. ej. `partes.carga.paquetes`, `gridId` p. ej. `cargaPaquetes` |
 | Permisos | Matriz menú/rol distinta de `partes.carga.diaria` |
 | Tests | Feature API supervisor vs asistente; Vitest validación formulario; E2E humo alta paquete; SC opcional con mock turno |
@@ -268,7 +270,8 @@ Carga de paquetes: adoptar GEN-11 como Carga diaria (SPEC-004 §4.10). UI/motor 
 | 2026-10-20 | Parte A1: revisión ambigüedad — **Apto con observaciones**; cierres default mes, cliente filtro, `usuario_id` en update, 422 notPaquete, GEN-11, SC mismo endpoint. |
 | 2026-10-21 | Parte B+B1: enlazada [HU-013](../../03-historias-usuario/100-SistemaPartes/HU-013-carga-paquetes-horas.md). |
 | 2026-10-21 | Parte C+C1: enlazada [TR-013](../../04-tareas/100-SistemaPartes/TR-013-carga-paquetes-horas.md). Estado → Especificado. |
+| 2026-11-06 | Parte I CC-PQ #8: piso de duración **1 h** (R-PH-20/21). Update eliminado. Estado → **Finalizado**. |
 
 ---
 
-**Trazabilidad:** siguiente paso SDD **Parte D1/D** (implementar TR-013). Informe cuenta corriente: SPEC-006 (sin cambios). Smart Capture genérico: SPEC-010 + Framework GEN-03.
+**Trazabilidad:** [HU-013](../../03-historias-usuario/100-SistemaPartes/HU-013-carga-paquetes-horas.md) · [TR-013](../../04-tareas/100-SistemaPartes/TR-013-carga-paquetes-horas.md). Informe cuenta corriente: SPEC-006. Smart Capture genérico: SPEC-010 + Framework GEN-03.
