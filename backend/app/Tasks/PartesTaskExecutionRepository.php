@@ -388,21 +388,8 @@ final class PartesTaskExecutionRepository implements TaskExecutionRepository
                 continue;
             }
 
-            $message = StaleTaskExecutionRecovery::recoveryMessage();
-            try {
-                $this->appendLog($executionId, 'warning', $message, [
-                    'startedAt' => $startedAt->format(DATE_ATOM),
-                ]);
-            } catch (\Throwable) {
-                // best-effort
-            }
-
-            $this->updateExecutionStatus(
-                $executionId,
-                TaskExecutionStatuses::FALLIDA,
-                new DateTimeImmutable('now'),
-                $message,
-            );
+            $staleRecovery = app(StaleTaskExecutionRecovery::class);
+            $staleRecovery->closeStaleExecutionIfNeeded($row, $cutoff);
         }
     }
 
