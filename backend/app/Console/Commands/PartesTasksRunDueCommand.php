@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use PaqSuite\LaravelCore\Tasks\Backup\RdsDeferredBackupExecutionPoller;
 use App\Tasks\StaleTaskExecutionRecovery;
 use App\Tenancy\CliInstalacionContext;
 use App\Tenancy\SchedulerClienteResolver;
@@ -24,6 +25,7 @@ final class PartesTasksRunDueCommand extends Command
     public function handle(
         CliInstalacionContext $cliInstalacion,
         SchedulerClienteResolver $clienteResolver,
+        RdsDeferredBackupExecutionPoller $rdsPoller,
         StaleTaskExecutionRecovery $staleRecovery,
         TaskDefinitionRepository $definitionRepository,
         TaskExecutionService $executionService,
@@ -40,6 +42,7 @@ final class PartesTasksRunDueCommand extends Command
             if (! $this->runForCliente(
                 $cliente,
                 $cliInstalacion,
+                $rdsPoller,
                 $staleRecovery,
                 $definitionRepository,
                 $executionService,
@@ -54,6 +57,7 @@ final class PartesTasksRunDueCommand extends Command
     private function runForCliente(
         string $cliente,
         CliInstalacionContext $cliInstalacion,
+        RdsDeferredBackupExecutionPoller $rdsPoller,
         StaleTaskExecutionRecovery $staleRecovery,
         TaskDefinitionRepository $definitionRepository,
         TaskExecutionService $executionService,
@@ -72,6 +76,10 @@ final class PartesTasksRunDueCommand extends Command
         ));
 
         if (! $this->option('skip-recover')) {
+            $polled = $rdsPoller->pollOpenRdsBackups();
+            if ($polled > 0) {
+                $this->info("Backups RDS cerrados por scheduler: {$polled}.");
+            }
             $recovered = $staleRecovery->recoverOverlaps();
             if ($recovered > 0) {
                 $this->warn("Recuperadas {$recovered} ejecución(es) EN_EJECUCION expirada(s) (overlap).");

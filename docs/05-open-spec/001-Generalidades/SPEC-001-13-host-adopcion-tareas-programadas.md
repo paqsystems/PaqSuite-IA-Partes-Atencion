@@ -12,7 +12,7 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 | Host | PaqSuite-IA-Partes-Atencion |
 | GEN | GEN-13 — Tareas programadas |
 | Estado | Finalizado |
-| Última actualización | 2026-11-06 |
+| Última actualización | 2026-11-11 (defer manual RDS — doc operativa; SPEC base **Finalizado**) |
 | HU relacionada(s) | [HU-GEN-13-adopcion-tareas-programadas](../../03-historias-usuario/001-Generalidades/HU-GEN-13-adopcion-tareas-programadas.md) |
 | TR relacionada(s) | [TR-GEN-13-adopcion-tareas-programadas](../../04-tareas/001-Generalidades/TR-GEN-13-adopcion-tareas-programadas.md) |
 | SoT Framework | `SPEC-001-13` + `TR-GEN-13-backup-windows-rds-update` + **`docs/06-operacion/adopcion-gen-13-tareas-programadas-host.md`** (cableado Must) |
@@ -86,6 +86,7 @@ lock global por instalación y logs trazables.
 5. **Backup RDS → S3:** `TASKS_BACKUP_S3_ARN_PREFIX` como prefijo; gateway host usa `RdsBackupS3Arn::composeExportDestination`.
 6. **UI:** columna motivo en historial (`@paqsuite/react-core` ≥ `2.4.30-beta.2`) + i18n host.
 7. **Scheduler multi-tenant:** `partes:tasks-run-due` recorre instalaciones SQL directo del proyecto (`SchedulerClienteResolver`); `PAQSUITE_CLIENTE` es fallback.
+8. **Backup manual RDS sin bloqueo HTTP (2026-11-11):** con `PAQSUITE_TASKS_BACKUP_DEFER_MANUAL_POLLING=true` y pin `laravel-core` **≥ 1.3.18-beta.32`, el manual deja `EN_EJECUCION` y el host cierra vía `RdsDeferredBackupExecutionPoller` en el cron. SoT Framework: `SPEC-001-13-update-defer-manual-rds-polling-2026-11-11`.
 
 ## 6. Trazabilidad
 
@@ -100,3 +101,4 @@ lock global por instalación y logs trazables.
 | 2026-10-23 | A0 — adopción host GEN-13 (código parcialmente cableado). |
 | 2026-10-30 | Parte G — SPEC-update CC PQ #10 (monitor sqlsrv + backup MONO/S3). |
 | 2026-11-06 | Parte I — unificación + **Finalizado**. Backup RDS verificado por el usuario. |
+| 2026-11-11 | Delta operativo defer manual RDS (adopción + pin beta.32); sin reabrir alcance SPEC base. |

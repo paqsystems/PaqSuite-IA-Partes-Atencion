@@ -131,6 +131,10 @@ return [
             ),
         ],
         'backup' => [
+            'deferManualRdsPolling' => filter_var(
+                env('PAQSUITE_TASKS_BACKUP_DEFER_MANUAL_POLLING', true),
+                FILTER_VALIDATE_BOOLEAN,
+            ),
             'backend' => env('PAQSUITE_TASKS_BACKUP_BACKEND', 'rds'),
             's3ArnPrefix' => env('TASKS_BACKUP_S3_ARN_PREFIX', ''),
             'windowsService' => env('TASKS_BACKUP_WINDOWS_SERVICE', ''),

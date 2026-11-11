@@ -73,6 +73,8 @@ use PaqSuite\LaravelCore\Tasks\Backup\ConfigBackupInstallationProfileResolver;
 use App\Tasks\Backup\PartesMonoBackupCompanyTargetResolver;
 use PaqSuite\LaravelCore\Tasks\Backup\EmpresaAdminBackupCompanyTargetResolver;
 use PaqSuite\LaravelCore\Tasks\Backup\RdsBackupLock;
+use PaqSuite\LaravelCore\Tasks\Backup\RdsBackupExecutionLogSupport;
+use PaqSuite\LaravelCore\Tasks\Backup\RdsDeferredBackupExecutionPoller;
 use PaqSuite\LaravelCore\Tasks\Processes\BackupDatabaseProcess;
 use PaqSuite\LaravelCore\Tasks\Repositories\TaskDefinitionRepository;
 use PaqSuite\LaravelCore\Tasks\Repositories\TaskExecutionRepository;
@@ -137,6 +139,27 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(TaskProcessRepository::class, static fn () => new StoredProcedureTaskProcessRepository());
         $this->app->singleton(InstalacionConnectionConfigurator::class);
         $this->app->singleton(CliInstalacionContext::class);
+        $this->app->singleton(RdsBackupExecutionLogSupport::class, static fn ($app) => new RdsBackupExecutionLogSupport(
+            $app->make(TaskExecutionRepository::class),
+            $app->make(MonoRdsBackupGateway::class),
+        ));
+        $this->app->singleton(RdsDeferredBackupExecutionPoller::class, static function ($app) {
+            $repo = $app->make(TaskExecutionRepository::class);
+            $listOpen = $repo instanceof PartesTaskExecutionRepository
+                ? static fn (int $page, int $pageSize) => $repo->listStaleExecutionsForRecovery($page, $pageSize)
+                : null;
+
+            return new RdsDeferredBackupExecutionPoller(
+                $repo,
+                $app->make(MonoRdsBackupGateway::class),
+                $app->make(RdsBackupExecutionLogSupport::class),
+                $app->make(RdsBackupLock::class),
+                $app->make(BackupInstallationProfileResolver::class),
+                deferManualRdsPolling: (bool) config('paqsuite.tasks.backup.deferManualRdsPolling', false),
+                backupBackend: (string) config('paqsuite.tasks.backup.backend', 'rds'),
+                listOpenExecutions: $listOpen,
+            );
+        });
         $this->app->singleton(StaleTaskExecutionRecovery::class);
         $this->app->singleton(
             \PaqSuite\LaravelCore\Tasks\TaskExecutionStaleRecovery::class,

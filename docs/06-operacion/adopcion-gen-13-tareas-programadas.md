@@ -27,6 +27,7 @@ Este archivo documenta **perfil Partes** (MONO/RDS, backup, env, scheduler) e **
 ## Configuración operativa
 
 - `PAQSUITE_TASKS_BACKUP_BACKEND=rds`
+- `PAQSUITE_TASKS_BACKUP_DEFER_MANUAL_POLLING=true` — backup RDS **manual** vía HTTP: el POST solo dispara `startExport` y deja `EN_EJECUCION`; el cierre lo hace el scheduler (`RdsDeferredBackupExecutionPoller`) antes de recuperar overlaps. Obligatorio en Partes (perfil RDS). Pin SDK **≥ 1.3.18-beta.32** (no usar beta.31: sin poller publicado).
 - `PAQSUITE_CLIENTE` es el código de `EMPRESAS_CONEXION` (el mismo que
   `X-Paq-Cliente`). Sigue siendo fallback CLI y post-deploy. **El scheduler
   `partes:tasks-run-due` no se limita a ese valor:** recorre todas las
@@ -124,6 +125,8 @@ manual o programado puede fallar con **Backup company target not found**.
 | Backup omitido / ventana RDS | Mantenimiento o backup concurrente en RDS | Reintentar fuera de ventana; revisar `TASKS_BACKUP_LOCK_LEASE_SECONDS` |
 | Ejecución FALLIDA sin texto en UI | Snapshot/log sqlsrv o mensaje no hidratado | Deploy repositorio ejecuciones CC #10; SP `append_log` / `get` en tenant |
 | Backup de un tenant (p. ej. PAQ) no corre; cron `schedule:run` sí | Scheduler limitado a `PAQSUITE_CLIENTE` (otro tenant, p. ej. DEMO) | Pin con `SchedulerClienteResolver`; dry-run sin `--cliente` debe listar due de **todos** los SQL directo; no cambiar el `.env` a un solo cliente |
+| Manual backup **FALLIDA** ~1–2 min; RDS/S3 OK | nginx cortó el POST (~60s) o overlap recovery cerró antes que el poller | `PAQSUITE_TASKS_BACKUP_DEFER_MANUAL_POLLING=true` + pin **≥ beta.32** + poller en `partes:tasks-run-due` / `partes:tasks-recover-stale`. Opcional residual: `scripts/forge/nginx-php-fastcgi-backup-run.timeout.snippet` |
+| UI «En curso» mucho tiempo tras manual | Poller inactivo o SDK &lt; beta.32 | Verificar Forge `schedule:run`; smoke `pollOpenRdsBackups` vía comando due; incidente [d-nota GEN-13 backup zombie](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/main/docs/08-control/d-nota-gen-13-backup-zombie-paq-2026-11-03.md) §2026-11-11 |
 
 ### CC PQ #10 — seguimiento deploy (30/10/2026)
 
@@ -147,14 +150,17 @@ diariamente en `backend/app/Console/Kernel.php`. El comando due:
    fallback `PAQSUITE_CLIENTE`).
 2. Por cada tenant aplica la BD (`CliInstalacionContext`, y actualiza
    `paqsuite.clienteCodigo` para el lock RDS).
-3. Recupera ejecuciones `EN_EJECUCION` expiradas y ejecuta due.
+3. Si `deferManualRdsPolling` está activo: **`RdsDeferredBackupExecutionPoller::pollOpenRdsBackups()`** sobre ejecuciones `EN_EJECUCION` con `taskId` en logs (renueva lock mientras RDS corre; cierra `EXITOSA` / `FALLIDA`).
+4. Recupera ejecuciones `EN_EJECUCION` expiradas (`StaleTaskExecutionRecovery`) y ejecuta due.
+
+El comando **`partes:tasks-recover-stale`** usa el **mismo orden** (poller → recover).
 
 Un Forge que atiende **varios** `{cliente}` del mismo proyecto (PAQ, DEMO,
 DEV) **Must** recorrerlos todos. No alcanza con `PAQSUITE_CLIENTE=DEMO` en el
 `.env` del sitio: la UI de `paq.…` usa `X-Paq-Cliente` y el cron no.
 
-Mutex `withoutOverlapping(15)`: un tick puede incluir más de un backup RDS
-(~2 min c/u).
+Mutex `withoutOverlapping(15)`: con polling **diferido**, el POST manual no bloquea
+minutos en HTTP; el tick del cron puede cerrar varios backups en curso consultando AWS (~1–3 min típico hasta `EXITOSA`).
 
 Para que la agenda opere en un ambiente, una tarea externa debe ejecutar:
 
@@ -207,6 +213,11 @@ php artisan db:seed --class=Database\Seeders\PqTaskProcessFrameworkSeeder --forc
 php scripts/deploy-sp.php
 ```
 
+En **Forge**, `scripts/forge/post-deploy.sh` → `run-post-deploy-backend.php`
+ejecuta el mismo `PqTaskProcessFrameworkSeeder` por tenant tras
+`installation:update` y `deploy-sp` (idempotente; alinea parámetros
+`BACKUP_DATABASE` al SDK vigente, p. ej. `includeWeekdayInName` / CC PQ #17).
+
 Verificación mínima en SQL:
 
 ```sql
@@ -232,7 +243,7 @@ de reintentar el seed.
 
 1. Validar catálogo con `tasks:validate-catalog`.
 2. Crear una definición `BACKUP_DATABASE` para la empresa vigente.
-3. Ejecutar manualmente y comprobar `taskId`, polling terminal y logs.
+3. Ejecutar manualmente: respuesta rápida con `EN_EJECUCION`, log `RDS export started` + `taskId`; tras 1–3 ticks de `partes:tasks-run-due`, estado terminal y objeto en S3.
 4. Verificar que timeout/error resulte `FALLIDA` y lock ocupado resulte
    `OMITIDA`.
 5. Repetir en ambiente autorizado con RDS/S3 e IAM reales.
@@ -247,30 +258,28 @@ de reintentar el seed.
    en Monitoreo/Historial (SDK) o `php artisan partes:tasks-recover-stale --cliente={PAQSUITE_CLIENTE}`.
    Modo `--full` si la corrida supera ~2 h (timeout RDS). Nota incidente PAQ 2026-11-03:
    Framework `docs/08-control/d-nota-gen-13-backup-zombie-paq-2026-11-03.md`.
+9. **Backup RDS manual (GEN-13, 2026-11):** SDK `BackupDatabaseProcess` + config
+   `paqsuite.tasks.backup.deferManualRdsPolling` (`PAQSUITE_TASKS_BACKUP_DEFER_MANUAL_POLLING=true` en
+   Partes). El POST solo dispara RDS (`MonoRdsBackupService::beginBackup`) y deja `EN_EJECUCION`. El
+   cierre lo hace el comando scheduler del host llamando `RdsDeferredBackupExecutionPoller::pollOpenRdsBackups()`
+   antes de la recuperación de overlap (`partes:tasks-run-due` cada minuto). Pin mínimo
+   `paqsuite/laravel-core` **≥ 1.3.18-beta.32**.
 
 La implementación de código no forma parte de esta definición; el host adopta
 los exports y contratos del SDK.
 
-## Estado de adopción 2026-10-27 (actualizado 2026-10-30)
+## Estado de adopción (pin vigente 2026-11-11)
 
-El host queda cableado con `@paqsuite/react-core` **`2.4.30-beta.2`** (UI tareas +
-columna motivo) y `paqsuite/laravel-core` **`1.3.18-beta.18`** (pin en
-`backend/composer.json`; verificar con `installation:status` tras sync local o
-Forge) desde Cloudsmith.
-La línea beta.1 incluía
-`BackupInstallationProfile`, `BackupCompanyTargetResolver` y `RdsBackupLock`.
-El SDK publica `RdsBackupLock` como contrato; el host aporta el adapter
-`App\Tasks\Backup\RdsBackupCacheLock` sobre el cache configurado de Laravel.
-El host incluye la migración `2026_07_25_000006_create_pq_task_tables` y el
-runbook § «Provisionamiento por base tenant». Antes del smoke deben existir
-`PQ_TASK_*`, el seed `BACKUP_DATABASE` y todos los SP `pq_sp_task_*` en la
-base del tenant.
+| Paquete | Pin repo | Notas |
+|---------|----------|--------|
+| `paqsuite/laravel-core` | **1.3.18-beta.32** | Motor defer manual RDS (`RdsDeferredBackupExecutionPoller`, `beginBackup`, `TaskResult::enEjecucion`). Manifiesto `partesatencion-1.3.18-beta.32.json`. |
+| `@paqsuite/react-core` | **2.4.30-beta.13** (ver `frontend/package.json`) | UI tareas + columna motivo; chrome pestañas **TaskScheduledLayout** ≥ **2.4.30-beta.14** pendiente de migración en Partes (ver Framework SPEC-update chrome 2026-11-11). |
 
-Complementos de host (2026-10-27, ampliado 2026-10-31): `PAQSUITE_CLIENTE` →
-`clienteCodigo`; cadena de repositorios § «Inventario cableado»; SP snapshot
-host con `parameter_code`; override `pq_sp_task_definition_parameter_set` para
-RDS con `process_parameter_id`. Incidente RDS 2026-10-27: faltaban SP tras
-timeout → migrate + seed + `installation:update` + `deploy-sp.php`.
+El SDK publica `RdsBackupLock` como contrato; el host usa `App\Tasks\Backup\RdsBackupCacheLock`.
+Migración host `2026_07_25_000006_create_pq_task_tables`; seed `BACKUP_DATABASE` en post-deploy Forge.
+**Backup manual diferido (11/11/2026):** cableado en `AppServiceProvider` (`RdsDeferredBackupExecutionPoller` + `listOpenExecutions` vía `PartesTaskExecutionRepository::listStaleExecutionsForRecovery`), `PartesTasksRunDueCommand`, `PartesTasksRecoverStaleCommand`, `StaleTaskExecutionRecovery` (reconcilia RDS ya terminado antes de marcar FALLIDA).
+
+SoT Framework: [SPEC-001-13-update-defer-manual-rds-polling-2026-11-11](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/main/docs/05-open-spec/updates/001-Generalidades/SPEC-001-13-update-defer-manual-rds-polling-2026-11-11.md) · `adopcion-gen-13-tareas-programadas-host.md` §3.4.1.
 
 ---
 
@@ -282,7 +291,8 @@ timeout → migrate + seed + `installation:update` + `deploy-sp.php`.
 | Decorador listado sqlsrv | `backend/app/Tasks/PartesTaskDefinitionRepository.php` |
 | Agenda `nextRunAt` | `backend/app/Tasks/SchedulingTaskDefinitionRepository.php` |
 | Ejecuciones sqlsrv | `backend/app/Tasks/PartesTaskExecutionRepository.php` |
-| Scheduler CLI | `backend/app/Console/Commands/PartesTasksRunDueCommand.php`, `PartesTasksRecoverStaleCommand.php`, `PartesTasksBackfillNextRunAtCommand.php` |
+| Poller RDS + stale recovery | `AppServiceProvider` (`RdsDeferredBackupExecutionPoller`, `RdsBackupExecutionLogSupport`), `StaleTaskExecutionRecovery.php` |
+| Scheduler CLI | `PartesTasksRunDueCommand.php`, `PartesTasksRecoverStaleCommand.php`, `PartesTasksBackfillNextRunAtCommand.php` (poller **antes** de overlap recovery) |
 | Tenant CLI | `backend/app/Tenancy/CliInstalacionContext.php` (aplica BD + `clienteCodigo` para lock RDS) |
 | Tenants scheduler | `backend/app/Tenancy/SchedulerClienteResolver.php`, `EmpresasConexionSqlDirectClienteCatalog.php` |
 | Recuperación UI/API | `POST /api/v1/task-executions/recover-stale` · `PartesTaskExecutionStaleRecovery` |
@@ -290,9 +300,10 @@ timeout → migrate + seed + `installation:update` + `deploy-sp.php`.
 | Override SP parámetros definición | `backend/database/sp/pq_sp_task_definition_parameter_set.sql` |
 | Otros SP host tenant | `backend/database/sp/*.sql`, `backend/scripts/sql/partes/` |
 | Deploy SP post-manifiesto | `backend/scripts/deploy-sp.php` |
-| UI rutas SDK | `frontend/src/features/tareasProgramadas/TareasProgramadasSdkRoutes.tsx` |
-| i18n host (it/fr/…) | `frontend/src/features/tareasProgramadas/tareasProgramadasI18n.ts` |
-| Tests wrappers | `backend/tests/Unit/SchedulingTaskDefinitionRepositoryTest.php` |
+| UI rutas SDK | `frontend/src/features/tareasProgramadas/TareasProgramadasSdkRoutes.tsx` — **debe** usar `TaskScheduledLayout` + pin `@paqsuite/react-core` ≥ **2.4.30-beta.14** (Framework: `docs/05-open-spec/updates/001-Generalidades/SPEC-001-13-update-chrome-pestanas-ejecuciones-2026-11-11.md`); eliminar solapas NavLink locales al migrar. |
+| i18n host (it/fr/…) | `frontend/src/features/tareasProgramadas/tareasProgramadasI18n.ts` — **no** duplicar `tareasProgramadas.tabs.*` (SDK); revisar overrides de `monitoreo.title` vs caption **Ejecuciones**. |
+| Tests wrappers / GEN-13 | `SchedulingTaskDefinitionRepositoryTest.php`, `StaleTaskExecutionRecoveryTest.php`, `BackupRdsExecutionPollerTest.php`, `RdsBackupTestDoubles.php` |
+| Nginx timeout (opcional) | `scripts/forge/nginx-php-fastcgi-backup-run.timeout.snippet` — residual si no se usa defer polling |
 
 ### Checklist al bump `paqsuite/laravel-core` (Must)
 
