@@ -352,6 +352,14 @@
             "dependsOn": []
         },
         {
+            "id": "partes-migration-2026_11_11_210000_widen_pq_installation_run_step_kind_gen34",
+            "kind": "migration",
+            "target": "dictionary",
+            "path": "database/migrations/2026_11_11_210000_widen_pq_installation_run_step_kind_gen34.php",
+            "checksum": "576f7a00a2f5be9ae99729dfd2a06a7f8d5fb21464f98fd096f6f7576450769a",
+            "dependsOn": []
+        },
+        {
             "id": "partes-sp-ddl_2026_07_31_theme_y_pq_rol_atributos",
             "kind": "sql",
             "target": "dictionary",
