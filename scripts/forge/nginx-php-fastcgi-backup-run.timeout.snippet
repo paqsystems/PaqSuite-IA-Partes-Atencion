@@ -1,0 +1,8 @@
+# GEN-13 — backup manual vía POST /api/v1/task-definitions/{id}/run
+# Agregar dentro de `location ~ \.php$ {` del sitio Forge (junto a forge_fastcgi_defaults):
+#
+#     fastcgi_read_timeout 600s;
+#     fastcgi_send_timeout 600s;
+#
+# Alinear con PAQSUITE_TASKS_HTTP_RUN_MAX_SECONDS (default 600).
+# Sin esto, nginx corta ~60s y la ejecución queda EN_EJECUCION hasta la recuperación automática.
