@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|--------|
-| **SPEC-update** | [SPEC-013-update-cc-pq-8-2026-10-25-duracion-paquetes](./SPEC-013-update-cc-pq-8-2026-10-25-duracion-paquetes.md) |
+| **SPEC** | Fusionado Parte I 06/11/2026 → [`SPEC-013-carga-paquetes-horas.md`](../../100-SistemaPartes/SPEC-013-carga-paquetes-horas.md) (archivo update eliminado) |
 | **Paso** | A1 |
 | **Fecha** | 2026-10-30 |
 | **Estado A1** | **Cerrado** |

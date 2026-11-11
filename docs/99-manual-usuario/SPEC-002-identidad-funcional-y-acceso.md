@@ -3,7 +3,7 @@ specId: SPEC-002
 titulo: Identidad funcional y acceso a Partes
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-05
+ultimaActualizacion: 2026-11-07
 procesoErrores: P01
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md
 ---
@@ -30,6 +30,24 @@ Para usar Partes de Atención necesitás credenciales válidas **y** un perfil f
 1. Abrí el menú del **avatar** (tu usuario).
 2. Consultá tipo funcional, código, nombre, si sos supervisor y datos de contacto de dominio.
 3. Es información de **solo lectura** en esta versión.
+
+### Notificar acceso a un usuario (administradores)
+
+Válido en **Seguridad → Usuarios** (solo web; no en la app móvil).
+
+**Alta de usuario**
+
+1. Completá código, nombre y **correo electrónico** (no hace falta ingresar contraseña).
+2. Guardá. Si el correo es válido, el sistema envía automáticamente un mail con el enlace al sitio y las credenciales iniciales.
+3. Si el envío falla, el mensaje aparece en el mismo formulario; el usuario igual queda guardado — podés reenviar desde edición.
+
+**Edición de usuario**
+
+1. Abrí el usuario y verificá que tenga **correo**.
+2. Junto al campo de correo, usá el ícono de **enviar / notificar acceso** (solo activo si hay correo).
+3. El destinatario recibe de nuevo enlace y credenciales; en el **primer ingreso** deberá cambiar la contraseña.
+
+No existe un proceso aparte para “elegir usuario en una lista” y notificar en lote: la notificación es siempre del usuario que estás dando de alta o editando.
 
 ### Si te quitan el acceso estando logueado
 

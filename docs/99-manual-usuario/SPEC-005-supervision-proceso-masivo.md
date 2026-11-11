@@ -3,7 +3,7 @@ specId: SPEC-005
 titulo: Supervisión y proceso masivo
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-11-01
+ultimaActualizacion: 2026-11-09
 procesoErrores: P06
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md
 ---
@@ -14,7 +14,7 @@ openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masiv
 
 ## Resumen
 
-El **proceso masivo** permite a un **supervisor** localizar tareas (por periodo y filtros opcionales), seleccionarlas y aplicar cambios en lote: **cerrar/reabrir**, o actualizar atributos permitidos (**tipo de tarea**, **sin cargo**; y en evoluciones cercanas presencial, asistente o fecha). Asistentes y clientes no usan esta pantalla. El cierre individual sigue disponible en carga diaria (SPEC-004).
+El **proceso masivo** permite a un **supervisor** localizar tareas (por periodo y filtros opcionales), seleccionarlas y aplicar cambios en lote: **cerrar/reabrir**, o actualizar atributos permitidos (**tipo de tarea**, **sin cargo**; y en evoluciones cercanas presencial, asistente o fecha). También puede **informar novedades por correo** a los clientes del periodo filtrado. Asistentes y clientes no usan esta pantalla. El cierre individual sigue disponible en carga diaria (SPEC-004).
 
 ## Funcionamiento
 
@@ -22,7 +22,7 @@ El **proceso masivo** permite a un **supervisor** localizar tareas (por periodo 
 
 1. Menú **Partes** → **Proceso masivo** (un atajo desde carga **no** arrastra los filtros previos).
 2. Aplicá filtros: fechas obligatorias; cliente, asistente y estado opcionales.
-3. Revisá el listado en la grilla (podés filtrar por columna, elegir qué columnas ver, usar plantillas y exportar a Excel). Si el filtro devuelve más filas que las que entran en una hoja, usá el **paginador** al pie para pasar de página; el **total filtro** indica cuántos registros hay en el universo filtrado.
+3. Revisá el listado en la grilla (podés filtrar por columna, elegir qué columnas ver, usar plantillas y exportar a Excel). Clic en el **título de una columna** (por ejemplo Cliente) ordena **todo** el resultado filtrado, no solo la página que estás viendo. El **embudo** del encabezado lista los valores distintos de esa columna para elegir uno o varios. Si el filtro devuelve más filas que las que entran en una hoja, usá el **paginador** al pie para pasar de página; el **total filtro** indica cuántos registros hay en el universo filtrado.
 4. Seleccioná filas, o usá la opción de seleccionar todos los del resultado (si hay varias páginas, confirmá que afectará a N partes).
 
 ### Cerrar o reabrir en lote
@@ -43,6 +43,14 @@ El **proceso masivo** permite a un **supervisor** localizar tareas (por periodo 
 
 No se puede cambiar en lote: **cliente**, **duración** ni **descripción**.
 
+### Informar novedades a clientes
+
+1. Con el **filtro de periodo** aplicado (y los filtros opcionales que uses), pulsá el ícono de correo **Informar a clientes**. No hace falta tildar filas: se avisa a todos los clientes del resultado filtrado que tienen usuario y correo.
+2. Se abre una confirmación con la **cantidad de avisos** y el **periodo** (día/mes/año). Cada destinatario aparece en una **tarjeta** con nombre y correo.
+3. Si hay más de **cinco** destinatarios, recorré el resto con **scroll** dentro de la lista. El título y los botones **Cancelar** / **Enviar correos** siguen visibles.
+4. Revisá el listado y confirmá **Enviar correos**. El mail incluye el acceso al portal y el código de usuario; **nunca** la contraseña.
+5. Si salís del proceso con cambios pendientes, el sistema pregunta si querés enviar los correos, salir sin enviar o cancelar.
+
 ### Supervisión puntual en carga diaria
 
 1. En carga diaria, filtrá por asistente u otros criterios.
@@ -50,12 +58,13 @@ No se puede cambiar en lote: **cliente**, **duración** ni **descripción**.
 
 ## Particularidades
 
-- La grilla del masivo incluye filtro bajo títulos, totales, selector de columnas, plantillas y exportación a Excel.
+- La grilla del masivo incluye filtro bajo títulos, embudo de valores únicos, orden por columna sobre todo el filtro, totales, selector de columnas, **plantillas** (Original / Guardar / Guardar como / Eliminar) y exportación a Excel.
 - Exportar a Excel **no** es importar desde Excel (eso no forma parte de este proceso).
 - Acciones ya aplicadas (cerrar lo cerrado, o el mismo valor de atributo) son inocuas / idempotentes.
 - Si se supera el tope configurado o el límite técnico (~5000), debés refinar el filtro.
 - El proceso masivo solo localiza y opera sobre **tareas** (no incluye compras de horas del Paquete de Horas).
 - **No disponible en la app móvil.**
+- **Informar a clientes** usa el universo **filtrado** (todas las páginas). La lista de confirmación muestra **todos** los destinatarios; como máximo se ven **cinco tarjetas** a la vez y el resto se recorre con scroll.
 
 ### Límites / cupos visibles al usuario
 
@@ -86,6 +95,8 @@ No se puede cambiar en lote: **cliente**, **duración** ni **descripción**.
 | Atributo o valor no válido para el lote | `partes.masivo.atributoInvalido` | p. ej. tipo incompatible con un cliente | Elegir otro tipo o reducir selección |
 | Ítem de lote inválido | `partes.masivo.itemInvalido` | Selección corrupta | Refrescar y reseleccionar |
 | El lote incluye un registro que no es tarea | `partes.masivo.noEsTarea` | Alguno de los IDs corresponde a una compra de horas | Reducir la selección a tareas |
+| No hay destinatarios para informar | `partes.masivo.sinDestinatarios` | Ningún cliente del filtro tiene usuario con correo | Ampliar el periodo o vincular usuario al cliente |
+| No hay destinatarios para el filtro | `partes.masivo.mailInformarClientes.empty` | Preview vacío | Completar fechas y comprobar clientes con usuario |
 
 ## Errores de lógica
 
@@ -123,3 +134,15 @@ No. Esos campos quedan fuera del proceso masivo.
 ### ¿Desde el celular?
 
 No; solo en la versión web.
+
+### ¿Tengo que tildar filas para informar a clientes?
+
+No. El aviso cubre a los clientes del **filtro vigente** que tienen usuario y correo.
+
+### Si hay muchos destinatarios, ¿se recortan?
+
+No. Se listan todos. En la confirmación ves hasta **cinco tarjetas** y el resto se recorre con **scroll**.
+
+### ¿El orden o el embudo solo afectan la página actual?
+
+No. Ordenar por un título y elegir un valor en el embudo aplican a **todas las páginas** del filtro vigente. El agrupamiento por arrastre de columnas sí opera sobre la página que está en pantalla.

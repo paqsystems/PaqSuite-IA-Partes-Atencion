@@ -184,6 +184,7 @@
   "partes.mobile.guardar": "Salvar",
   "partes.carga.guardando": "Salvando…",
   "partes.carga.title": "Carga diária",
+  "partes.carga.errorTitle": "Erro",
   "partes.carga.linkMasivo": "Ir para processo em massa",
   "partes.paquete.title": "Carga de pacotes",
   "partes.paquete.horasLabel": "{{horas}} horas",

@@ -1,5 +1,7 @@
 # Plan D1 — CC PQ #8 (TR-006-update + TR-013-update)
 
+> **Cerrado Parte I 06/11/2026.** Updates fusionados en SPEC/HU/TR-006 y SPEC/HU/TR-013 base. Evidencia: [D-VERIFICACION-CC-PQ-8](../D-VERIFICACION-CC-PQ-8-2026-10-25.md).
+
 ## Alcance entendido
 
 Corrección informe Paquete de Horas (cliente obligatorio, saldo SP/sqlsrv, destaque compras) + rango paquetes 1–240 h. Sin CC #9 Framework en este plan.

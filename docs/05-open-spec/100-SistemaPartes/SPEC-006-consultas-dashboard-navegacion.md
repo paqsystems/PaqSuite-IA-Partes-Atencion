@@ -11,7 +11,7 @@ Jira: PIAPARTES-6
 | Título | Consultas, dashboard y navegación del módulo |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Finalizado |
-| Última actualización | 2026-10-29 (CC ST #1: selección grilla Consulta detallada) |
+| Última actualización | 2026-11-06 (Parte I CC-PQ #8: saldo SP + destaque paquetes) |
 | HU relacionada(s) | [HU-006-consultas-dashboard-navegacion](../../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md) |
 | TR relacionada(s) | [TR-006-consultas-dashboard-navegacion](../../04-tareas/100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md); menú seed alineado a SPEC-003/005 |
@@ -130,7 +130,7 @@ Al menos esa superficie debe permitir agregar tiempo / cantidad de tareas por:
 **Objetivo:** cuenta corriente de horas para clientes con paquetes de horas anticipados (contratados por adelantado); permite ver consumo (tareas) y reposición (compras) con saldo corriente.
 
 - UI: grilla / pivot (framework), mismo patrón `ProcessDataGrid` + PivotGrid que el resto de Informes.
-- Filtros: `fechaDesde`, `fechaHasta`, **cliente** (obligatorio acotar; asistente/supervisor eligen cliente, cliente funcional ve su propia org) **y** tipo de cliente opcional (`tipoClienteId`; vacío = todos los tipos del universo ya delimitado).
+- Filtros: `fechaDesde`, `fechaHasta`, **cliente obligatorio** para supervisor/asistente (API **422** si falta `clienteId`; FE no consulta al abrir sin cliente). Cliente funcional usa su organización de sesión (sin selector). Tipo de cliente opcional (`tipoClienteId`; vacío = todos los tipos del universo ya delimitado). Una consulta = un `cliente_id`.
 - El filtro de tipo acota **movimientos del periodo y saldo inicial** (mismo universo).
 - Columnas: **mismos atributos que consulta detallada / carga diaria** (fecha, cliente, asistente, tipo de tarea, duración, sin cargo, presencial, cerrado, observación) **más** `tipoClienteCode` y `tipoClienteDescripcion` (código y descripción de `PQ_PARTES_TIPOS_CLIENTE` del cliente de la fila). La fila «Saldo inicial» deja esas columnas vacías.
 - **No filtra por `es_tarea`**: incluye tanto tareas (`es_tarea = true`) como compras/movimientos de paquete (`es_tarea = false`), a diferencia de consulta detallada/agrupadas/dashboard.
@@ -139,8 +139,9 @@ Al menos esa superficie debe permitir agregar tiempo / cantidad de tareas por:
   - `es_tarea = false` (compra) → **resta** `duracion_minutos` (repone el paquete).
 - **Columna Saldo** (running balance): en la fila «Saldo inicial» = acumulado previo a `fechaDesde`; en cada fila siguiente = saldo previo ± minutos de esa fila (misma regla suma/resta), ordenadas por fecha (+ id) ascendente tras la fila de saldo inicial.
 - **En Pivot:** el campo/atributo **Saldo no se incluye** (no tiene sentido en una tabla pivote); el resto de atributos de detalle sí está disponible, **incluidos** código y descripción de tipo de cliente. Selector de tipo: catálogo usable (código + descripción) con «Cargando…» mientras llega.
-- Presentación de duración en **`hh:mm`** (API/persistencia en minutos), igual que el resto de Informes.
-- **Fuera de alcance:** UI de alta de compras de horas (`es_tarea = false`); sin ese proceso, el saldo solo reflejará sumas (+) hasta que existan movimientos de compra.
+- Presentación de duración: tareas `hh:mm` estilo normal; compras (`es_tarea = false`) **`-hh:mm`** y destaque rojo. Columna Saldo: `hh:mm` con signo algebraico. API/persistencia en minutos positivos.
+- Cálculo sqlsrv: SP **`pq_sp_partes_informe_paquete_horas`** (regla 74). PHP `PartesInformeOperations::paqueteHoras` solo paridad de tests sqlite.
+- Alta de compras: proceso SPEC-013 (Carga de paquetes). El informe solo consume los movimientos persistidos.
 
 ### 4.4 Resultados vacíos
 
@@ -219,7 +220,10 @@ Gráficos simples opcionales si no complican el MVP.
 | R-CO-09 | Web: PivotGrid **ofrecido** en todo proceso Informes con grilla (detalle + agrupadas). Dashboard sin pivot obligatorio. Mobile: sin pivot. |
 | R-CO-10 | Acceso datos vía SP (MUST). |
 | R-CO-11 | Consulta detallada, agrupadas y dashboard: solo `es_tarea = 1`. |
-| R-CO-12 | Paquete de Horas **no** filtra por `es_tarea` (incluye tareas y compras); fila «Saldo inicial» = movimientos con fecha &lt; `fechaDesde` (tarea suma, compra resta); columna Saldo = running balance en grilla, excluida del pivot; mismos atributos de detalle que consulta detallada; filtros periodo + cliente según rol. |
+| R-CO-12 | Paquete de Horas **no** filtra por `es_tarea` (incluye tareas y compras); fila «Saldo inicial» = movimientos con fecha &lt; `fechaDesde` (tarea suma, compra resta); columna Saldo = running balance en grilla, excluida del pivot; mismos atributos de detalle que consulta detallada; filtros periodo + **cliente obligatorio** (supervisor/asistente) o cliente de sesión. |
+| R-CO-16 | Una consulta Paquete de Horas = un `cliente_id`; S₀ y running no mezclan clientes (CC-PQ #8). |
+| R-CO-17 | Compras: duración mostrada `-hh:mm` + destaque rojo; tareas estilo normal (CC-PQ #8). |
+| R-CO-18 | sqlsrv EXEC `pq_sp_partes_informe_paquete_horas`; no calcular saldo de negocio en PHP de producción (CC-PQ #8). |
 | R-CO-13 | Consulta detallada y agrupada exponen `erpCliente` / `erpArticulo` en grilla y pivot; valores vacíos/NULL no rompen la consulta. |
 | R-CO-14 | Paquete de Horas acepta filtro opcional `tipoClienteId`. Si viene informado, saldo inicial y movimientos se limitan a clientes de ese tipo. |
 | R-CO-15 | Cada movimiento expone `tipoClienteCode` y `tipoClienteDescripcion`. La fila «Saldo inicial» los deja vacíos. Pivot los ofrece; no ofrece Saldo. |
@@ -245,6 +249,7 @@ Gráficos simples opcionales si no complican el MVP.
 - [x] Paquete de Horas muestra tareas y compras del periodo; fila «Saldo inicial» con acumulado correcto (exclusive `fechaDesde`); columna Saldo corre en grilla; pivot no expone Saldo; filtro cliente disponible para asistente/supervisor.
 - [x] Detallada: grilla y pivot muestran Erp Cliente y Erp Articulo; agrupada los expone en grilla y pivot.
 - [x] Paquete de Horas: filtro opcional tipo de cliente; columnas código y descripción de tipo en grilla y pivot; saldo inicial las deja vacías.
+- [x] Paquete de Horas: `clienteId` obligatorio (supervisor/asistente); compras destacadas en Duración; saldo S₀ + running por cliente vía SP (CC-PQ #8).
 
 ---
 
@@ -297,6 +302,7 @@ Gráficos simples opcionales si no complican el MVP.
 | 2026-10-11 | Parte I CC-PQ #4 (04/10/2026): filtro y columnas de tipo de cliente en Paquete de Horas (R-CO-14/15); update eliminado. Estado → Finalizado. |
 | 2026-11-02 | CC-PQ #12: ítem menú **Consultas agrupadas** (`40200`) retirado del seed y migración de despliegue. |
 | 2026-10-29 | CC ST #1 (29/10/2026): selector de filas en Consulta detallada (web) para Emitir; select all allPages; export grilla independiente. Parte I desde SPEC-006-update. |
+| 2026-11-06 | Parte I CC-PQ #8: cliente obligatorio, saldo SP por cliente, destaque `-hh:mm` rojo en compras (R-CO-16…18). Update eliminado. Estado → **Finalizado**. |
 
 ---
 

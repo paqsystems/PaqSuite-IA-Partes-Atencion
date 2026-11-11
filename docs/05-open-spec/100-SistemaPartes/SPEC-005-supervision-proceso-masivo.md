@@ -11,7 +11,7 @@ Jira: PIAPARTES-5
 | Título | Supervisión: terceros y proceso masivo sobre tareas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Finalizado |
-| Última actualización | 04/11/2026 (Parte I CC-PQ #15 — informar clientes) |
+| Última actualización | 09/11/2026 (sort/HeaderFilter remotos + plantillas GEN-11) |
 | HU relacionada(s) | [HU-005-supervision-proceso-masivo](../../03-historias-usuario/100-SistemaPartes/HU-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md) |
@@ -99,7 +99,7 @@ La supervisión **reutiliza** las mismas reglas de `cerrado`, tipos, marcas e in
 
 1. Solo supervisor entra a la pantalla/proceso.
 2. Aplica **filtros previos** (mínimo §4.4) y obtiene un listado acotado.
-   - Si el **`total`** del listado supera el tamaño de página, la grilla usa **paginación remota** (CC-PQ #11): cada cambio de página o de tamaño (**20 / 40 / 80**) solicita al API `page` + `pageSize`; el paginador DevExtreme refleja todas las páginas; la leyenda **Total filtro** muestra el `total` global del filtro. **Must:** solo **`paging`** es remoto (`RemoteOperations` explícito); summary/filtro/sort/group en cliente — evita pager bloqueado en 1 página con totalizadores de pie activos.
+   - Si el **`total`** del listado supera el tamaño de página, la grilla usa **paginación remota** (CC-PQ #11): cada cambio de página o de tamaño (**20 / 40 / 80**) solicita al API `page` + `pageSize`; el paginador DevExtreme refleja todas las páginas; la leyenda **Total filtro** muestra el `total` global del filtro. **Remoto:** `paging`, `filtering` (FilterRow contains — CC-PQ #13 — y HeaderFilter por igualdad) y `sorting` (universo filtrado, no solo la página visible). **En cliente:** `grouping` y `summary` (totalizadores de pie de duración). Must: summary **no** remoto, para no bloquear el pager. Agrupación y column chooser operan sobre la **página cargada**.
 3. Marca una **selección explícita** de filas. No se procesa “todo el filtro” implícitamente sin selección. La UI ofrece **«Seleccionar todos los del resultado actual»** = **todo el resultado filtrado** (todas las páginas), con `id` + `rowVersion` de cada fila.
    - Si esa selección abarca **más de una página** → modal «Afectará a N partes. ¿Confirma?». Si cancela, no se arma esa selección masiva.
 4. Elige **una acción de lote** (§4.5b / §4.6): cerrar, reabrir, o actualizar atributo(s) permitidos.
@@ -111,7 +111,13 @@ La supervisión **reutiliza** las mismas reglas de `cerrado`, tipos, marcas e in
 1. Toolbar: ícono mail + tooltip i18n `partes.masivo.informarClientes` + `data-testid` `partesMasivoInformarClientes` (solo supervisor; excluido native).
 2. Destinatarios: `users.id` únicos de clientes del resultado filtrado (`es_tarea = 1`) con `PQ_PARTES_CLIENTES.user_id` → `USERS` usable (`activo`, no inhabilitado) y **`users.email`** no vacío. To del mail = **`users.email`** (**prohibido** `PQ_PARTES_CLIENTES.email`). Recolección en servidor (SP JOIN; sin `whereIn` N); sin exigir selección ni modificación de filas.
 3. Mail v1 (Mail Engine GEN / futuro GEN-30): empresa emisora; período filtros; URL portal tenant; `users.usuario` / código; forgot GEN-04; **sin** contraseña; asunto/cuerpo en `users.locale` (5 locales host).
-4. Confirmación previa con N destinatarios y rango fechas; 422 sin destinatarios / tope.
+4. Confirmación previa (`partesMasivoInformarConfirmDialog`) **antes** de enviar. Must de UX (adopta GEN-01 §17):
+   - Al abrir el diálogo se **reconsulta** el preview con los **mismos filtros** de la grilla (no un recuento stale de cuando se cargó la pantalla).
+   - Copy de negocio: **prohibido** jerga técnica (`users.email`, nombres de tablas/columnas).
+   - Encabezado con **N avisos por correo**; período del filtro según locale i18n (`dd/MM/yyyy` en es/pt/fr/it; `MM/dd/yyyy` en en).
+   - Lista **completa** de destinatarios en **tarjetas** (iniciales, nombre del cliente, mail). El conjunto es el universo filtrado (todas las páginas; sin exigir tilde).
+   - Viewport de la lista: **máximo 5 tarjetas visibles**. Si hay más, **scroll** en el recuadro de destinatarios (no paginar; no recortar con «Y N más»). Título del Popup y pie **Cancelar / Enviar correos** permanecen fijos.
+   - 422 sin destinatarios / tope.
 5. **Guard salida:** si hay cambios/selección pendientes y el supervisor abandona (menú / pestaña / `beforeunload`), diálogo i18n ofrece Enviar correos y salir / Salir sin enviar / Cancelar.
 
 ### 4.3b Grilla del proceso (capacidades Framework) — Must
@@ -120,12 +126,14 @@ La grilla del masivo **debe** usar el patrón común de grilla del framework (`P
 
 | Capacidad | Requisito |
 |-----------|-----------|
-| Fila de filtrado bajo títulos | Sí (`filterRow` / equivalente framework) |
-| Totalización | Sí — al menos sumatoria útil de **duración** cuando la columna esté presente (presentación alineada a SPEC-004/006: UI `hh:mm` / horas decimales en pie según norma de grilla del módulo) |
-| Selección de campos | Sí — column chooser |
-| Plantillas de layout | Sí — guardar / aplicar / último usado según contrato GEN de layouts de grilla |
+| Fila de filtrado bajo títulos | Sí (`filterRow`); contains remoto al API (CC-PQ #13) |
+| Filtro de encabezado (embudo) | Sí (`HeaderFilter`); lista valores únicos del **universo filtrado**; aplicar un valor (o varios) filtra por igualdad |
+| Orden por columna | Sí — clic en el título reordena el **universo filtrado** vía API, no solo la página visible |
+| Totalización | Sí — al menos sumatoria útil de **duración** cuando la columna esté presente (presentación alineada a SPEC-004/006: UI `hh:mm` / horas decimales en pie según norma de grilla del módulo). Pie **local** (no summary remoto) |
+| Selección de campos | Sí — column chooser (sobre la página cargada) |
+| Plantillas de layout | Sí — toolbar GEN-11 guardar / aplicar / último usado (`proceso` + `gridId` del masivo); mismo contrato que carga diaria; **sin** opt-out |
 | Exportación a Excel | Sí — del conjunto presentado en la grilla (capacidad framework; distinta de importación Excel fuera de alcance) |
-| Paginación alineada al total filtrado | Sí — remota vía API cuando `total > pageSize` (CC-PQ #11); tamaños 20/40/80; solo paging remoto; agrupación/column chooser sobre la **página cargada** |
+| Paginación alineada al total filtrado | Sí — remota vía API cuando `total > pageSize` (CC-PQ #11); tamaños 20/40/80; paging + filtro + sort remotos; agrupación sobre la **página cargada** |
 
 La implementación concreta sigue las normas del framework; este SPEC solo exige su **uso** en el proceso.
 
@@ -243,7 +251,7 @@ La UI debe dejar claro **qué atributo(s)** y **qué valor** se aplicarán antes
 - [ ] Actualizar `tipoTarea` incompatible con el cliente de alguna fila → 422/error de negocio; **cero** cambios.
 - [ ] Incluir un id inexistente → ninguna fila del lote cambia.
 - [ ] Filas ya en estado/valor objetivo no rompen el lote (idempotencia).
-- [ ] Grilla: filter row, totales, column chooser, plantillas y export Excel disponibles.
+- [ ] Grilla: filter row, HeaderFilter con valores únicos, orden por columna del universo filtrado, totales, column chooser, plantillas GEN-11 y export Excel disponibles.
 - [ ] UI muestra confirmación con cantidad (y valores de atributo) antes de ejecutar.
 - [ ] Tras éxito, el listado refleja el cambio sin recarga completa de la app.
 - [ ] i18n + `data-testid` en proceso masivo.
@@ -295,6 +303,8 @@ La UI debe dejar claro **qué atributo(s)** y **qué valor** se aplicarán antes
 | 03/11/2026 | CC-PQ #13: FilterRow remoto en grilla masivo (`clienteNombre`, `tipoTareaDescripcion`). Parte I acotada; F1/F Preview OK; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 | 04/11/2026 | CC-PQ #15: Informar a clientes (§4.7 — URL tenant, i18n destinatario, guard salida, plantilla v1). Parte I fusionó SPEC-005-update; [D-VERIFICACION-CC-PQ-15](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md). |
 | 04/11/2026 | Corrección PQ: destinatario = **`users.email`** del usuario vinculado; nunca `PQ_PARTES_CLIENTES.email`. |
+| 06/11/2026 | Confirmación informar clientes: tarjetas de destinatarios, lista completa, viewport de **5** + **scroll** (GEN-01 §17); preview al abrir con filtros vigentes; sin jerga técnica. |
+| 09/11/2026 | Grilla masivo: sort y HeaderFilter remotos sobre el universo filtrado; plantillas GEN-11 activas (revierte el opt-out del follow-up CC #11). §4.3 / §4.3b. |
 
 ---
 

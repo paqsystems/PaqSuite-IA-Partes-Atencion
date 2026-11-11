@@ -85,18 +85,29 @@
 }
 
 .pqMasivoInformarRecipientList {
+  --pq-masivo-recipient-visible: 5;
+  --pq-masivo-recipient-row: 62px;
+  --pq-masivo-recipient-gap: 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 280px;
-  overflow: auto;
+  gap: var(--pq-masivo-recipient-gap);
+  max-height: calc(
+    (var(--pq-masivo-recipient-visible) * var(--pq-masivo-recipient-row)) +
+      ((var(--pq-masivo-recipient-visible) - 1) * var(--pq-masivo-recipient-gap))
+  );
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding-right: 2px;
 }
 
 .pqMasivoInformarRecipient {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 12px;
+  min-height: var(--pq-masivo-recipient-row, 62px);
+  box-sizing: border-box;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid var(--pq-process-border, var(--dx-color-border, #e3e7ee));
@@ -128,6 +139,9 @@
 .pqMasivoInformarRecipientName {
   font-weight: 600;
   line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pqMasivoInformarRecipientEmail {
@@ -135,11 +149,7 @@
   opacity: 0.78;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.pqMasivoInformarMore {
-  font-size: 13px;
-  opacity: 0.8;
+  white-space: nowrap;
 }
 
 .pqMasivoInformarActions {

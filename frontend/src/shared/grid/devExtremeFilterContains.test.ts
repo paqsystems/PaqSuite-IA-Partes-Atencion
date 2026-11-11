@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { devExtremeFilterToContains } from './devExtremeFilterContains'
+import { devExtremeFilterToContains, parseDevExtremeFilter } from './devExtremeFilterContains'
 
 describe('devExtremeFilterToContains', () => {
   it('parses simple contains filter', () => {
@@ -20,5 +20,27 @@ describe('devExtremeFilterToContains', () => {
 
   it('returns empty for null', () => {
     expect(devExtremeFilterToContains(null)).toEqual({})
+  })
+})
+
+describe('parseDevExtremeFilter', () => {
+  it('parses header filter equals and or-list', () => {
+    expect(
+      parseDevExtremeFilter([
+        ['clienteNombre', '=', 'PaqSystems'],
+        'or',
+        ['clienteNombre', '=', 'Golo Tap'],
+      ]),
+    ).toEqual({
+      contains: {},
+      equals: { clienteNombre: ['PaqSystems', 'Golo Tap'] },
+    })
+  })
+
+  it('parses anyof unique values', () => {
+    expect(parseDevExtremeFilter(['usuarioCode', 'anyof', ['PQ', 'ADM']])).toEqual({
+      contains: {},
+      equals: { usuarioCode: ['PQ', 'ADM'] },
+    })
   })
 })

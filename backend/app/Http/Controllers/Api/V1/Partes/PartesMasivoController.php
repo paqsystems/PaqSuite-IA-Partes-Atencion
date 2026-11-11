@@ -60,6 +60,7 @@ final class PartesMasivoController extends Controller
             'p_cliente_nombre' => $request->query('clienteNombre', $request->input('clienteNombre')),
             'p_tipo_tarea_code' => $request->query('tipoTareaCode', $request->input('tipoTareaCode')),
             'p_tipo_tarea_descripcion' => $request->query('tipoTareaDescripcion', $request->input('tipoTareaDescripcion')),
+            'p_eq_json' => $request->query('eq', $request->input('eq')),
         ]);
     }
 

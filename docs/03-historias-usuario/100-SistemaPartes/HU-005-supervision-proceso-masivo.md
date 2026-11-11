@@ -12,7 +12,7 @@ Jira: PIAPARTES-19
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
 | Estado | Finalizado |
-| Última actualización | 04/11/2026 (Parte I CC-PQ #15 — informar clientes) |
+| Última actualización | 09/11/2026 (sort/HeaderFilter remotos + plantillas GEN-11) |
 | SPEC origen | [SPEC-005-supervision-proceso-masivo](../../05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md) |
 | TR relacionada(s) | [TR-005-supervision-proceso-masivo](../../04-tareas/100-SistemaPartes/TR-005-supervision-proceso-masivo.md) |
 
@@ -23,7 +23,7 @@ Jira: PIAPARTES-19
 | Entregable / criterio SPEC-005 | Dónde en esta HU |
 |--------------------------------|------------------|
 | Supervisión sobre mismo dominio §2.1 | Alcance; R-SU-02 |
-| Descubrimiento: filtros + selección §4.3–4.4 | CA-02, CA-03, CA-14, CA-CC11-01…05 |
+| Descubrimiento: filtros + selección §4.3–4.4 | CA-02, CA-03, CA-14, CA-CC11-01…07 |
 | Grilla Framework §4.3b, R-SU-03c | CA-15; Alcance |
 | Cerrar/reabrir lote §4.5b | CA-04, CA-05 |
 | Actualizar atributos Must §4.6 | CA-16, CA-17, CA-18 |
@@ -34,7 +34,8 @@ Jira: PIAPARTES-19
 | Tope `PartesMasivoMaxIds` | CA-11 |
 | Atributos sobre cerradas R-SU-10 | CA-16 |
 | i18n + testids | CA-10 |
-| Fuera: import Excel, mails, atributos excluidos | Fuera de alcance |
+| Informar a clientes §4.7 (ícono, destinatarios, confirmación UX, guard) | CA-CC15-M01…04, CA-CC15-M08 |
+| Fuera: import Excel, mails selectivos, atributos excluidos | Fuera de alcance |
 
 ---
 
@@ -64,7 +65,7 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
   - **Should acciones (mismo circuito):** `presencial`, `asistente`, `fecha`;
   - confirmación con cantidad y valores; lote atómico; tope `PartesMasivoMaxIds`;
   - SP + 403/409/422; i18n `partes.masivo.*` + `data-testid`.
-  - **Informar a clientes** (CC #15): ícono mail; destinatarios = usuarios Framework vinculados (`users.email`, nunca mail del maestro cliente); URL tenant + código; locale destinatario; guard salida; plantilla v1 i18n.
+  - **Informar a clientes** (CC #15): ícono mail; destinatarios = usuarios Framework vinculados (`users.email`, nunca mail del maestro cliente); URL tenant + código; locale destinatario; guard salida; plantilla v1 i18n; **confirmación** con tarjetas de destinatarios (lista completa; **5 visibles** + scroll; copy de negocio).
 - Delimitación implícita por `es_tarea = true`: listado, `list_ids`/«seleccionar todos» y lotes (cerrar/reabrir, atributos) operan únicamente sobre registros de tarea; un id con `es_tarea = false` en un lote falla de forma atómica (422, cero cambios).
 
 ---
@@ -120,7 +121,7 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
 - [ ] **CA-12** Atajo desde carga = link sin query/filtros; entrada principal = menú.
 - [ ] **CA-13** `rowVersion` stale → 409; 0 cambios.
 - [ ] **CA-14** Select-all = todo el filtro; >1 página → modal N; cancelar no arma selección.
-- [ ] **CA-15** Grilla masivo: filter row, totales de duración, column chooser, plantillas y export Excel.
+- [x] **CA-15** Grilla masivo: filter row, totales de duración, column chooser, **plantillas GEN-11** (toolbar Original / Guardar / Guardar como / Eliminar) y export Excel.
 - [ ] **CA-16** Actualizar `sinCargo` en lote (incl. filas cerradas) → las N reflejan el valor.
 - [ ] **CA-17** Actualizar `tipoTarea` válido para todas las filas → las N quedan con ese tipo.
 - [ ] **CA-18** `tipoTarea` incompatible con el cliente de alguna fila → error; **cero** cambios.
@@ -134,10 +135,13 @@ El supervisor ya puede cargar y editar tareas propias y de terceros no cerradas 
 - [x] **CA-CC11-03** Cambiar tamaño de página (20 / 40 / 80) recalcula páginas vía API.
 - [x] **CA-CC11-04** Agrupación por columnas no rompe la carga de datos ni deja la grilla vacía sin mensaje.
 - [x] **CA-CC11-05** Selección por fila y flujos de cierre/aplicar campos operativos en páginas distintas de la primera.
+- [x] **CA-CC11-06** Ordenar por título de columna (p. ej. Cliente) reordena el **universo filtrado** (todas las páginas), no solo la hoja visible.
+- [x] **CA-CC11-07** Embudo (HeaderFilter): las opciones no están vacías; lista valores únicos del universo filtrado y al aplicar recorta el listado.
 - [x] **CA-CC15-M01** Ícono mail «Informar a clientes» en proceso masivo (`partesMasivoInformarClientes`); mail con empresa emisora.
 - [x] **CA-CC15-M02** URL `https://{tenant}.partesatencion.paqsystems.com` + código usuario; locale del destinatario; sin password.
 - [x] **CA-CC15-M03** Destinatarios = clientes con usuario en el universo filtrado (todas las páginas; sin tilde obligatoria).
 - [x] **CA-CC15-M04** Guard al salir con cambios: Enviar / Salir sin enviar / Cancelar; plantilla v1 i18n sin editor.
+- [x] **CA-CC15-M08** Diálogo `partesMasivoInformarConfirmDialog`: preview al abrir con filtros vigentes; N avisos + período `dd/MM/yyyy`; tarjetas con nombre y mail (sin jerga `users.email`); lista **completa**; viewport de **5** tarjetas y **scroll** si hay más (no paginar ni «Y N más»).
 
 ---
 
@@ -203,6 +207,13 @@ Feature: Proceso masivo de supervisión Partes
     When tilda el check de cabecera / seleccionar todos
     Then los checks no se limpian inmediatamente
     And la selección coincide con el contrato de select-all vigente
+
+  Scenario: Confirmación de informar clientes lista destinatarios
+    Given un supervisor con filtro de periodo que incluye al menos 2 clientes con usuario y mail
+    When abre Informar a clientes
+    Then el diálogo muestra el recuento de avisos y el periodo filtrado
+    And lista una tarjeta por destinatario con nombre y correo (sin jerga técnica)
+    And si hay más de 5 destinatarios puede recorrer el resto con scroll sin perder tarjetas
 ```
 
 ---
@@ -256,3 +267,5 @@ Feature: Proceso masivo de supervisión Partes
 | 01/11/2026 | CC-PQ #11 prod: paginador OK tras `RemoteOperations` solo paging (PR #117/#118); Parte I acotada en HU base. |
 | 03/11/2026 | CC-PQ #13: FilterRow remoto grilla masivo (cliente / tipo tarea). Parte I acotada; F1/F Preview OK; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 | 04/11/2026 | CC-PQ #15: Informar a clientes (CA-CC15-M01…04). Parte I fusionó HU-005-update; [D-VERIFICACION-CC-PQ-15](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md). |
+| 06/11/2026 | CA-CC15-M08: confirmación con tarjetas, lista completa, 5 visibles + scroll; preview al abrir. |
+| 09/11/2026 | CA-CC11-06/07: sort y HeaderFilter remotos; CA-15 plantillas GEN-11 activas (sin opt-out). |

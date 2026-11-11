@@ -13,7 +13,7 @@ Jira: PIAPARTES-34
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md), [TR-003](./TR-003-maestros-y-catalogos.md) (menú Archivos), [TR-004](./TR-004-operacion-carga-diaria.md) (tareas), [TR-005](./TR-005-supervision-proceso-masivo.md) (ítem masivo menú) |
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Finalizado |
-| **Última actualización** | 2026-10-11 |
+| **Última actualización** | 2026-11-06 (Parte I CC-PQ #8) |
 
 **Origen:** [HU-006](../../03-historias-usuario/100-SistemaPartes/HU-006-consultas-dashboard-navegacion.md)  
 **Referencia SPEC:** [SPEC-006](../../05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md)
@@ -63,6 +63,9 @@ Jira: PIAPARTES-34
 | AC-U05 | Cada ítem de movimiento de Paquete de Horas trae `tipoClienteCode` y `tipoClienteDescripcion`. La fila saldo inicial los trae vacíos |
 | AC-U06 | `tipoClienteId` excluye movimientos de otro tipo y recalcula `saldoInicial` solo con el tipo |
 | AC-U07 | `buildPaqueteHorasPivotFields` incluye ambos dataField y no incluye `saldo` |
+| AC-CC8-01 | Supervisor/asistente sin `clienteId` → 422; FE no auto-carga |
+| AC-CC8-02 | Compras: duración `-hh:mm` + clase rojo; tareas normales |
+| AC-CC8-03 | sqlsrv EXEC `pq_sp_partes_informe_paquete_horas`; S₀ + running por el cliente consultado |
 
 ---
 
@@ -150,7 +153,7 @@ Errores: 422 fechas faltantes / eje inválido / granularidad faltante / `cliente
 |-------|---------|
 | Consulta detallada | `/partes/informes/consulta-detallada`; **`ProcessDataGrid`** (plantillas + column chooser inherentes) + toggle Pivot; filtros; empty i18n; duración en **`hh:mm`**; columnas `erpCliente`/`erpArticulo`; **solo lectura** |
 | Consultas agrupadas | `/partes/informes/consultas-agrupadas`; selector eje + granularidad fecha; **`ProcessDataGrid`** + Pivot; `totalMinutos` en **`hh:mm`**; `erpCliente`/`erpArticulo` en grilla y pivot |
-| Paquete de horas | `/partes/informes/paquete-horas`; filtros `fechaDesde`/`fechaHasta`/cliente/`tipoClienteId`; **`ProcessDataGrid`** con fila «Saldo inicial» + columna Saldo running (**`hh:mm`**) + tipo de cliente (código y descripción); toggle Pivot **sin** el campo Saldo; mismos atributos que detalle (incl. ERP); `data-testid` `partesPaqueteTipoCliente` |
+| Paquete de horas | `/partes/informes/paquete-horas`; filtros `fechaDesde`/`fechaHasta`/cliente **obligatorio**/`tipoClienteId`; **`ProcessDataGrid`** con fila «Saldo inicial» + columna Saldo running (**`hh:mm`** firmado) + tipo de cliente (código y descripción); compras **`-hh:mm`** rojo; toggle Pivot **sin** el campo Saldo; mismos atributos que detalle (incl. ERP); `data-testid` `partesPaqueteTipoCliente` |
 | Dashboard | Ruta `/partes`; indicadores; top N en **`ProcessDataGrid`**; DateBox mes; botón refresh; timer; totales en **`hh:mm`**; **sin** Pivot |
 | Post-login | Redirect a `/partes` |
 | Layouts | Via **`ProcessDataGrid`** (`proceso` + `gridId`); no redefinir chooser/plantillas por menú |
@@ -252,6 +255,7 @@ Jira: PIAPARTES-34
 | 2026-08-01 | Parte I: fusionados TR-006-update (CC-PQ #1, 31/07) y TR-006-update-01 (CC-PQ #2, 01/08) en esta TR; updates eliminados. Estado → Finalizado. |
 | 2026-10-11 | Parte I CC-PQ #4: AC-U05…U07 tipo de cliente en Paquete de Horas; update eliminado. Estado → Finalizado. |
 | 2026-10-29 | CC ST #1: `Selection` en `ConsultaDetalladaPage`; ver TR-011 / D-VERIFICACION-CC-ST-01. |
+| 2026-11-06 | Parte I CC-PQ #8: AC-CC8-01…03 (cliente obligatorio, destaque, saldo SP). Update eliminado. [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-8-2026-10-25.md). Estado → **Finalizado**. |
 
 ---
 

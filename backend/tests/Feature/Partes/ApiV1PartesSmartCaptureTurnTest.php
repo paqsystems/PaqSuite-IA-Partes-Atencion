@@ -133,6 +133,7 @@ final class ApiV1PartesSmartCaptureTurnTest extends TestCase
             'esSupervisor' => $esSupervisor,
             'tramoMinutos' => 15,
             'rowVersion' => null,
+            'locale' => 'es',
         ];
     }
 
@@ -561,6 +562,111 @@ final class ApiV1PartesSmartCaptureTurnTest extends TestCase
         ));
     }
 
+    public function test_turn_llm_falla_aplica_prompt_etiquetado_con_fecha_latina(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $tipoClienteId = (int) DB::table('PQ_PARTES_CLIENTES')->where('id', $cat['clienteId'])->value('tipo_cliente_id');
+        $herrajesId = DB::table('PQ_PARTES_CLIENTES')->insertGetId([
+            'user_id' => null,
+            'code' => 'HERRAJESMI',
+            'nombre' => 'Herrajes Mi',
+            'tipo_cliente_id' => $tipoClienteId,
+            'email' => null,
+            'activo' => true,
+            'inhabilitado' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('PQ_PARTES_USUARIOS')->where('id', $cat['asistenteId'])->update(['code' => 'PV']);
+        $credentialId = $this->createCredential($token);
+        $this->app->instance(PartesSmartCaptureProposalPort::class, new class implements PartesSmartCaptureProposalPort
+        {
+            public function propose(
+                string $message,
+                array $draftContext,
+                ?array $pendingChoice,
+                array $images,
+                object $credentialContext,
+            ): array {
+                throw new \RuntimeException('LLM provider request failed: HTTP 500');
+            }
+        });
+        $this->app->forgetInstance(\App\Services\Partes\SmartCapture\PartesTareaSmartCaptureTurnService::class);
+
+        $response = $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'Asistente PV fecha 07/11/2026 cliente HERRAJESMI Duracion 9 hrs observacion ACTUALIZACION T 26 + TERMINALES 8 Guardar',
+            'modality' => 'texto',
+            'credentialId' => $credentialId,
+            'draftContext' => $this->draftContext($cat),
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token));
+
+        $response->assertOk()->assertJsonPath('error', 0);
+        $actions = collect($response->json('resultado.actions') ?? []);
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'clienteId'
+                && (int) ($a['payload']['value'] ?? 0) === $herrajesId
+        ));
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'asistenteId'
+                && (int) ($a['payload']['value'] ?? 0) === $cat['asistenteId']
+        ));
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'fecha'
+                && ($a['payload']['value'] ?? null) === '2026-11-07'
+        ), 'es interpreta 07/11/2026 como 7 de noviembre');
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'duracionMinutos'
+                && (int) ($a['payload']['value'] ?? 0) === 540
+        ));
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'observacion'
+                && ($a['payload']['value'] ?? null) === 'ACTUALIZACION T 26 + TERMINALES 8'
+        ));
+        $this->assertTrue($actions->contains(fn ($a) => ($a['action'] ?? null) === 'save'));
+    }
+
+    public function test_turn_fecha_ambigua_en_es_julio_no_noviembre(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $credentialId = $this->createCredential($token);
+        $this->bindProposal([
+            'replyText' => 'fecha',
+            'save' => false,
+            'fields' => ['fecha' => '07/11/2026'],
+        ]);
+
+        $draft = $this->draftContext($cat);
+        $draft['locale'] = 'en';
+
+        $response = $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'fecha 07/11/2026',
+            'modality' => 'texto',
+            'credentialId' => $credentialId,
+            'draftContext' => $draft,
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token));
+
+        $response->assertOk()->assertJsonPath('error', 0);
+        $actions = collect($response->json('resultado.actions') ?? []);
+        $this->assertTrue($actions->contains(
+            fn ($a) => ($a['action'] ?? null) === 'setField'
+                && ($a['payload']['field'] ?? null) === 'fecha'
+                && ($a['payload']['value'] ?? null) === '2026-07-11'
+        ));
+    }
+
     /** @return array<string, mixed> */
     private function draftContextPaquete(array $cat, bool $esSupervisor = true): array
     {
@@ -577,6 +683,7 @@ final class ApiV1PartesSmartCaptureTurnTest extends TestCase
             'esSupervisor' => $esSupervisor,
             'tramoMinutos' => 15,
             'rowVersion' => null,
+            'locale' => 'es',
         ];
     }
 

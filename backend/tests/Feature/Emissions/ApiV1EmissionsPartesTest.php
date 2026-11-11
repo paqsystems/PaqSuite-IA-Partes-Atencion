@@ -502,6 +502,30 @@ class ApiV1EmissionsPartesTest extends TestCase
             ->assertJsonPath('resultado.items.0.isStandard', true);
     }
 
+    public function test_process_catalog_caption_is_not_original_report(): void
+    {
+        $token = $this->login();
+        $items = $this->getJson('/api/v1/emissions/processes', $this->authHeaders($token))
+            ->assertStatus(200)
+            ->json('resultado.items');
+
+        $this->assertIsArray($items);
+        $this->assertNotEmpty($items);
+        foreach ($items as $item) {
+            $this->assertIsArray($item);
+            $this->assertNotSame('', (string) ($item['processCode'] ?? ''));
+            $this->assertNotSame('<Original>', $item['name'] ?? null);
+            $this->assertNotSame($item['processCode'], $item['name']);
+        }
+
+        $this->getJson(
+            '/api/v1/emissions/design/processes/partes.informes.paqueteHoras/reports',
+            $this->authHeaders($token)
+        )
+            ->assertStatus(200)
+            ->assertJsonPath('resultado.items.0.name', '<Original>');
+    }
+
     public function test_field_schema_con_token_no_revienta_en_401(): void
     {
         $this->getJson(

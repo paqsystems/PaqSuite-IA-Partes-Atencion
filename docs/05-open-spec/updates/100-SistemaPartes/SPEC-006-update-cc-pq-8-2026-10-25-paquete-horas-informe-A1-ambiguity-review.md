@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|--------|
-| **SPEC-update** | [SPEC-006-update-cc-pq-8-2026-10-25-paquete-horas-informe](./SPEC-006-update-cc-pq-8-2026-10-25-paquete-horas-informe.md) |
+| **SPEC** | Fusionado Parte I 06/11/2026 → [`SPEC-006-consultas-dashboard-navegacion.md`](../../100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md) §4.3b (archivo update eliminado) |
 | **Paso** | A1 |
 | **Fecha** | 2026-10-30 |
 | **Origen** | CC PQ **#8** · decisiones PQ en chat 30/10/2026 |

@@ -13,6 +13,7 @@ export type PartesPaqueteSmartCaptureDraftContext = {
   esSupervisor: boolean
   tramoMinutos: number
   rowVersion: string | null
+  locale: string
 }
 
 type CatalogItem = { id: number; code?: string; nombre?: string }
@@ -23,6 +24,7 @@ export function buildPartesPaqueteDraftContext(input: {
   esSupervisor: boolean
   clientes: CatalogItem[]
   tramoMinutos?: number
+  locale?: string | null
 }): PartesPaqueteSmartCaptureDraftContext {
   const { form, editingId, esSupervisor, clientes } = input
   const tramoMinutos = input.tramoMinutos && input.tramoMinutos > 0 ? input.tramoMinutos : 15
@@ -41,5 +43,11 @@ export function buildPartesPaqueteDraftContext(input: {
     esSupervisor,
     tramoMinutos,
     rowVersion: form.rowVersion ?? null,
+    locale: resolveDraftLocale(input.locale),
   }
+}
+
+function resolveDraftLocale(locale?: string | null): string {
+  const code = String(locale ?? 'es').trim().slice(0, 2).toLowerCase()
+  return ['es', 'en', 'pt', 'fr', 'it'].includes(code) ? code : 'es'
 }

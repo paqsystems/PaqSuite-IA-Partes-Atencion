@@ -201,6 +201,7 @@
   "partes.mobile.guardar": "Save",
   "partes.carga.guardando": "Saving…",
   "partes.carga.title": "Daily entry",
+  "partes.carga.errorTitle": "Error",
   "partes.carga.linkMasivo": "Go to bulk process",
   "partes.paquete.title": "Hour package entry",
   "partes.paquete.horasLabel": "{{horas}} hours",

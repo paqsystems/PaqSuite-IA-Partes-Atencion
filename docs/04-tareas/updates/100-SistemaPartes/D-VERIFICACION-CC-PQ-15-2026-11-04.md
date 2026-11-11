@@ -52,3 +52,7 @@
 ## 3) Smoke manual UI
 
 Opcional post-deploy preview: ícono mail → confirmación N → log mail; dirty → diálogo leave. No bloquea F1/F con evidencia automatizada + code review.
+
+## 4) Ajuste UX confirmación (06/11/2026)
+
+Lista de destinatarios en tarjetas: universo filtrado completo; viewport de **5** + **scroll**; sin recorte «Y N más»; preview al abrir con filtros vigentes. Cubierto en SPEC/HU/TR-005 (CA-CC15-M08 / RN-TR-CC15-05) y Vitest `MasivoInformarConfirmDialog.test.tsx`. Adopta GEN-01 §17.

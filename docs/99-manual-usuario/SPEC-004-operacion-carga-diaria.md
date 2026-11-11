@@ -36,6 +36,7 @@ Desde la barra de la grilla podés **exportar a Excel** el listado filtrado (inc
 ## Particularidades
 
 - La **observación es obligatoria**.
+- Las **fechas** se muestran y se interpretan según el **idioma** de la sesión: en español, portugués, francés e italiano como **día/mes/año** (`07/11/2026` = 7 de noviembre); en inglés como **mes/día/año** (`07/11/2026` = 11 de julio). Internamente se guardan en formato ISO.
 - La duración se elige en formato **hh:mm** (tramos según parámetro; por defecto cada **15** minutos), mayor que 0 y hasta **24:00** (1440 minutos).
 - Los tipos disponibles dependen del cliente: genéricos + asignados a ese cliente.
 - Al cambiar de cliente, si el tipo ya no aplica se limpia y debés elegir otro.
@@ -81,8 +82,9 @@ Al dar de alta o editar una tarea (modal), debajo del formulario podés usar la 
 
 1. Escribí, dictá o adjuntá una imagen (si tu proveedor LLM lo permite) describiendo la tarea.
 2. El asistente **propone** valores en el formulario (cliente, tipo, duración, etc.) y deben **verse en los campos** del modal, no solo en el texto del chat.
-3. Si un dato no es válido (por ejemplo, una duración que no respeta el tramo de 15 minutos), el sistema lo indica en el hilo pero **no borra** los demás campos ya aplicados.
-4. Revisá y, si corresponde, pedí **guardar**; se usan las mismas validaciones que el botón Guardar.
+3. Si un dato no es válido (por ejemplo, una duración que no respeta el tramo de 15 minutos), el sistema lo indica **sin borrar** los demás campos ya aplicados. Un fallo al completar el turno o al guardar se muestra en una **ventana de error** sobre el formulario, no en el chat del panel ni en la grilla de detrás.
+4. La fecha del texto se lee con el **mismo formato que el idioma** de la sesión (ver Particularidades).
+5. Revisá y, si corresponde, pedí **guardar**; se usan las mismas validaciones que el botón Guardar.
 
 No confundir con el **Asistente IA** del menú del avatar (ese responde preguntas de ayuda; no completa el parte). En **mobile** la captura inteligente no está disponible. Si la tarea está **cerrada**, el panel queda deshabilitado. Sin credencial LLM configurada en Preferencias, el panel te pedirá configurarla.
 

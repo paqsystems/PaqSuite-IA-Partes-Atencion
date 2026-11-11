@@ -33,6 +33,7 @@ describe('buildPartesPaqueteDraftContext', () => {
     expect(draft.clienteCode).toBe('CL1')
     expect(draft.duracionMinutos).toBe(8 * 60)
     expect(draft).not.toHaveProperty('asistenteId')
+    expect(draft.locale).toBe('es')
   })
 })
 

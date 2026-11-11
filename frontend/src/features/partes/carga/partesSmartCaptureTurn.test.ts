@@ -3,6 +3,7 @@ import { buildPartesDraftContext } from './buildPartesDraftContext'
 import {
   applyPartesAction,
   handlePartesSmartCaptureSend,
+  isSmartCaptureHardFailure,
   resolveSmartCaptureReplyText,
 } from './partesSmartCaptureTurn'
 import type { FormState } from './cargaDiariaFormTypes'
@@ -46,6 +47,31 @@ describe('buildPartesDraftContext', () => {
     expect(draft.tipoTareaCode).toBe('T1')
     expect(draft.presencial).toBe(true)
     expect(draft.tramoMinutos).toBe(15)
+    expect(draft.locale).toBe('es')
+  })
+
+  it('propaga locale i18n al draft', () => {
+    const form: FormState = {
+      usuarioId: 1,
+      clienteId: null,
+      tipoTareaId: null,
+      fecha: '2026-08-03',
+      duracionMinutos: 15,
+      sinCargo: false,
+      presencial: false,
+      observacion: '',
+    }
+    const draft = buildPartesDraftContext({
+      form,
+      editingId: null,
+      cerrado: false,
+      esSupervisor: false,
+      clientes: [],
+      asistentes: [],
+      tipos: [],
+      locale: 'en-US',
+    })
+    expect(draft.locale).toBe('en')
   })
 })
 
@@ -229,6 +255,81 @@ describe('applyPartesAction', () => {
       }
     )
     expect(onError).toHaveBeenCalledWith('Configurá LLM')
+  })
+
+  it('muestra turnError ante fallo de transporte 5xx', async () => {
+    const post = vi.mocked(postSmartCaptureTurn)
+    post.mockResolvedValue({
+      kind: 'transportError',
+      httpStatus: 500,
+      i18nKey: 'infra.transport',
+    } as never)
+    const onError = vi.fn()
+    const form: FormState = {
+      usuarioId: 1,
+      clienteId: null,
+      tipoTareaId: null,
+      fecha: '2026-09-15',
+      duracionMinutos: 15,
+      sinCargo: false,
+      presencial: false,
+      observacion: '',
+    }
+    await handlePartesSmartCaptureSend(
+      { message: 'hola', modality: 'texto', images: [], credentialId: 10 },
+      {
+        ...handlersBase(form),
+        onError,
+        resolveMessage: (key) => key,
+      }
+    )
+    expect(onError).toHaveBeenCalledWith('partes.smartCapture.turnError')
+  })
+
+  it('trata replyText turnError + noop como error, no como respuesta del hilo', async () => {
+    expect(
+      isSmartCaptureHardFailure('partes.smartCapture.turnError', [
+        { action: 'noop', payload: {}, resultado: 'ok' },
+      ])
+    ).toBe(true)
+    const post = vi.mocked(postSmartCaptureTurn)
+    post.mockResolvedValue({
+      kind: 'ok',
+      envelope: {
+        error: 0,
+        respuesta: 'ok',
+        resultado: {
+          replyText: 'partes.smartCapture.turnError',
+          actions: [{ action: 'noop', payload: {}, resultado: 'ok' }],
+          pendingChoice: null,
+          configurationRequired: false,
+        },
+      },
+    } as never)
+    const onError = vi.fn()
+    const onAssistantReply = vi.fn()
+    const form: FormState = {
+      usuarioId: 1,
+      clienteId: null,
+      tipoTareaId: null,
+      fecha: '2026-09-15',
+      duracionMinutos: 15,
+      sinCargo: false,
+      presencial: false,
+      observacion: '',
+    }
+    await handlePartesSmartCaptureSend(
+      { message: 'hola', modality: 'texto', images: [], credentialId: 10 },
+      {
+        ...handlersBase(form),
+        onError,
+        onAssistantReply,
+        resolveMessage: (key) =>
+          key === 'partes.smartCapture.turnError' ? 'No se pudo completar el turno de captura.' : key,
+      }
+    )
+    expect(onError).toHaveBeenCalledWith('No se pudo completar el turno de captura.')
+    expect(onAssistantReply).not.toHaveBeenCalled()
   })
 
   it('duración 85 / 1:25 no pisa lookups ni setea minutos inválidos', async () => {

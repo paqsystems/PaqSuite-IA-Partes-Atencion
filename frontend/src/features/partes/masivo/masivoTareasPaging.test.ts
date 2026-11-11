@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { masivoGridLoadOptionsToQuery } from './masivoTareasPaging'
+import { coerceHeaderFilterKey, masivoGridLoadOptionsToQuery } from './masivoTareasPaging'
 
 describe('masivoGridLoadOptionsToQuery', () => {
   it('maps first page from skip 0', () => {
@@ -38,5 +38,47 @@ describe('masivoGridLoadOptionsToQuery', () => {
         filter: ['clienteNombre', 'contains', 'ANKAS'],
       }),
     ).toEqual({ page: 1, pageSize: 20, clienteNombre: 'ANKAS' })
+  })
+
+  it('maps remote sort on clienteNombre', () => {
+    expect(
+      masivoGridLoadOptionsToQuery({
+        skip: 0,
+        take: 20,
+        sort: [{ selector: 'clienteNombre', desc: false }],
+      }),
+    ).toEqual({ page: 1, pageSize: 20, sortField: 'clienteNombre', sortOrder: 'asc' })
+  })
+
+  it('maps header filter group to distinctField', () => {
+    expect(
+      masivoGridLoadOptionsToQuery({
+        skip: 0,
+        take: 20,
+        group: [{ selector: 'clienteNombre', isExpanded: false }],
+      }),
+    ).toEqual({ page: 1, pageSize: 20, distinctField: 'clienteNombre' })
+  })
+
+  it('maps header filter equals to eq', () => {
+    expect(
+      masivoGridLoadOptionsToQuery({
+        skip: 0,
+        take: 20,
+        filter: ['clienteNombre', '=', 'PaqSystems'],
+      }),
+    ).toEqual({
+      page: 1,
+      pageSize: 20,
+      eq: { clienteNombre: ['PaqSystems'] },
+    })
+  })
+})
+
+describe('coerceHeaderFilterKey', () => {
+  it('normalizes empty and boolean values', () => {
+    expect(coerceHeaderFilterKey('clienteNombre', '')).toBeNull()
+    expect(coerceHeaderFilterKey('sinCargo', 1)).toBe(true)
+    expect(coerceHeaderFilterKey('fecha', '2026-11-07 00:00:00')).toBe('2026-11-07')
   })
 })

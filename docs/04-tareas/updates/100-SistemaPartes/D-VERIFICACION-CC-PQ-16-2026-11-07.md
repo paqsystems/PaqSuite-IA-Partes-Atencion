@@ -4,7 +4,7 @@
 |-------|--------|
 | **Origen** | `00-ControlCalidad-PQ` · CC **#16** |
 | **Parte E** | [E-CC-PQ-16-2026-11-07.md](./E-CC-PQ-16-2026-11-07.md) |
-| **TR** | [TR-002-update-02](./TR-002-identidad-funcional-y-acceso-update-02.md) |
+| **TR** | [TR-002 §13](../../100-SistemaPartes/TR-002-identidad-funcional-y-acceso.md) (Parte I unificación) |
 | **Veredicto F** | **Apto** — regresión automatizada OK; smoke manual preview **no ejecutado** en esta sesión |
 | **F1/F** | **Aprobado con observaciones** 07/11/2026 |
 | **Parte I** | Pendiente de merge/deploy (sin PR en esta sesión) |

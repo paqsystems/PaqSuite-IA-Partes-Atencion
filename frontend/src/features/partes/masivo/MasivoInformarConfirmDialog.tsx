@@ -7,8 +7,6 @@ import { masivoRecipientInitials } from './masivoRecipientInitials'
 import type { MasivoInformarDestinatario } from './partesMasivoApi'
 import './MasivoInformarConfirmDialog.css'
 
-const MAX_VISIBLE_RECIPIENTS = 20
-
 type Props = {
   visible: boolean
   loading: boolean
@@ -34,9 +32,7 @@ export function MasivoInformarConfirmDialog({
   onCancel,
   onSend,
 }: Props) {
-  const { t } = useTranslation()
-  const hiddenCount = Math.max(0, destinatarios.length - MAX_VISIBLE_RECIPIENTS)
-  const visibleRecipients = destinatarios.slice(0, MAX_VISIBLE_RECIPIENTS)
+  const { t, i18n } = useTranslation()
   const busy = loading || submitting
   const canSend = !busy && destinatarioCount > 0
 
@@ -79,11 +75,12 @@ export function MasivoInformarConfirmDialog({
             <div className="pqMasivoInformarPeriod" data-testid="partesMasivoInformarPeriod">
               <strong>{t('partes.masivo.mailInformarClientes.periodLabel')}</strong>
               <span>
-                {formatMasivoIsoDate(fechaDesde)} → {formatMasivoIsoDate(fechaHasta)}
+                {formatMasivoIsoDate(fechaDesde, i18n.language)} →{' '}
+                {formatMasivoIsoDate(fechaHasta, i18n.language)}
               </span>
             </div>
 
-            {visibleRecipients.length > 0 ? (
+            {destinatarios.length > 0 ? (
               <div className="pqMasivoInformarRecipients">
                 <strong className="pqMasivoInformarRecipientsTitle">
                   {t('partes.masivo.mailInformarClientes.recipientsTitle')}
@@ -92,7 +89,7 @@ export function MasivoInformarConfirmDialog({
                   className="pqMasivoInformarRecipientList"
                   data-testid="partesMasivoInformarRecipientList"
                 >
-                  {visibleRecipients.map((item) => {
+                  {destinatarios.map((item) => {
                     const displayName = item.clienteNombre || item.nombre
                     return (
                       <div
@@ -111,11 +108,6 @@ export function MasivoInformarConfirmDialog({
                     )
                   })}
                 </div>
-                {hiddenCount > 0 ? (
-                  <span className="pqMasivoInformarMore">
-                    {t('partes.masivo.mailInformarClientes.moreRecipients', { count: hiddenCount })}
-                  </span>
-                ) : null}
               </div>
             ) : null}
           </>

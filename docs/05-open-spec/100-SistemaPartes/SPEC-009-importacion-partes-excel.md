@@ -12,7 +12,7 @@ Jira: PIAPARTES-9
 | Título | Importación de partes (tareas) desde Excel bajo Carga de Partes |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Finalizado |
-| Última actualización | 2026-10-11 |
+| Última actualización | 2026-11-07 |
 | HU relacionada(s) | [HU-009-importacion-partes-excel](../../03-historias-usuario/100-SistemaPartes/HU-009-importacion-partes-excel.md) |
 | TR relacionada(s) | [TR-009-importacion-partes-excel](../../04-tareas/100-SistemaPartes/TR-009-importacion-partes-excel.md) |
 | Depende de | [SPEC-001](./SPEC-001-modelo-datos-modulo.md), [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-003](./SPEC-003-maestros-y-catalogos.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md) (grilla/filtros/validaciones de tarea) |
@@ -176,7 +176,7 @@ Si el procesamiento **graba al menos una fila**, el host debe **volver a cargar*
 
 ## 5. Criterios verificables
 
-- [ ] Menú / entrada bajo Carga de Partes; cliente no ve ni puede invocar el proceso.
+- [ ] Embebido en Carga diaria (sin ítem de menú ni ruta aparte); cliente no ve ni puede invocar el proceso.
 - [ ] Toolbar GEN (plantilla + importar) en fila propia **en Carga diaria** (sin ruta/menú aparte).
 - [ ] Plantilla descarga columnas canónicas §4.2.
 - [ ] Fechas en Excel aceptadas según formato de fecha configurado de la app (y/o fecha nativa Excel); UI de carga sigue mostrando según locale.
@@ -234,3 +234,4 @@ Si el procesamiento **graba al menos una fila**, el host debe **volver a cargar*
 | 2026-08-02 | Parte B1: HU-009 enriquecida. |
 | 2026-08-02 | Parte C: enlace TR-009. |
 | 2026-10-11 | Parte I: i18n GEN-14 (`excelImport.sheet.*` + `partes.import.*` 5 locales; `t` i18next). F1/F Aprobado. Update eliminado. Estado → Finalizado. |
+| 2026-11-07 | Parte I: evidencia E de TR-009 absorbida en el original; §5 alineado a embebido-only (sin menú aparte). |

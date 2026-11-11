@@ -15,7 +15,7 @@ import { getAuthSession, getAuthToken } from '../../auth/authSessionStore'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
 import {
-  dateDisplayFormat,
+  resolvePartesDateDisplayFormat,
   dateSerializationFormat,
   DURACION_HORAS_NUMBER_FORMAT,
   enrichRowsWithDuracionHoras,
@@ -58,6 +58,7 @@ function catalogDisplay(item: Record<string, unknown> | null, descriptionKey: 'n
 
 export function ConsultaDetalladaPage() {
   const { t, i18n } = useTranslation()
+  const dateFormat = resolvePartesDateDisplayFormat(i18n.language)
   const pageTitle = useProcessMenuTitle(
     t('partes.informe.page.consultaDetallada'),
     '/partes/informes/consulta-detallada',
@@ -349,7 +350,7 @@ export function ConsultaDetalladaPage() {
           <DateBox
             value={fechaDesde}
             type="date"
-            displayFormat={dateDisplayFormat}
+            displayFormat={dateFormat}
             dateSerializationFormat={dateSerializationFormat}
             useMaskBehavior
             onValueChanged={(e) => {
@@ -363,7 +364,7 @@ export function ConsultaDetalladaPage() {
         <DateBox
           value={fechaHasta}
           type="date"
-          displayFormat={dateDisplayFormat}
+          displayFormat={dateFormat}
           dateSerializationFormat={dateSerializationFormat}
           useMaskBehavior
           onValueChanged={(e) => {
@@ -476,6 +477,7 @@ export function ConsultaDetalladaPage() {
 
 export function ConsultasAgrupadasPage() {
   const { t, i18n } = useTranslation()
+  const dateFormat = resolvePartesDateDisplayFormat(i18n.language)
   const pageTitle = useProcessMenuTitle(
     t('partes.informe.page.consultasAgrupadas'),
     '/partes/informes/consultas-agrupadas',
@@ -633,7 +635,7 @@ export function ConsultasAgrupadasPage() {
         <DateBox
           value={fechaDesde}
           type="date"
-          displayFormat={dateDisplayFormat}
+          displayFormat={dateFormat}
           dateSerializationFormat={dateSerializationFormat}
           useMaskBehavior
           onValueChanged={(e) => {
@@ -646,7 +648,7 @@ export function ConsultasAgrupadasPage() {
         <DateBox
           value={fechaHasta}
           type="date"
-          displayFormat={dateDisplayFormat}
+          displayFormat={dateFormat}
           dateSerializationFormat={dateSerializationFormat}
           useMaskBehavior
           onValueChanged={(e) => {

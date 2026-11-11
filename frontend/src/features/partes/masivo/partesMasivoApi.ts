@@ -1,7 +1,7 @@
 import { apiRequest } from '@paqsuite/react-core'
 import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { getAuthToken } from '../../auth/authSessionStore'
-import type { TareaListQuery } from '../carga/partesTareaApi'
+import { appendTareaListParams, type TareaListQuery } from '../carga/partesTareaApi'
 
 function authHeaders(): HeadersInit {
   const token = getAuthToken()
@@ -33,12 +33,7 @@ export async function listTareaIds(query: Omit<TareaListQuery, 'page' | 'pageSiz
     fechaHasta: query.fechaHasta,
     estadoCerrado: query.estadoCerrado ?? 'todas',
   })
-  if (query.clienteId) {
-    params.set('clienteId', String(query.clienteId))
-  }
-  if (query.usuarioId) {
-    params.set('usuarioId', String(query.usuarioId))
-  }
+  appendTareaListParams(params, query as TareaListQuery)
   return apiRequest<{ items: TareaIdItem[]; total: number }>(
     `/api/v1/partes/tareas/ids?${params.toString()}`,
     {
@@ -103,24 +98,7 @@ function buildMasivoFilterParams(query: MasivoInformarFilters): URLSearchParams 
     fechaHasta: query.fechaHasta,
     estadoCerrado: query.estadoCerrado ?? 'todas',
   })
-  if (query.clienteId) {
-    params.set('clienteId', String(query.clienteId))
-  }
-  if (query.usuarioId) {
-    params.set('usuarioId', String(query.usuarioId))
-  }
-  if (query.clienteCode) {
-    params.set('clienteCode', query.clienteCode)
-  }
-  if (query.clienteNombre) {
-    params.set('clienteNombre', query.clienteNombre)
-  }
-  if (query.tipoTareaCode) {
-    params.set('tipoTareaCode', query.tipoTareaCode)
-  }
-  if (query.tipoTareaDescripcion) {
-    params.set('tipoTareaDescripcion', query.tipoTareaDescripcion)
-  }
+  appendTareaListParams(params, query)
   return params
 }
 
