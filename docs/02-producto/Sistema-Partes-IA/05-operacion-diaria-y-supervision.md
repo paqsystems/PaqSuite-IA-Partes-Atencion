@@ -219,7 +219,7 @@ Accion **aparte de la seleccion**: el supervisor informa por correo a los client
 La confirmacion previa debe:
 
 - reconsultar destinatarios con los filtros vigentes al abrir el dialogo;
-- mostrar cantidad de avisos y periodo en `dd/MM/yyyy`;
+- mostrar cantidad de avisos y periodo según el idioma de la sesión (`dd/MM/yyyy` en es/pt/fr/it; `MM/dd/yyyy` en en);
 - listar **todos** los destinatarios en **tarjetas** (nombre y correo; copy de negocio, sin jerga tecnica);
 - mostrar como maximo **cinco tarjetas** a la vez y permitir **scroll** para el resto (no paginar ni recortar con «Y N mas»);
 - mantener fijos el titulo y las acciones Cancelar / Enviar.

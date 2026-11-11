@@ -29,7 +29,7 @@ import {
   type PartesTareaItem,
 } from '../carga/partesTareaApi'
 import {
-  dateDisplayFormat,
+  resolvePartesDateDisplayFormat,
   dateSerializationFormat,
   formatMinutosAsHhMm,
   isoDateFromDateBox,
@@ -79,7 +79,8 @@ export function ProcesoMasivoPage() {
 }
 
 function ProcesoMasivoView() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const dateFormat = resolvePartesDateDisplayFormat(i18n.language)
   const nativeApp = isNativeApp()
   const pageTitle = useProcessMenuTitle(t('partes.masivo.title'), '/partes/proceso-masivo')
   const estadoOpciones = usePartesEstadoCerradoOptions()
@@ -635,7 +636,7 @@ function ProcesoMasivoView() {
           <DateBox
             value={fechaDesde}
             type="date"
-            displayFormat={dateDisplayFormat}
+            displayFormat={dateFormat}
             dateSerializationFormat={dateSerializationFormat}
             onValueChanged={(e) => {
               const next = isoDateFromDateBox(e)
@@ -650,7 +651,7 @@ function ProcesoMasivoView() {
           <DateBox
             value={fechaHasta}
             type="date"
-            displayFormat={dateDisplayFormat}
+            displayFormat={dateFormat}
             dateSerializationFormat={dateSerializationFormat}
             onValueChanged={(e) => {
               const next = isoDateFromDateBox(e)
@@ -824,7 +825,7 @@ function ProcesoMasivoView() {
           <DateBox
             value={applyFecha || undefined}
             type="date"
-            displayFormat={dateDisplayFormat}
+            displayFormat={dateFormat}
             dateSerializationFormat={dateSerializationFormat}
             disabled={!touchFecha}
             elementAttr={{ 'data-testid': 'partesMasivoFecha' }}

@@ -11,6 +11,7 @@ import {
   minutosToHorasDecimal,
   parseDuracionToMinutos,
   parseHhMmToMinutos,
+  resolvePartesDateDisplayFormat,
 } from './partesTareaDuration'
 
 describe('partesTareaDuration', () => {
@@ -72,6 +73,12 @@ describe('partesTareaDuration', () => {
     ])
   })
 
+  it('incluye 9 horas en el combo por defecto (tope 24 h)', () => {
+    const labels = buildTramoHhMmOptions(15).map((item) => item.minutos)
+    expect(labels).toContain(540)
+    expect(labels[labels.length - 1]).toBe(1440)
+  })
+
   it('detecta fecha futura', () => {
     expect(isFechaFutura('2099-01-01', '2026-07-30')).toBe(true)
     expect(isFechaFutura('2026-07-30', '2026-07-30')).toBe(false)
@@ -82,6 +89,15 @@ describe('partesTareaDuration', () => {
     expect(isValidIsoDate('0000-09-16')).toBe(false)
     expect(isValidIsoDate('2026-02-30')).toBe(false)
     expect(isValidIsoDate('16-09-2026')).toBe(false)
+  })
+
+  it('resuelve displayFormat de fecha según locale i18n', () => {
+    expect(resolvePartesDateDisplayFormat('es')).toBe('dd/MM/yyyy')
+    expect(resolvePartesDateDisplayFormat('pt')).toBe('dd/MM/yyyy')
+    expect(resolvePartesDateDisplayFormat('fr')).toBe('dd/MM/yyyy')
+    expect(resolvePartesDateDisplayFormat('it')).toBe('dd/MM/yyyy')
+    expect(resolvePartesDateDisplayFormat('en')).toBe('MM/dd/yyyy')
+    expect(resolvePartesDateDisplayFormat('en-US')).toBe('MM/dd/yyyy')
   })
 
   it('isoDateFromDateBox ignora cambios programáticos', () => {

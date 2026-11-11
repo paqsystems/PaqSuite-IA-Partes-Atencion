@@ -1,4 +1,4 @@
-# SPEC-010 – Smart Capture en carga diaria (modal de tarea)
+# SPEC-010 – Smart Capture en carga diaria (modal de tarea)
 
 Jira: PIAPARTES-10
 
@@ -11,7 +11,7 @@ Jira: PIAPARTES-10
 | Título | Smart Capture (asistente operativo GEN-03) en el modal de alta/edición de tarea — Carga diaria |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Finalizado |
-| Última actualización | 2026-09-16 |
+| Última actualización | 2026-11-11 |
 | HU relacionada(s) | [HU-010-smart-capture-carga-diaria](../../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md) |
 | TR relacionada(s) | [TR-010-smart-capture-carga-diaria](../../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-003](./SPEC-003-maestros-y-catalogos.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md), [SPEC-008](./SPEC-008-asistente-ia-chat-documental.md) (BYOK / timeout LLM host); Framework GEN-03 / SPEC-001-03 (docs en `PaqSuite-IA-FRAMEWORK`); provider GEN-16 |
@@ -142,6 +142,13 @@ Jira: PIAPARTES-10
 | R-SC-14 | Si la fecha propuesta es **estrictamente posterior** a la fecha del día del sistema/instalación → pedir confirmación en el hilo **antes de aplicarla al draft**. |
 | R-SC-15 | Sin confirmar → la fecha futura **no** queda en el formulario. |
 | R-SC-16 | Fecha = hoy o pasada: se puede aplicar sin esa confirmación extra (sujeto a demás reglas SPEC-004). |
+| R-SC-34 | Fechas con barras/puntos en el prompt se interpretan según el **locale i18n activo** (`draftContext.locale`): `en` = `MM/dd/yyyy`; `es` / `pt` / `fr` / `it` = `dd/MM/yyyy`. Persistencia y `setField` siguen en ISO `yyyy-MM-dd`. Una fecha inequívoca (día &gt; 12) no se invierte. El DateBox del modal usa el mismo patrón de presentación. |
+
+### 4.5.1 Errores duros de turno (Must)
+
+| ID | Norma |
+|----|--------|
+| R-SC-35 | Fallos de turno (`partes.smartCapture.turnError`, envelope/transporte, validación al Guardar con el Popup abierto) se muestran en **ventana modal** sobre el formulario (regla 36). **No** van al hilo de Captura inteligente ni al banner de la grilla detrás. Ambigüedad de catálogo y confirmación de fecha futura **sí** siguen en el hilo. |
 
 ### 4.6 Grabación por keyword (Must — D-SC-08)
 
@@ -238,7 +245,7 @@ Confirmación de **fecha futura** (R-SC-14…16): palabras de aceptación del hi
 | OpenAPI | Documentar endpoint de turno (tag acorde, p. ej. Partes Tareas / Smart Capture) |
 | Docs | Manual usuario: cómo usar SC en carga; distinguir de Asistente IA avatar |
 
-`draftContext` (opaco GEN; shape Partes en TR): snapshot de ids/códigos/textos del form (cliente, asistente, tipo, fecha, duración, flags, observación, `cerrado`, modo alta|edición, `id` si edición).
+`draftContext` (opaco GEN; shape Partes en TR): snapshot de ids/códigos/textos del form (cliente, asistente, tipo, fecha, duración, flags, observación, `cerrado`, modo alta|edición, `id` si edición) más **`locale`** (código i18n de 2 letras, R-SC-34).
 
 Familias de `action` orientativas (nombres finales en TR): `setField`, lookups/`needsChoice`/`needsRefine`, `confirmFutureDate`, `save`/`submit` (**FE → API Guardar**), `noop`/`help`.
 
@@ -252,7 +259,7 @@ Familias de `action` orientativas (nombres finales en TR): `setField`, lookups/`
 |------|-------------|
 | Paquete SC en `@paqsuite/react-core` / laravel-core | Supuesto: API panel + helpers disponibles (GEN-03 cerrado conceptual; smoke Framework). Si falta pieza, TR declara gap y mínimos. |
 | UI actual oculta Editar en tareas cerradas | D-SC-13 sigue Must como defensa; E2E puede mockear `cerrado` o unit del `disabled`. |
-| Calidad LLM / STT | No inventar datos; ambigüedad → choice; errores visibles en hilo. |
+| Calidad LLM / STT | No inventar datos; ambigüedad → choice en hilo; fallos duros de turno → modal (R-SC-35). |
 | Especialización vs P7 GEN (orden raíz) | Explicitada en R-SC-08; no bloquear turno por falta de cliente. |
 | Conflicto SPEC-004 “fecha futura sin bloqueo duro” | SC **añade** confirmación al **aplicar draft** (D-SC-07); no contradice el alta manual sin SC. |
 | Endpoint path exacto | TR; OpenAPI al implementar. |
@@ -273,3 +280,4 @@ Familias de `action` orientativas (nombres finales en TR): `setField`, lookups/`
 | 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): R-SC-31…33 — controles visibles + apply parcial si duración inválida. |
 | 2026-09-16 | Parte F: criterios verificados — [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-010-update-CC-PQ-03-2026-09-16.md). |
 | 2026-09-16 | Parte I: fusionado SPEC-010-update (CC-PQ #3, 09/08) en este original; update eliminado. Estado → Finalizado. |
+| 2026-11-11 | R-SC-34 fecha según locale i18n (no siempre `dd/MM`); R-SC-35 errores duros en modal, no en hilo ni grilla. |

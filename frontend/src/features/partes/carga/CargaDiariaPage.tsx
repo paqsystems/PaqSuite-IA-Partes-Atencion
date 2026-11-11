@@ -37,7 +37,7 @@ import {
 } from './partesTareaApi'
 import {
   buildTramoHhMmOptions,
-  dateDisplayFormat,
+  resolvePartesDateDisplayFormat,
   dateSerializationFormat,
   DURACION_HORAS_NUMBER_FORMAT,
   formatMinutosAsHhMm,
@@ -50,6 +50,7 @@ import { shouldRefreshCargaAfterImport } from './excelImportCargaHelpers'
 import { handlePartesSmartCaptureSend } from './partesSmartCaptureTurn'
 import { resolveDefaultTipoId } from './cargaDiariaTipoDefault'
 import { cargaDiariaPersistErrorKey } from './cargaDiariaPersistValidation'
+import { FormErrorModal } from '../../../shared/ui/FormErrorModal'
 import { isDxUserEvent, normalizeCatalogItems } from './catalogItems'
 import { usePartesEstadoCerradoOptions } from '../partesFiltroEstado'
 import { usePartesTareaGridCaptions } from '../partesTareaGridI18n'
@@ -75,7 +76,7 @@ const emptyForm = (asistenteId: number | null): FormState => ({
 })
 
 export function CargaDiariaPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const pageTitle = useProcessMenuTitle(t('partes.carga.title'), '/partes/carga-diaria')
   const estadoOpciones = usePartesEstadoCerradoOptions()
   const gridCaptions = usePartesTareaGridCaptions()
@@ -86,6 +87,7 @@ export function CargaDiariaPage() {
   const llmSelection = useLlmCredentialSelection({ autoSelectFirstEnabled: true })
   const { pendingChoice, setPendingChoice, clearPendingChoice } = useSmartCapturePendingChoice()
 
+  const dateFormat = resolvePartesDateDisplayFormat(i18n.language)
   const hoy = todayIsoDate()
   const [fechaDesde, setFechaDesde] = useState(hoy)
   const [fechaHasta, setFechaHasta] = useState(hoy)
@@ -95,7 +97,8 @@ export function CargaDiariaPage() {
   const [rows, setRows] = useState<CargaDiariaGridRow[]>([])
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState(0)
-  const [error, setError] = useState<string | null>(null)
+  const [listError, setListError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
   const [tramo, setTramo] = useState(15)
   const [clientes, setClientes] = useState<Record<string, unknown>[]>([])
   const [asistentes, setAsistentes] = useState<Record<string, unknown>[]>([])
@@ -134,22 +137,8 @@ export function CargaDiariaPage() {
   function closeForm() {
     setFormOpen(false)
     setIsSaving(false)
+    setFormError(null)
     resetSmartCaptureState()
-  }
-
-  function renderFormErrorAlert() {
-    if (!error) {
-      return null
-    }
-    return (
-      <div
-        role="alert"
-        data-testid="partesCargaError"
-        style={{ color: 'var(--dx-color-danger, #d9534f)', fontWeight: 600 }}
-      >
-        {error}
-      </div>
-    )
   }
 
   function resolveSmartCaptureMessage(key: string): string {
@@ -170,6 +159,7 @@ export function CargaDiariaPage() {
       asistentes: asistentes as Array<{ id: number; code?: string; nombre?: string }>,
       tipos: tipos as Array<{ id: number; code?: string; descripcion?: string }>,
       tramoMinutos: tramo,
+      locale: i18n.language,
       pendingChoice,
       activeCredentialId: llmSelection.activeCredentialId,
       supportsVision: llmSelection.canAttachImages,
@@ -183,8 +173,7 @@ export function CargaDiariaPage() {
         setScThread((prev) => [...prev, { role: 'assistant', text }])
       },
       onError: (message: string) => {
-        setError(message)
-        setScThread((prev) => [...prev, { role: 'assistant', text: message }])
+        setFormError(message)
       },
       resolveMessage: resolveSmartCaptureMessage,
     }
@@ -204,13 +193,13 @@ export function CargaDiariaPage() {
 
   const load = useCallback(async () => {
     if (!fechaDesde || !fechaHasta) {
-      setError(resolveAuthMessage('partes.tarea.fechasRequeridas'))
+      setListError(resolveAuthMessage('partes.tarea.fechasRequeridas'))
       setRows([])
       setLoading(false)
       return
     }
     setLoading(true)
-    setError(null)
+    setListError(null)
     try {
       const result = await listTareas({
         fechaDesde,
@@ -223,7 +212,7 @@ export function CargaDiariaPage() {
         setRows(mapGridRows(result.envelope.resultado.items ?? []))
         setTotal(result.envelope.resultado.total ?? 0)
       } else if (result.kind === 'envelopeError') {
-        setError(resolveAuthMessage(result.envelope.respuesta))
+        setListError(resolveAuthMessage(result.envelope.respuesta))
       }
     } finally {
       setLoading(false)
@@ -269,7 +258,7 @@ export function CargaDiariaPage() {
   async function openCreate() {
     setEditingId(null)
     setFormCerrado(false)
-    setError(null)
+    setFormError(null)
     setIsSaving(false)
     const initial = emptyForm(asistenteId)
     initial.duracionMinutos = tramo
@@ -287,7 +276,7 @@ export function CargaDiariaPage() {
     }
     setEditingId(row.id)
     setFormCerrado(false)
-    setError(null)
+    setFormError(null)
     setIsSaving(false)
     const next: FormState = {
       usuarioId: row.usuarioId,
@@ -324,7 +313,7 @@ export function CargaDiariaPage() {
     const currentEditingId = editingIdRef.current
     const validationKey = cargaDiariaPersistErrorKey(current, tramo)
     if (validationKey) {
-      setError(resolveAuthMessage(validationKey))
+      setFormError(resolveAuthMessage(validationKey))
       return
     }
     let confirmedFutura = confirmFutura
@@ -339,7 +328,7 @@ export function CargaDiariaPage() {
       confirmedFutura = true
     }
 
-    setError(null)
+    setFormError(null)
     setIsSaving(true)
     try {
       const body: Record<string, unknown> = {
@@ -371,12 +360,12 @@ export function CargaDiariaPage() {
         return
       }
       if (result.kind === 'envelopeError') {
-        setError(resolveAuthMessage(result.envelope.respuesta))
+        setFormError(resolveAuthMessage(result.envelope.respuesta))
         return
       }
-      setError(resolveAuthMessage(result.i18nKey || 'infra.transport'))
+      setFormError(resolveAuthMessage(result.i18nKey || 'infra.transport'))
     } catch {
-      setError(resolveAuthMessage('infra.unexpected'))
+      setFormError(resolveAuthMessage('infra.unexpected'))
     } finally {
       setIsSaving(false)
     }
@@ -394,7 +383,7 @@ export function CargaDiariaPage() {
     if (result.kind === 'ok') {
       void load()
     } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setListError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
@@ -403,7 +392,7 @@ export function CargaDiariaPage() {
     if (result.kind === 'ok') {
       void load()
     } else if (result.kind === 'envelopeError') {
-      setError(resolveAuthMessage(result.envelope.respuesta))
+      setListError(resolveAuthMessage(result.envelope.respuesta))
     }
   }
 
@@ -427,7 +416,7 @@ export function CargaDiariaPage() {
           <DateBox
             value={fechaDesde}
             type="date"
-            displayFormat={dateDisplayFormat}
+            displayFormat={dateFormat}
             dateSerializationFormat={dateSerializationFormat}
             onValueChanged={(e) => {
               const next = isoDateFromDateBox(e)
@@ -442,7 +431,7 @@ export function CargaDiariaPage() {
           <DateBox
             value={fechaHasta}
             type="date"
-            displayFormat={dateDisplayFormat}
+            displayFormat={dateFormat}
             dateSerializationFormat={dateSerializationFormat}
             onValueChanged={(e) => {
               const next = isoDateFromDateBox(e)
@@ -509,7 +498,15 @@ export function CargaDiariaPage() {
         />
       ) : null}
 
-      {!formOpen ? renderFormErrorAlert() : null}
+      {!formOpen && listError ? (
+        <div
+          role="alert"
+          data-testid="partesCargaListError"
+          style={{ color: 'var(--dx-color-danger, #d9534f)', fontWeight: 600 }}
+        >
+          {listError}
+        </div>
+      ) : null}
       <div data-testid="partesCargaGrid">
         <ProcessDataGrid
           dataSource={rows}
@@ -583,7 +580,6 @@ export function CargaDiariaPage() {
         showCloseButton
       >
         <div style={{ display: 'grid', gap: 10, padding: 8 }} data-testid="partesCargaForm">
-          {formOpen ? renderFormErrorAlert() : null}
           {esSupervisor ? (
             <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
               <label>{t('partes.informe.filtro.asistente')}</label>
@@ -608,7 +604,7 @@ export function CargaDiariaPage() {
             <DateBox
               value={form.fecha}
               type="date"
-              displayFormat={dateDisplayFormat}
+              displayFormat={dateFormat}
               dateSerializationFormat={dateSerializationFormat}
               elementAttr={{ 'data-testid': 'partesCargaFecha' }}
               onValueChanged={(e) => {
@@ -756,6 +752,15 @@ export function CargaDiariaPage() {
           ) : null}
         </div>
       </Popup>
+
+      <FormErrorModal
+        visible={formOpen && Boolean(formError)}
+        title={t('partes.carga.errorTitle')}
+        message={formError}
+        closeLabel={t('partes.common.cerrar')}
+        testId="partesCargaError"
+        onClose={() => setFormError(null)}
+      />
 
       <LlmPreferencesModalHost
         visible={llmPreferencesVisible}

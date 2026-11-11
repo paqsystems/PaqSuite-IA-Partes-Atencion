@@ -32,7 +32,7 @@ export function MasivoInformarConfirmDialog({
   onCancel,
   onSend,
 }: Props) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const busy = loading || submitting
   const canSend = !busy && destinatarioCount > 0
 
@@ -75,7 +75,8 @@ export function MasivoInformarConfirmDialog({
             <div className="pqMasivoInformarPeriod" data-testid="partesMasivoInformarPeriod">
               <strong>{t('partes.masivo.mailInformarClientes.periodLabel')}</strong>
               <span>
-                {formatMasivoIsoDate(fechaDesde)} → {formatMasivoIsoDate(fechaHasta)}
+                {formatMasivoIsoDate(fechaDesde, i18n.language)} →{' '}
+                {formatMasivoIsoDate(fechaHasta, i18n.language)}
               </span>
             </div>
 

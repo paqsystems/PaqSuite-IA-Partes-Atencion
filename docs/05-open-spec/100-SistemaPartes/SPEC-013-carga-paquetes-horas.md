@@ -163,6 +163,8 @@ Adopta **GEN-03** y reutiliza el contrato de turno / keywords / BYOK / modalidad
 | Campos que SC **no** pide ni pisa | Tipo, asistente, sin cargo, presencial, cerrado (§4.4 los fija el sistema al grabar) |
 | Ambigüedad cliente | Lista numerada si >1 coincidencia (D-SC-05); **sin** lookup asistente/tipo |
 | Fecha futura | Confirmación en hilo **antes** de aplicar al draft (D-SC-07 / D-SC-16) |
+| Formato de fecha | Hereda R-SC-34 (locale i18n; persistencia ISO) |
+| Errores duros | Hereda R-SC-35 (`FormErrorModal` del paquete, no hilo ni grilla) |
 | Hint | Clave i18n **de paquete** (`partes.paquete.smartCapture.*` o equivalente TR) |
 | Grabación | Action `save` → **mismo** POST/PUT que botón Guardar del modal de paquetes |
 | Sin BYOK | Gate «Ir a Preferencias»; ABM manual sigue disponible |

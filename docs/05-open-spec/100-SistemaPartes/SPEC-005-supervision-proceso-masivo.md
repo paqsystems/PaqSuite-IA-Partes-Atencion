@@ -114,7 +114,7 @@ La supervisión **reutiliza** las mismas reglas de `cerrado`, tipos, marcas e in
 4. Confirmación previa (`partesMasivoInformarConfirmDialog`) **antes** de enviar. Must de UX (adopta GEN-01 §17):
    - Al abrir el diálogo se **reconsulta** el preview con los **mismos filtros** de la grilla (no un recuento stale de cuando se cargó la pantalla).
    - Copy de negocio: **prohibido** jerga técnica (`users.email`, nombres de tablas/columnas).
-   - Encabezado con **N avisos por correo**; período del filtro en `dd/MM/yyyy` → `dd/MM/yyyy`.
+   - Encabezado con **N avisos por correo**; período del filtro según locale i18n (`dd/MM/yyyy` en es/pt/fr/it; `MM/dd/yyyy` en en).
    - Lista **completa** de destinatarios en **tarjetas** (iniciales, nombre del cliente, mail). El conjunto es el universo filtrado (todas las páginas; sin exigir tilde).
    - Viewport de la lista: **máximo 5 tarjetas visibles**. Si hay más, **scroll** en el recuadro de destinatarios (no paginar; no recortar con «Y N más»). Título del Popup y pie **Cancelar / Enviar correos** permanecen fijos.
    - 422 sin destinatarios / tope.

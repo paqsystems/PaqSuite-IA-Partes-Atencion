@@ -57,7 +57,7 @@ Como supervisor quiero ABM de compras de horas (`es_tarea = false`) en pantalla 
 | Fecha futura API | Mismo flag **`confirmarFechaFutura`** que TR-004 |
 | `rowVersion` | String hex opaco (TR-004 RN-TR-04) |
 | Turno SC | Path **`POST .../tareas/asistente/turn`** + `processKind: 'paquete'` |
-| `draftContext` paquete | `mode`, `id`, `processKind`, `clienteId`, `fecha`, `duracionMinutos`, `observacion`, `esSupervisor` |
+| `draftContext` paquete | `mode`, `id`, `processKind`, `clienteId`, `fecha`, `duracionMinutos`, `observacion`, `esSupervisor`, `locale` |
 | Actions SC | `setField` solo: `clienteId`, `fecha`, `duracionMinutos`, `observacion`; `save` → FE guarda vía API paquetes |
 | Export grilla | `canExport={false}` (o omitir); no viola SPEC |
 
@@ -182,7 +182,7 @@ OpenAPI: `OpenApiPathsPartesOperacion` — tag **Partes Paquetes** + ampliar des
 | Router | `AppRouter.tsx` — ruta autenticada Partes |
 | Menú | `PartesMenuSidebar`: extender `filterMenuForNonSupervisor` con `partes_carga_paquetes` / `/partes/carga-paquetes` |
 | Mobile | `partesMobilePolicy`: denegar `/partes/carga-paquetes` |
-| Filtros | `DateBox` `dd/MM/yyyy` + máscara (regla 35); cliente `SelectBox` catálogo TR-003 |
+| Filtros | `DateBox` con `displayFormat` según locale i18n (`dd/MM/yyyy` en es/pt/fr/it; `MM/dd/yyyy` en en) + máscara (regla 35); cliente `SelectBox` catálogo TR-003 |
 | Grid | `ProcessDataGrid` `proceso="partes.carga.paquetes"` `gridId="cargaPaquetes"`; duración en horas enteras; **sin** `canExport` Must |
 | Modal | Popup ABM; `listError` / `formError` separados (regla 36); `data-testid` `partesCargaPaquetesFormError` |
 | Duración | Selector propio de horas enteras **1–240** (default alta 1 h); API/SP persisten minutos equivalentes |

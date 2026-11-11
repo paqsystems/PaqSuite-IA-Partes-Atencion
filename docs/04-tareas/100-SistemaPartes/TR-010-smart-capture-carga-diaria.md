@@ -1,4 +1,4 @@
-# TR-010 – Smart Capture en modal de Carga diaria — adopción GEN-03
+# TR-010 – Smart Capture en modal de Carga diaria — adopción GEN-03
 
 Jira: PIAPARTES-38
 
@@ -14,7 +14,7 @@ Jira: PIAPARTES-38
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Finalizado |
 | **Revisión C1** | Apto con observaciones (ver §11) |
-| **Última actualización** | 2026-09-16 |
+| **Última actualización** | 2026-11-11 |
 
 **Origen:** [HU-010](../../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md)  
 **Referencia SPEC:** [SPEC-010](../../05-open-spec/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md)  
@@ -118,6 +118,8 @@ Mapear HU CA-01…16:
 | RN-TR-CC3-21 | `applyPartesAction` / `CargaDiariaPage`: `setForm` = state de SelectBox; **await** `onClienteIdChange` antes de aplicar `tipoTareaId`; `formRef` coherente. |
 | RN-TR-CC3-22 | Parser duración: `h:mm` reloj ≠ decimal horas (`1:25` vs `1.25`). |
 | RN-TR-CC3-23 | Feature LACAPOL+PQ; Vitest apply; E2E smoke modal con valor en `partesCargaCliente` / asistente. |
+| RN-TR-24 | `draftContext.locale` = locale i18n del host (`es`/`en`/`pt`/`fr`/`it`). `PartesLocaleDateParser`: `en` → `MM/dd/yyyy`; resto → `dd/MM/yyyy`; ISO sin cambio; día &gt; 12 no se invierte. Prompt LLM: misma regla. DateBox: `resolvePartesDateDisplayFormat(i18n.language)`. |
+| RN-TR-25 | `onError` de SC y validación/persistencia con Popup abierto → `formError` + `FormErrorModal` (`partesCargaError`). `turnError`+`noop` no va al hilo. Banner de listado solo con modal cerrado (`partesCargaListError`). |
 
 ### Actions Must (nombres estables)
 
@@ -151,7 +153,9 @@ Mapear HU CA-01…16:
   "sinCargo": false,
   "presencial": false,
   "esSupervisor": false,
-  "rowVersion": null
+  "tramoMinutos": 15,
+  "rowVersion": null,
+  "locale": "es"
 }
 ```
 
@@ -306,3 +310,4 @@ APIs de persistencia (**sin cambio de contrato**):
 | 2026-09-16 | Fallback extractor cliente/asistente/duración si LLM devuelve prosa vacía; imágenes Anthropic/Gemini. |
 | 2026-09-16 | Parte F: F1/F Aprobado — [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-TR-010-update-CC-PQ-03-2026-09-16.md). |
 | 2026-09-16 | Parte I: fusionado TR-010-update (CC-PQ #3, 09/08) en esta TR; update eliminado. Estado → Finalizado. |
+| 2026-11-11 | RN-TR-24 fecha por locale; RN-TR-25 errores en `FormErrorModal`; `draftContext.locale`. |

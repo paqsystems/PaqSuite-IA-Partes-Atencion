@@ -10,7 +10,7 @@ import type { PaqueteFormState } from './cargaPaquetesFormTypes'
 import { buildPartesPaqueteDraftContext } from './buildPartesPaqueteDraftContext'
 import { parseDuracionToMinutos } from './partesTareaDuration'
 import { isValidPaqueteDuracionMinutos } from './partesPaqueteDuration'
-import { resolveSmartCaptureReplyText } from './partesSmartCaptureTurn'
+import { isSmartCaptureHardFailure, resolveSmartCaptureReplyText } from './partesSmartCaptureTurn'
 
 const turnUrl = '/api/v1/partes/tareas/asistente/turn'
 
@@ -27,6 +27,7 @@ export type PartesPaqueteSmartCaptureHandlers = {
   esSupervisor: boolean
   clientes: Array<{ id: number; code?: string; nombre?: string }>
   tramoMinutos?: number
+  locale?: string | null
   pendingChoice: PendingChoice | null
   activeCredentialId: number | null
   supportsVision: boolean
@@ -54,6 +55,7 @@ export async function handlePartesPaqueteSmartCaptureSend(
     esSupervisor: handlers.esSupervisor,
     clientes: handlers.clientes,
     tramoMinutos: handlers.tramoMinutos,
+    locale: handlers.locale,
   })
 
   const body = buildSmartCaptureTurnRequest({
@@ -66,26 +68,39 @@ export async function handlePartesPaqueteSmartCaptureSend(
     supportsVision: handlers.supportsVision,
   })
 
-  const result = await postSmartCaptureTurn(turnUrl, body, { signal: handlers.signal })
-  if (result.kind === 'ok') {
-    const turn = result.envelope.resultado
-    handlers.onAssistantReply(
-      resolveSmartCaptureReplyText(turn.replyText, handlers.resolveMessage)
-    )
-    handlers.setPendingChoice(turn.pendingChoice)
-    await applySmartCaptureActions(turn.actions ?? [], {
-      applyAction: async (action) => {
-        await applyPaqueteAction(action, handlers)
-      },
-    })
-    return
-  }
+  try {
+    const result = await postSmartCaptureTurn(turnUrl, body, { signal: handlers.signal })
+    if (result.kind === 'ok') {
+      const turn = result.envelope.resultado
+      const resolvedReply = resolveSmartCaptureReplyText(turn.replyText, handlers.resolveMessage)
+      if (isSmartCaptureHardFailure(turn.replyText, turn.actions ?? [])) {
+        handlers.onError(resolvedReply)
+        handlers.setPendingChoice(turn.pendingChoice)
+        return
+      }
+      handlers.onAssistantReply(resolvedReply)
+      handlers.setPendingChoice(turn.pendingChoice)
+      await applySmartCaptureActions(turn.actions ?? [], {
+        applyAction: async (action) => {
+          await applyPaqueteAction(action, handlers)
+        },
+      })
+      return
+    }
 
-  if (result.kind === 'envelopeError') {
-    handlers.onError(handlers.resolveMessage(result.envelope.respuesta) || result.envelope.respuesta)
-    return
+    if (result.kind === 'envelopeError') {
+      handlers.onError(handlers.resolveMessage(result.envelope.respuesta) || result.envelope.respuesta)
+      return
+    }
+
+    const transportKey =
+      result.kind === 'transportError' && result.httpStatus && result.httpStatus < 500
+        ? result.i18nKey || 'infra.transport'
+        : 'partes.smartCapture.turnError'
+    handlers.onError(handlers.resolveMessage(transportKey) || handlers.resolveMessage('partes.smartCapture.turnError'))
+  } catch {
+    handlers.onError(handlers.resolveMessage('partes.smartCapture.turnError'))
   }
-  handlers.onError(handlers.resolveMessage('partes.smartCapture.turnError'))
 }
 
 async function applyPaqueteAction(

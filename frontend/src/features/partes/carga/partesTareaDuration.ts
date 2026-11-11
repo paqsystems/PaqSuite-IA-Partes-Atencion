@@ -4,7 +4,7 @@ export function isValidDuracionMinutos(duracion: number, tramoMinutos: number): 
   return Number.isInteger(duracion) && duracion > 0 && duracion <= 1440 && duracion % tramo === 0
 }
 
-export function buildTramoOptions(tramoMinutos: number, maxMinutos = 480): number[] {
+export function buildTramoOptions(tramoMinutos: number, maxMinutos = 1440): number[] {
   const tramo = tramoMinutos > 0 ? tramoMinutos : 15
   const options: number[] = []
   for (let value = tramo; value <= maxMinutos; value += tramo) {
@@ -116,7 +116,7 @@ export type TramoHhMmOption = {
 
 export function buildTramoHhMmOptions(
   tramoMinutos: number,
-  maxMinutos = 480
+  maxMinutos = 1440
 ): TramoHhMmOption[] {
   return buildTramoOptions(tramoMinutos, maxMinutos).map((minutos) => ({
     minutos,
@@ -149,8 +149,17 @@ export function isoDateFromDateBox(e: { event?: Event; value?: unknown }): strin
   return todayIsoDate(new Date(e.value as Date))
 }
 
-/** Presentación de fechas en UI (locale es / latam). Persistencia sigue en ISO. */
-export const dateDisplayFormat = 'dd/MM/yyyy'
+/**
+ * Presentación de fechas en UI según locale i18n.
+ * `en` = MM/dd/yyyy; es/pt/fr/it = dd/MM/yyyy. Persistencia sigue en ISO.
+ */
+export function resolvePartesDateDisplayFormat(locale?: string | null): string {
+  const code = String(locale ?? 'es').trim().slice(0, 2).toLowerCase()
+  return code === 'en' ? 'MM/dd/yyyy' : 'dd/MM/yyyy'
+}
+
+/** Fallback ES cuando el llamador aún no tiene locale (p. ej. tests). */
+export const dateDisplayFormat = resolvePartesDateDisplayFormat('es')
 export const dateSerializationFormat = 'yyyy-MM-dd'
 
 export function isFechaFutura(fechaIso: string, hoyIso = todayIsoDate()): boolean {

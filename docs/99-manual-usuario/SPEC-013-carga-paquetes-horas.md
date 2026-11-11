@@ -28,7 +28,7 @@ Permite al **supervisor** registrar **compras o créditos de horas** de un clien
 
 ### Captura inteligente en el formulario
 
-En el mismo modal podés describir la compra (cliente, fecha, duración, observación). Completa campos del formulario; **no** es el **Asistente IA** del menú avatar (ese chat no crea paquetes).
+En el mismo modal podés describir la compra (cliente, fecha, duración, observación). Completa campos del formulario; **no** es el **Asistente IA** del menú avatar (ese chat no crea paquetes). La fecha sigue el **idioma** de la sesión (día/mes/año en español; mes/día/año en inglés). Si el turno o el guardado fallan, el mensaje sale en una **ventana de error**, no en el listado.
 
 ## Particularidades
 

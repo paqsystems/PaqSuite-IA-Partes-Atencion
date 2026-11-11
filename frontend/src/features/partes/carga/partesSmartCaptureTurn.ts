@@ -32,6 +32,7 @@ export type PartesSmartCaptureTurnHandlers = {
   asistentes: Array<{ id: number; code?: string; nombre?: string }>
   tipos: Array<{ id: number; code?: string; descripcion?: string }>
   tramoMinutos?: number
+  locale?: string | null
   pendingChoice: PendingChoice | null
   activeCredentialId: number | null
   supportsVision: boolean
@@ -63,6 +64,7 @@ export async function handlePartesSmartCaptureSend(
     asistentes: handlers.asistentes,
     tipos: handlers.tipos,
     tramoMinutos: handlers.tramoMinutos,
+    locale: handlers.locale,
   })
 
   const body = buildSmartCaptureTurnRequest({
@@ -75,24 +77,47 @@ export async function handlePartesSmartCaptureSend(
     supportsVision: handlers.supportsVision,
   })
 
-  const result = await postSmartCaptureTurn(turnUrl, body, { signal: handlers.signal })
-  if (result.kind === 'ok') {
-    const turn = result.envelope.resultado
-    handlers.onAssistantReply(resolveSmartCaptureReplyText(turn.replyText, handlers.resolveMessage))
-    handlers.setPendingChoice(turn.pendingChoice)
-    await applySmartCaptureActions(turn.actions ?? [], {
-      applyAction: async (action) => {
-        await applyPartesAction(action, handlers)
-      },
-    })
-    return
-  }
+  try {
+    const result = await postSmartCaptureTurn(turnUrl, body, { signal: handlers.signal })
+    if (result.kind === 'ok') {
+      const turn = result.envelope.resultado
+      const resolvedReply = resolveSmartCaptureReplyText(turn.replyText, handlers.resolveMessage)
+      if (isSmartCaptureHardFailure(turn.replyText, turn.actions ?? [])) {
+        handlers.onError(resolvedReply)
+        handlers.setPendingChoice(turn.pendingChoice)
+        return
+      }
+      handlers.onAssistantReply(resolvedReply)
+      handlers.setPendingChoice(turn.pendingChoice)
+      await applySmartCaptureActions(turn.actions ?? [], {
+        applyAction: async (action) => {
+          await applyPartesAction(action, handlers)
+        },
+      })
+      return
+    }
 
-  if (result.kind === 'envelopeError') {
-    handlers.onError(handlers.resolveMessage(result.envelope.respuesta) || result.envelope.respuesta)
-    return
+    if (result.kind === 'envelopeError') {
+      handlers.onError(handlers.resolveMessage(result.envelope.respuesta) || result.envelope.respuesta)
+      return
+    }
+
+    const transportKey =
+      result.kind === 'transportError' && result.httpStatus && result.httpStatus < 500
+        ? result.i18nKey || 'infra.transport'
+        : 'partes.smartCapture.turnError'
+    handlers.onError(handlers.resolveMessage(transportKey) || handlers.resolveMessage('partes.smartCapture.turnError'))
+  } catch {
+    handlers.onError(handlers.resolveMessage('partes.smartCapture.turnError'))
   }
-  handlers.onError(handlers.resolveMessage('partes.smartCapture.turnError'))
+}
+
+export function isSmartCaptureHardFailure(
+  replyText: string,
+  actions: SmartCaptureTurnAction[]
+): boolean {
+  const onlyNoop = actions.length === 0 || actions.every((action) => action.action === 'noop')
+  return onlyNoop && /(?:^|\s)partes\.smartCapture\.turnError(?:\s|$)/.test(replyText.trim())
 }
 
 /** Traduce claves `partes.smartCapture.*` / `smartCapture.*` sueltas o incrustadas en el reply. */

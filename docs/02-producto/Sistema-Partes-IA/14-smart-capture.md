@@ -169,6 +169,18 @@ Límite orientativo de opciones: el del Framework (~10 visibles).
 |---------|---------|
 | **D-SC-13** | Si la tarea en edición está **cerrada**, Smart Capture queda **deshabilitado** (panel no usable: sin envío de turnos / dictado / imágenes). La edición manual sigue las reglas ya vigentes de carga para tareas cerradas; SC no propone ni graba sobre cerradas. |
 
+### 8.2b Formato de fecha del prompt (cerrado 2026-11-11)
+
+| Decisión | Detalle |
+|---------|---------|
+| **D-SC-21** | El usuario dicta o escribe la fecha en el **formato del idioma activo** (igual que el DateBox). Inglés: mes/día/año. Español, portugués, francés e italiano: día/mes/año. El sistema guarda siempre `yyyy-MM-dd`. |
+
+### 8.2c Errores de turno (cerrado 2026-11-11)
+
+| Decisión | Detalle |
+|---------|---------|
+| **D-SC-22** | Un turno que no se puede completar (timeout, fallo de proveedor, error de guardado) se informa en un **diálogo modal** sobre el formulario. La lista numerada de coincidencias y la confirmación de fecha futura siguen en el hilo. |
+
 ### 8.3 Timeout LLM y hint del panel (cerrado)
 
 | Decisión | Detalle |
@@ -249,6 +261,8 @@ Las tres comparten **reglas de dominio** de una tarea (cliente, tipo, duración 
 | **D-SC-18** | Persistencia = FE aplica `save` → mismo API que Guardar UI |
 | **D-SC-19** | Overwrite de campos/cliente al draft **sin** confirmación destructiva extra |
 | **D-SC-20** | Edición: SC solo aporta cambios deseados; al grabar validar draft completo |
+| **D-SC-21** | Fecha con barras según **idioma de la sesión**: inglés `MM/dd/yyyy`; es/pt/fr/it `dd/MM/yyyy`. Persistencia ISO. |
+| **D-SC-22** | Fallo de turno o de Guardar con el modal abierto: **ventana de error**, no el hilo del panel ni la grilla detrás. |
 
 ---
 
@@ -286,7 +300,7 @@ Sin preguntas abiertas de producto para arrancar SDD.
 Con este documento **cerrado**, el flujo Open-Spec puede generar:
 
 1. **[SPEC-010](../../05-open-spec/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md)** — adopción GEN-03 en Carga diaria / modal tarea  
-2. **HU** — criterios de aceptación trazables a D-SC-01…20  
+2. **HU** — criterios de aceptación trazables a D-SC-01…22  
 3. **TR** — endpoint de turno Partes, `draftContext`, actions de dominio, tests, OpenAPI, i18n (incl. hint), `data-testid`
 
 No debe reabrirse en SPEC: ubicación modal vs grilla (D-SC-01/02), distinción con chat documental / Excel, Q1–Q4 ni cierres A1 (D-SC-17…20).

@@ -128,7 +128,7 @@ Solo **supervisores** operan el ABM. El menú es **hermano** de Carga diaria, co
 | R-PH-19 | Id de tarea → 422 `notPaquete`. |
 | R-PH-20 | Duración 1…240 h (60…14400 min) en UI/API/SP/SC (CC-PQ #8). |
 | R-PH-21 | Default alta = 1 h (CC-PQ #8). |
-| R-PH-SC-01…05 | SC solo modal paquete; solo supervisor; campos acotados; hint paquete; save = API Guardar. |
+| R-PH-SC-01…05 | SC solo modal paquete; solo supervisor; campos acotados; hint paquete; save = API Guardar. Fecha y errores duros heredan R-SC-34/35 (SPEC-010). |
 
 ---
 

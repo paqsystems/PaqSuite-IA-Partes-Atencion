@@ -2,6 +2,7 @@
 
 namespace App\Services\Partes\SmartCapture;
 
+use App\Services\Partes\PartesMasivoLocale;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use PaqSuite\LaravelCore\Llm\LlmCredentialResolver;
@@ -54,7 +55,17 @@ final class PartesTareaSmartCaptureTurnService
 
         $this->guard->validateGen($body, $options);
 
+        $llmTimeout = max(5, (int) config('paqsuite.chatAssistant.llmTimeoutSeconds', 60));
+        if (function_exists('set_time_limit')) {
+            @set_time_limit($llmTimeout + 20);
+        }
+
         $draftContext = is_array($body['draftContext'] ?? null) ? $body['draftContext'] : [];
+        $draftContext['locale'] = PartesMasivoLocale::normalize(
+            is_string($draftContext['locale'] ?? null)
+                ? (string) $draftContext['locale']
+                : (is_string($body['locale'] ?? null) ? (string) $body['locale'] : 'es')
+        );
         if ($this->isPaqueteProcess($draftContext) && ! $this->isSupervisor($draftContext)) {
             return $this->noopResult('partes.paquete.soloSupervisor');
         }
@@ -96,7 +107,16 @@ final class PartesTareaSmartCaptureTurnService
             return $this->noopResult('partes.smartCapture.turnError');
         }
 
-        return $this->buildResultFromProposal($proposal, $draftContext);
+        try {
+            return $this->buildResultFromProposal($proposal, $draftContext);
+        } catch (\Throwable $exception) {
+            Log::warning('partes.smartCapture.buildFailed', [
+                'exception' => $exception::class,
+                'detail' => $exception->getMessage(),
+            ]);
+
+            return $this->noopResult('partes.smartCapture.turnError');
+        }
     }
 
     /**
@@ -300,7 +320,7 @@ final class PartesTareaSmartCaptureTurnService
         }
 
         if (array_key_exists('fecha', $fields) && $fields['fecha'] !== null && $fields['fecha'] !== '') {
-            $fecha = $this->normalizeFecha((string) $fields['fecha']);
+            $fecha = $this->normalizeFecha((string) $fields['fecha'], $draftContext);
             if ($fecha === null) {
                 $actions[] = $this->action('needsRefine', ['field' => 'fecha']);
                 $replyParts[] = 'partes.smartCapture.fechaInvalida';
@@ -541,7 +561,7 @@ final class PartesTareaSmartCaptureTurnService
         }
 
         if (array_key_exists('fecha', $fields) && $fields['fecha'] !== null && $fields['fecha'] !== '') {
-            $fecha = $this->normalizeFecha((string) $fields['fecha']);
+            $fecha = $this->normalizeFecha((string) $fields['fecha'], $draftContext);
             if ($fecha === null) {
                 $actions[] = $this->action('needsRefine', ['field' => 'fecha']);
                 $replyParts[] = 'partes.smartCapture.fechaInvalida';
@@ -656,17 +676,16 @@ final class PartesTareaSmartCaptureTurnService
         return null;
     }
 
-    private function normalizeFecha(string $raw): ?string
+    /**
+     * @param  array<string, mixed>  $draftContext
+     */
+    private function normalizeFecha(string $raw, array $draftContext): ?string
     {
-        $value = trim($raw);
-        if ($this->isValidIsoDate($value)) {
-            return $value;
-        }
-        try {
-            return Carbon::parse($value)->toDateString();
-        } catch (\Throwable) {
-            return null;
-        }
+        $locale = PartesMasivoLocale::normalize(
+            is_string($draftContext['locale'] ?? null) ? (string) $draftContext['locale'] : 'es'
+        );
+
+        return PartesLocaleDateParser::toIso($raw, $locale);
     }
 
     private function isValidIsoDate(string $value): bool

@@ -34,7 +34,7 @@ Reglas:
 - Completá solo campos mencionados o inferibles; el resto null.
 - NUNCA emitas asistente, tipoTarea, sinCargo ni presencial.
 - cliente: texto libre (código o descripción).
-- fecha: yyyy-MM-dd si se menciona.
+- fecha: interpretá barras según draftContext.locale (en = MM/dd/yyyy; es/pt/fr/it = dd/MM/yyyy). Emití siempre yyyy-MM-dd.
 - duracionMinutos: para paquetes, convertir únicamente horas enteras de 1 a 240 a minutos (ej. 1 hora = 60). Rechazá horas decimales y duraciones con minutos.
 - Si la duración no es una cantidad entera de horas entre 8 y 240, dejá duracionMinutos null.
 - save=true SOLO si el usuario expresa intención clara de grabar el paquete.
@@ -49,7 +49,7 @@ Respondé SOLO con un JSON válido (sin markdown) con esta forma:
 Reglas:
 - Completá solo campos mencionados o inferibles; el resto null.
 - cliente/asistente/tipoTarea: texto libre (código o descripción).
-- fecha: yyyy-MM-dd si se menciona.
+- fecha: interpretá barras según draftContext.locale (en = MM/dd/yyyy; es/pt/fr/it = dd/MM/yyyy). Emití siempre yyyy-MM-dd.
 - duracionMinutos: entero en MINUTOS. Reloj h:mm (ej. 1:25) = 85 minutos, NO 1.25 horas. Horas decimales (1.25 h / 1,25 horas) = 75 minutos.
 - Si la duración no es múltiplo del tramo (típicamente 15), dejá duracionMinutos null.
 - save=true SOLO si el usuario expresa intención clara de grabar (guardar/confirmar/procesar/grabar/registrar/aceptar/ok/dale/guardar tarea/confirmar tarea) como intención de persistir la tarea, no por substring accidental en otra frase.

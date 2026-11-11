@@ -115,7 +115,7 @@ Para conectividad con otros sistemas (integraciones), el administrador debe indi
 
 | Clave | Qué ve el usuario (resumen) | Causa habitual | Qué hacer |
 |-------|-----------------------------|----------------|-----------|
-| `partes.smartCapture.turnError` | No se completó el turno | Fallo al procesar | Reintentar; revisar conexión y credencial |
+| `partes.smartCapture.turnError` | No se completó el turno (ventana de error sobre el formulario) | Fallo al procesar | Reintentar; revisar conexión y credencial |
 | `partes.smartCapture.sinCredencial` | Sin credencial de modelo | Preferencias sin clave | Configurar en Preferencias (avatar) |
 | `partes.smartCapture.noEntendi` | No se interpretó el mensaje | Texto ambiguo | Reformular con más detalle |
 | `partes.smartCapture.clienteNoEncontrado` | Cliente no encontrado | Nombre/código no coincide | Indicar cliente válido |
@@ -125,7 +125,7 @@ Para conectividad con otros sistemas (integraciones), el administrador debe indi
 | `partes.smartCapture.asistenteNoEncontrado` | Asistente no encontrado | Nombre no coincide | Indicar asistente válido |
 | `partes.smartCapture.asistenteAmbiguo` | Varios asistentes posibles | Coincidencias múltiples | Elegir opción numerada |
 | `partes.smartCapture.asistenteSoloSupervisor` | Solo supervisor cambia asistente | Rol asistente | Pedir a supervisor o cargar vos |
-| `partes.smartCapture.fechaInvalida` | Fecha no válida | Formato o valor incorrecto | Corregir fecha |
+| `partes.smartCapture.fechaInvalida` | Fecha no válida | Formato distinto del idioma o valor incorrecto | Usar el formato del idioma (es: día/mes/año; en: mes/día/año) |
 | `partes.smartCapture.fechaFuturaConfirmar` | Fecha futura pendiente | Requiere confirmación | Responder sí/confirmo |
 | `partes.smartCapture.fechaFuturaPendiente` | Pendiente confirmación fecha | Turno anterior incompleto | Confirmar o cancelar |
 | `partes.smartCapture.fechaConfirmada` | (Informativo) Fecha aplicada | Confirmación aceptada | Continuar y guardar si corresponde |
