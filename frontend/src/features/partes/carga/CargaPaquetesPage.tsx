@@ -32,7 +32,7 @@ import {
 } from './partesPaqueteApi'
 import { fetchDuracionTramo } from './partesTareaApi'
 import {
-  dateDisplayFormat,
+  resolvePartesDateDisplayFormat,
   dateSerializationFormat,
   DURACION_HORAS_NUMBER_FORMAT,
   formatMinutosAsHhMm,
@@ -41,10 +41,11 @@ import {
   minutosToHorasDecimal,
   todayIsoDate,
 } from './partesTareaDuration'
-import { buildPaqueteDuracionOptions } from './partesPaqueteDuration'
+import { buildPaqueteDuracionOptions, PAQUETE_MIN_MINUTOS } from './partesPaqueteDuration'
 import { normalizeCatalogItems } from './catalogItems'
 import { usePartesTareaGridCaptions } from '../partesTareaGridI18n'
 import { usePartesDuracionHorasSummaryItems } from '../partesGridSummary'
+import { FormErrorModal } from '../../../shared/ui/FormErrorModal'
 import { handlePartesPaqueteSmartCaptureSend } from './partesPaqueteSmartCaptureTurn'
 
 type PaqueteGridRow = PartesPaqueteItem & {
@@ -55,12 +56,12 @@ type PaqueteGridRow = PartesPaqueteItem & {
 const emptyForm = (): PaqueteFormState => ({
   clienteId: null,
   fecha: todayIsoDate(),
-  duracionMinutos: 60,
+  duracionMinutos: PAQUETE_MIN_MINUTOS,
   observacion: '',
 })
 
 export function CargaPaquetesPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const pageTitle = useProcessMenuTitle(t('partes.paquete.title'), '/partes/carga-paquetes')
   const gridCaptions = usePartesTareaGridCaptions()
   const session = getAuthSession()
@@ -68,6 +69,7 @@ export function CargaPaquetesPage() {
   const llmSelection = useLlmCredentialSelection({ autoSelectFirstEnabled: true })
   const { pendingChoice, setPendingChoice, clearPendingChoice } = useSmartCapturePendingChoice()
 
+  const dateFormat = resolvePartesDateDisplayFormat(i18n.language)
   const mesDefault = defaultPaqueteFiltroMes()
   const [fechaDesde, setFechaDesde] = useState(mesDefault.fechaDesde)
   const [fechaHasta, setFechaHasta] = useState(mesDefault.fechaHasta)
@@ -253,6 +255,7 @@ export function CargaPaquetesPage() {
     esSupervisor: true,
     clientes: clientes as Array<{ id: number; code?: string; nombre?: string }>,
     tramoMinutos: tramo,
+    locale: i18n.language,
     pendingChoice,
     activeCredentialId: llmSelection.activeCredentialId,
     supportsVision: Boolean(llmSelection.activeResolved?.supportsVision),
@@ -277,7 +280,7 @@ export function CargaPaquetesPage() {
               value={fechaDesde}
               type="date"
               useMaskBehavior
-              displayFormat={dateDisplayFormat}
+              displayFormat={dateFormat}
               dateSerializationFormat={dateSerializationFormat}
               onValueChanged={(e) => {
                 const next = isoDateFromDateBox(e)
@@ -293,7 +296,7 @@ export function CargaPaquetesPage() {
               value={fechaHasta}
               type="date"
               useMaskBehavior
-              displayFormat={dateDisplayFormat}
+              displayFormat={dateFormat}
               dateSerializationFormat={dateSerializationFormat}
               onValueChanged={(e) => {
                 const next = isoDateFromDateBox(e)
@@ -385,11 +388,6 @@ export function CargaPaquetesPage() {
           showCloseButton
         >
           <div style={{ display: 'grid', gap: 10, padding: 8 }} data-testid="partesCargaPaquetesForm">
-            {formError ? (
-              <div role="alert" data-testid="partesCargaPaquetesFormError">
-                {formError}
-              </div>
-            ) : null}
             <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
               <label>{t('partes.informe.filtro.cliente')}</label>
               <SelectBox
@@ -409,7 +407,7 @@ export function CargaPaquetesPage() {
               <DateBox
                 value={form.fecha}
                 type="date"
-                displayFormat={dateDisplayFormat}
+                displayFormat={dateFormat}
                 dateSerializationFormat={dateSerializationFormat}
                 useMaskBehavior
                 elementAttr={{ 'data-testid': 'partesCargaPaquetesFecha' }}
@@ -432,7 +430,7 @@ export function CargaPaquetesPage() {
                 onValueChanged={(e) =>
                   setForm((prev) => ({
                     ...prev,
-                    duracionMinutos: Number(e.value ?? 8 * 60),
+                    duracionMinutos: Number(e.value ?? PAQUETE_MIN_MINUTOS),
                   }))
                 }
               />
@@ -477,6 +475,15 @@ export function CargaPaquetesPage() {
             </div>
           </div>
         </Popup>
+
+        <FormErrorModal
+          visible={formOpen && Boolean(formError)}
+          title={t('partes.carga.errorTitle')}
+          message={formError}
+          closeLabel={t('partes.common.cerrar')}
+          testId="partesCargaPaquetesFormError"
+          onClose={() => setFormError(null)}
+        />
 
         <LlmPreferencesModalHost visible={prefsOpen} onClose={() => setPrefsOpen(false)} />
       </div>

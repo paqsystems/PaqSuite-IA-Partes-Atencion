@@ -31,6 +31,20 @@ final class PartesSmartCaptureFieldExtractorTest extends TestCase
         $this->assertTrue($parsed['save']);
     }
 
+    public function test_extrae_prompt_etiquetado_con_guardar(): void
+    {
+        $parsed = PartesSmartCaptureFieldExtractor::fromText(
+            'Asistente PV fecha 07/11/2026 cliente HERRAJESMI Duracion 9 hrs observacion ACTUALIZACION T 26 + TERMINALES 8 Guardar'
+        );
+
+        $this->assertSame('PV', $parsed['fields']['asistente']);
+        $this->assertSame('HERRAJESMI', $parsed['fields']['cliente']);
+        $this->assertSame('07/11/2026', $parsed['fields']['fecha']);
+        $this->assertSame('9 hrs', $parsed['fields']['duracionMinutos']);
+        $this->assertSame('ACTUALIZACION T 26 + TERMINALES 8', $parsed['fields']['observacion']);
+        $this->assertTrue($parsed['save']);
+    }
+
     public function test_merge_llm_pisa_extractor(): void
     {
         $merged = PartesSmartCaptureFieldExtractor::mergeFields(

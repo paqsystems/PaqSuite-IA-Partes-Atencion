@@ -184,6 +184,7 @@
   "partes.mobile.guardar": "Enregistrer",
   "partes.carga.guardando": "Enregistrement…",
   "partes.carga.title": "Saisie quotidienne",
+  "partes.carga.errorTitle": "Erreur",
   "partes.carga.linkMasivo": "Aller au traitement en masse",
   "partes.paquete.title": "Saisie de forfaits",
   "partes.paquete.horasLabel": "{{horas}} heures",

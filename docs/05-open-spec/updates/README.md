@@ -12,8 +12,8 @@ Las carpetas se crean al primer update; no es obligatorio tener archivos aquí s
 
 Cola histórica:
 
-- [SPEC-002-update](./100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso-update.md) — mail de acceso ABM Usuarios (si aún abierto)
-- SPEC-005-update (informar clientes masivo, CC #7/#15): **unificado** 04/11/2026 en SPEC/HU/TR-005 · [D-VERIFICACION-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md)
+- SPEC-002 notify ABM (CC #7 / #16): **unificado** 07/11/2026 en SPEC/HU/TR-002 · [D-VERIFICACION-CC-PQ-16](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-16-2026-11-07.md)
+- SPEC-005-update (informar clientes masivo, CC #7/#15): **unificado** 04/11/2026 en SPEC/HU/TR-005 · [D-VERIFICACION-CC-PQ-15](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-15-2026-11-04.md). Ajuste UX 06/11/2026: confirmación 5 tarjetas + scroll (CA-CC15-M08 / GEN-01 §17).
 
 SPEC-002-update (CC-PQ #6 PA-02…PA-14): **unificado** 12/10/2026 en SPEC/HU/TR-002 originales.
 

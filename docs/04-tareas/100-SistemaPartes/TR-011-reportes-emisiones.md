@@ -14,7 +14,7 @@ Jira: PIAPARTES-39
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Finalizado |
 | **Revisión C1** | Apto con observaciones (ver §11) |
-| **Última actualización** | 2026-11-03 (Parte I CC-PQ #13) |
+| **Última actualización** | 2026-11-07 (Parte I: evidencia E absorbida) |
 
 **Origen:** [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md)  
 **Referencia SPEC:** [SPEC-011](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md)  
@@ -320,9 +320,10 @@ Ninguna bloqueante.
 | 2026-08-25 | Parte D: adopción GEN-15 en host (DB/SP, puerto Consulta detallada, `EmissionDialog`, diseñador placeholder). |
 | 2026-08-25 | CC Q13: RN-TR-12 / CA-15 → `EmissionReportDesignerPage` sin hardcode; listado processes Must; T6/E2E con lista+confirmación (código FE pendiente de bump `react-core`). |
 | 2026-10-15 | Adopción FE GEN-15: `EmissionDialog` + `EmissionReportDesignerPage` desde `@paqsuite/react-core` 2.4.25-beta.1; se retiran forks host (`PartesEmissionDialog`, diseñador local). i18n `emission.*` alineado al SDK. |
-| 2026-10-16 | Parte E: Playwright `partes-emisiones.spec.ts` (Emitir + diseñador llega a DX `GetDesignerModel` sin error). |
+| 2026-10-16 | Parte E: Playwright `partes-emisiones.spec.ts` (Emitir + diseñador llega a DX `GetDesignerModel` sin error). Detalle absorbido en §16. |
 | 2026-10-29 | Parte F1+F+I: [D-VERIFICACION-TR-011](../updates/100-SistemaPartes/D-VERIFICACION-TR-011-2026-10-29.md). Runtime desplegado = sidecar `remote`. Emitir usa el diseño guardado (no la plantilla estándar). Duración = minutos. |
 | 2026-10-29 | CC ST #1: `selectedTareaIds`; puerto filtra ids; Emitir disabled sin tildes. Ver [D-VERIFICACION-CC-ST-01](../updates/100-SistemaPartes/D-VERIFICACION-CC-ST-01-2026-10-29.md). |
+| 2026-11-07 | Parte I: evidencia `E-TR-011-reportes-emisiones-2026-10-16.md` fusionada en §16 y archivo eliminado. |
 
 ---
 
@@ -379,13 +380,50 @@ Ninguna bloqueante.
 
 ---
 
-## 16) Pendientes (hacia F)
+## 16) Parte E — evidencia de tests (2026-10-16)
 
-- Parte E **2026-10-16:** ver `docs/04-tareas/updates/100-SistemaPartes/E-TR-011-reportes-emisiones-2026-10-16.md`.
-- SQL Server: desplegar `pq_sp_emission_core.sql` (runtime tests = Query Builder MONO / sqlite).
-- E2E `partes-emisiones.spec.ts` endurecido: catálogo GEN antes de `GetDesignerModel`; retry login. Aislado y mix 5 workers **pass**. Suite repo 8 workers sigue saturando `php -S` (fuera de GEN-15).
+Resultado E: **OK con observaciones** (suite TR pass; E2E completo del repo con fallos ajenos + 1 flake DX). Cierre F1/F: §17.
 
-Cerrados en F1 2026-10-29 (ver §17): emisión real en DEV vía sidecar `remote`; el PDF en blanco era `PAQSUITE_EMISSION_DX_MODE=fake`. Smoke SMTP de mail real sigue fuera de esta verificación.
+### Comandos / resultados
+
+| Capa | Comando | Resultado |
+|------|---------|-----------|
+| Backend | `cd backend && php artisan test` | **108 passed**, 7 skipped (integridad SQL Server), 747 assertions, ~97 s |
+| Feature TR-011 | `Tests\Feature\Emissions\ApiV1EmissionsPartesTest` | **11 passed** |
+| Vitest | `cd frontend && npm run test` | **53 files / 168 tests passed**, ~116 s |
+| E2E TR-011 | `npx playwright test tests/e2e/partes-emisiones.spec.ts` | **2 passed** (~16 s) |
+| E2E repo | `cd frontend && npm run test:e2e` | **15 passed**, **4 failed**, 5 did not run (~2.3 min) — fallos ajenos a GEN-15 |
+
+No existe `npm run test:run`; el script del host es `npm run test` (vitest run).
+
+### Feature BE (CA-21 / §8)
+
+- GET process seed + 401 sin token
+- `EmissionEnabled` off → **4704**
+- Sin puerto → **4706**
+- Fechas vacías → **4701**
+- Sin menú consulta → **4703**
+- Design sin permiso → **4709**; asistente emite
+- PDF todas las filas + `hostContext` por `jobId`
+- Cliente no ve otras orgs y puede emitir
+- Mail síncrono con `mailTo`
+- Supervisor design OK + save-as catálogo
+
+### Vitest / E2E aislado
+
+Cubren montaje `EmissionDialog` solo en Consulta detallada, `partesConsultaDetalladaEmit`, `hostContext`, policy native `/emisiones`, catálogo de reportes.
+
+1. Login → Consulta detallada → `partesConsultaDetalladaEmit` visible; si enabled abre `emission.dialog`.
+2. `/emisiones/disenador` → lista+confirmación → host DX + `GetDesignerModel` OK.
+
+### Observaciones (no retroceden la TR)
+
+1. E2E endurecido: falla rápida si el catálogo GEN no carga (`infra.transport` / combo vacío); `GetDesignerModel` se espera **después** de confirmar proceso; retry de login. Aislado **2 passed**. La suite repo con 8 workers sigue saturando `php -S` (logins ajenos a GEN-15).
+2. 7 tests `PqPartesSchemaIntegrityTest` skipped en sqlite (esperado).
+3. Warnings DX trial (W0019/W0021) en consola Vite; filtrados en el spec de diseñador.
+4. SQL Server: desplegar `pq_sp_emission_core.sql` (runtime tests = Query Builder MONO / sqlite).
+
+Cerrados en F1 2026-10-29 (ver §17): emisión real en DEV vía sidecar `remote`; el PDF en blanco era `PAQSUITE_EMISSION_DX_MODE=fake`. Smoke SMTP de mail real sigue fuera de esa verificación.
 
 ---
 

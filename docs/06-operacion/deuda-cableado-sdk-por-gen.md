@@ -1,15 +1,15 @@
 # Deuda de cableado SDK — Partes-Atención (por GEN)
 
 **Origen:** relevamiento Framework 2026-10-11 (`PaqSuite-IA-FRAMEWORK` / `docs/06-operacion/relevamiento-cableado-hosts-tango-partes.md`).
-**Pin de referencia:** `@paqsuite/react-core` **2.4.29-beta.1** · `paqsuite/laravel-core` **1.3.15-beta.1**.
+**Pin vigente en repo (2026-11):** `@paqsuite/react-core` **2.4.30-beta.9** · `paqsuite/laravel-core` **1.3.18-beta.24** (tabla «Versiones instaladas» en `docs/01-arquitectura/ritual-bump-sdk.md`). El relevamiento 2026-10 citaba **2.4.29-beta.1** / **1.3.15-beta.1** como snapshot histórico.
 **Criterio:** mala invocación de un export GEN listo, fork de una pantalla/motor que el SDK ya exporta, o contrato que el SDK ya cubre (headers, cliente, envelope, tema, i18n GEN).
 **Fuera de alcance del relevamiento original:** pantallas de dominio (carga
 diaria, maestros, informes) y gaps de producto no ofrecidos en esa fecha
-(GEN-13, GEN-17, GEN-23, GEN-32). GEN-13 fue adoptado posteriormente de forma
-parcial; su estado operativo vigente está documentado en
-`docs/06-operacion/adopcion-gen-13-tareas-programadas.md` y la norma transversal
-Framework `docs/06-operacion/adopcion-gen-13-tareas-programadas-host.md`
-(repo PaqSuite-IA-FRAMEWORK).
+(GEN-13, GEN-17, GEN-23, GEN-32). GEN-13 quedó **adoptado y Finalizado**
+(Parte I 2026-11-06; backup RDS verificado). SPEC/HU/TR:
+`docs/05-open-spec/001-Generalidades/SPEC-001-13-host-adopcion-tareas-programadas.md`.
+Operación: `docs/06-operacion/adopcion-gen-13-tareas-programadas.md`. Norma
+transversal Framework: `docs/06-operacion/adopcion-gen-13-tareas-programadas-host.md`.
 
 **Qué ya está bien (no pedir trabajo):** `registerGridI18nResources`; `MenuSidebar` con `t`/`locale`/`labels`/`openInNewTab`/`onItemsLoaded`; `UserAvatarMenu`; `DashboardContainer`; `EmpresaSelectorPage`; `ParametrosGeneralesPage`; `ProcessDataGrid` (salvo permisos); `ConsultaGrillaPivotShell`; `ExcelImportToolbar`; `SmartCapturePanel`; `ChatAssistantPage`; `LlmPreferencesPanel`; `ShellLayout` + CSS SDK; `EmpresasAdminPage` con `tenancyMode="single"` y preview sin reload.
 

@@ -1,6 +1,8 @@
 # Adopción GEN-13 — Tareas Programadas en PARTES
 
-Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
+Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49) · Estado OpenSpec: **Finalizado** (Parte I 2026-11-06)
+
+Contrato: [SPEC-001-13](../05-open-spec/001-Generalidades/SPEC-001-13-host-adopcion-tareas-programadas.md) · [HU-GEN-13](../03-historias-usuario/001-Generalidades/HU-GEN-13-adopcion-tareas-programadas.md) · [TR-GEN-13](../04-tareas/001-Generalidades/TR-GEN-13-adopcion-tareas-programadas.md)
 
 ## SoT transversal (Framework)
 

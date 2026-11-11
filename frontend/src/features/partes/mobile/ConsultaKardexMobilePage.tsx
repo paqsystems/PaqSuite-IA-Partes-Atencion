@@ -21,7 +21,7 @@ import {
 } from '../carga/partesTareaApi'
 import {
   buildTramoHhMmOptions,
-  dateDisplayFormat,
+  resolvePartesDateDisplayFormat,
   dateSerializationFormat,
   formatMinutosAsHhMm,
   isFechaFutura,
@@ -31,7 +31,8 @@ import {
 import { mapPartesTareaToKardexItem } from './mapPartesTareaToKardexItem'
 
 export function ConsultaKardexMobilePage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const dateFormat = resolvePartesDateDisplayFormat(i18n.language)
   const pageTitle = useProcessMenuTitle(t('partes.mobile.kardexTitle'), '/partes/consulta')
   const session = getAuthSession()
   const readOnly = session?.partes?.tipoFuncional === 'cliente'
@@ -234,7 +235,7 @@ export function ConsultaKardexMobilePage() {
               <DateBox
                 value={fecha}
                 type="date"
-                displayFormat={dateDisplayFormat}
+                displayFormat={dateFormat}
                 dateSerializationFormat={dateSerializationFormat}
                 onValueChanged={(e) =>
                   setFecha(e.value ? todayIsoDate(new Date(e.value as Date)) : hoy)

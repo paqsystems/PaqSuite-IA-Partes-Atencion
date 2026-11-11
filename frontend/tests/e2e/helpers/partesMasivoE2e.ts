@@ -132,6 +132,17 @@ export async function mockMasivoSupervisorApis(
     if (url.includes('/partes/tareas') && method === 'GET') {
       const parsed = new URL(url)
       const { items, total } = listTareas(parsed)
+      const distinctField = parsed.searchParams.get('distinctField')
+      if (distinctField) {
+        const unique = new Map<unknown, number>()
+        for (const row of items) {
+          const value = row[distinctField]
+          unique.set(value, (unique.get(value) ?? 0) + 1)
+        }
+        const distinctItems = [...unique.entries()].map(([value, count]) => ({ value, count }))
+        await fulfill(envelope({ items: distinctItems, total: distinctItems.length }))
+        return
+      }
       await fulfill(envelope({ items, total }))
       return
     }

@@ -19,7 +19,7 @@ import { buildAuthPlatformHeaders } from '../../auth/platformContext'
 import { resolveAuthMessage } from '../../auth/authMessages'
 import { listCatalogo } from '../maestros/partesMaestrosApi'
 import {
-  dateDisplayFormat,
+  resolvePartesDateDisplayFormat,
   dateSerializationFormat,
   enrichRowsWithDuracionHoras,
   formatMinutosAsHhMm,
@@ -83,6 +83,7 @@ const PAQUETE_HORAS_PROCESS = 'partes.informes.paqueteHoras'
 
 export function PaqueteHorasPage() {
   const { t, i18n } = useTranslation()
+  const dateFormat = resolvePartesDateDisplayFormat(i18n.language)
   const pageTitle = useProcessMenuTitle(
     t('partes.informe.page.paqueteHoras'),
     '/partes/informes/paquete-horas',
@@ -399,7 +400,7 @@ export function PaqueteHorasPage() {
             <DateBox
               value={fechaDesde}
               type="date"
-              displayFormat={dateDisplayFormat}
+              displayFormat={dateFormat}
               dateSerializationFormat={dateSerializationFormat}
               elementAttr={{ 'data-testid': 'partesPaqueteFechaDesde' }}
               onValueChanged={(e) => {
@@ -412,7 +413,7 @@ export function PaqueteHorasPage() {
             <DateBox
               value={fechaHasta}
               type="date"
-              displayFormat={dateDisplayFormat}
+              displayFormat={dateFormat}
               dateSerializationFormat={dateSerializationFormat}
               elementAttr={{ 'data-testid': 'partesPaqueteFechaHasta' }}
               onValueChanged={(e) => {
@@ -516,7 +517,7 @@ export function PaqueteHorasPage() {
         <DateBox
           value={fechaDesde}
           type="date"
-          displayFormat={dateDisplayFormat}
+          displayFormat={dateFormat}
           dateSerializationFormat={dateSerializationFormat}
           elementAttr={{ 'data-testid': 'partesPaqueteFechaDesde' }}
           onValueChanged={(e) => {
@@ -529,7 +530,7 @@ export function PaqueteHorasPage() {
         <DateBox
           value={fechaHasta}
           type="date"
-          displayFormat={dateDisplayFormat}
+          displayFormat={dateFormat}
           dateSerializationFormat={dateSerializationFormat}
           elementAttr={{ 'data-testid': 'partesPaqueteFechaHasta' }}
           onValueChanged={(e) => {

@@ -20,19 +20,17 @@ final class PartesTareaController extends Controller
     public function list(Request $request): JsonResponse
     {
         try {
-            $result = $this->repository->list(array_merge($this->actorParams($request), [
-                'p_fecha_desde' => $request->query('fechaDesde'),
-                'p_fecha_hasta' => $request->query('fechaHasta'),
-                'p_cliente_id' => $request->query('clienteId'),
-                'p_usuario_id' => $request->query('usuarioId'),
-                'p_estado_cerrado' => $request->query('estadoCerrado', 'todas'),
-                'p_page' => $request->query('page', 1),
-                'p_page_size' => $request->query('pageSize', 50),
-                'p_cliente_code' => $request->query('clienteCode'),
-                'p_cliente_nombre' => $request->query('clienteNombre'),
-                'p_tipo_tarea_code' => $request->query('tipoTareaCode'),
-                'p_tipo_tarea_descripcion' => $request->query('tipoTareaDescripcion'),
-            ]));
+            $result = $this->repository->list(array_merge(
+                $this->actorParams($request),
+                $this->listFilterParams($request),
+                [
+                    'p_page' => $request->query('page', 1),
+                    'p_page_size' => $request->query('pageSize', 50),
+                    'p_sort_field' => $request->query('sortField'),
+                    'p_sort_order' => $request->query('sortOrder'),
+                    'p_distinct_field' => $request->query('distinctField'),
+                ]
+            ));
 
             return ApiResponse::success($result);
         } catch (PartesTareaException $e) {
@@ -43,17 +41,10 @@ final class PartesTareaController extends Controller
     public function listIds(Request $request): JsonResponse
     {
         try {
-            $result = $this->repository->listIds(array_merge($this->actorParams($request), [
-                'p_fecha_desde' => $request->query('fechaDesde'),
-                'p_fecha_hasta' => $request->query('fechaHasta'),
-                'p_cliente_id' => $request->query('clienteId'),
-                'p_usuario_id' => $request->query('usuarioId'),
-                'p_estado_cerrado' => $request->query('estadoCerrado', 'todas'),
-                'p_cliente_code' => $request->query('clienteCode'),
-                'p_cliente_nombre' => $request->query('clienteNombre'),
-                'p_tipo_tarea_code' => $request->query('tipoTareaCode'),
-                'p_tipo_tarea_descripcion' => $request->query('tipoTareaDescripcion'),
-            ]));
+            $result = $this->repository->listIds(array_merge(
+                $this->actorParams($request),
+                $this->listFilterParams($request),
+            ));
 
             return ApiResponse::success($result);
         } catch (PartesTareaException $e) {
@@ -197,6 +188,25 @@ final class PartesTareaController extends Controller
         } catch (PartesTareaException $e) {
             return $this->fromException($e);
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function listFilterParams(Request $request): array
+    {
+        return [
+            'p_fecha_desde' => $request->query('fechaDesde'),
+            'p_fecha_hasta' => $request->query('fechaHasta'),
+            'p_cliente_id' => $request->query('clienteId'),
+            'p_usuario_id' => $request->query('usuarioId'),
+            'p_estado_cerrado' => $request->query('estadoCerrado', 'todas'),
+            'p_cliente_code' => $request->query('clienteCode'),
+            'p_cliente_nombre' => $request->query('clienteNombre'),
+            'p_tipo_tarea_code' => $request->query('tipoTareaCode'),
+            'p_tipo_tarea_descripcion' => $request->query('tipoTareaDescripcion'),
+            'p_eq_json' => $request->query('eq'),
+        ];
     }
 
     private function actorParams(Request $request): array

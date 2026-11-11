@@ -63,7 +63,7 @@ En el diseñador (piloto), puede haber **asistencia IA** para armar diseños en 
 | Cargar el trabajo del día | Partes → Carga diaria | [SPEC-004](./SPEC-004-operacion-carga-diaria.md) |
 | Registrar una compra de horas | Partes → Carga de paquetes | [SPEC-013](./SPEC-013-carga-paquetes-horas.md) |
 | Importar planilla | Carga diaria → Importar | [SPEC-009](./SPEC-009-importacion-excel.md) |
-| Cerrar muchas partes | Partes → Proceso masivo | [SPEC-005](./SPEC-005-supervision-proceso-masivo.md) |
+| Cerrar muchas partes o informar novedades a clientes | Partes → Proceso masivo | [SPEC-005](./SPEC-005-supervision-proceso-masivo.md) |
 | Ver totales e informes | Inicio / Informes | [SPEC-006](./SPEC-006-consultas-dashboard-navegacion.md) |
 | Emitir un reporte | Consulta detallada → Emitir | [SPEC-010](./SPEC-010-emisiones-informes.md) |
 | Parámetros o usuarios/roles | Parámetros / Seguridad | [SPEC-011](./SPEC-011-parametros-seguridad.md) |

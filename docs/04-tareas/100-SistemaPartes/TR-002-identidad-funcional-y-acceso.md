@@ -12,8 +12,8 @@ Jira: PIAPARTES-30
 | **Roles** | Asistente / Supervisor / Cliente (funcionales); usuario solo GEN denegado |
 | **Dependencias** | [TR-001](./TR-001-modelo-datos-modulo.md) (tablas `PQ_PARTES_USUARIOS` / `CLIENTES`); auth GEN (`LoginController`, `MeController`, Sanctum, envelope) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | En Control Calidad |
-| **Última actualización** | 2026-10-20 |
+| **Estado** | Finalizado |
+| **Última actualización** | 2026-11-07 |
 
 **Origen:** [HU-002](../../03-historias-usuario/100-SistemaPartes/HU-002-identidad-funcional-y-acceso.md)  
 **Referencia SPEC:** [SPEC-002](../../05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md)  
@@ -309,7 +309,37 @@ Jira: PIAPARTES-30
 |-------|--------|
 | 2026-07-30 | Parte C + C1: TR creada y apta con observaciones absorbidas. |
 | 2026-07-30 | Parte D: SP resolver, gate Partes, middleware `/me`, seed admin/PQ, FE perfil + i18n, Feature tests OK. |
+| 2026-11-06 | CC #7: `POST notify-access`, mail acceso, toolbar host (superseded CC #16). |
+| 2026-11-07 | CC #16: UI en formulario; password opcional en create; Parte I fusionada en §13. |
 
 ---
 
-**Siguiente:** F1 verificación TR-002; o **D de TR-003** cuando se autorice.
+## 13) Notificación de acceso ABM Usuarios (CC #7 / CC #16)
+
+**HU:** sección notify en [HU-002](../../03-historias-usuario/100-SistemaPartes/HU-002-identidad-funcional-y-acceso.md). **SPEC:** §9. **Evidencia:** [D-VERIFICACION-CC-PQ-16](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-16-2026-11-07.md), [E-CC-PQ-16](../../04-tareas/updates/100-SistemaPartes/E-CC-PQ-16-2026-11-07.md).
+
+### 13.1 Contrato API
+
+| ID | Implementación |
+|----|----------------|
+| RN-NOTIFY-01 | `POST /api/v1/admin/usuarios/{id}/notify-access` — gate `paqsuite.seguridadAdmin`; body vacío; envelope GEN-20. |
+| RN-NOTIFY-02 | `PolicyCompliantPasswordGenerator` + `PasswordPolicy`; persistencia hash vía SP admin usuarios; `firstLogin=true`; password **no** en `resultado`. |
+| RN-NOTIFY-03 | Mail `NotifyUsuarioAccessNotification`; URL `PasswordResetLinkBuilder::buildAccessUrl` → `https://{cliente}.partesatencion.paqsystems.com`. |
+| RN-NOTIFY-04 | 422 `admin.usuarios.notify.emailRequired` sin email; fallo envío `mailEngine.sendFailed`. |
+| RN-NOTIFY-05 | `UsuariosController::store`: `password` opcional; generación policy si ausente/vacío. |
+| RN-NOTIFY-06 | Alta con email: FE `create` + `notify-access` secuencial (o error en modal, regla 36). |
+
+### 13.2 Frontend (CC #16)
+
+- `PartesUsuariosFormPopup` / wrapper: sin `NotifyUsuarioAccessToolbar` ni diálogo masivo.
+- Edición: ícono `adminUsuariosNotifyEmail` junto a Email; `adminUsuariosNotifyFormError`.
+- Alta: sin TextBox contraseña; notify tras guardar exitoso.
+- Excluido `isNativeApp()`; sin fork `UsuariosAdminPage` (deuda SDK: props en `UsuariosFormPopup` — Framework).
+
+### 13.3 Tests
+
+PHPUnit notify + auto-password policy; Vitest formulario; Playwright `partes-cc-pq-16-usuarios-notify-access.spec.ts`; OpenAPI `adminUsuariosNotifyAccess`.
+
+---
+
+**Siguiente:** épica posterior según roadmap (p. ej. TR-003) cuando se autorice.

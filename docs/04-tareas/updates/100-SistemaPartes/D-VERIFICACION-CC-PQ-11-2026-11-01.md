@@ -59,3 +59,7 @@
 ## Deploy
 
 - Solo frontend; sin migrate/seed ni SP nuevos por CC #11.
+
+## Nota posterior (09/11/2026)
+
+El contrato **vivo** en SPEC/HU/TR-005 ya no es «solo paging remoto». El `CustomStore` del masivo mapea **sort** y **HeaderFilter** (`distinctField` / `eq`) al API, y las **plantillas GEN-11** están activas (se quitó `layoutsEnabled={false}`). `grouping` y `summary` siguen en cliente. Esta D-VERIFICACION permanece como evidencia del hito de paginación del 01/11/2026.

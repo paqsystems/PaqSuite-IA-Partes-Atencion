@@ -51,7 +51,8 @@ Para conectividad con otros sistemas (integraciones), el administrador debe indi
 | `auth.invalidCredentials` | Usuario o contraseña incorrectos | Credenciales erróneas | Verificar datos |
 | `auth.emailNotFound` | El mail no existe | Email no registrado | Mail correcto o pedir alta |
 | `auth.password.mismatch` | Las contraseñas no coinciden | Confirmación distinta | Repetir la nueva clave |
-| `auth.password.tooShort` / `auth.password.policyUnsafe` / `validation.failed` | La contraseña no cumple las condiciones | Política de contraseña | Cumplir longitud y reglas |
+| `auth.password.tooShort` / `auth.password.policyUnsafe` | La contraseña no cumple las condiciones | Política de contraseña | Cumplir longitud y reglas |
+| `admin.usuarios.validation.passwordPolicy` / `admin.usuarios.validation.failed` | Mensaje en el alta/edición de usuario (ABM seguridad) | Validación de usuario o política de clave | Corregir datos o cumplir la política; el API debe enviar **`auth.password.*`** en `respuesta` para política de contraseña |
 | `auth.password.fieldsRequired` | Faltan campos de contraseña | Formulario incompleto | Completar actual, nueva y confirmación |
 | `auth.password.sameAsCurrent` | La nueva debe ser distinta a la actual | Misma clave | Elegir otra contraseña |
 | `auth.password.currentInvalid` / `auth.password.invalidCurrent` | Contraseña actual no válida | Clave actual incorrecta | Verificar contraseña actual |
@@ -114,7 +115,7 @@ Para conectividad con otros sistemas (integraciones), el administrador debe indi
 
 | Clave | Qué ve el usuario (resumen) | Causa habitual | Qué hacer |
 |-------|-----------------------------|----------------|-----------|
-| `partes.smartCapture.turnError` | No se completó el turno | Fallo al procesar | Reintentar; revisar conexión y credencial |
+| `partes.smartCapture.turnError` | No se completó el turno (ventana de error sobre el formulario) | Fallo al procesar | Reintentar; revisar conexión y credencial |
 | `partes.smartCapture.sinCredencial` | Sin credencial de modelo | Preferencias sin clave | Configurar en Preferencias (avatar) |
 | `partes.smartCapture.noEntendi` | No se interpretó el mensaje | Texto ambiguo | Reformular con más detalle |
 | `partes.smartCapture.clienteNoEncontrado` | Cliente no encontrado | Nombre/código no coincide | Indicar cliente válido |
@@ -124,7 +125,7 @@ Para conectividad con otros sistemas (integraciones), el administrador debe indi
 | `partes.smartCapture.asistenteNoEncontrado` | Asistente no encontrado | Nombre no coincide | Indicar asistente válido |
 | `partes.smartCapture.asistenteAmbiguo` | Varios asistentes posibles | Coincidencias múltiples | Elegir opción numerada |
 | `partes.smartCapture.asistenteSoloSupervisor` | Solo supervisor cambia asistente | Rol asistente | Pedir a supervisor o cargar vos |
-| `partes.smartCapture.fechaInvalida` | Fecha no válida | Formato o valor incorrecto | Corregir fecha |
+| `partes.smartCapture.fechaInvalida` | Fecha no válida | Formato distinto del idioma o valor incorrecto | Usar el formato del idioma (es: día/mes/año; en: mes/día/año) |
 | `partes.smartCapture.fechaFuturaConfirmar` | Fecha futura pendiente | Requiere confirmación | Responder sí/confirmo |
 | `partes.smartCapture.fechaFuturaPendiente` | Pendiente confirmación fecha | Turno anterior incompleto | Confirmar o cancelar |
 | `partes.smartCapture.fechaConfirmada` | (Informativo) Fecha aplicada | Confirmación aceptada | Continuar y guardar si corresponde |
@@ -178,10 +179,11 @@ Para conectividad con otros sistemas (integraciones), el administrador debe indi
 | `partes.masivo.itemInvalido` | Ítem de lote inválido | Selección inconsistente | Refrescar y reseleccionar |
 | `partes.masivo.noEsTarea` | Registro que no es tarea | Mezcla con paquete de horas | Solo tareas de carga |
 | `partes.masivo.forbidden` | Solo supervisor | No es supervisor | Usuario supervisor |
-| `partes.masivo.topeExcedido` | Supera tope configurado | Demasiadas filas | Reducir selección |
+| `partes.masivo.topeExcedido` | Supera tope configurado | Demasiadas filas o destinatarios | Reducir filtro o selección |
 | `partes.masivo.loteDemasiadoGrande` | Más de ~5000 registros | Lote técnico | Refinar filtros |
 | `partes.masivo.conflictoVersion` | Conflicto de versión | Cambio concurrente | Refrescar y rearmar |
 | `partes.masivo.idInexistente` | Identificador inexistente | Fila obsoleta | Refrescar listado |
+| `partes.masivo.sinDestinatarios` | No hay destinatarios para informar | Clientes del filtro sin usuario/correo | Ampliar filtro o vincular usuario |
 | `partes.tarea.fechasRequeridas` | Faltan fechas de filtro | Filtro incompleto | Completar fechas |
 
 *(También **P00**.)*

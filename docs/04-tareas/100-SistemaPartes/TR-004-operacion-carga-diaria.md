@@ -1,4 +1,4 @@
-# TR-004 – Operación / carga diaria de tareas
+# TR-004 – Operación / carga diaria de tareas
 
 Jira: PIAPARTES-32
 
@@ -110,7 +110,7 @@ Base `/api/v1/partes/tareas` — Bearer + tenant + perfil Partes + middleware pe
 
 | Método | Path | Notas |
 |--------|------|-------|
-| GET | `/partes/tareas` | Query: `fechaDesde`, `fechaHasta`, `clienteId?`, `usuarioId?`, `estadoCerrado?`, `page`, `pageSize` |
+| GET | `/partes/tareas` | Query: `fechaDesde`, `fechaHasta`, `clienteId?`, `usuarioId?`, `estadoCerrado?`, `page`, `pageSize`. Extensión masivo/grilla: `clienteCode?`, `clienteNombre?`, `tipoTareaCode?`, `tipoTareaDescripcion?` (contains); `sortField?`, `sortOrder?` (`asc`/`desc`); `distinctField?` (valores únicos HeaderFilter); `eq?` (JSON `{ campo: [valores] }` igualdad, OR acotado) |
 | GET | `/partes/tareas/{id}` | |
 | POST | `/partes/tareas` | Body camelCase + `confirmarFechaFutura?` |
 | PUT | `/partes/tareas/{id}` | + `rowVersion` + `confirmarFechaFutura?` |
@@ -204,7 +204,7 @@ IA: no UI.
 
 ## 11) Informe C1
 
-# Revisión de ambigüedad - TR-004
+# Revisión de ambigüedad - TR-004
 
 Jira: PIAPARTES-32
 
@@ -243,3 +243,4 @@ Jira: PIAPARTES-32
 | 2026-08-01 | Parte I: fusionado TR-004-update (CC-PQ #1, 31/07) en esta TR; update eliminado. Estado → Finalizado. |
 | 2026-09-15 | Parte D CC-PQ #3: columnas hh:mm + decimal, `exportEnabled`, layouts compartidos + `isOwner`, tipo default. |
 | 2026-09-16 | Parte I: fusionado TR-004-update (CC-PQ #3, 09/08) en esta TR; update eliminado. Estado → Finalizado. |
+| 09/11/2026 | `GET /partes/tareas`: query `sortField`/`sortOrder`, `distinctField`, `eq` (HeaderFilter) + contains CC #13. Consumidor: proceso masivo (TR-005). |

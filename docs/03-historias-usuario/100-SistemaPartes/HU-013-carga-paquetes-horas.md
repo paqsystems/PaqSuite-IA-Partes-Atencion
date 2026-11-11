@@ -10,8 +10,8 @@ Jira: PIAPARTES-47
 | Título | ABM de paquetes de horas y Smart Capture en modal (supervisor) |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Especificado |
-| Última actualización | 2026-10-21 |
+| Estado | Finalizado |
+| Última actualización | 2026-11-06 (Parte I CC-PQ #8) |
 | SPEC origen | [SPEC-013-carga-paquetes-horas](../../05-open-spec/100-SistemaPartes/SPEC-013-carga-paquetes-horas.md) |
 | TR relacionada(s) | [TR-013-carga-paquetes-horas](../../04-tareas/100-SistemaPartes/TR-013-carga-paquetes-horas.md) |
 | Producto | [`16-carga-paquetes-horas.md`](../../02-producto/Sistema-Partes-IA/16-carga-paquetes-horas.md) |
@@ -126,7 +126,9 @@ Solo **supervisores** operan el ABM. El menú es **hermano** de Carga diaria, co
 | R-PH-17 | Default filtros fecha = mes calendario en curso. |
 | R-PH-18 | `usuario_id` solo en alta. |
 | R-PH-19 | Id de tarea → 422 `notPaquete`. |
-| R-PH-SC-01…05 | SC solo modal paquete; solo supervisor; campos acotados; hint paquete; save = API Guardar. |
+| R-PH-20 | Duración 1…240 h (60…14400 min) en UI/API/SP/SC (CC-PQ #8). |
+| R-PH-21 | Default alta = 1 h (CC-PQ #8). |
+| R-PH-SC-01…05 | SC solo modal paquete; solo supervisor; campos acotados; hint paquete; save = API Guardar. Fecha y errores duros heredan R-SC-34/35 (SPEC-010). |
 
 ---
 
@@ -136,7 +138,8 @@ Solo **supervisores** operan el ABM. El menú es **hermano** de Carga diaria, co
 - [ ] **CA-02** Al abrir la pantalla, `fechaDesde` = 1.er día del mes en curso y `fechaHasta` = último día del mismo mes (calendario del sistema).
 - [ ] **CA-03** Sin rango de fechas aplicado, no se lista el histórico completo (mensaje i18n); con fechas, solo paquetes en el rango; cliente vacío = todos los usables del universo supervisor; con cliente = acotado.
 - [ ] **CA-04** Alta persiste `es_tarea = false`, tipo default, `usuario_id` = asistente del supervisor autenticado, bits en false.
-- [ ] **CA-05** Rechazo si falta cliente, fecha, duración válida (horas enteras entre 8 y 240, inclusive) u observación vacía.
+- [x] **CA-05** Rechazo si falta cliente, fecha, duración válida (horas enteras entre **1 y 240**, inclusive) u observación vacía.
+- [x] **CA-21** Default de duración en alta = **1 h**; el selector cubre 1…240.
 - [ ] **CA-06** Fecha futura: advertencia confirmable en UI manual; permite guardar tras confirmar.
 - [ ] **CA-07** Alta: solo clientes usables en selector. Edición: puede mantener cliente inhabilitado; al cambiar, solo usables.
 - [ ] **CA-08** Error de guardado con modal abierto se muestra **dentro** del Popup (`*FormError`); al cancelar/cerrar se limpia.
@@ -250,3 +253,4 @@ Feature: Carga de paquetes de horas
 | 2026-10-21 | Parte B + B1: HU creada desde SPEC-013 (A+A1 2026-10-20). |
 | 2026-10-21 | Parte C + C1: enlazada [TR-013](../../04-tareas/100-SistemaPartes/TR-013-carga-paquetes-horas.md). Estado → Especificado. |
 | 2026-10-21 | Jira catch-up: Story **PIAPARTES-47** (columna Especificado). |
+| 2026-11-06 | Parte I CC-PQ #8: CA-05/CA-21 duración **1–240 h**. Update eliminado. Estado → **Finalizado**. |

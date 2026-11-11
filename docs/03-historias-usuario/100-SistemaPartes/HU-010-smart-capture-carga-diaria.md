@@ -1,4 +1,4 @@
-# HU-010 – Smart Capture en el modal de carga de tarea
+# HU-010 – Smart Capture en el modal de carga de tarea
 
 Jira: PIAPARTES-24
 
@@ -12,7 +12,7 @@ Jira: PIAPARTES-24
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
 | Estado | Finalizado |
-| Última actualización | 2026-09-16 |
+| Última actualización | 2026-11-11 |
 | SPEC origen | [SPEC-010-smart-capture-carga-diaria](../../05-open-spec/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md) |
 | TR relacionada(s) | [TR-010-smart-capture-carga-diaria](../../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) |
 
@@ -138,6 +138,8 @@ Distinto del Asistente IA documental del avatar (SPEC-008 / HU-008) y de la impo
 | R-SC-31 | Cada dato resoluble debe emitirse como `setField` y reflejarse de inmediato en el control visible; `replyText` sin mutación no cumple. |
 | R-SC-32 | Lo resoluble se aplica aunque otro campo del mismo turno sea inválido (apply parcial). |
 | R-SC-33 | Tras `setField` de cliente/asistente/duración, el SelectBox correspondiente muestra la opción (no placeholder). |
+| R-SC-34 | Fecha con barras según locale i18n (`en` = `MM/dd/yyyy`; resto = `dd/MM/yyyy`); persistencia ISO. |
+| R-SC-35 | Errores duros de turno / Guardar con modal abierto: ventana modal, no hilo ni grilla. |
 
 ---
 
@@ -162,6 +164,8 @@ Distinto del Asistente IA documental del avatar (SPEC-008 / HU-008) y de la impo
 - [x] **CA-CC3-07** Tras un turno con cliente y asistente únicos, esos SelectBox muestran las opciones (código + descripción); no quedan en placeholder.
 - [x] **CA-CC3-08** Si la duración no es múltiplo del tramo, el hilo lo informa y **no** borra ni impide los campos ya aplicados.
 - [x] **CA-CC3-09** Observación / fecha / tipo resolubles se ven en sus controles DX del mismo modal.
+- [x] **CA-34** `07/11/2026` con locale `es` aplica `2026-11-07`; con locale `en` aplica `2026-07-11`. DateBox del modal usa el mismo patrón.
+- [x] **CA-35** Un `turnError` se ve en el Popup de error del formulario (`partesCargaError`); no se agrega al hilo ni al listado detrás.
 
 ### Escenarios Gherkin
 
@@ -277,3 +281,4 @@ Cerradas en Parte C (TR-010).
 | 2026-09-15 | Parte G CC-PQ #3 (09/08/2026): apply visible en controles DX + apply parcial. |
 | 2026-09-16 | Parte F: CA-CC3-07…09 verificados — [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-010-update-CC-PQ-03-2026-09-16.md). |
 | 2026-09-16 | Parte I: fusionado HU-010-update (CC-PQ #3, 09/08) en esta HU; update eliminado. Estado → Finalizado. |
+| 2026-11-11 | R-SC-34/35 + CA-34/35: fecha por locale i18n; errores duros en modal. |

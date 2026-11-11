@@ -26,7 +26,7 @@ Un archivo `.md` por capacidad (prefijo `SPEC-00N`). Los archivos que empiezan c
 | [SPEC-002-identidad-funcional-y-acceso.md](./SPEC-002-identidad-funcional-y-acceso.md) | Login, perfil Partes, acceso | Publicado |
 | [SPEC-003-maestros-y-catalogos.md](./SPEC-003-maestros-y-catalogos.md) | Archivos: asistentes, clientes, tipos | Publicado |
 | [SPEC-004-operacion-carga-diaria.md](./SPEC-004-operacion-carga-diaria.md) | Carga diaria, captura inteligente | Publicado |
-| [SPEC-005-supervision-proceso-masivo.md](./SPEC-005-supervision-proceso-masivo.md) | Cierre/reapertura masiva (supervisor) | Publicado |
+| [SPEC-005-supervision-proceso-masivo.md](./SPEC-005-supervision-proceso-masivo.md) | Proceso masivo: lote e informar a clientes (supervisor) | Publicado |
 | [SPEC-006-consultas-dashboard-navegacion.md](./SPEC-006-consultas-dashboard-navegacion.md) | Dashboard, informes, pivot web | Publicado |
 | [SPEC-007-mobile-capacitor.md](./SPEC-007-mobile-capacitor.md) | App móvil | Publicado |
 | [SPEC-008-asistente-ia-y-preferencias.md](./SPEC-008-asistente-ia-y-preferencias.md) | Chat avatar, preferencias de modelo | Publicado |
@@ -35,4 +35,4 @@ Un archivo `.md` por capacidad (prefijo `SPEC-00N`). Los archivos que empiezan c
 | [SPEC-011-parametros-seguridad.md](./SPEC-011-parametros-seguridad.md) | Parámetros y administración de seguridad | Publicado |
 | [SPEC-013-carga-paquetes-horas.md](./SPEC-013-carga-paquetes-horas.md) | Carga de paquetes de horas (supervisor) | Publicado |
 
-Última actualización del índice: **2026-10-21**.
+Última actualización del índice: **2026-11-09**.
