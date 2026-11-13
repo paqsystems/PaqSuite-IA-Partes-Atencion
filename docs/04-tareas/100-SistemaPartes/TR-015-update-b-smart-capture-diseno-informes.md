@@ -303,3 +303,4 @@ Cualquier otro `type` → **D-12** (omitir en turno LLM; 422 solo payload client
 | 2026-11-13 | Parte C1: Apto con observaciones; D-11…D-13; Estado **Especificado**. |
 | 2026-11-13 | Parte D1: plan implementación (sin código). |
 | 2026-11-13 | Parte D: T1–T7 implementados (apply sidecar, D4, turn BE, SC FE, OpenAPI, i18n, runbook §6.2); tests unit/feature/vitest; [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-b-2026-11-13.md); Estado **Pendiente de Revisión**. T8/T9 manual → E/F1. |
+| 2026-11-13 | Parte E: DesignLayout 2/2 + DesignAssistantTurn 6/6 + Vitest design 4/4 **PASS**; EmissionsPartes 1 fail seed clienteId; E2E diseñador blocked (Playwright browsers). T8/T9 → F1. |

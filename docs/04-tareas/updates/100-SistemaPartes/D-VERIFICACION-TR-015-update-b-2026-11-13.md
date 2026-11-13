@@ -7,7 +7,8 @@
 | **Jira** | Epic [PIAPARTES-53](https://paqsystems.atlassian.net/browse/PIAPARTES-53) · HU [PIAPARTES-61](https://paqsystems.atlassian.net/browse/PIAPARTES-61) · TR [PIAPARTES-62](https://paqsystems.atlassian.net/browse/PIAPARTES-62) |
 | **Fecha** | 2026-11-13 |
 | **Repos** | Framework `dx-reporting` (T1–T3) + Partes host (T4–T9) |
-| **Estado Parte D** | Implementación T1–T9 cerrada a nivel código/tests automatizados; batería manual F1 pendiente (Parte E/F1) |
+| **Estado Parte D** | Implementación T1–T9 cerrada a nivel código/tests automatizados |
+| **Estado Parte E** | **2026-11-13** — tests TR Must **PASS**; regresión emisiones 1 fail preexistente; E2E bloqueado (browsers Playwright); T8/T9 manual → **F1** |
 
 ---
 
@@ -25,6 +26,22 @@
 | Unit BE | `DesignLayoutActionPlannerTest` — **2/2 OK** |
 | Feature BE | `ApiV1DesignAssistantTurnTest` — auth / 4709 / BYOK / 422 / heurística |
 | Vitest FE | `enableReportDesignerAi.test.ts` + `emissionDesignSmartCaptureTurn.test.ts` — **4/4 OK** |
+
+---
+
+## Parte E — ejecución de tests (2026-11-13)
+
+| Comando / suite | Resultado | Detalle |
+|-----------------|-----------|---------|
+| `vendor/bin/phpunit --filter DesignLayoutActionPlannerTest` | **PASS** | 2/2, 5 assertions |
+| `vendor/bin/phpunit --filter ApiV1DesignAssistantTurnTest` | **PASS** | 6/6, 24 assertions |
+| `vendor/bin/phpunit --filter ApiV1EmissionsPartesTest` | **FAIL 1/17** | `test_design_sin_acceso_total_4709_asistente_emite`: alta tarea 422 `partes.tarea.camposObligatorios` porque `clienteId=0` (seed sin cliente). **No** toca el turn design assistant. |
+| `npx vitest run …enableReportDesignerAi… emissionDesignSmartCaptureTurn` | **PASS** | 2 files / 4 tests (`--pool=threads`) |
+| `npx vitest run src/features/partes/informes` (carpeta) | **Inestable** | 25 tests PASS en 9 files + timeouts de workers (pool forks) → exit 1 de infra |
+| Sidecar C# unit | **N/A** | Sin proyecto test; `dotnet build` OK (Parte D) |
+| `npx playwright test …partes-emisiones --grep disenador` | **BLOCKED** | Falta Chromium Playwright: `npx playwright install` |
+
+**Veredicto Parte E (TR-015-update-b):** tests Must del alcance **OK**. Fallo emisiones = deuda de fixture/seed (clienteId). E2E requiere install browsers + stack lab → **F1**.
 
 ---
 
@@ -59,7 +76,9 @@ Ejecutar en lab: sidecar `:5055` + Partes + BYOK GEN-16 (no OpenAI sidecar oblig
 
 ## Gaps / follow-ups
 
-- Batería manual #1–#8 → Parte **E** / **F1** (veredicto A/B/C).
+- Batería manual #1–#8 → **Parte F1**.
+- E2E: `npx playwright install` (Chromium) en la PC de lab.
+- Fixture `ApiV1EmissionsPartesTest` (seed cliente) — fuera de alcance Must TR-015-update-b.
 - Proxy Forge/nginx `/api/layout` en preview si no solo Vite.
 - Manual usuario GEN-99 al cierre F si se pide.
 
@@ -70,3 +89,4 @@ Ejecutar en lab: sidecar `:5055` + Partes + BYOK GEN-16 (no OpenAI sidecar oblig
 | Fecha | Cambio |
 |-------|--------|
 | 2026-11-13 | Creado al cierre Parte D (código T1–T7 + tests + runbook; T8/T9 checklist para F1). |
+| 2026-11-13 | Parte E: re-ejecución PHPUnit/Vitest Must PASS; 1 fail emisiones seed; E2E blocked Playwright browsers. |
