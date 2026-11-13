@@ -1,7 +1,11 @@
 import { Suspense, lazy, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { buildDxGetDesignerModelAction, type ReportDesignerContext } from '@paqsuite/react-core'
-import { readDxReportingConfig, resolveDxDesignerReportUrl } from './dxReportingConfig'
+import type { ReportDesignerContext } from '@paqsuite/react-core'
+import {
+  buildDxGetDesignerModelAction,
+  readDxReportingConfig,
+  resolveDxDesignerReportUrl,
+} from './dxReportingConfig'
 
 const LazyDxReportDesignerApp = lazy(() => import('./DxReportDesignerApp'))
 

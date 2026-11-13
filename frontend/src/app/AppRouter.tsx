@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   BrowserRouter,
   Navigate,
@@ -90,11 +91,26 @@ function ConsultaRoute() {
   return <Navigate to="/partes/informes/consulta-detallada" replace />
 }
 
+/** Evita outlet en blanco mientras React lazy resuelve chunks (p. ej. diseñador de emisiones). */
+function RouteLoadingFallback() {
+  const { t } = useTranslation()
+  return (
+    <div
+      role="status"
+      aria-busy="true"
+      data-testid="appRouteLoading"
+      style={{ padding: 24, textAlign: 'center' }}
+    >
+      {t('catalog.loading')}
+    </div>
+  )
+}
+
 export function AppRouter() {
   return (
     <BrowserRouter>
       <AuthBootstrap />
-      <Suspense fallback={null}>
+      <Suspense fallback={<RouteLoadingFallback />}>
         <Routes>
         <Route element={<GuestOnly />}>
           <Route path="/login" element={<LoginPage />} />

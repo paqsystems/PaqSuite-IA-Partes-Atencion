@@ -545,5 +545,18 @@
   "partes.import.fechaInvalida": "Invalid date",
   "partes.import.duracionInvalida": "Invalid duration. Use hh:mm (e.g. 00:30) or whole minutes (e.g. 30); must be a multiple of the slot {{tramo}}",
   "partes.import.booleanoInvalido": "Use true or false",
-  "partes.import.descripcionRequerida": "Description is required"
+  "partes.import.descripcionRequerida": "Description is required",
+  "partes.emissionDesign.hint": "Ask for layout changes in natural language (group, title, totals…). Review the canvas and Save in the designer.",
+  "partes.emissionDesign.configurationRequired": "Configure an LLM credential in Preferences to use the design assistant.",
+  "partes.emissionDesign.reportUrlRequired": "Open or create a report variant before using the assistant.",
+  "partes.emissionDesign.actionsPlanned": "I will apply the allowed layout actions.",
+  "partes.emissionDesign.noMappedActions": "I could not map the request to allowed actions. Try title, group by client, or sum minutes.",
+  "partes.emissionDesign.appliedRefresh": "Changes applied. The designer refreshed; review the canvas and Save if needed.",
+  "partes.emissionDesign.applyFailed": "Could not apply layout changes.",
+  "partes.emissionDesign.applyCancelled": "Apply cancelled. Layout was not modified.",
+  "partes.emissionDesign.turnError": "Could not complete the design assistant turn.",
+  "partes.emissionDesign.confirmDirtyTitle": "Apply assistant changes",
+  "partes.emissionDesign.confirmDirtyApply": "The layout will be updated on disk and the designer reloaded. Unsaved canvas edits may be lost. Continue?",
+  "partes.emissionDesign.processNotSupported": "This process does not support design assistance in this version.",
+  "partes.emissionDesign.messageRequired": "Enter a message for the assistant."
 }

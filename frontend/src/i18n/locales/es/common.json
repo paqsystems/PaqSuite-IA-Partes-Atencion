@@ -545,5 +545,18 @@
   "partes.import.fechaInvalida": "Fecha inválida",
   "partes.import.duracionInvalida": "Duración inválida. Use hh:mm (ej. 00:30) o minutos enteros (ej. 30); debe ser múltiplo del tramo {{tramo}}",
   "partes.import.booleanoInvalido": "Usar verdadero o falso",
-  "partes.import.descripcionRequerida": "Descripción obligatoria"
+  "partes.import.descripcionRequerida": "Descripción obligatoria",
+  "partes.emissionDesign.hint": "Pedí cambios de layout en lenguaje natural (agrupar, título, totales…). Revisá el lienzo y guardá con Save del diseñador.",
+  "partes.emissionDesign.configurationRequired": "Configurá una credencial LLM en Preferencias para usar el asistente de diseño.",
+  "partes.emissionDesign.reportUrlRequired": "Abrí o creá una variante de informe antes de usar el asistente.",
+  "partes.emissionDesign.actionsPlanned": "Voy a aplicar las acciones permitidas al layout.",
+  "partes.emissionDesign.noMappedActions": "No pude mapear el pedido a acciones permitidas. Probá pedir título, agrupación por cliente o suma de minutos.",
+  "partes.emissionDesign.appliedRefresh": "Cambios aplicados. El diseñador se actualizó; revisá el lienzo y guardá si corresponde.",
+  "partes.emissionDesign.applyFailed": "No se pudieron aplicar los cambios al layout.",
+  "partes.emissionDesign.applyCancelled": "Aplicación cancelada. El layout no se modificó.",
+  "partes.emissionDesign.turnError": "No se pudo completar el turno del asistente de diseño.",
+  "partes.emissionDesign.confirmDirtyTitle": "Aplicar cambios del asistente",
+  "partes.emissionDesign.confirmDirtyApply": "Se actualizará el layout en disco y se recargará el diseñador. Los cambios no guardados en el lienzo pueden perderse. ¿Continuar?",
+  "partes.emissionDesign.processNotSupported": "Este proceso no admite asistencia de diseño en esta versión.",
+  "partes.emissionDesign.messageRequired": "Escribí un mensaje para el asistente."
 }

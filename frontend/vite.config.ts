@@ -68,7 +68,13 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 3000,
+      /** Lab Partes: URL canónica `http://127.0.0.1:3000`. Evita ambigüedad `localhost` → `::1` si hay conflicto IPv6. */
+      host: '127.0.0.1',
+      /** Lab Partes: si el puerto está tomado, fallar (no saltar a 3001). */
+      strictPort: true,
       proxy: {
+        // TR-015-update-b D-11: apply layout al sidecar (antes del proxy /api → Laravel)
+        '/api/layout': { target: dxReportingTarget, changeOrigin: true },
         '/api': {
           target: apiProxyTarget,
           changeOrigin: true,

@@ -260,6 +260,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(PartesSmartCaptureProposalPort::class, LlmPartesSmartCaptureProposal::class);
         $this->app->singleton(PartesTareaSmartCaptureTurnService::class);
 
+        // GEN-03 diseño informes oleada 2 B (TR-015-update-b)
+        $this->app->singleton(\App\Services\Emissions\DesignAssistant\DesignLayoutActionPlanner::class);
+        $this->app->singleton(\App\Services\Emissions\DesignAssistant\DesignAssistantTurnService::class);
+
         // GEN-14 Excel import (TR-009)
         $this->app->singleton(\App\Repositories\Sp\ExcelImport\SpExcelImportRepository::class);
         $this->app->singleton(
