@@ -139,14 +139,14 @@ Misma tabla que A.3, pero disparo desde Postman/curl al endpoint (o script), lue
 
 | Criterio | Peso | Camino A (JS) | Camino B (REPX) |
 |----------|------|---------------|-----------------|
-| ACT-01..03 pass en lienzo | Alto | | |
-| Validate Bindings OK (`name` schema) | Alto | | |
-| Sin recarga full page (ideal) | Medio | | |
-| API estable / documentada | Alto | | |
-| Esfuerzo TR oleada 2 | Medio | | |
-| Riesgo regresión Save/TR-011 | Medio | | |
+| ACT-01..03 pass en lienzo | Alto | N/E (cancelado MVP) | **OK** — scripts + REPX `spike-layout-b-1`; refresh variante |
+| Validate Bindings OK (`name` schema) | Alto | — | **OK** con Data Source **Consulta detallada** (usuario; ver D-VERIFICACION) |
+| Sin recarga full page (ideal) | Medio | — | **No** — cerrar/reabrir variante o F5 post-patch |
+| API estable / documentada | Alto | N/E | **Parcial** — scripts lab; endpoint spike doc, productivo pendiente TR |
+| Esfuerzo TR oleada 2 | Medio | — | **Medio** — motor C# reutilizable desde spike |
+| Riesgo regresión Save/TR-011 | Medio | — | **Bajo** en lab (usuario); re-smoke en TR |
 
-**Veredicto spike:** `A` \| `B` \| **Híbrido** (definir qué acciones en cada capa).
+**Veredicto spike:** **B** — evidencia [D-VERIFICACION-spike-015-oleada2-aplicador-2026-11-10.md](./D-VERIFICACION-spike-015-oleada2-aplicador-2026-11-10.md). Camino A no ejecutado (L-B-05).
 
 ---
 
@@ -155,7 +155,8 @@ Misma tabla que A.3, pero disparo desde Postman/curl al endpoint (o script), lue
 | Fecha | Ejecutor | Camino | ACT-01 | ACT-02 | ACT-03 | Notas |
 |-------|----------|--------|--------|--------|--------|-------|
 | | | A | | | | |
-| 2026-11-10 | Lab ST | B | — | **OK** | — | `spike-layout-b-1` · script `PaqSuite-IA-FRAMEWORK/services/dx-reporting/scripts/spike/Apply-Act02-GroupBy.ps1` · Group Header `clienteNombre` + recarga variante en diseñador |
+| 2026-11-10 | Lab ST | B | **OK** | **OK** | **OK** | ACT-01/03 scripts `Apply-Act0*-*.ps1` · DisplayName **Spike B titulo** · grupo `clienteNombre` · pie `sumSum([duracionMinutos])` · Validate con Consulta detallada · D1–D3 sidecar |
+| 2026-11-12 | Agente + UI | B | **OK** | **OK** | **OK** | D-VERIFICACION · captura usuario: variante **Spike B titulo**, grupo + total minutos en lienzo |
 
 ---
 

@@ -1,7 +1,7 @@
 # Deuda de cableado SDK — Partes-Atención (por GEN)
 
 **Origen:** relevamiento Framework 2026-10-11 (`PaqSuite-IA-FRAMEWORK` / `docs/06-operacion/relevamiento-cableado-hosts-tango-partes.md`).
-**Pin vigente en repo (2026-11):** `@paqsuite/react-core` **2.4.30-beta.9** · `paqsuite/laravel-core` **1.3.18-beta.24** (tabla «Versiones instaladas» en `docs/01-arquitectura/ritual-bump-sdk.md`). El relevamiento 2026-10 citaba **2.4.29-beta.1** / **1.3.15-beta.1** como snapshot histórico.
+**Pin vigente en repo (2026-11):** `@paqsuite/react-core` **2.4.30-beta.13** · `paqsuite/laravel-core` **1.3.18-beta.32** (tabla «Versiones instaladas» en `docs/01-arquitectura/ritual-bump-sdk.md`). GEN-13 defer manual RDS requiere **≥ beta.32**. El relevamiento 2026-10 citaba **2.4.29-beta.1** / **1.3.15-beta.1** como snapshot histórico.
 **Criterio:** mala invocación de un export GEN listo, fork de una pantalla/motor que el SDK ya exporta, o contrato que el SDK ya cubre (headers, cliente, envelope, tema, i18n GEN).
 **Fuera de alcance del relevamiento original:** pantallas de dominio (carga
 diaria, maestros, informes) y gaps de producto no ofrecidos en esa fecha

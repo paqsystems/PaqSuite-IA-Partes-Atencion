@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   isKnockoutModuleId,
   rewriteKnockoutNamespaceImport,
+  wrapJqueryUmdAsDefaultEsm,
   wrapKnockoutUmdAsDefaultEsm,
 } from './reportingCjsInterop'
 
@@ -51,5 +52,32 @@ describe('reportingCjsInterop', () => {
     expect(typeof ko.observable).toBe('function')
     expect(ko.observable(3)()).toBe(3)
     expect(typeof ko.bindingEvent.subscribe).toBe('function')
+  })
+})
+
+describe('wrapJqueryUmdAsDefaultEsm', () => {
+  it('carga UMD sin top-level module.exports (Vitest ESM)', () => {
+    const umd = `( function( global, factory ) {
+"use strict";
+if ( typeof module === "object" && typeof module.exports === "object" ) {
+  module.exports = global.document ? factory( global, true ) : function(){};
+} else {
+  factory( global );
+}
+} )( typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
+"use strict";
+var jQuery = function jQuery() {};
+jQuery.Deferred = function() {};
+if ( typeof noGlobal === "undefined" ) {
+  window.jQuery = window.$ = jQuery;
+}
+return jQuery;
+});`
+    const wrapped = wrapJqueryUmdAsDefaultEsm(umd).replace(
+      'export default __jquery;',
+      'return __jquery;',
+    )
+    const $ = new Function(wrapped)() as { Deferred: () => void }
+    expect(typeof $.Deferred).toBe('function')
   })
 })

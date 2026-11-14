@@ -1,7 +1,7 @@
 # Deploy Partes — SDK vía Cloudsmith (modelo empaquetado)
 
 Fecha: 2026-08-14 · Actualizado: 2026-11-10 (pin react-core 2.4.30-beta.11)  
-Target: `paqsuite/laravel-core@1.3.18-beta.24` · `@paqsuite/react-core@2.4.30-beta.11`  
+Target: `paqsuite/laravel-core@1.3.18-beta.32` · `@paqsuite/react-core@2.4.30-beta.13`  
 Instructivo: [`docs/06-operacion/adopcion-gen-35-cloudsmith.md`](../06-operacion/adopcion-gen-35-cloudsmith.md)
 
 > Guías Framework: `GUIA_PRUEBA_INSTALACION.md`, `GUIA_ACTUALIZACION_PROYECTO.md`  
@@ -14,7 +14,7 @@ Instructivo: [`docs/06-operacion/adopcion-gen-35-cloudsmith.md`](../06-operacion
 
 | Capa | Dependencia | Registry |
 |------|-------------|----------|
-| Backend | `paqsuite/laravel-core: 1.3.18-beta.24` | Cloudsmith `composer.cloudsmith.io/paqsystems/paqsuite-sdk` |
+| Backend | `paqsuite/laravel-core: 1.3.18-beta.32` | Cloudsmith `composer.cloudsmith.io/paqsystems/paqsuite-sdk` |
 | Frontend | `@paqsuite/react-core: 2.4.30-beta.11` | Cloudsmith `npm.cloudsmith.io/paqsystems/paqsuite-sdk` (`frontend/.npmrc`) |
 
 **Sin** path/`file:` al monorepo Framework.  

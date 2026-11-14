@@ -51,6 +51,7 @@
 | `PAQSUITE_INSTALACION_RESOLVER` | `sql` |
 | `PAQSUITE_HOST_MANIFEST` | (opcional) ruta absoluta al JSON si no usa default en config |
 | `PAQSUITE_TASKS_BACKUP_BACKEND` | `rds` |
+| `PAQSUITE_TASKS_BACKUP_DEFER_MANUAL_POLLING` | `true` (manual HTTP no hace polling inline; cierre vía scheduler — pin **≥ 1.3.18-beta.32**) |
 | `TASKS_BACKUP_S3_ARN_PREFIX` | `arn:aws:s3:::…/backups` (solo prefijo; ver adopción GEN-13) |
 | `TASKS_BACKUP_POLL_SECONDS` | `5` |
 | `TASKS_BACKUP_LOCK_LEASE_SECONDS` | `900` |

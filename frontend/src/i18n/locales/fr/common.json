@@ -521,5 +521,18 @@
   "partes.import.fechaInvalida": "Date invalide",
   "partes.import.duracionInvalida": "Durée invalide. Utilisez hh:mm (ex. 00:30) ou des minutes entières (ex. 30) ; doit être un multiple du créneau {{tramo}}",
   "partes.import.booleanoInvalido": "Utiliser vrai ou faux",
-  "partes.import.descripcionRequerida": "Description obligatoire"
+  "partes.import.descripcionRequerida": "Description obligatoire",
+  "partes.emissionDesign.hint": "Demandez des changements de mise en page en langage naturel (grouper, titre, totaux…). Vérifiez le canevas et enregistrez.",
+  "partes.emissionDesign.configurationRequired": "Configurez une clé LLM dans Préférences pour utiliser l’assistant de conception.",
+  "partes.emissionDesign.reportUrlRequired": "Ouvrez ou créez une variante de rapport avant d’utiliser l’assistant.",
+  "partes.emissionDesign.actionsPlanned": "Je vais appliquer les actions de mise en page autorisées.",
+  "partes.emissionDesign.noMappedActions": "Impossible de mapper la demande aux actions autorisées. Essayez titre, regroupement client ou somme des minutes.",
+  "partes.emissionDesign.appliedRefresh": "Modifications appliquées. Le concepteur a été actualisé ; vérifiez et enregistrez si besoin.",
+  "partes.emissionDesign.applyFailed": "Impossible d’appliquer les modifications de mise en page.",
+  "partes.emissionDesign.applyCancelled": "Application annulée. La mise en page n’a pas été modifiée.",
+  "partes.emissionDesign.turnError": "Impossible de terminer le tour de l’assistant de conception.",
+  "partes.emissionDesign.confirmDirtyTitle": "Appliquer les changements de l’assistant",
+  "partes.emissionDesign.confirmDirtyApply": "La mise en page sera mise à jour sur le disque et le concepteur rechargé. Les modifications non enregistrées peuvent être perdues. Continuer ?",
+  "partes.emissionDesign.processNotSupported": "Ce processus ne prend pas en charge l’assistance de conception dans cette version.",
+  "partes.emissionDesign.messageRequired": "Saisissez un message pour l’assistant."
 }

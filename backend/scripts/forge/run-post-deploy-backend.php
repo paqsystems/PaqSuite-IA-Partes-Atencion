@@ -113,6 +113,17 @@ foreach ($targets as $target) {
         }
     }
 
+    if (! $tenantFailed) {
+        $taskCatalogSeedExit = runArtisanLogged($kernel, 'db:seed', [
+            '--class' => 'Database\\Seeders\\PqTaskProcessFrameworkSeeder',
+            '--force' => true,
+        ]);
+        if ($taskCatalogSeedExit !== 0) {
+            $failedTenants[] = $label.' (task-process-seed)';
+            $tenantFailed = true;
+        }
+    }
+
     if ($tenantFailed) {
         fwrite(STDERR, "[FAIL {$label}] omito resto de pasos de este tenant; continúo con los siguientes.\n");
         if ($failFast) {

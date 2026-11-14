@@ -10,7 +10,7 @@ Framework: `PaqSuite-IA-FRAMEWORK` vía `paqsuite/laravel-core` + `@paqsuite/rea
 
 | Capa | Paquete | Resolución (deploy) |
 |------|---------|---------------------|
-| Backend | `paqsuite/laravel-core: 1.3.18-beta.24` | Cloudsmith (`composer.json` → `composer.cloudsmith.io/paqsystems/paqsuite-sdk`) |
+| Backend | `paqsuite/laravel-core: 1.3.18-beta.32` | Cloudsmith (`composer.json` → `composer.cloudsmith.io/paqsystems/paqsuite-sdk`) |
 | Frontend | `@paqsuite/react-core: 2.4.30-beta.11` | Cloudsmith (`frontend/.npmrc` + lock; Vercel: `CLOUDSMITH_READ_TOKEN`) |
 
 Deploy / bump: [`deploy-sdk-package-repos.md`](./deploy-sdk-package-repos.md).  

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use PaqSuite\LaravelCore\Tasks\Backup\RdsDeferredBackupExecutionPoller;
 use App\Tasks\StaleTaskExecutionRecovery;
 use App\Tenancy\CliInstalacionContext;
 use App\Tenancy\SchedulerClienteResolver;
@@ -21,6 +22,7 @@ final class PartesTasksRecoverStaleCommand extends Command
     public function handle(
         CliInstalacionContext $cliInstalacion,
         SchedulerClienteResolver $clienteResolver,
+        RdsDeferredBackupExecutionPoller $rdsPoller,
         StaleTaskExecutionRecovery $staleRecovery,
     ): int {
         $clientes = $clienteResolver->resolve($this->option('cliente') ? (string) $this->option('cliente') : null);
@@ -41,6 +43,11 @@ final class PartesTasksRecoverStaleCommand extends Command
             }
 
             $this->line(sprintf('Tenant %s → BD %s', $record->cliente, (string) $record->databaseName));
+
+            $polled = $rdsPoller->pollOpenRdsBackups();
+            if ($polled > 0) {
+                $this->info("Backups RDS cerrados por scheduler: {$polled}.");
+            }
 
             $recovered = $this->option('full')
                 ? $staleRecovery->recover()

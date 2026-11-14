@@ -123,8 +123,8 @@ export function invalidateSessionIfClienteMismatch(currentCliente: string): bool
 
   if (!expected) {
     if (actual) {
-      clearAuthSession()
-      return true
+      patchAuthSession({ cliente: actual })
+      return false
     }
     return false
   }

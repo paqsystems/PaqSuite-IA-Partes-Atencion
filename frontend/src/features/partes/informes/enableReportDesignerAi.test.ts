@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { enableReportDesignerAiServices } from './enableReportDesignerAi'
 
 describe('enableReportDesignerAiServices', () => {
-  it('invoca AIServicesEnabled(true) cuando DevExpress expone Settings', () => {
+  it('invoca AIServicesEnabled(false) — camino B desactiva Prompt-to-Report', () => {
     let enabled: boolean | undefined
     ;(
       globalThis as typeof globalThis & {
@@ -25,7 +25,7 @@ describe('enableReportDesignerAiServices', () => {
     }
 
     enableReportDesignerAiServices()
-    expect(enabled).toBe(true)
+    expect(enabled).toBe(false)
   })
 
   it('no falla si DevExpress no está cargado', () => {

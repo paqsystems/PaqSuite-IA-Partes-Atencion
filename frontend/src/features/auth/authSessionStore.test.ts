@@ -36,10 +36,11 @@ describe('invalidateSessionIfClienteMismatch', () => {
     expect(getAuthSession()?.cliente).toBe('ESTUDIOGB')
   })
 
-  it('invalida sesiones viejas sin cliente al entrar con tenant', () => {
+  it('rellena cliente en sesiones viejas sin cliente al entrar con tenant', () => {
     saveLoginSession(baseResultado())
     expect(getAuthSession()?.cliente).toBeUndefined()
-    expect(invalidateSessionIfClienteMismatch('ESTUDIOGB')).toBe(true)
-    expect(getAuthSession()).toBeNull()
+    expect(invalidateSessionIfClienteMismatch('ESTUDIOGB')).toBe(false)
+    expect(getAuthSession()?.cliente).toBe('ESTUDIOGB')
+    expect(getAuthSession()?.token).toBe('tok-1')
   })
 })

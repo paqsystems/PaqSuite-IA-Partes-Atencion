@@ -139,6 +139,10 @@ Route::prefix('v1')->group(function () {
             Route::post('/emissions/design/processes/{processCode}/reports', [$e, 'designCreateReport']);
             Route::put('/emissions/design/reports/{reportId}/layout', [$e, 'designUpdateLayout'])->whereNumber('reportId');
             Route::post('/emissions/design/reports/{reportId}/set-principal', [$e, 'designSetPrincipal'])->whereNumber('reportId');
+            Route::post(
+                '/emissions/design/processes/{processCode}/assistant/turn',
+                \App\Http\Controllers\Api\V1\Emissions\DesignAssistantTurnController::class,
+            );
         });
 
         // Lectura: dashboard / informes (incluye perfil cliente)

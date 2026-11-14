@@ -75,7 +75,7 @@ php artisan paqsuite:installation:status --cliente=DEV --proyecto=partesatencion
 php artisan test tests/Unit/SchedulingTaskDefinitionRepositoryTest.php
 ```
 
-Manifiesto esperado alineado al pin de `composer.json` (p. ej. `paqsuite-framework-1.3.18-beta.18+partesatencion-1.3.18-beta.18`).
+Manifiesto esperado alineado al pin de `composer.json` (p. ej. `paqsuite-framework-1.3.18-beta.32+partesatencion-1.3.18-beta.32`).
 
 Checklist operativo (listado UI, guardar definición, `parameter_set`, wrappers PHP):
 

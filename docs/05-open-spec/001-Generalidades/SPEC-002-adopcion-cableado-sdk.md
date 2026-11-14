@@ -14,7 +14,7 @@ Jira: PIAPARTES-14
 | **TR** | [TR-002](../../04-tareas/001-Generalidades/TR-002-adopcion-cableado-sdk.md) |
 | **F** | [F PA-02](../../04-tareas/updates/001-Generalidades/F-TR-002-adopcion-cableado-sdk-PA-02.md) · [F PA-05/06](../../04-tareas/updates/001-Generalidades/F-TR-002-adopcion-cableado-sdk-PA-05-06.md) · [F PA-07](../../04-tareas/updates/001-Generalidades/F-TR-002-adopcion-cableado-sdk-PA-07.md) · [F PA-08/10](../../04-tareas/updates/001-Generalidades/F-TR-002-adopcion-cableado-sdk-PA-08-10.md) · [F PA-11/13](../../04-tareas/updates/001-Generalidades/F-TR-002-adopcion-cableado-sdk-PA-11-13.md) · [F T6](../../04-tareas/updates/001-Generalidades/F-TR-002-adopcion-cableado-sdk-T6.md) · [F PA-03/04/14](../../04-tareas/updates/001-Generalidades/F-TR-002-adopcion-cableado-sdk-PA-03-04-14.md) |
 | **PA-01** | [SPEC-012](../100-SistemaPartes/SPEC-012-adopcion-gen-35-cloudsmith.md) |
-| **Pin (runtime repo, 2026-11)** | `@paqsuite/react-core` **2.4.30-beta.9** · `paqsuite/laravel-core` **1.3.18-beta.24** |
+| **Pin (runtime repo, 2026-11)** | `@paqsuite/react-core` **2.4.30-beta.13** · `paqsuite/laravel-core` **1.3.18-beta.32** |
 
 ```text
 [Proceso] Cableado SDK del host Partes: adoptar GEN-20, GEN-06, GEN-19, GEN-07, GEN-02, GEN-04, GEN-01.

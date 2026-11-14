@@ -13,7 +13,7 @@ Jira: PIAPARTES-55
 | **Roles** | Diseñador = `emission.design` + desktop + menú `/emisiones/disenador` |
 | **Dependencias** | [TR-011](./TR-011-reportes-emisiones.md) (diseñador + sidecar cableado); Framework `services/dx-reporting` 26.1; credencial LLM **despliegue sidecar** (D-A1-02) |
 | **Clasificación** | HU COMPLEJA (piloto cross-repo) |
-| **Estado** | **Especificado** (Parte C1 — 2026-10-30) |
+| **Estado** | **Pendiente de Revisión** (F1 piloto 2026-11-10 — veredicto **B**; [D-VERIFICACION-TR-015](../updates/100-SistemaPartes/D-VERIFICACION-TR-015-2026-10-30.md)) |
 | **Revisión C1** | **Apto con observaciones** — §9 |
 
 **Origen:** [HU-015](../../03-historias-usuario/100-SistemaPartes/HU-015-ia-diseno-informes.md)  

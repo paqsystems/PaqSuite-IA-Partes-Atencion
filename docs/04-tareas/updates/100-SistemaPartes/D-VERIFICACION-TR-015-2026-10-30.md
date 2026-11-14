@@ -15,7 +15,8 @@
 
 ## Resultado F1 (agente)
 
-- **Apto con observaciones (parcial)** — Prompt-to-Report **completó** en lab 2026-11-04 (informe «Report prueba ia 1» en diseñador). **Veredicto A \| B \| C no firmado**: batería §4.4 #1–#8 incompleta; bindings **XRE023** (labels vs `name` schema). Ver § **Lab 2026-11-04**.
+- **Veredicto oleada 1 (2026-11-10): B** — Camino **A** (Prompt-to-Report DX) **cancelado** para producto Partes: sin entrega productiva estable; cuelgues wizard, schema incompleto por `reportUrl`, fallos de contrato. Continúa **oleada 2** vía Smart Capture bajo diseñador → [SPEC-015-update oleada 2](../../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-2-b-update.md).
+- **Histórico parcial (lab):** Prompt-to-Report **completó** en lab 2026-11-04 («Report prueba ia 1»). Batería §4.4 #1–#8 incompleta; bindings **XRE023**. No bloquea veredicto **B**.
 
 ---
 
@@ -114,10 +115,48 @@ DevExpress **Validate Bindings** → **XRE023** en Text/Visible: la IA enlazó *
 | Veredicto | Significado | Estado |
 |-----------|-------------|--------|
 | **A** | DX IA suficiente; oleada 2 = schema + operación Framework | **No firmado** |
-| **B** | Modificación web insuficiente → Smart Capture bajo diseñador | **No firmado** |
-| **C** | Híbrido SC + sidecar Prompt-to-Report | **No firmado** |
+| **B** | Modificación web insuficiente → Smart Capture bajo diseñador | **Firmado 2026-11-10** |
+| **C** | Híbrido SC + sidecar Prompt-to-Report | **Descartado** |
 
-**Fila obligatoria:** `Veredicto = ___` — completar tras batería §4.4 y filas «Pendiente» de la matriz.
+**Fila obligatoria:** `Veredicto = **B**` (decisión producto tras piloto A inestable / sin entrega productiva; oleada 2 → SPEC-015-update B).
+
+---
+
+## Verificación del agente (F1) — TR-015 piloto oleada 1
+
+| Campo | Valor |
+|-------|--------|
+| TR | TR-015 |
+| Fecha F1 | 2026-11-10 |
+| Resultado | **Aprobado con observaciones** |
+
+### Evidencia revisada
+
+- Schema + bootstrap sidecar (FW); FE remote DX; lab 2026-11-04 generación única; Vitest diseñador 2/2; veredicto producto **B** documentado.
+
+### Hallazgos críticos
+
+- Ninguno que impida **cerrar el piloto** oleada 1: el objetivo era **decidir A\|B\|C**, no productizar camino A.
+- Batería §4.4 #3–#8 **no** ejecutada en formalidad completa.
+
+### Advertencias
+
+- XRE023 bindings (labels vs `name`); E2E Playwright no corrido en PC; tests API emissions fallo esquema test SQLite (ajeno).
+
+### Tests
+
+- Vitest ReportDesignerHostPage: OK (2026-10-30).
+- Playwright emisiones: **no ejecutado**.
+- Batería manual §4.4: **parcial**.
+
+### Pendientes
+
+- Implementación oleada 2 (TR nueva / pivot) — fuera de TR-015.
+
+### Recomendación final
+
+- TR-015 → **Pendiente de revisión humana** (F1 agente OK con observaciones).
+- Siguiente SDD: **Parte B** (HU oleada 2), **no** B1 hasta existir HU.
 
 ---
 
@@ -161,3 +200,4 @@ DevExpress **Validate Bindings** → **XRE023** en Text/Visible: la IA enlazó *
 |-------|------|
 | 2026-10-30 | Creado post Parte D (FW T1–T5, Partes T6, Vitest). Batería IA manual pendiente. |
 | 2026-11-04 | Lab Prompt-to-Report OK (Report prueba ia 1); quota OpenAI resuelta; observación XRE023; FW LAB + REPX muestra; F1 **apto con observaciones** parcial. |
+| 2026-11-10 | Veredicto piloto **B** firmado; oleada 2 SDD (SPEC-015-update B); limitaciones [20-ia-diseno…limitaciones-mvp-b](../../../02-producto/Sistema-Partes-IA/20-ia-diseno-informes-limitaciones-mvp-b.md). |

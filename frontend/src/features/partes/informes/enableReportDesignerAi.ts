@@ -1,4 +1,7 @@
-/** Asegura servicios IA del Web Report Designer (Prompt-to-Report) cuando el sidecar los registró. */
+/**
+ * Prompt-to-Report DX (camino A) — desactivado en Partes oleada 2 B (TR-015-update-b D-08).
+ * Se mantiene el export para no romper imports; no habilita AIServices.
+ */
 export function enableReportDesignerAiServices(): void {
   const settings = (
     globalThis as typeof globalThis & {
@@ -14,5 +17,6 @@ export function enableReportDesignerAiServices(): void {
     }
   ).DevExpress?.Reporting?.Designer?.Settings
 
-  settings?.AIServicesEnabled?.(true)
+  // L-B-05 / D-08: forzar off si la API existe.
+  settings?.AIServicesEnabled?.(false)
 }

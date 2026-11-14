@@ -33,16 +33,31 @@ export function rewriteJqueryNamespaceImport(code: string): string {
 }
 
 export function wrapJqueryUmdAsDefaultEsm(umdSource: string): string {
+  // El UMD de jQuery asigna `module.exports`. En Vitest/Node (módulo ESM) `module` puede
+  // existir en el scope externo con `exports` de solo lectura → "Cannot set property default…".
+  // Cargamos el UMD dentro de un IIFE con `module`/`exports` locales (mismo patrón que knockout).
   return `'use strict';
+function __paqLoadJQuery() {
+  var module = { exports: {} };
+  var exports = module.exports;
 ${umdSource}
-const __jquery =
-  (typeof jQuery !== 'undefined' && typeof jQuery.Deferred === 'function')
-    ? jQuery
-    : (typeof globalThis !== 'undefined' &&
-        typeof globalThis.jQuery !== 'undefined' &&
-        typeof globalThis.jQuery.Deferred === 'function')
-      ? globalThis.jQuery
-      : undefined;
+  var jq = module.exports;
+  // jQuery es una función (factory); el branch CJS asigna esa función a module.exports.
+  if (jq != null && typeof jq.Deferred === 'function') {
+    return jq;
+  }
+  if (
+    jq != null &&
+    typeof jq === 'object' &&
+    typeof jq.default === 'function' &&
+    typeof jq.default.Deferred === 'function'
+  ) {
+    return jq.default;
+  }
+  var w = typeof window !== 'undefined' ? window : globalThis;
+  return w.jQuery;
+}
+const __jquery = __paqLoadJQuery();
 if (typeof __jquery === 'undefined' || typeof __jquery.Deferred !== 'function') {
   throw new Error('jQuery Deferred is not a function');
 }

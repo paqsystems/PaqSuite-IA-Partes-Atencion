@@ -71,13 +71,13 @@ Validar en instalación Partes + sidecar Framework:
 
 Referencias: [AI for Reporting](https://docs.devexpress.com/XtraReports/405211/ai-for-devexpress-reporting), [Prompt-to-Report web](https://docs.devexpress.com/XtraReports/405485/ai-powered-functionality/web-reporting/prompt-to-report-in-web-report-designer).
 
-### Oleada 2 — Producto (condicional)
+### Oleada 2 — Producto (**veredicto B — 2026-11-10**)
 
-| Veredicto | Partes implementa |
-|-----------|-------------------|
-| **A** | Schema + smoke; operación según runbook Framework |
-| **B** | `SmartCapturePanel` bajo DX + turno host (excepción diseñador documental) |
-| **C** | UI SC + puente a API Prompt-to-Report sidecar |
+| Veredicto | Partes implementa | Estado |
+|-----------|-------------------|--------|
+| **A** | Prompt-to-Report DX | **Cancelado** (sin entrega productiva) |
+| **B** | `SmartCapturePanel` bajo DX + turno host | **En SDD** — [SPEC-015-update oleada 2](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-2-b-update.md) · [limitaciones MVP](./20-ia-diseno-informes-limitaciones-mvp-b.md) |
+| **C** | — | No aplica |
 
 ---
 
@@ -92,4 +92,5 @@ Referencias: [AI for Reporting](https://docs.devexpress.com/XtraReports/405211/a
 
 ## Próximo paso SDD
 
-- **Parte D** — cierre: batería §4.4 manual con sidecar + LLM → firmar veredicto en [D-VERIFICACION-TR-015](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-2026-10-30.md).
+- **Oleada 1 — cierre F1:** veredicto **B** en [D-VERIFICACION-TR-015](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-2026-10-30.md) (camino A cancelado).
+- **Oleada 2:** Parte **A1** → **B** (HU) → **C** (TR) sobre [SPEC-015-update oleada 2](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-2-b-update.md).

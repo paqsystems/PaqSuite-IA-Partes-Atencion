@@ -8,7 +8,7 @@ Plan de adopción sin forks GEN: [plan-partes-adopcion-sdk-sin-fork-gen.md](./pl
 
 | Paquete | Objetivo | Registry |
 |---------|----------|----------|
-| `paqsuite/laravel-core` | Alinear a `VERSION` del Framework vigente (Partes: **1.3.18-beta.24** en composer) | Cloudsmith `paqsystems/paqsuite-sdk` |
+| `paqsuite/laravel-core` | Alinear a `VERSION` del Framework vigente (Partes: **1.3.18-beta.32** en composer) | Cloudsmith `paqsystems/paqsuite-sdk` |
 | `@paqsuite/react-core` | Alinear a `VERSION` del Framework vigente (Partes: **2.4.30-beta.11** en `frontend/package.json`) | Cloudsmith `npm.cloudsmith.io/paqsystems/paqsuite-sdk` |
 | `@paqsuite/create-app` (scaffold, diff obligatorio) | según oleada Framework | Cloudsmith (no es dep runtime de Partes) |
 
@@ -16,7 +16,7 @@ Plan de adopción sin forks GEN: [plan-partes-adopcion-sdk-sin-fork-gen.md](./pl
 
 | Paquete | Pin / lock | Nota |
 |---------|------------|------|
-| `paqsuite/laravel-core` | **1.3.18-beta.24** | Cloudsmith en `backend/composer.json` (lock). Bump con `composer update` y `CLOUDSMITH_READ_TOKEN`. |
+| `paqsuite/laravel-core` | **1.3.18-beta.32** | Cloudsmith en `backend/composer.json` (lock). Incluye poller RDS diferido (GEN-13). Bump con `composer update` y `CLOUDSMITH_READ_TOKEN`. |
 | `@paqsuite/react-core` | **2.4.30-beta.11** | Cloudsmith; `frontend/package-lock.json` resuelve tarball `npm.cloudsmith.io`. GEN-11: export Excel usa el diálogo nativo Guardar como (`showSaveFilePicker`) y `getInstance()` de DevExtreme React 26. GEN-06: FilterRow, alta por «+» de grilla, alta individual de Permisos; política de contraseña vía **`respuesta` = `auth.password.*`** + i18n en modal (regla **36**). |
 
 Vercel: `scripts/vercel-install.sh` + `CLOUDSMITH_READ_TOKEN`. Vite **no** alias al monorepo salvo `PAQ_REPO_LAB=1`.

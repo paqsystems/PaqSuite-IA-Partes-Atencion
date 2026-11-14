@@ -75,24 +75,71 @@ export function LoginPage() {
     await applyGuestLocale(next)
   }
 
+  function resolveCredentialsFromDom(form: HTMLFormElement): {
+    usuario: string
+    password: string
+    tenant: string
+  } {
+    function queryTextBoxValue(...dataTestIds: string[]): string {
+      for (const dataTestId of dataTestIds) {
+        const host = form.querySelector(`[data-testid="${dataTestId}"]`)
+        const input = host?.querySelector('input')
+        const value = (input?.value ?? '').trim()
+        if (value !== '') {
+          return value
+        }
+      }
+      return ''
+    }
+
+    const textInputs = Array.from(
+      form.querySelectorAll<HTMLInputElement>('input'),
+    ).filter((input) => {
+      const type = (input.type || 'text').toLowerCase()
+      return type === 'text' || type === 'email' || type === 'tel'
+    })
+    const passwordInputs = Array.from(
+      form.querySelectorAll<HTMLInputElement>('input[type="password"]'),
+    )
+
+    const usuarioFromDom =
+      queryTextBoxValue('loginUsuario', 'login.codigo', 'login.username') ||
+      (textInputs[0]?.value ?? '').trim()
+    const passwordFromDom =
+      queryTextBoxValue('loginPassword', 'login.password') ||
+      (passwordInputs[0]?.value ?? '').trim()
+    const tenantFromDom = native ? queryTextBoxValue('loginTenant') : ''
+
+    return {
+      usuario: usuario.trim() || usuarioFromDom,
+      password: password || passwordFromDom,
+      tenant: tenant.trim() || tenantFromDom,
+    }
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setErrorMessage(null)
     setIsSubmitting(true)
 
+    const form = event.currentTarget
+    const creds = resolveCredentialsFromDom(form)
+
     try {
       if (native) {
-        resolvePlatformCliente(tenant)
+        resolvePlatformCliente(creds.tenant)
       }
       const result = await loginRequest({
-        usuario,
-        password,
+        usuario: creds.usuario,
+        password: creds.password,
         locale,
-        tenant: native ? tenant : undefined,
+        tenant: native ? creds.tenant : undefined,
       })
 
       if (result.kind === 'ok') {
-        const clienteCode = resolvePlatformCliente(native ? tenant : undefined)
+        const clienteCode = resolvePlatformCliente(
+          native ? creds.tenant : undefined,
+        )
         const session = saveLoginSession(result.envelope.resultado, clienteCode)
         bootstrapAuthenticatedSession(session)
         const decision = resolvePostLoginRoute(session)
