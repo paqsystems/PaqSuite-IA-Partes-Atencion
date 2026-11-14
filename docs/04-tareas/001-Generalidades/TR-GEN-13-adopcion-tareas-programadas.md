@@ -32,7 +32,7 @@ motor y la UI pertenecen a los paquetes SDK.
   (`SchedulingTaskDefinitionRepository`). El SP due exige `next_run_at`.
 - Repositorios: Must implementar **todos** los métodos de
   `TaskDefinitionRepository` en cada wrapper (p. ej. `claimNextRunAt` desde
-  laravel-core 1.3.18-beta.18). Ver Framework adopcion-gen-13-tareas-programadas-host §3.
+  laravel-core ≥ 1.3.18-beta.32). Ver Framework adopcion-gen-13-tareas-programadas-host §3.
 - SQL: `installation:update` antes de `deploy-sp.php`; overrides en
   `backend/database/sp/` (p. ej. `pq_sp_task_definition_parameter_set.sql`).
 - Snapshot: SP host `pq_sp_task_execution_save_snapshot` expande JSON a
@@ -40,6 +40,10 @@ motor y la UI pertenecen a los paquetes SDK.
 - Polling: intervalo configurado y estados `running|success|error`.
 - Lock: `tasks:backup:rds:{cliente}`, adquisición no bloqueante, renovación y
   liberación en `finally`.
+- **Backup manual RDS diferido:** `PAQSUITE_TASKS_BACKUP_DEFER_MANUAL_POLLING=true`;
+  `partes:tasks-run-due` y `partes:tasks-recover-stale` invocan
+  `RdsDeferredBackupExecutionPoller::pollOpenRdsBackups()` **antes** de
+  `StaleTaskExecutionRecovery`. Pin `laravel-core` **≥ 1.3.18-beta.32**.
 - Acceso: permiso de la opción de menú de configuración de tareas programadas.
 
 ## 3. Piezas de implementación (host)
@@ -51,7 +55,8 @@ motor y la UI pertenecen a los paquetes SDK.
 | `PartesMonoBackupCompanyTargetResolver` | Fallback BD tenant MONO |
 | `RdsSqlServerBackupGateway` | `RdsBackupS3Arn::composeExportDestination` (SoT SDK; sin concat manual) |
 | `partes:tasks-backfill-next-run-at` | Recalcula `nextRunAt` vía `SchedulingTaskDefinitionRepository` |
-| `AppServiceProvider` | Bindings resolver backup + gateway RDS |
+| `AppServiceProvider` | `RdsDeferredBackupExecutionPoller`, `RdsBackupExecutionLogSupport`, resolver backup + gateway RDS |
+| `StaleTaskExecutionRecovery` | Overlap/full recovery; reconcilia RDS OK antes de FALLIDA |
 | `frontend` | i18n motivo ejecución; pin `@paqsuite/react-core` ≥ 2.4.30-beta.2 |
 
 ## 4. Catálogo y operación
@@ -102,6 +107,7 @@ scheduler `schedule:run`; smoke backup manual con estado terminal SUCCESS y obje
 | CA-10-05 BD tenant MONO | `PartesMonoBackupCompanyTargetResolver`. |
 | CA-10-06 S3 sin ARN duplicado | `RdsBackupS3Arn::composeExportDestination`; smoke 2026-11-06. |
 | CA-10-07 Motivo en historial | i18n host + pin react-core ≥ 2.4.30-beta.2. |
+| CA-DEF Manual defer RDS | POST manual `EN_EJECUCION`; poller cierra en scheduler; pin ≥ 1.3.18-beta.32; ver adopción GEN-13 § smoke #9. |
 
 **Fuera de esta TR:** saldo informe Paquete de horas → [TR-006](../100-SistemaPartes/TR-006-consultas-dashboard-navegacion.md) (CC #8 unificado 06/11/2026).
 
@@ -112,3 +118,4 @@ scheduler `schedule:run`; smoke backup manual con estado terminal SUCCESS y obje
 | 2026-10-23 | A0 — wiring documental (código parcialmente cableado). |
 | 2026-10-30 | Parte G — TR-update CC PQ #10 (sqlsrv, backfill, backup MONO/S3). |
 | 2026-11-06 | Parte I — unificación + **Finalizado**. Backup RDS verificado por el usuario. |
+| 2026-11-11 | Cableado host defer manual RDS polling + pin `laravel-core` 1.3.18-beta.32 (Framework update 11/11). |

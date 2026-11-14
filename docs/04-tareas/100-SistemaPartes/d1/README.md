@@ -13,6 +13,9 @@ Planes de implementación (parte D1) antes de ejecutar D.
 | [D1-TR-008](./D1-TR-008-asistente-ia.md) | Asistente IA chat documental | TR-002 shell; paquetes Framework GEN-16/21; C1 OK |
 | [D1-TR-009](./D1-TR-009-importacion-excel.md) | Importación Excel (GEN-14) en Carga diaria | TR-004 carga; paquetes GEN-14; C1 OK 2026-08-02 |
 | [D1-TR-011](./D1-TR-011-reportes-emisiones.md) | Reportes / emisiones (GEN-15) en Consulta detallada | TR-006 informes; paquetes GEN-15; C1 OK 2026-08-25 |
+| [D1-TR-015](./D1-TR-015-piloto-dx-reporting-ia.md) | Piloto IA diseño informes (sidecar + schema) | TR-011; C1 2026-10-30 |
+| [D1-TR-015-update-b](./D1-TR-015-update-b-smart-capture-diseno-informes.md) | SC diseño informes oleada 2 B (REPX apply) | TR-015-update-b; C1 2026-11-13; **D1 listo** |
+| [D1-TR-016](./D1-TR-016-edicion-ia-informes-existentes.md) | Edición IA Prompt-to-Report (**obsoleto funcional** MVP B) | Ver TR-015-update-b |
 | [D1-TR-013](./D1-TR-013-carga-paquetes-horas.md) | Carga paquetes de horas (ABM + SC modal) | TR-002…004, 006, 008, 010 **hechos**; C1 OK 2026-10-21 |
 
 **Decisiones D1 absorbidas (2026-07-30):**

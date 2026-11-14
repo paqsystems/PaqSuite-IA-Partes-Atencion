@@ -37,7 +37,7 @@ Diseño informes Partes oleada 1: **piloto** IA DevExpress 26.1 en sidecar GEN-1
 | Actores §3 (solo `emission.design`, desktop) | Actores; CA-09 |
 | Fuera alcance Emitir / mobile / chat REPX (§2.3) | Fuera de alcance |
 | A1 D-A1-01…07 | Supuestos; Reglas R-ID-BYOK |
-| Oleada 2 B/C R-ID-30…32 | Fuera de alcance (TR-016 post-F1) |
+| Oleada 2 B/C R-ID-30…32 | Entregado en [HU-015-update](./HU-015-update-ia-diseno-informes-camino-b.md) (camino B) |
 | CA-15-01…08 SPEC §6 | CA-01…08 |
 
 ---

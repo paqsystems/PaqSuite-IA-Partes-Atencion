@@ -113,6 +113,26 @@ namespace App\OpenApi;
  *   @OA\Response(response=403, description="Sin permiso de diseño (4709)")
  * )
  *
+ * @OA\Post(
+ *   path="/api/v1/emissions/design/processes/{processCode}/assistant/turn",
+ *   operationId="emissionsDesignAssistantTurn",
+ *   tags={"Emisiones"},
+ *   summary="Turno Smart Capture de diseño de layout (oleada 2 B; AccesoTotal / emission.design)",
+ *   security={{"sanctum":{}},{"tenant":{}}},
+ *   @OA\Parameter(name="processCode", in="path", required=true, @OA\Schema(type="string")),
+ *   @OA\RequestBody(required=true, @OA\JsonContent(
+ *     required={"message","reportUrl"},
+ *     @OA\Property(property="message", type="string"),
+ *     @OA\Property(property="reportUrl", type="string"),
+ *     @OA\Property(property="credentialId", type="integer", nullable=true),
+ *     @OA\Property(property="locale", type="string", nullable=true)
+ *   )),
+ *   @OA\Response(response=200, description="OK — resultado GEN-03 (replyText, actions, configurationRequired)"),
+ *   @OA\Response(response=403, description="Sin permiso de diseño (4709)"),
+ *   @OA\Response(response=422, description="Validación (processCode/reportUrl/message)")
+ * )
+ *
+
  * @OA\Schema(
  *   schema="ConsultaDetalladaHostContext",
  *   type="object",

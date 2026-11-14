@@ -2,6 +2,7 @@
 
 namespace App\Tasks;
 
+use PaqSuite\LaravelCore\Tasks\Backup\RdsBackupExecutionLogSupport;
 use DateTimeImmutable;
 use DateTimeInterface;
 use PaqSuite\LaravelCore\Tasks\Backup\BackupInstallationProfileResolver;
@@ -25,6 +26,7 @@ final class StaleTaskExecutionRecovery
         private readonly TaskExecutionRepository $executionRepository,
         private readonly RdsBackupLock $backupLock,
         private readonly BackupInstallationProfileResolver $profileResolver,
+        private readonly RdsBackupExecutionLogSupport $rdsLogSupport,
     ) {
     }
 
@@ -83,11 +85,19 @@ final class StaleTaskExecutionRecovery
             return false;
         }
 
+        $backupOkMessage = (string) config('paqsuite.tasks.backup.backend', '') === 'rds'
+            ? $this->rdsLogSupport->resolveRdsBackupSuccessMessage($executionId)
+            : null;
+        $statusCode = $backupOkMessage !== null
+            ? TaskExecutionStatuses::EXITOSA
+            : TaskExecutionStatuses::FALLIDA;
+        $closeMessage = $backupOkMessage ?? self::RECOVERY_MESSAGE;
+
         try {
             $this->executionRepository->appendLog(
                 $executionId,
-                'warning',
-                self::RECOVERY_MESSAGE,
+                $statusCode === TaskExecutionStatuses::EXITOSA ? 'info' : 'warning',
+                $closeMessage,
                 ['startedAt' => $startedAt->format(DATE_ATOM)],
             );
         } catch (\Throwable) {
@@ -96,10 +106,18 @@ final class StaleTaskExecutionRecovery
 
         return $this->executionRepository->updateExecutionStatus(
             $executionId,
-            TaskExecutionStatuses::FALLIDA,
+            $statusCode,
             new DateTimeImmutable('now'),
-            self::RECOVERY_MESSAGE,
+            $closeMessage,
         );
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     */
+    public function closeStaleExecutionIfNeeded(array $row, DateTimeInterface $cutoff): bool
+    {
+        return $this->recoverRowIfStale($row, $cutoff);
     }
 
     /**
