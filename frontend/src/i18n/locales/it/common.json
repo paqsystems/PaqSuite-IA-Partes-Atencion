@@ -521,5 +521,18 @@
   "partes.import.fechaInvalida": "Data non valida",
   "partes.import.duracionInvalida": "Durata non valida. Usare hh:mm (es. 00:30) o minuti interi (es. 30); deve essere un multiplo dell'intervallo {{tramo}}",
   "partes.import.booleanoInvalido": "Usare vero o falso",
-  "partes.import.descripcionRequerida": "Descrizione obbligatoria"
+  "partes.import.descripcionRequerida": "Descrizione obbligatoria",
+  "partes.emissionDesign.hint": "Chiedi modifiche al layout in linguaggio naturale (raggruppa, titolo, totali…). Controlla il canvas e salva nel designer.",
+  "partes.emissionDesign.configurationRequired": "Configura una credenziale LLM in Preferenze per usare l’assistente di progettazione.",
+  "partes.emissionDesign.reportUrlRequired": "Apri o crea una variante di report prima di usare l’assistente.",
+  "partes.emissionDesign.actionsPlanned": "Applicherò le azioni di layout consentite.",
+  "partes.emissionDesign.noMappedActions": "Non sono riuscito a mappare la richiesta alle azioni consentite. Prova titolo, raggruppamento per cliente o somma minuti.",
+  "partes.emissionDesign.appliedRefresh": "Modifiche applicate. Il designer è stato aggiornato; controlla e salva se necessario.",
+  "partes.emissionDesign.applyFailed": "Impossibile applicare le modifiche al layout.",
+  "partes.emissionDesign.applyCancelled": "Applicazione annullata. Il layout non è stato modificato.",
+  "partes.emissionDesign.turnError": "Impossibile completare il turno dell’assistente di progettazione.",
+  "partes.emissionDesign.confirmDirtyTitle": "Applica modifiche dell’assistente",
+  "partes.emissionDesign.confirmDirtyApply": "Il layout verrà aggiornato su disco e il designer ricaricato. Le modifiche non salvate possono andare perse. Continuare?",
+  "partes.emissionDesign.processNotSupported": "Questo processo non supporta l’assistenza di progettazione in questa versione.",
+  "partes.emissionDesign.messageRequired": "Scrivi un messaggio per l’assistente."
 }

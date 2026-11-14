@@ -94,8 +94,15 @@ use App\Tenancy\CliInstalacionContext;
 use App\Tenancy\InstalacionConnectionConfigurator;
 use DateTimeInterface;
 use DateTimeZone;
+use PaqSuite\LaravelCore\Mail\DefaultMailEngine;
+use PaqSuite\LaravelCore\Mail\MailEngine;
+use PaqSuite\LaravelCore\Mail\MailMessage;
+use PaqSuite\LaravelCore\Mail\MailSendResult;
 use PaqSuite\LaravelCore\Tasks\TaskExecutionService;
+use PaqSuite\LaravelCore\Tasks\TaskExecutionServiceFactory;
+use PaqSuite\LaravelCore\Tasks\TaskMailNotifier;
 use PaqSuite\LaravelCore\Tasks\TaskScheduleCalculator;
+use Illuminate\Support\Facades\Mail;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -180,15 +187,56 @@ class AppServiceProvider extends ServiceProvider
 
             return new PartesTaskDefinitionRepository($scheduling);
         });
-        $this->app->singleton(TaskExecutionService::class, static function ($app) {
-            return new TaskExecutionService(
-                $app->make(TaskProcessRegistry::class),
-                $app->make(TaskProcessRepository::class),
-                $app->make(TaskDefinitionRepository::class),
-                $app->make(TaskExecutionRepository::class),
-                scheduleCalculator: $app->make(TaskScheduleCalculator::class),
-            );
-        });
+        if (! $this->app->bound(MailEngine::class)) {
+            $this->app->singleton(MailEngine::class, static function (): MailEngine {
+                $mailer = (string) config('mail.default', '');
+                $configured = $mailer !== '' && $mailer !== 'array';
+
+                return new DefaultMailEngine(
+                    transport: static function (MailMessage $message) use ($configured): MailSendResult {
+                        if (! $configured) {
+                            return MailSendResult::failure(
+                                \PaqSuite\LaravelCore\Mail\MailErrorCodes::CONFIG_MISSING,
+                                \PaqSuite\LaravelCore\Mail\MailErrorCodes::RESPUESTA_CONFIG_MISSING,
+                            );
+                        }
+                        try {
+                            $title = (string) ($message->viewData['taskTitle'] ?? '');
+                            $status = (string) ($message->viewData['statusCode'] ?? '');
+                            $executionId = (string) ($message->viewData['executionId'] ?? '');
+                            $body = trim($title.' ['.$status.'] #'.$executionId);
+
+                            Mail::html(
+                                '<p>'.e($body !== '' ? $body : $message->subject).'</p>',
+                                static function ($mail) use ($message): void {
+                                    $mail->to($message->to)->subject($message->subject);
+                                },
+                            );
+
+                            return MailSendResult::success('laravel-mail');
+                        } catch (\Throwable) {
+                            return MailSendResult::failure(
+                                \PaqSuite\LaravelCore\Mail\MailErrorCodes::SEND_FAILED,
+                                \PaqSuite\LaravelCore\Mail\MailErrorCodes::RESPUESTA_SEND_FAILED,
+                            );
+                        }
+                    },
+                    mailerConfigured: $configured,
+                );
+            });
+        }
+        if (! $this->app->bound(TaskMailNotifier::class)) {
+            $this->app->singleton(TaskMailNotifier::class, static function ($app): TaskMailNotifier {
+                return new TaskMailNotifier(
+                    $app->make(MailEngine::class),
+                    $app->make(TaskDefinitionRepository::class),
+                );
+            });
+        }
+        $this->app->singleton(
+            TaskExecutionService::class,
+            static fn ($app): TaskExecutionService => TaskExecutionServiceFactory::create($app),
+        );
         $this->app->singleton(TaskExecutionRepository::class, static fn () => new PartesTaskExecutionRepository(
             new StoredProcedureTaskExecutionRepository(),
         ));
@@ -259,6 +307,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(PartesTareaSmartCaptureCatalogResolver::class);
         $this->app->singleton(PartesSmartCaptureProposalPort::class, LlmPartesSmartCaptureProposal::class);
         $this->app->singleton(PartesTareaSmartCaptureTurnService::class);
+
+        // GEN-03 diseño informes oleada 2 B (TR-015-update-b)
+        $this->app->singleton(\App\Services\Emissions\DesignAssistant\DesignLayoutActionPlanner::class);
+        $this->app->singleton(\App\Services\Emissions\DesignAssistant\DesignAssistantTurnService::class);
 
         // GEN-14 Excel import (TR-009)
         $this->app->singleton(\App\Repositories\Sp\ExcelImport\SpExcelImportRepository::class);
