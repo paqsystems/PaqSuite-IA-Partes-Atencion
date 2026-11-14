@@ -2,23 +2,149 @@
   "version": 1,
   "datasetDisplayName": "Paquete de horas",
   "fields": [
-    { "name": "fecha", "type": "date" },
-    { "name": "clienteCode", "type": "string" },
-    { "name": "clienteNombre", "type": "string" },
-    { "name": "usuarioCode", "type": "string" },
-    { "name": "usuarioNombre", "type": "string" },
-    { "name": "tipoClienteCode", "type": "string" },
-    { "name": "tipoClienteDescripcion", "type": "string" },
-    { "name": "tipoTareaCode", "type": "string" },
-    { "name": "tipoTareaDescripcion", "type": "string" },
-    { "name": "duracionMinutos", "type": "number" },
-    { "name": "saldo", "type": "number" },
-    { "name": "esTarea", "type": "boolean" },
-    { "name": "observacion", "type": "string" },
-    { "name": "erpCliente", "type": "string" },
-    { "name": "erpArticulo", "type": "string" },
-    { "name": "sinCargo", "type": "boolean" },
-    { "name": "presencial", "type": "boolean" },
-    { "name": "cerrado", "type": "boolean" }
+    {
+      "name": "fecha",
+      "type": "date",
+      "label": "Fecha",
+      "captionKey": "partes.informe.field.fecha",
+      "description": "Fecha del renglón (tarea o movimiento de paquete).",
+      "synonyms": ["día", "jornada"]
+    },
+    {
+      "name": "clienteCode",
+      "type": "string",
+      "label": "Cliente (código)",
+      "captionKey": "partes.informe.field.clienteCode",
+      "description": "Código interno del cliente.",
+      "synonyms": ["código de cliente"]
+    },
+    {
+      "name": "clienteNombre",
+      "type": "string",
+      "label": "Cliente (nombre)",
+      "captionKey": "partes.informe.field.clienteNombre",
+      "description": "Nombre o razón social del cliente.",
+      "synonyms": ["razón social", "empresa", "cliente"]
+    },
+    {
+      "name": "usuarioCode",
+      "type": "string",
+      "label": "Asistente (código)",
+      "captionKey": "partes.informe.field.usuarioCode",
+      "description": "Código del asistente.",
+      "synonyms": ["código de asistente"]
+    },
+    {
+      "name": "usuarioNombre",
+      "type": "string",
+      "label": "Asistente (nombre)",
+      "captionKey": "partes.informe.field.usuarioNombre",
+      "description": "Nombre del asistente.",
+      "synonyms": ["técnico", "asistente", "usuario"]
+    },
+    {
+      "name": "tipoClienteCode",
+      "type": "string",
+      "label": "Tipo de cliente (código)",
+      "captionKey": "partes.informe.field.tipoClienteCode",
+      "description": "Código del tipo de cliente.",
+      "synonyms": ["código tipo cliente"]
+    },
+    {
+      "name": "tipoClienteDescripcion",
+      "type": "string",
+      "label": "Tipo de cliente",
+      "captionKey": "partes.informe.field.tipoClienteDescripcion",
+      "description": "Descripción del tipo de cliente.",
+      "synonyms": ["categoría de cliente"]
+    },
+    {
+      "name": "tipoTareaCode",
+      "type": "string",
+      "label": "Tipo de tarea (código)",
+      "captionKey": "partes.informe.field.tipoTareaCode",
+      "description": "Código del tipo de tarea.",
+      "synonyms": ["código tipo tarea"]
+    },
+    {
+      "name": "tipoTareaDescripcion",
+      "type": "string",
+      "label": "Tipo de tarea",
+      "captionKey": "partes.informe.field.tipoTareaDescripcion",
+      "description": "Descripción del tipo de tarea.",
+      "synonyms": ["tipo", "categoría de tarea"]
+    },
+    {
+      "name": "duracionMinutos",
+      "type": "number",
+      "label": "Duración (minutos)",
+      "captionKey": "partes.informe.field.duracion",
+      "description": "Duración del renglón en minutos.",
+      "synonyms": ["minutos", "tiempo", "duración", "horas"]
+    },
+    {
+      "name": "saldo",
+      "type": "number",
+      "label": "Saldo",
+      "captionKey": "partes.informe.field.saldo",
+      "description": "Saldo de horas del paquete en el renglón.",
+      "synonyms": ["balance", "restante", "horas restantes"]
+    },
+    {
+      "name": "esTarea",
+      "type": "boolean",
+      "label": "Es tarea",
+      "captionKey": "partes.informe.field.esTarea",
+      "description": "Indica si el renglón corresponde a una tarea (frente a movimiento de paquete).",
+      "synonyms": ["tarea", "renglón de tarea"]
+    },
+    {
+      "name": "observacion",
+      "type": "string",
+      "label": "Observación",
+      "captionKey": "partes.informe.field.observacion",
+      "description": "Texto libre del renglón.",
+      "synonyms": ["nota", "comentario"]
+    },
+    {
+      "name": "erpCliente",
+      "type": "string",
+      "label": "ERP cliente",
+      "captionKey": "partes.informe.field.erpCliente",
+      "description": "Código de cliente en el ERP vinculado.",
+      "synonyms": ["cliente erp"]
+    },
+    {
+      "name": "erpArticulo",
+      "type": "string",
+      "label": "ERP artículo",
+      "captionKey": "partes.informe.field.erpArticulo",
+      "description": "Código de artículo o servicio ERP vinculado.",
+      "synonyms": ["artículo erp"]
+    },
+    {
+      "name": "sinCargo",
+      "type": "boolean",
+      "label": "Sin cargo",
+      "captionKey": "partes.informe.field.sinCargo",
+      "description": "Indica si el renglón no se factura.",
+      "synonyms": ["gratis", "no facturable"]
+    },
+    {
+      "name": "presencial",
+      "type": "boolean",
+      "label": "Presencial",
+      "captionKey": "partes.informe.field.presencial",
+      "description": "Atención presencial.",
+      "synonyms": ["en sitio", "on-site"]
+    },
+    {
+      "name": "cerrado",
+      "type": "boolean",
+      "label": "Cerrado",
+      "captionKey": "partes.informe.field.cerrado",
+      "description": "Estado cerrado del renglón.",
+      "synonyms": ["finalizado"]
+    }
   ]
 }

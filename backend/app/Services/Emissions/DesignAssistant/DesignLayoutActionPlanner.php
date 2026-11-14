@@ -81,6 +81,7 @@ final class DesignLayoutActionPlanner
     {
         $fields = implode(', ', DesignLayoutWhitelist::SCHEMA_FIELDS);
         $types = implode(', ', DesignLayoutWhitelist::TYPES);
+        $vocabulary = DesignSemanticCatalog::promptVocabulary(DesignLayoutWhitelist::PROCESS_CODE);
         $system = <<<PROMPT
 Sos el asistente de diseño de informes Partes (Smart Capture bajo DevExpress).
 Respondé SOLO JSON válido (sin markdown):
@@ -88,6 +89,8 @@ Respondé SOLO JSON válido (sin markdown):
 Reglas:
 - Solo actions de: {$types}
 - Campos técnicos permitidos: {$fields}
+- Catálogo semántico GEN-37 (resolvé lenguaje natural → name técnico; usá synonyms/label):
+{$vocabulary}
 - addGroupByField/addGroupSum: payload.field = name técnico
 - setReportTitle: payload.title string 1..200
 - setPageOrientation: payload.orientation = portrait|landscape

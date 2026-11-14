@@ -11,8 +11,8 @@ Jira: PIAPARTES-25
 | Título | Diseñar informes y emitir salidas documentales de Consulta detallada (adopción GEN-15) |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | Finalizado |
-| Última actualización | 2026-11-07 |
+| Estado | En Control Calidad |
+| Última actualización | 2026-11-14 (CC #17 GEN-37) |
 | SPEC origen | [SPEC-011-reportes-emisiones](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) |
 | TR relacionada(s) | [TR-011-reportes-emisiones](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
 

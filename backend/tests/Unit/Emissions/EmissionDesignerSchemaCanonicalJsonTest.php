@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Emissions;
 
+use App\Services\Emissions\DesignAssistant\DesignSemanticCatalog;
 use App\Services\Emissions\PartesConsultaDetalladaEmissionPort;
 use App\Services\Emissions\PartesPaqueteHorasEmissionPort;
 use Tests\TestCase;
@@ -14,23 +15,45 @@ final class EmissionDesignerSchemaCanonicalJsonTest extends TestCase
             base_path('database/emission-designer-schemas/partes.informes.paqueteHoras.json'),
             PartesPaqueteHorasEmissionPort::designDatasetColumnNames(),
             'Paquete de horas',
+            requireIaSemantics: false,
         );
     }
 
-    public function test_consulta_detallada_canonical_schema_matches_port(): void
+    public function test_consulta_detallada_canonical_schema_matches_port_and_gen37(): void
     {
         $this->assertCanonicalSchemaMatchesPort(
             base_path('database/emission-designer-schemas/partes.informes.consultaDetallada.json'),
             PartesConsultaDetalladaEmissionPort::designDatasetColumnNames(),
             'Consulta detallada',
+            requireIaSemantics: true,
         );
+    }
+
+    public function test_consulta_detallada_semantic_catalog_loads_from_json(): void
+    {
+        $fields = DesignSemanticCatalog::fieldsForProcess('partes.informes.consultaDetallada');
+        $this->assertNotEmpty($fields);
+        $byName = [];
+        foreach ($fields as $field) {
+            $byName[$field['name']] = $field;
+        }
+        $this->assertArrayHasKey('duracionMinutos', $byName);
+        $this->assertSame('Duración (minutos)', $byName['duracionMinutos']['label']);
+        $this->assertContains('horas', $byName['duracionMinutos']['synonyms']);
+        $vocab = DesignSemanticCatalog::promptVocabulary('partes.informes.consultaDetallada');
+        $this->assertStringContainsString('duracionMinutos', $vocab);
+        $this->assertStringContainsString('horas', $vocab);
     }
 
     /**
      * @param list<string> $expectedColumns
      */
-    private function assertCanonicalSchemaMatchesPort(string $path, array $expectedColumns, string $displayName): void
-    {
+    private function assertCanonicalSchemaMatchesPort(
+        string $path,
+        array $expectedColumns,
+        string $displayName,
+        bool $requireIaSemantics,
+    ): void {
         $this->assertFileExists($path);
         $decoded = json_decode((string) file_get_contents($path), true);
         $this->assertIsArray($decoded);
@@ -38,14 +61,38 @@ final class EmissionDesignerSchemaCanonicalJsonTest extends TestCase
         $this->assertSame($displayName, $decoded['datasetDisplayName'] ?? null);
 
         $names = [];
+        $synonymOwners = [];
         foreach ($decoded['fields'] ?? [] as $field) {
-            if (is_array($field) && isset($field['name'])) {
-                $names[] = (string) $field['name'];
+            $this->assertIsArray($field);
+            $this->assertArrayHasKey('name', $field);
+            $name = (string) $field['name'];
+            $names[] = $name;
+
+            $label = trim((string) ($field['label'] ?? ''));
+            $this->assertNotSame('', $label, "GEN-37: falta label en {$name}");
+            $this->assertNotSame($name, $label, "GEN-37: label no debe ser el name técnico ({$name})");
+
+            if ($requireIaSemantics) {
+                $this->assertNotSame('', trim((string) ($field['description'] ?? '')), "GEN-37 IA: falta description en {$name}");
+                $this->assertIsArray($field['synonyms'] ?? null, "GEN-37 IA: falta synonyms en {$name}");
+                $this->assertNotEmpty($field['synonyms'], "GEN-37 IA: synonyms vacío en {$name}");
+            }
+
+            foreach ($field['synonyms'] ?? [] as $syn) {
+                $key = mb_strtolower(trim((string) $syn), 'UTF-8');
+                if ($key === '') {
+                    continue;
+                }
+                if (isset($synonymOwners[$key])) {
+                    $this->fail("Sinónimo ambiguo \"{$syn}\" en {$synonymOwners[$key]} y {$name}");
+                }
+                $synonymOwners[$key] = $name;
             }
         }
 
         foreach ($expectedColumns as $column) {
             $this->assertContains($column, $names, "Falta {$column} en {$path}");
         }
+        $this->assertSameSize($expectedColumns, $names, "Cantidad de fields distinta al puerto en {$path}");
     }
 }
