@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { APPLY_URL, turnUrlFor } from './emissionDesignSmartCaptureTurn'
+import { LAYOUT_APPLY_URL } from './layoutPendingReviewApi'
 
 describe('emissionDesignSmartCaptureTurn helpers', () => {
   it('arma URL de turno por processCode', () => {
@@ -10,5 +11,6 @@ describe('emissionDesignSmartCaptureTurn helpers', () => {
 
   it('usa path same-origin de apply (proxy Vite)', () => {
     expect(APPLY_URL).toBe('/api/layout/apply')
+    expect(LAYOUT_APPLY_URL).toBe(APPLY_URL)
   })
 })

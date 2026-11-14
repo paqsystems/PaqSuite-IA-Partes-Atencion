@@ -6,11 +6,13 @@ import {
   type SmartCaptureSendPayload,
   type SmartCaptureTurnAction,
 } from '@paqsuite/react-core'
+import { LAYOUT_APPLY_URL } from './layoutPendingReviewApi'
 
 const turnUrlFor = (processCode: string) =>
   `/api/v1/emissions/design/processes/${encodeURIComponent(processCode)}/assistant/turn`
 
-export const APPLY_URL = '/api/layout/apply'
+/** @deprecated prefer LAYOUT_APPLY_URL — se mantiene por tests existentes */
+export const APPLY_URL = LAYOUT_APPLY_URL
 
 export type EmissionDesignSmartCaptureHandlers = {
   processCode: string
@@ -23,6 +25,8 @@ export type EmissionDesignSmartCaptureHandlers = {
   onError: (message: string) => void
   resolveMessage: (key: string) => string
   onAppliedRefresh: () => void
+  /** L-B-10: tras apply con cambios, marcar revisión Guardar/Descartar. */
+  onPendingReview?: (pending: boolean) => void
   setPendingChoice: (next: PendingChoice | null) => void
   signal?: AbortSignal
 }
@@ -115,7 +119,7 @@ export async function handleEmissionDesignSmartCaptureSend(
         return
       }
 
-      const applyRes = await fetch(APPLY_URL, {
+      const applyRes = await fetch(LAYOUT_APPLY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
@@ -127,7 +131,7 @@ export async function handleEmissionDesignSmartCaptureSend(
       })
 
       const applyJson = (await applyRes.json().catch(() => null)) as
-        | { ok?: boolean; applied?: number; error?: string }
+        | { ok?: boolean; applied?: number; pendingReview?: boolean; error?: string }
         | null
 
       if (!applyRes.ok || !applyJson?.ok) {
@@ -143,7 +147,14 @@ export async function handleEmissionDesignSmartCaptureSend(
         applyAction: async () => undefined,
       })
 
-      handlers.onAssistantReply(handlers.resolveMessage('partes.emissionDesign.appliedRefresh'))
+      // Solo banner Guardar/Descartar si el sidecar dejó backup (pendingReview).
+      if (applyJson.pendingReview) {
+        handlers.onPendingReview?.(true)
+        handlers.onAssistantReply(handlers.resolveMessage('partes.emissionDesign.pendingReviewHint'))
+      } else {
+        handlers.onAssistantReply(handlers.resolveMessage('partes.emissionDesign.appliedRefresh'))
+      }
+
       handlers.onAppliedRefresh()
       return
     }
