@@ -46,6 +46,39 @@ final class DesignLayoutActionPlannerTest extends TestCase
         $this->assertSame('setReportTitle', $out[0]['action']);
     }
 
+    /**
+     * @dataProvider titleMessageProvider
+     */
+    public function test_heuristics_extract_full_title(string $message, string $expectedTitle): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics($message);
+
+        $titleAction = null;
+        foreach ($result['actions'] as $action) {
+            if ($action['action'] === 'setReportTitle') {
+                $titleAction = $action;
+            }
+        }
+
+        $this->assertNotNull($titleAction, 'Debe mapear setReportTitle');
+        $this->assertSame($expectedTitle, $titleAction['payload']['title'] ?? null);
+    }
+
+    /**
+     * @return list<array{0: string, 1: string}>
+     */
+    public static function titleMessageProvider(): array
+    {
+        return [
+            ['cambia el título a consulta detallada', 'consulta detallada'],
+            ['cambia el título a "consulta detallada"', 'consulta detallada'],
+            ['pone el título como Informe PAQ', 'Informe PAQ'],
+            ['título: Demo Partes', 'Demo Partes'],
+            ['Cambiá el título a «Consulta detallada»', 'Consulta detallada'],
+        ];
+    }
+
     private function unusedLlm(): LlmChatCompletionClient
     {
         return new class implements LlmChatCompletionClient {
