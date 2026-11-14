@@ -50,6 +50,11 @@ final class SchedulingTaskDefinitionRepository implements TaskDefinitionReposito
         return $this->inner->softDeactivate($definitionId);
     }
 
+    public function deleteDefinition(int $definitionId): bool
+    {
+        return $this->inner->deleteDefinition($definitionId);
+    }
+
     public function listCompanyIds(int $definitionId): array
     {
         return $this->inner->listCompanyIds($definitionId);
