@@ -105,6 +105,13 @@ final class InMemoryTaskDefinitionRepository implements TaskDefinitionRepository
         return true;
     }
 
+    public function deleteDefinition(int $definitionId): bool
+    {
+        unset($this->definitions[$definitionId]);
+
+        return true;
+    }
+
     public function listCompanyIds(int $definitionId): array
     {
         return [];
