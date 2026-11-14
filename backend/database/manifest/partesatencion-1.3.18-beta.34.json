@@ -10,7 +10,7 @@
             "kind": "emissionDesignerSchema",
             "target": "dictionary",
             "path": "database/emission-designer-schemas/partes.informes.consultaDetallada.json",
-            "checksum": "428dd13a7441c77823062ec6fe593b2e6415ea22fbddef1921865344103c9a71",
+            "checksum": "c93049f027c3fab5c50aa7dfe3adeeac751989de6ded23d5f98d7c86413cbd4b",
             "dependsOn": [
                 "fw-migration-2026_11_03_000041_create_pq_emission_designer_schemas_table",
                 "fw-sp-pq_sp_emission_designer_schema"
@@ -23,7 +23,7 @@
             "kind": "emissionDesignerSchema",
             "target": "dictionary",
             "path": "database/emission-designer-schemas/partes.informes.paqueteHoras.json",
-            "checksum": "2dca4a9b189b874769c57cb6ba1dde65565dec0f740b42f36f5f60d3797f13e9",
+            "checksum": "305650bf83c567b765fa9e0f375856843e5119da7ab84b791c54b3df01a0bdc1",
             "dependsOn": [
                 "fw-migration-2026_11_03_000041_create_pq_emission_designer_schemas_table",
                 "fw-sp-pq_sp_emission_designer_schema"

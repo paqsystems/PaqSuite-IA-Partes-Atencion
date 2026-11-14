@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9602c5c6805ede944426ff636a278042",
+    "content-hash": "0e66a5566feab2db04d75dc778be4c38",
     "packages": [
         {
             "name": "brick/math",
@@ -2562,11 +2562,11 @@
         },
         {
             "name": "paqsuite/laravel-core",
-            "version": "1.3.18-beta.35",
+            "version": "1.3.18-beta.37",
             "dist": {
                 "type": "zip",
-                "url": "https://dl.cloudsmith.io/basic/paqsystems/paqsuite-sdk/composer/files/paqsuite-laravel-core/1.3.18-beta.35/paqsuite-laravel-core-1.3.18-beta.35.zip",
-                "shasum": "837ee8ad6f1f79ce927afe083536a6e9ded723f3"
+                "url": "https://dl.cloudsmith.io/basic/paqsystems/paqsuite-sdk/composer/files/paqsuite-laravel-core/1.3.18-beta.37/paqsuite-laravel-core-1.3.18-beta.37.zip",
+                "shasum": "5a6da20a250d5c69ea56ded33f2225af00709514"
             },
             "require": {
                 "illuminate/console": "^10.0",
@@ -2615,7 +2615,7 @@
             "support": {
                 "source": "https://github.com/paqsystems/laravel-core"
             },
-            "time": "2026-11-14T19:27:33+00:00"
+            "time": "2026-11-14T20:28:21+00:00"
         },
         {
             "name": "phpoption/phpoption",

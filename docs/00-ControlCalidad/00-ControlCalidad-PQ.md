@@ -62,6 +62,58 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 14 | 03/11/2026 | Especificado | ABM Clientes — columnas usuario/mail + FilterRow usuario — **F1/F Aprobado** · **Parte I** · manual DEV OK — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md) |
 | 15 | 04/11/2026 | Especificado · **F1/F Aprobado** · **Parte I** cerrada | Informar por mail a clientes desde Proceso masivo (asistencias / revisar / observaciones) — refino CC #7 (URL tenant, i18n destinatario, guard salida, plantilla v1 hardcode) |
 | 16 | 07/11/2026 | Especificado · **F1/F Aprobado con observaciones** | ABM Usuarios — notificar acceso **por usuario** (no masivo): ícono junto al mail, alta sin contraseña manual + envío automático, reenvío en edición — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-16-2026-11-07.md) |
+| 17 | 14/11/2026 | Especificado | **GEN-37** — catálogo semántico en `emission-designer-schemas` (labels; IA = description+synonyms) |
+
+---
+
+## Control de Calidad #17
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 14/11/2026 |
+| **Responsable** | Adopción producto (pedido GEN-37) |
+| **Estado** | **Especificado** · D/E en curso de verificación |
+| **Parte G** | 14/11/2026 — SPEC/HU/TR-update CC #17 |
+| **Parte D/E** | 14/11/2026 — [D-VERIFICACION-CC-PQ-17](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-17-2026-11-14-gen37.md) · installation:update DEV OK |
+| **Origen** | Adoptar **GEN-37** (Framework SPEC-001-37 / `37-catalogo-semantico-campos-dataset.md`). Deuda: schemas host solo con `name`+`type`. |
+| **Proceso** | Emisiones GEN-15 — diseñador DX · Field List · IA diseño (SPEC-015 camino B) |
+| **Relación** | [SPEC-011](../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) · [SPEC-015-update oleada 2 B](../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-2-b-update.md) · Framework **GEN-37** |
+| **Jira** | Epic emisiones [PIAPARTES-11](https://paqsystems.atlassian.net/browse/PIAPARTES-11) · Epic IA [PIAPARTES-53](https://paqsystems.atlassian.net/browse/PIAPARTES-53) |
+
+### Resumen / mejora solicitada
+
+Adoptar el **contrato GEN-37** sin inventar un catálogo semántico paralelo ni hardcode en sidecar:
+
+1. Completar `fields[].label` (**Must**) en todos los `processCode` emisibles con diseñador DX.
+2. Para procesos con IA diseño (`partes.informes.consultaDetallada`): `description` + `synonyms` (**Must**).
+3. Opcional: `captionKey` + i18n (5 locales), reutilizando claves producto de informe (no mezclar con GEN-14 Excel).
+4. Mantener paridad `fields[].name` ↔ puerto / `port-names.json` (V-EM-04).
+5. Regenerar manifiesto, `installation:update`, smoke Field List (+ IA sinónimo → `name`).
+
+### Criterios de aceptación
+
+- [ ] **CA-37-01** `partes.informes.consultaDetallada.json` y `paqueteHoras.json`: todo `fields[]` con `label` no vacío y ≠ `name` (salvo excepción TR).
+- [ ] **CA-37-02** Consulta detallada: todo field con `description` y `synonyms` útiles; sin sinónimo ambiguo a dos `name`.
+- [ ] **CA-37-03** `captionKey` opcional presente; claves en es/en/pt/fr/it (o reuso `partes.informe.field.*`).
+- [ ] **CA-37-04** V-EM-04 / unit port-names: mismos `name` que antes (sin cambiar wire del dataset).
+- [ ] **CA-37-05** Manifiesto regenerado; paso `emissionDesignerSchema` listo para update.
+- [ ] **CA-37-06** Smoke: Field List captions humanas; pedido IA con sinónimo resuelve a `name` técnico.
+- [ ] **CA-37-07** Sin fork de schema canónico ni hardcode de labels Partes en sidecar C#.
+
+### Derivación SDD
+
+| Ítem | Updates |
+|------|---------|
+| Catálogo semántico (ambos procesos) | [SPEC-011-update](../05-open-spec/updates/100-SistemaPartes/SPEC-011-update-cc-pq-17-2026-11-14-gen37-catalogo-semantico.md) · [HU-011-update](../03-historias-usuario/updates/100-SistemaPartes/HU-011-reportes-emisiones-update-cc-pq-17-2026-11-14-gen37.md) · [TR-011-update](../04-tareas/updates/100-SistemaPartes/TR-011-update-cc-pq-17-2026-11-14-gen37.md) |
+| Semántica IA (consulta detallada) | [SPEC-015-update GEN-37](../05-open-spec/updates/100-SistemaPartes/SPEC-015-update-cc-pq-17-2026-11-14-gen37-semantica-ia.md) · [HU-015-update GEN-37](../03-historias-usuario/updates/100-SistemaPartes/HU-015-update-cc-pq-17-2026-11-14-gen37.md) · [TR-015-update GEN-37](../04-tareas/updates/100-SistemaPartes/TR-015-update-cc-pq-17-2026-11-14-gen37.md) |
+
+*Procesado* (Parte G 14/11/2026)
+
+### Dependencia Framework
+
+SPEC-001-37 Framework aún **Pendiente** (A1). El validador canónico actual solo preserva `name`/`type`/`captionKey`. Host aporta contenido; runtime DIC requiere oleada Framework que conserve `label`/`description`/`synonyms` (parche mínimo autorizado en path-lab si el host está en repo-lab).
 
 ---
 

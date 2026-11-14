@@ -16,7 +16,7 @@ Jira: [PIAPARTES-62](https://paqsystems.atlassian.net/browse/PIAPARTES-62) (Task
 | **Dependencias** | [TR-011](./TR-011-reportes-emisiones.md); [TR-015](./TR-015-piloto-dx-reporting-ia.md) (schema + veredicto B); [TR-010](./TR-010-smart-capture-carga-diaria.md) (patrón GEN-03, **no** mismos endpoints); Framework `dx-reporting` + fix `GetDesignerModel`/`processCode` |
 | **Clasificación** | HU COMPLEJA (host + sidecar) |
 | **Última actualización** | 2026-11-13 |
-| **Estado** | **Pendiente de Revisión** (Parte D — 2026-11-13) |
+| **Estado** | **En Control Calidad** (CC #17 GEN-37 — 2026-11-14; además update GEN-37 abierto) |
 | **Evidencia D** | [D-VERIFICACION-TR-015-update-b-2026-11-13](../updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-b-2026-11-13.md) |
 | **Revisión C1** | [C1 ambiguity review](./TR-015-update-b-smart-capture-diseno-informes-C1-ambiguity-review.md) — **Apto con observaciones** |
 | **Obsoleto funcional (camino A)** | [SPEC-016](../../05-open-spec/100-SistemaPartes/SPEC-016-prompt-to-report-edicion-informes.md) / [TR-016](./TR-016-edicion-ia-informes-existentes-prompt-to-report.md) — **no** es la entrega MVP; pivot trazabilidad a este TR |

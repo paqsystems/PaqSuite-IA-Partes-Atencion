@@ -118,7 +118,22 @@ Captura obligatoria: pantalla con Field List + evidencia de que IA está activa 
 
 ---
 
-## 5. Pruebas #1–#8
+## 5. Mínimo E2E (producto — Must GEN-37 / IA diseño)
+
+Piso acordado 2026-11-14 (Framework TR-GEN-37-resolucion / adopción). Ejecutar **antes** o como subset de la batería #1–#8. Registrar OK/Fallo en F1.
+
+| ID | Caso | Cómo probar (ejemplo) | Éxito mínimo |
+|----|------|------------------------|--------------|
+| **E2E-01** | Diseño **nuevo** + serie de pedidos desde el prompt + **grabar** | Wizard IA → prompts cortos en ES (p. ej. listado fecha/cliente + un total) → **Guardar** / **Guardar como** | Layout con campos del Field List; Save OK; sin campos inventados |
+| **E2E-02** | **Modificar** el diseño anterior + **grabar** | Reabrir el reporte de E2E-01 → pedir otro campo o cambiar propiedad (p. ej. «Agregá subtotal de horas» / negrita en un label) → Guardar | Cambio visible; resto del layout conservado; Save OK |
+| **E2E-03** | Campo que **no existe** | Prompt: `Agregá rentabilidad de cada parte` | Mensaje de error / imposible; **no** aparece columna inventada |
+| **E2E-04** | Atributo por **nombre técnico** | Prompt que cite `duracionMinutos` (o otro `name` del dataset) sin usar solo el label humano | Resuelve y coloca ese field; no exige sinónimo |
+
+Trazabilidad: Framework [TR-GEN-37-resolucion-ambigua §8.1](../../../PaqSuite-IA-FRAMEWORK/docs/04-tareas/001-Generalidades/TR-GEN-37-resolucion-ambigua.md) · [TR-GEN-37-adopcion-host](../../../PaqSuite-IA-FRAMEWORK/docs/04-tareas/001-Generalidades/TR-GEN-37-adopcion-host.md).
+
+---
+
+## 6. Pruebas #1–#8 (batería ampliada)
 
 ### #1 — Listado por fecha y cliente
 
@@ -210,7 +225,7 @@ Captura **antes** y **después**.
 
 ---
 
-## 6. Después de la batería
+## 7. Después de la batería
 
 1. Completá la tabla §4.4 en [`D-VERIFICACION-TR-015-2026-10-30.md`](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-2026-10-30.md).
 2. Completá la **matriz §5** (licencia DX IA, calidad #1–#5, conclusión #6, regresión Save).
@@ -226,7 +241,7 @@ Captura **antes** y **después**.
 
 ---
 
-## 7. Problemas frecuentes
+## 8. Problemas frecuentes
 
 | Síntoma | Qué revisar |
 |---------|-------------|
@@ -238,7 +253,7 @@ Captura **antes** y **después**.
 
 ---
 
-## 8. Plantilla de registro (copiar al F1)
+## 9. Plantilla de registro (copiar al F1)
 
 ```markdown
 | # | Resultado | Notas | Captura |
