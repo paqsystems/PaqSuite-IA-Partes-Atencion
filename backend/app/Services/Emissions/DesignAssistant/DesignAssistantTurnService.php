@@ -49,7 +49,14 @@ final class DesignAssistantTurnService
         if (is_int($credentialId) && $credentialId > 0) {
             try {
                 $credential = $this->credentialResolver->resolveSecret($credentialId, $userId);
-            } catch (LlmDomainException) {
+            } catch (LlmDomainException|\Illuminate\Contracts\Encryption\DecryptException $exception) {
+                // DecryptException (p. ej. APP_KEY distinta al momento de guardar el secreto)
+                // no era LlmDomainException → controller devolvía turnError genérico.
+                Log::warning('partes.emissionDesign.credentialResolveFailed', [
+                    'exception' => $exception::class,
+                    'detail' => $exception->getMessage(),
+                    'credentialId' => $credentialId,
+                ]);
                 $credential = null;
             }
         }
