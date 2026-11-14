@@ -78,11 +78,7 @@ final class PqTaskProcessFrameworkSeeder extends Seeder
                 'data_type' => $parameter['dataType'],
                 'ui_control_type' => $parameter['uiControlType'] ?? null,
                 'is_required' => $parameter['isRequired'],
-                'default_value_text' => isset($parameter['defaultValue'])
-                    ? (is_array($parameter['defaultValue'])
-                        ? json_encode($parameter['defaultValue'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
-                        : (string) $parameter['defaultValue'])
-                    : null,
+                'default_value_text' => $this->encodeDefaultValue($parameter['defaultValue'] ?? null),
                 'allowed_values_source' => $parameter['allowedValuesSource'] ?? null,
                 'display_order' => $parameter['displayOrder'],
                 'is_user_editable' => $parameter['isUserEditable'],
@@ -100,6 +96,27 @@ final class PqTaskProcessFrameworkSeeder extends Seeder
                 $parameterPayload,
             );
         }
+    }
+
+    /**
+     * Persiste defaults tipados en NVARCHAR. `(string) false` en PHP es "" y tumba BOOL required.
+     */
+    private function encodeDefaultValue(mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+        if (is_array($value)) {
+            return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        return (string) $value;
     }
 
     /**
