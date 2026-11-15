@@ -1,7 +1,7 @@
 # Deploy Partes — SDK vía Cloudsmith (modelo empaquetado)
 
-Fecha: 2026-08-14 · Actualizado: 2026-11-14 (pin react-core 2.4.30-beta.19)  
-Target: `paqsuite/laravel-core@1.3.18-beta.38` · `@paqsuite/react-core@2.4.30-beta.19`  
+Fecha: 2026-08-14 · Actualizado: 2026-11-15 (GEN-13 CC #20 — manual con definición inactiva)  
+Target: `paqsuite/laravel-core@1.3.18-beta.39` · `@paqsuite/react-core@2.4.30-beta.21`  
 Instructivo: [`docs/06-operacion/adopcion-gen-35-cloudsmith.md`](../06-operacion/adopcion-gen-35-cloudsmith.md)
 
 > Guías Framework: `GUIA_PRUEBA_INSTALACION.md`, `GUIA_ACTUALIZACION_PROYECTO.md`  
@@ -14,8 +14,8 @@ Instructivo: [`docs/06-operacion/adopcion-gen-35-cloudsmith.md`](../06-operacion
 
 | Capa | Dependencia | Registry |
 |------|-------------|----------|
-| Backend | `paqsuite/laravel-core: 1.3.18-beta.38` | Cloudsmith `composer.cloudsmith.io/paqsystems/paqsuite-sdk` |
-| Frontend | `@paqsuite/react-core: 2.4.30-beta.19` | Cloudsmith `npm.cloudsmith.io/paqsystems/paqsuite-sdk` (`frontend/.npmrc`) |
+| Backend | `paqsuite/laravel-core: 1.3.18-beta.39` | Cloudsmith `composer.cloudsmith.io/paqsystems/paqsuite-sdk` |
+| Frontend | `@paqsuite/react-core: 2.4.30-beta.21` | Cloudsmith `npm.cloudsmith.io/paqsystems/paqsuite-sdk` (`frontend/.npmrc`) |
 
 **Sin** path/`file:` al monorepo Framework.  
 **Sin** `git+https` / VCS GitHub como contrato de producto.  
