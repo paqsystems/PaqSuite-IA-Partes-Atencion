@@ -668,6 +668,34 @@ final class ApiV1PartesSmartCaptureTurnTest extends TestCase
             ->assertJsonPath('respuesta', 'partes.smartCapture.llmFailed');
     }
 
+    public function test_turn_credencial_no_descifrable_devuelve_mensaje_reconfigurar(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $credentialId = $this->createCredential($token);
+
+        $cipher = (string) DB::table('pq_llm_credentials')->where('id', $credentialId)->value('secreto_cifrado');
+        $corrupt = strlen($cipher) > 4
+            ? substr($cipher, 0, -4).'xxxx'
+            : 'invalid-ciphertext';
+        DB::table('pq_llm_credentials')->where('id', $credentialId)->update([
+            'secreto_cifrado' => $corrupt,
+        ]);
+
+        $response = $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'hola',
+            'modality' => 'texto',
+            'credentialId' => $credentialId,
+            'draftContext' => $this->draftContext($cat),
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token));
+
+        $response->assertStatus(422)
+            ->assertJsonPath('error', 4291)
+            ->assertJsonPath('respuesta', 'partes.smartCapture.credencialReconfigurar');
+    }
     public function test_turn_fecha_ambigua_en_es_julio_no_noviembre(): void
     {
         $token = $this->login();
