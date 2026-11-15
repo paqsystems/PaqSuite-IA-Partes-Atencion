@@ -46,7 +46,9 @@ test.describe('CC #20 — GEN-13 definición inactiva, manual habilitado', () =>
       await page.goto('/tareas-programadas/definiciones')
       await expect(page.getByTestId('tareasProgramadas.definiciones')).toBeVisible({ timeout: 30_000 })
       await expect(page.getByTestId('tareasProgramadas.definiciones.grid')).toBeVisible({ timeout: 30_000 })
-      await expect(page.locator('.dx-loadpanel')).toBeHidden({ timeout: 60_000 })
+      await expect(
+        page.getByTestId('tareasProgramadas.definiciones.grid').locator('.dx-loadpanel'),
+      ).toBeHidden({ timeout: 60_000 })
 
       const row = page.locator('.dx-datagrid-rowsview .dx-data-row').filter({ hasText: taskTitle })
       await expect(row).toBeVisible({ timeout: 45_000 })
@@ -88,7 +90,7 @@ test.describe('CC #20 — GEN-13 definición inactiva, manual habilitado', () =>
       await page.goto('/tareas-programadas/ejecuciones')
       await expect(page.getByTestId('tareasProgramadas.ejecuciones')).toBeVisible({ timeout: 30_000 })
       await expect(page.getByTestId('tareasProgramadas.monitoreo.root')).toBeVisible({ timeout: 30_000 })
-      await expect(page.locator('.dx-loadpanel')).toBeHidden({ timeout: 60_000 })
+      await expect(page.getByTestId('tareasProgramadas.monitoreo.loading')).toBeHidden({ timeout: 60_000 })
 
       const item = page
         .getByTestId('tareasProgramadas.monitoreo.item')
