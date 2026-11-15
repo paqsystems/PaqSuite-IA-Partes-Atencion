@@ -62,6 +62,7 @@
   "smartCapture.error.visionRequired": "Questo modello non ammette immagini; usa un .txt o passa a un provider con visione.",
   "partes.smartCapture.turnError": "Impossibile completare il turno di cattura.",
   "partes.smartCapture.llmFailed": "Impossibile contattare il provider LLM. Verifica la credenziale nelle Preferenze e riprova.",
+  "partes.smartCapture.credencialReconfigurar": "Riconfigura la credenziale del modello LLM o scegline un’altra in Preferenze.",
   "chatAssistant.title": "Assistente IA",
   "chatAssistant.subtitle": "Aiuto documentale",
   "chatAssistant.activeConfigLabel": "Configurazione LLM",

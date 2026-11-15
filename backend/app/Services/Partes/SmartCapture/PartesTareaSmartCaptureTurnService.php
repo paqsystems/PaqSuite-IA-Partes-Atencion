@@ -4,6 +4,7 @@ namespace App\Services\Partes\SmartCapture;
 
 use App\Services\Partes\PartesMasivoLocale;
 use Carbon\Carbon;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Log;
 use PaqSuite\LaravelCore\Llm\LlmCredentialResolver;
 use PaqSuite\LaravelCore\Llm\LlmDomainException;
@@ -41,6 +42,19 @@ final class PartesTareaSmartCaptureTurnService
                 $credential = $this->credentialResolver->resolveSecret($credentialId, $userId);
             } catch (LlmDomainException) {
                 $credential = null;
+            } catch (DecryptException $exception) {
+                Log::warning('partes.smartCapture.credentialDecryptFailed', [
+                    'credentialId' => $credentialId,
+                    'detail' => $exception->getMessage(),
+                ]);
+
+                throw new SmartCaptureDomainException(
+                    4291,
+                    'partes.smartCapture.credencialReconfigurar',
+                    422,
+                    [],
+                    'LLM credential decrypt failed',
+                );
             }
         }
 

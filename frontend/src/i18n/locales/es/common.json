@@ -32,6 +32,7 @@
   "partes.smartCapture.noop": "No encontré cambios para aplicar.",
   "partes.smartCapture.turnError": "No se pudo completar el turno de captura.",
   "partes.smartCapture.llmFailed": "No se pudo consultar el proveedor LLM. Verificá la credencial en Preferencias e intentá de nuevo.",
+  "partes.smartCapture.credencialReconfigurar": "Reconfigurá la credencial del modelo LLM o elegí otra en Preferencias.",
   "partes.smartCapture.clienteNoEncontrado": "No encontré un cliente usable con ese dato.",
   "partes.smartCapture.clienteAmbiguo": "Hay varios clientes posibles; elegí una opción numerada.",
   "partes.smartCapture.tipoNoEncontrado": "No encontré un tipo de tarea usable con ese dato.",

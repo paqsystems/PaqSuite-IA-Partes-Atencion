@@ -62,6 +62,7 @@
   "smartCapture.error.visionRequired": "Este modelo não admite imagens; use um .txt ou mude para um fornecedor com visão.",
   "partes.smartCapture.turnError": "Não foi possível concluir o turno de captura.",
   "partes.smartCapture.llmFailed": "Não foi possível consultar o provedor LLM. Verifique a credencial nas Preferências e tente novamente.",
+  "partes.smartCapture.credencialReconfigurar": "Reconfigure a credencial do modelo LLM ou escolha outra em Preferências.",
   "chatAssistant.title": "Assistente IA",
   "chatAssistant.subtitle": "Ajuda documental",
   "chatAssistant.activeConfigLabel": "Configuração LLM",
