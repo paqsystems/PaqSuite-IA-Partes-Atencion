@@ -272,8 +272,8 @@ los exports y contratos del SDK.
 
 | Paquete | Pin repo | Notas |
 |---------|----------|--------|
-| `paqsuite/laravel-core` | **1.3.18-beta.38** | Oleada GEN-13 CC #17–#20 (`isActive` scheduler-only, cascade DELETE, naming `-sNN`/`-mNN`, BOOL, defer RDS). Manifiesto alineado al pin. Mínimo histórico defer: ≥ beta.32. |
-| `@paqsuite/react-core` | **2.4.30-beta.20** | UI tareas + `TaskScheduledLayout`; CC #20: run/simulate en Ejecuciones sin bloquear por `isActive` (beta.20+). |
+| `paqsuite/laravel-core` | **1.3.18-beta.39** | Oleada GEN-13 CC #17–#20 (`isActive` scheduler-only, manual permitido con definición inactiva, cascade DELETE, naming `-sNN`/`-mNN`, BOOL, defer RDS). Mínimo defer: ≥ beta.32. |
+| `@paqsuite/react-core` | **2.4.30-beta.21** | UI tareas + `TaskScheduledLayout`; CC #20: run/simulate en Definiciones y Monitoreo sin bloquear por `isActive` (beta.21). |
 
 El SDK publica `RdsBackupLock` como contrato; el host usa `App\Tasks\Backup\RdsBackupCacheLock`.
 Migración host `2026_07_25_000006_create_pq_task_tables`; seed `BACKUP_DATABASE` en post-deploy Forge.
