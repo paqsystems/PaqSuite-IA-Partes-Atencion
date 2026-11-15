@@ -9,7 +9,7 @@ Jira: [PIAPARTES-53](https://paqsystems.atlassian.net/browse/PIAPARTES-53) (mism
 | ID | SPEC-015-update-oleada-2-b |
 | Título | Asistencia IA en diseñador de emisiones vía Smart Capture (camino B) |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | **Especificado** (Parte A + A1 — 2026-11-10) |
+| Estado | **En revisión** (CC #17 GEN-37 — 2026-11-14; update semántica IA abierto) |
 | A1 | [A1 ambiguity review](./SPEC-015-ia-diseno-informes-oleada-2-b-update-A1-ambiguity-review.md) — Apto con observaciones |
 | Última actualización | 2026-11-10 |
 | SPEC base | [SPEC-015-ia-diseno-informes](../../100-SistemaPartes/SPEC-015-ia-diseno-informes.md) |

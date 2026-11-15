@@ -12,7 +12,7 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 | Host | PaqSuite-IA-Partes-Atencion |
 | GEN | GEN-13 — Tareas programadas |
 | Estado | Finalizado |
-| Última actualización | 2026-11-11 (defer manual RDS — doc operativa; SPEC base **Finalizado**) |
+| Última actualización | 2026-11-15 (pin SDK beta.38 / beta.19; SPEC base **Finalizado**) |
 | HU relacionada(s) | [HU-GEN-13-adopcion-tareas-programadas](../../03-historias-usuario/001-Generalidades/HU-GEN-13-adopcion-tareas-programadas.md) |
 | TR relacionada(s) | [TR-GEN-13-adopcion-tareas-programadas](../../04-tareas/001-Generalidades/TR-GEN-13-adopcion-tareas-programadas.md) |
 | SoT Framework | `SPEC-001-13` + `TR-GEN-13-backup-windows-rds-update` + **`docs/06-operacion/adopcion-gen-13-tareas-programadas-host.md`** (cableado Must) |
@@ -102,3 +102,4 @@ lock global por instalación y logs trazables.
 | 2026-10-30 | Parte G — SPEC-update CC PQ #10 (monitor sqlsrv + backup MONO/S3). |
 | 2026-11-06 | Parte I — unificación + **Finalizado**. Backup RDS verificado por el usuario. |
 | 2026-11-11 | Delta operativo defer manual RDS (adopción + pin beta.32); sin reabrir alcance SPEC base. |
+| 2026-11-15 | Confirmación CC Framework #20 GEN-13 cerrado. Pin host `laravel-core` **1.3.18-beta.38** / `react-core` **2.4.30-beta.19**. |

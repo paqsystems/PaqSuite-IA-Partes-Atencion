@@ -14,7 +14,7 @@ Jira: PIAPARTES-38
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Finalizado |
 | **Revisión C1** | Apto con observaciones (ver §11) |
-| **Última actualización** | 2026-11-11 |
+| **Última actualización** | 2026-11-15 |
 
 **Origen:** [HU-010](../../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md)  
 **Referencia SPEC:** [SPEC-010](../../05-open-spec/100-SistemaPartes/SPEC-010-smart-capture-carga-diaria.md)  
@@ -120,6 +120,7 @@ Mapear HU CA-01…16:
 | RN-TR-CC3-23 | Feature LACAPOL+PQ; Vitest apply; E2E smoke modal con valor en `partesCargaCliente` / asistente. |
 | RN-TR-24 | `draftContext.locale` = locale i18n del host (`es`/`en`/`pt`/`fr`/`it`). `PartesLocaleDateParser`: `en` → `MM/dd/yyyy`; resto → `dd/MM/yyyy`; ISO sin cambio; día &gt; 12 no se invierte. Prompt LLM: misma regla. DateBox: `resolvePartesDateDisplayFormat(i18n.language)`. |
 | RN-TR-25 | `onError` de SC y validación/persistencia con Popup abierto → `formError` + `FormErrorModal` (`partesCargaError`). `turnError`+`noop` no va al hilo. Banner de listado solo con modal cerrado (`partesCargaListError`). |
+| RN-TR-26 | LLM/build fail sin fields recuperables → `SmartCaptureDomainException` **4290** / `partes.smartCapture.llmFailed` / HTTP **502**. FE `envelopeError` → `respuesta` i18n. `turnError` solo 5xx sin cuerpo. OpenAPI: 409 (4201) + 502 (4290). |
 
 ### Actions Must (nombres estables)
 
@@ -193,6 +194,7 @@ Errores Must:
 | Cliente / sin perfil carga | Denegación middleware `partes.notCliente` (mismo patrón TR-004) |
 | Sin LLM | **4201** + HTTP **409** + `resultado.configurationRequired: true` (GEN-03 / TR-GEN-03-contrato-turno) |
 | Timeout LLM | Error envelope i18n; sin actions de save |
+| LLM/build sin fields recuperables | **4290** + HTTP **502** + `partes.smartCapture.llmFailed` |
 
 APIs de persistencia (**sin cambio de contrato**):
 
@@ -311,3 +313,4 @@ APIs de persistencia (**sin cambio de contrato**):
 | 2026-09-16 | Parte F: F1/F Aprobado — [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-TR-010-update-CC-PQ-03-2026-09-16.md). |
 | 2026-09-16 | Parte I: fusionado TR-010-update (CC-PQ #3, 09/08) en esta TR; update eliminado. Estado → Finalizado. |
 | 2026-11-11 | RN-TR-24 fecha por locale; RN-TR-25 errores en `FormErrorModal`; `draftContext.locale`. |
+| 2026-11-15 | RN-TR-26: 4290/`llmFailed` (CC Framework #20). Estado permanece Finalizado. [D-VERIFICACION](./D-VERIFICACION-CC-FW-20-smart-capture-turno-2026-11-15.md). |

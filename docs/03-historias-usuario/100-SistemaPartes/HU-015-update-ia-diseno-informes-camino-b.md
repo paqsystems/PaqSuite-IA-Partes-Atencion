@@ -10,7 +10,7 @@ Jira: [PIAPARTES-61](https://paqsystems.atlassian.net/browse/PIAPARTES-61)
 | Título | Asistencia IA en el diseñador de Consulta detallada vía Smart Capture (GEN-03) — oleada 2 camino B |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE (oleada 2 productiva) |
-| Estado | **Especificado** (Parte **C1** — 2026-11-13) |
+| Estado | **En Control Calidad** (CC #17 GEN-37 — 2026-11-14) |
 | SPEC origen | [SPEC-015-update oleada 2 B](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-2-b-update.md) |
 | A1 | [A1 ambiguity review](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-2-b-update-A1-ambiguity-review.md) — Apto con observaciones |
 | SPEC base | [SPEC-015-ia-diseno-informes](../../05-open-spec/100-SistemaPartes/SPEC-015-ia-diseno-informes.md) |

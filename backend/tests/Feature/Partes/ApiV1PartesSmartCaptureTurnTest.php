@@ -634,6 +634,68 @@ final class ApiV1PartesSmartCaptureTurnTest extends TestCase
         $this->assertTrue($actions->contains(fn ($a) => ($a['action'] ?? null) === 'save'));
     }
 
+    public function test_turn_llm_falla_sin_campos_recuperables_devuelve_envelope_accionable(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $credentialId = $this->createCredential($token);
+        $this->app->instance(PartesSmartCaptureProposalPort::class, new class implements PartesSmartCaptureProposalPort
+        {
+            public function propose(
+                string $message,
+                array $draftContext,
+                ?array $pendingChoice,
+                array $images,
+                object $credentialContext,
+            ): array {
+                throw new \RuntimeException('LLM provider request failed: HTTP 500');
+            }
+        });
+        $this->app->forgetInstance(\App\Services\Partes\SmartCapture\PartesTareaSmartCaptureTurnService::class);
+
+        $response = $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'hola sin datos estructurados',
+            'modality' => 'texto',
+            'credentialId' => $credentialId,
+            'draftContext' => $this->draftContext($cat),
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token));
+
+        $response->assertStatus(502)
+            ->assertJsonPath('error', 4290)
+            ->assertJsonPath('respuesta', 'partes.smartCapture.llmFailed');
+    }
+
+    public function test_turn_credencial_no_descifrable_devuelve_mensaje_reconfigurar(): void
+    {
+        $token = $this->login();
+        $cat = $this->seedCatalogos();
+        $credentialId = $this->createCredential($token);
+
+        $cipher = (string) DB::table('pq_llm_credentials')->where('id', $credentialId)->value('secreto_cifrado');
+        $corrupt = strlen($cipher) > 4
+            ? substr($cipher, 0, -4).'xxxx'
+            : 'invalid-ciphertext';
+        DB::table('pq_llm_credentials')->where('id', $credentialId)->update([
+            'secreto_cifrado' => $corrupt,
+        ]);
+
+        $response = $this->postJson('/api/v1/partes/tareas/asistente/turn', [
+            'contractVersion' => 1,
+            'message' => 'hola',
+            'modality' => 'texto',
+            'credentialId' => $credentialId,
+            'draftContext' => $this->draftContext($cat),
+            'pendingChoice' => null,
+            'images' => [],
+        ], $this->authHeaders($token));
+
+        $response->assertStatus(422)
+            ->assertJsonPath('error', 4291)
+            ->assertJsonPath('respuesta', 'partes.smartCapture.credencialReconfigurar');
+    }
     public function test_turn_fecha_ambigua_en_es_julio_no_noviembre(): void
     {
         $token = $this->login();

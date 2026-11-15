@@ -257,6 +257,39 @@ describe('applyPartesAction', () => {
     expect(onError).toHaveBeenCalledWith('Configurá LLM')
   })
 
+  it('muestra llmFailed accionable ante fallo de proveedor (envelope 4290)', async () => {
+    const post = vi.mocked(postSmartCaptureTurn)
+    post.mockResolvedValue({
+      kind: 'envelopeError',
+      envelope: { error: 4290, respuesta: 'partes.smartCapture.llmFailed', resultado: {} },
+    } as never)
+    const onError = vi.fn()
+    const form: FormState = {
+      usuarioId: 1,
+      clienteId: null,
+      tipoTareaId: null,
+      fecha: '2026-09-15',
+      duracionMinutos: 15,
+      sinCargo: false,
+      presencial: false,
+      observacion: '',
+    }
+    await handlePartesSmartCaptureSend(
+      { message: 'hola', modality: 'texto', images: [], credentialId: 10 },
+      {
+        ...handlersBase(form),
+        onError,
+        resolveMessage: (key) =>
+          key === 'partes.smartCapture.llmFailed'
+            ? 'No se pudo consultar el proveedor LLM. Verificá la credencial en Preferencias e intentá de nuevo.'
+            : key,
+      }
+    )
+    expect(onError).toHaveBeenCalledWith(
+      'No se pudo consultar el proveedor LLM. Verificá la credencial en Preferencias e intentá de nuevo.'
+    )
+  })
+
   it('muestra turnError ante fallo de transporte 5xx', async () => {
     const post = vi.mocked(postSmartCaptureTurn)
     post.mockResolvedValue({

@@ -4,6 +4,7 @@ namespace App\Services\Partes\SmartCapture;
 
 use App\Services\Partes\PartesMasivoLocale;
 use Carbon\Carbon;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Log;
 use PaqSuite\LaravelCore\Llm\LlmCredentialResolver;
 use PaqSuite\LaravelCore\Llm\LlmDomainException;
@@ -41,6 +42,19 @@ final class PartesTareaSmartCaptureTurnService
                 $credential = $this->credentialResolver->resolveSecret($credentialId, $userId);
             } catch (LlmDomainException) {
                 $credential = null;
+            } catch (DecryptException $exception) {
+                Log::warning('partes.smartCapture.credentialDecryptFailed', [
+                    'credentialId' => $credentialId,
+                    'detail' => $exception->getMessage(),
+                ]);
+
+                throw new SmartCaptureDomainException(
+                    4291,
+                    'partes.smartCapture.credencialReconfigurar',
+                    422,
+                    [],
+                    'LLM credential decrypt failed',
+                );
             }
         }
 
@@ -89,6 +103,8 @@ final class PartesTareaSmartCaptureTurnService
             );
         } catch (SmartCaptureDomainException $exception) {
             throw $exception;
+        } catch (LlmDomainException $exception) {
+            throw $exception;
         } catch (\Throwable $exception) {
             $llmFailed = true;
             Log::warning('partes.smartCapture.llmFailed', [
@@ -104,18 +120,32 @@ final class PartesTareaSmartCaptureTurnService
 
         $proposal = $this->enrichProposalFromUtterance($message, $proposal, ! $llmFailed);
         if ($llmFailed && ($proposal['fields'] ?? []) === []) {
-            return $this->noopResult('partes.smartCapture.turnError');
+            throw new SmartCaptureDomainException(
+                4290,
+                'partes.smartCapture.llmFailed',
+                502,
+                [],
+                'LLM turn failed',
+            );
         }
 
         try {
             return $this->buildResultFromProposal($proposal, $draftContext);
+        } catch (SmartCaptureDomainException|LlmDomainException $exception) {
+            throw $exception;
         } catch (\Throwable $exception) {
             Log::warning('partes.smartCapture.buildFailed', [
                 'exception' => $exception::class,
                 'detail' => $exception->getMessage(),
             ]);
 
-            return $this->noopResult('partes.smartCapture.turnError');
+            throw new SmartCaptureDomainException(
+                4290,
+                'partes.smartCapture.llmFailed',
+                502,
+                [],
+                'Smart Capture build failed',
+            );
         }
     }
 

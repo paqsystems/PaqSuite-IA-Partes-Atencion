@@ -9,6 +9,11 @@ import { DxReportDesignerPanel } from './DxReportDesignerPanel'
 import { EmissionDesignSmartCaptureSlot } from './EmissionDesignSmartCaptureSlot'
 import { ReportDesignerPageErrorBoundary } from './ReportDesignerPageErrorBoundary'
 import { readInitialProcessCodeFromSearch } from './reportDesignerInitialProcess'
+import {
+  ackLayoutBackup,
+  fetchLayoutContent,
+  restoreLayoutBackup,
+} from './layoutPendingReviewApi'
 
 const DESIGN_SC_PROCESS = 'partes.informes.consultaDetallada'
 
@@ -24,9 +29,14 @@ export function ReportDesignerHostPage() {
   const accessToken = getAuthToken() ?? undefined
   const platform = useMemo(() => buildAuthPlatformHeaders(), [])
   const [designerRemountKey, setDesignerRemountKey] = useState(0)
+  const [pendingScReview, setPendingScReview] = useState(false)
 
   const onAppliedRefresh = useCallback(() => {
     setDesignerRemountKey((prev) => prev + 1)
+  }, [])
+
+  const onPendingReview = useCallback((pending: boolean) => {
+    setPendingScReview(pending)
   }, [])
 
   return (
@@ -45,6 +55,48 @@ export function ReportDesignerHostPage() {
             t={(key) => t(key)}
             renderDesigner={(context) => {
               const showSc = !native && context.processCode === DESIGN_SC_PROCESS
+              const reportUrl = context.reportCode ?? null
+
+              const commitPending = async () => {
+                if (!reportUrl) {
+                  throw new Error(t('partes.emissionDesign.reportUrlRequired'))
+                }
+                if (!context.onDxReportSaved) {
+                  throw new Error(t('partes.emissionDesign.pendingSaveFailed'))
+                }
+
+                const content = await fetchLayoutContent(reportUrl)
+                if (!content.ok) {
+                  throw new Error(content.error || t('partes.emissionDesign.pendingSaveFailed'))
+                }
+
+                await context.onDxReportSaved({
+                  url: reportUrl,
+                  layoutDefinition: content.layoutXml,
+                  isNew: false,
+                })
+
+                const ack = await ackLayoutBackup(reportUrl)
+                if (!ack.ok) {
+                  throw new Error(ack.error || t('partes.emissionDesign.pendingSaveFailed'))
+                }
+
+                setPendingScReview(false)
+              }
+
+              const discardPending = async () => {
+                if (!reportUrl) {
+                  throw new Error(t('partes.emissionDesign.reportUrlRequired'))
+                }
+
+                const restored = await restoreLayoutBackup(reportUrl)
+                if (!restored.ok) {
+                  throw new Error(restored.error || t('partes.emissionDesign.pendingDiscardFailed'))
+                }
+
+                setPendingScReview(false)
+                setDesignerRemountKey((prev) => prev + 1)
+              }
 
               return (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -55,9 +107,13 @@ export function ReportDesignerHostPage() {
                   {showSc ? (
                     <EmissionDesignSmartCaptureSlot
                       processCode={context.processCode}
-                      reportUrl={context.reportCode ?? null}
+                      reportUrl={reportUrl}
                       remountToken={designerRemountKey}
                       onAppliedRefresh={onAppliedRefresh}
+                      pendingReview={pendingScReview}
+                      onPendingReview={onPendingReview}
+                      onCommitPending={commitPending}
+                      onDiscardPending={discardPending}
                     />
                   ) : null}
                 </div>

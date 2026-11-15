@@ -12,9 +12,9 @@ Jira: PIAPARTES-39
 | **Roles** | Cliente / asistente / supervisor (emitir según menú); diseñar = `emission.design` + desktop |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md); [TR-006](./TR-006-consultas-dashboard-navegacion.md) (`GET /partes/informes/tareas`, `pq_sp_partes_tarea_list`); [TR-007](./TR-007-mobile-capacitor.md) (policy native); paquetes `@paqsuite/react-core` + `paqsuite/laravel-core`; GEN-15 (SPEC-001-15 / TR-GEN-15-*) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | Finalizado |
+| **Estado** | En Control Calidad |
 | **Revisión C1** | Apto con observaciones (ver §11) |
-| **Última actualización** | 2026-11-07 (Parte I: evidencia E absorbida) |
+| **Última actualización** | 2026-11-14 (CC #17 GEN-37 — TR-update abierto) |
 
 **Origen:** [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md)  
 **Referencia SPEC:** [SPEC-011](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md)  

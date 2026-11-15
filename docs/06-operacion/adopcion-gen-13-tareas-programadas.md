@@ -268,12 +268,12 @@ de reintentar el seed.
 La implementación de código no forma parte de esta definición; el host adopta
 los exports y contratos del SDK.
 
-## Estado de adopción (pin vigente 2026-11-11)
+## Estado de adopción (pin vigente 2026-11-15)
 
 | Paquete | Pin repo | Notas |
 |---------|----------|--------|
-| `paqsuite/laravel-core` | **1.3.18-beta.32** | Motor defer manual RDS (`RdsDeferredBackupExecutionPoller`, `beginBackup`, `TaskResult::enEjecucion`). Manifiesto `partesatencion-1.3.18-beta.32.json`. |
-| `@paqsuite/react-core` | **2.4.30-beta.13** (ver `frontend/package.json`) | UI tareas + columna motivo; chrome pestañas **TaskScheduledLayout** ≥ **2.4.30-beta.14** pendiente de migración en Partes (ver Framework SPEC-update chrome 2026-11-11). |
+| `paqsuite/laravel-core` | **1.3.18-beta.39** | Oleada GEN-13 CC #17–#20 (`isActive` scheduler-only, manual permitido con definición inactiva, cascade DELETE, naming `-sNN`/`-mNN`, BOOL, defer RDS). Mínimo defer: ≥ beta.32. |
+| `@paqsuite/react-core` | **2.4.30-beta.21** | UI tareas + `TaskScheduledLayout`; CC #20: run/simulate en Definiciones y Monitoreo sin bloquear por `isActive` (beta.21). |
 
 El SDK publica `RdsBackupLock` como contrato; el host usa `App\Tasks\Backup\RdsBackupCacheLock`.
 Migración host `2026_07_25_000006_create_pq_task_tables`; seed `BACKUP_DATABASE` en post-deploy Forge.

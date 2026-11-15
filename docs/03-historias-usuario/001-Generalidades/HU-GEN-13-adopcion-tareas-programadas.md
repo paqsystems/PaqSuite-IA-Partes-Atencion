@@ -11,7 +11,7 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 | Épica / carpeta | 001 — Generalidades |
 | Clasificación | MUST-HAVE |
 | Estado | Finalizado |
-| Última actualización | 2026-11-06 |
+| Última actualización | 2026-11-15 |
 | SPEC origen | [SPEC-001-13-host-adopcion-tareas-programadas](../../05-open-spec/001-Generalidades/SPEC-001-13-host-adopcion-tareas-programadas.md) |
 | TR relacionada(s) | [TR-GEN-13-adopcion-tareas-programadas](../../04-tareas/001-Generalidades/TR-GEN-13-adopcion-tareas-programadas.md) |
 | Perfil | MONO/RDS |
@@ -66,3 +66,4 @@ sin pantallas vacías por fallos de adapter sqlsrv.
 | 2026-10-23 | A0 — adopción host. |
 | 2026-10-30 | Parte G — HU-update CC PQ #10. |
 | 2026-11-06 | Parte I — unificación + **Finalizado**. Backup RDS verificado por el usuario. |
+| 2026-11-15 | Confirmación: CC Framework #20 GEN-13 (`isActive` scheduler-only) cerrado F+I. Pin host `laravel-core` **1.3.18-beta.38** / `react-core` **2.4.30-beta.19**. Estado permanece Finalizado. |

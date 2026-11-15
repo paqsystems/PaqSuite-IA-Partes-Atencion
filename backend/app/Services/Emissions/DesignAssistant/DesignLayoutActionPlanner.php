@@ -35,16 +35,11 @@ final class DesignLayoutActionPlanner
         $text = mb_strtolower(trim($message), 'UTF-8');
         $actions = [];
 
-        if (preg_match('/t[ií]tulo\s*[:=]?\s*[«"\']?([^«"\']+)[»"\']?/u', $message, $m) === 1) {
-            $title = trim($m[1]);
-            if ($title !== '') {
-                $actions[] = $this->action('setReportTitle', ['title' => mb_substr($title, 0, 200)]);
-            }
-        } elseif (preg_match('/(pon[eé]|cambi[aá]|set(ea)?)\s+(el\s+)?t[ií]tulo\s+(a|como|en)\s+[«"\']?([^«"\']+)[»"\']?/u', $message, $m) === 1) {
-            $title = trim($m[5] ?? '');
-            if ($title !== '') {
-                $actions[] = $this->action('setReportTitle', ['title' => mb_substr($title, 0, 200)]);
-            }
+        // Primero verbos explícitos ("cambia el título a …"); el patrón suelto
+        // `título …` no debe comerse la preposición "a" cuando el valor va entre comillas.
+        $title = $this->extractTitleFromMessage($message);
+        if ($title !== null) {
+            $actions[] = $this->action('setReportTitle', ['title' => mb_substr($title, 0, 200)]);
         }
 
         if (preg_match('/agrup(a|á|ar).*(cliente)/u', $text) === 1) {
@@ -86,6 +81,7 @@ final class DesignLayoutActionPlanner
     {
         $fields = implode(', ', DesignLayoutWhitelist::SCHEMA_FIELDS);
         $types = implode(', ', DesignLayoutWhitelist::TYPES);
+        $vocabulary = DesignSemanticCatalog::promptVocabulary(DesignLayoutWhitelist::PROCESS_CODE);
         $system = <<<PROMPT
 Sos el asistente de diseño de informes Partes (Smart Capture bajo DevExpress).
 Respondé SOLO JSON válido (sin markdown):
@@ -93,6 +89,8 @@ Respondé SOLO JSON válido (sin markdown):
 Reglas:
 - Solo actions de: {$types}
 - Campos técnicos permitidos: {$fields}
+- Catálogo semántico GEN-37 (resolvé lenguaje natural → name técnico; usá synonyms/label):
+{$vocabulary}
 - addGroupByField/addGroupSum: payload.field = name técnico
 - setReportTitle: payload.title string 1..200
 - setPageOrientation: payload.orientation = portrait|landscape
@@ -194,6 +192,31 @@ PROMPT;
         }
 
         return $out;
+    }
+
+    /**
+     * Extrae el texto de título pedido por el usuario (heurística).
+     */
+    private function extractTitleFromMessage(string $message): ?string
+    {
+        $patterns = [
+            // "cambia/pone/setea el título a|como|en|: «valor»"
+            '/(?:pon[eé]|cambi[aá]|seteá?|set)\s+(?:el\s+)?t[ií]tulo\s+(?:a|como|en|:)\s*[«"\']?([^«"\'\n]+?)[»"\']?\s*$/iu',
+            // "título: valor" / "título = valor" (exige : o = para no confundir "título a …")
+            '/t[ií]tulo\s*[:=]\s*[«"\']?([^«"\'\n]+?)[»"\']?\s*$/iu',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, trim($message), $m) !== 1) {
+                continue;
+            }
+            $title = trim((string) ($m[1] ?? ''), " \t\n\r\0\x0B\"'«»");
+            if ($title !== '') {
+                return $title;
+            }
+        }
+
+        return null;
     }
 
     /**

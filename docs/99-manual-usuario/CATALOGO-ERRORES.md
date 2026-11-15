@@ -115,7 +115,10 @@ Para conectividad con otros sistemas (integraciones), el administrador debe indi
 
 | Clave | Qué ve el usuario (resumen) | Causa habitual | Qué hacer |
 |-------|-----------------------------|----------------|-----------|
-| `partes.smartCapture.turnError` | No se completó el turno (ventana de error sobre el formulario) | Fallo al procesar | Reintentar; revisar conexión y credencial |
+| `partes.smartCapture.turnError` | No se completó el turno (ventana de error sobre el formulario) | Transporte 5xx sin cuerpo (último recurso) | Reintentar; revisar conexión |
+| `partes.smartCapture.llmFailed` | No se pudo interpretar el pedido (4290) | Fallo del modelo o armado de propuesta | Reintentar; Preferencias IA / soporte si se repite |
+| `partes.smartCapture.credencialReconfigurar` | Reconfigurar credencial LLM o cambiar preferencia (4291) | Secreto cifrado con otra instalación/servidor (p. ej. APP_KEY distinto) | Preferencias → volver a guardar la clave del modelo o elegir otra credencial activa |
+| `smartCapture.configurationRequired` | Falta configuración de IA | Sin credencial BYOK | Preferencias → alta/selección de modelo |
 | `partes.smartCapture.sinCredencial` | Sin credencial de modelo | Preferencias sin clave | Configurar en Preferencias (avatar) |
 | `partes.smartCapture.noEntendi` | No se interpretó el mensaje | Texto ambiguo | Reformular con más detalle |
 | `partes.smartCapture.clienteNoEncontrado` | Cliente no encontrado | Nombre/código no coincide | Indicar cliente válido |
