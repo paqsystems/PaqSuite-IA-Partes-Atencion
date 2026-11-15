@@ -89,6 +89,8 @@ final class PartesTareaSmartCaptureTurnService
             );
         } catch (SmartCaptureDomainException $exception) {
             throw $exception;
+        } catch (LlmDomainException $exception) {
+            throw $exception;
         } catch (\Throwable $exception) {
             $llmFailed = true;
             Log::warning('partes.smartCapture.llmFailed', [
@@ -104,18 +106,32 @@ final class PartesTareaSmartCaptureTurnService
 
         $proposal = $this->enrichProposalFromUtterance($message, $proposal, ! $llmFailed);
         if ($llmFailed && ($proposal['fields'] ?? []) === []) {
-            return $this->noopResult('partes.smartCapture.turnError');
+            throw new SmartCaptureDomainException(
+                4290,
+                'partes.smartCapture.llmFailed',
+                502,
+                [],
+                'LLM turn failed',
+            );
         }
 
         try {
             return $this->buildResultFromProposal($proposal, $draftContext);
+        } catch (SmartCaptureDomainException|LlmDomainException $exception) {
+            throw $exception;
         } catch (\Throwable $exception) {
             Log::warning('partes.smartCapture.buildFailed', [
                 'exception' => $exception::class,
                 'detail' => $exception->getMessage(),
             ]);
 
-            return $this->noopResult('partes.smartCapture.turnError');
+            throw new SmartCaptureDomainException(
+                4290,
+                'partes.smartCapture.llmFailed',
+                502,
+                [],
+                'Smart Capture build failed',
+            );
         }
     }
 

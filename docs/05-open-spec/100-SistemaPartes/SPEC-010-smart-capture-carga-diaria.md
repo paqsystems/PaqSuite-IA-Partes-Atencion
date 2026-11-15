@@ -11,7 +11,7 @@ Jira: PIAPARTES-10
 | Título | Smart Capture (asistente operativo GEN-03) en el modal de alta/edición de tarea — Carga diaria |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Finalizado |
-| Última actualización | 2026-11-11 |
+| Última actualización | 2026-11-15 |
 | HU relacionada(s) | [HU-010-smart-capture-carga-diaria](../../03-historias-usuario/100-SistemaPartes/HU-010-smart-capture-carga-diaria.md) |
 | TR relacionada(s) | [TR-010-smart-capture-carga-diaria](../../04-tareas/100-SistemaPartes/TR-010-smart-capture-carga-diaria.md) |
 | Depende de | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md), [SPEC-003](./SPEC-003-maestros-y-catalogos.md), [SPEC-004](./SPEC-004-operacion-carga-diaria.md), [SPEC-008](./SPEC-008-asistente-ia-chat-documental.md) (BYOK / timeout LLM host); Framework GEN-03 / SPEC-001-03 (docs en `PaqSuite-IA-FRAMEWORK`); provider GEN-16 |
@@ -149,6 +149,7 @@ Jira: PIAPARTES-10
 | ID | Norma |
 |----|--------|
 | R-SC-35 | Fallos de turno (`partes.smartCapture.turnError`, envelope/transporte, validación al Guardar con el Popup abierto) se muestran en **ventana modal** sobre el formulario (regla 36). **No** van al hilo de Captura inteligente ni al banner de la grilla detrás. Ambigüedad de catálogo y confirmación de fecha futura **sí** siguen en el hilo. |
+| R-SC-36 | Fallo LLM/build **sin** campos recuperables → envelope **4290** / `partes.smartCapture.llmFailed` / HTTP **502** (accionable). Claves `smartCapture.*` (4201–4207) tienen prioridad sobre el genérico `turnError`. `turnError` queda para transporte 5xx sin cuerpo. Si hay fields recuperables, el turno puede devolver `error: 0` con esas actions. |
 
 ### 4.6 Grabación por keyword (Must — D-SC-08)
 
@@ -281,3 +282,4 @@ Familias de `action` orientativas (nombres finales en TR): `setField`, lookups/`
 | 2026-09-16 | Parte F: criterios verificados — [D-VERIFICACION](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-010-update-CC-PQ-03-2026-09-16.md). |
 | 2026-09-16 | Parte I: fusionado SPEC-010-update (CC-PQ #3, 09/08) en este original; update eliminado. Estado → Finalizado. |
 | 2026-11-11 | R-SC-34 fecha según locale i18n (no siempre `dd/MM`); R-SC-35 errores duros en modal, no en hilo ni grilla. |
+| 2026-11-15 | R-SC-36: 4290/`llmFailed` (CC Framework #20). Sin update nuevo. [D-VERIFICACION](../../04-tareas/100-SistemaPartes/D-VERIFICACION-CC-FW-20-smart-capture-turno-2026-11-15.md). |
