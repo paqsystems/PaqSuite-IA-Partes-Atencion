@@ -696,7 +696,6 @@ final class ApiV1PartesSmartCaptureTurnTest extends TestCase
             ->assertJsonPath('error', 4291)
             ->assertJsonPath('respuesta', 'partes.smartCapture.credencialReconfigurar');
     }
-
     public function test_turn_fecha_ambigua_en_es_julio_no_noviembre(): void
     {
         $token = $this->login();
