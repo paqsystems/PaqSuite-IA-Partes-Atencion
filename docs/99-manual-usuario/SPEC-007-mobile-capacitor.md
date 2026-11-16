@@ -3,7 +3,7 @@ specId: SPEC-007
 titulo: App móvil de Partes de Atención
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-11-15
+ultimaActualizacion: 2026-11-16
 procesoErrores: P09
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-007-mobile-capacitor.md
 ---

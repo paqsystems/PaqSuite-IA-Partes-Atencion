@@ -3,7 +3,7 @@ specId: SPEC-005
 titulo: Supervisión y proceso masivo
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-11-09
+ultimaActualizacion: 2026-11-16
 procesoErrores: P06
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-005-supervision-proceso-masivo.md
 ---

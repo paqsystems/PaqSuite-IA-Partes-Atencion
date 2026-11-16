@@ -556,9 +556,23 @@ Excluido en native: maestros, carga diaria escritorio, masivo, consultas detalla
 - **No** en mobile (`partesMobilePolicy.ts`).
 - SoT operación y triage: `docs/06-operacion/adopcion-gen-13-tareas-programadas.md` · SPEC: `docs/05-open-spec/001-Generalidades/SPEC-001-13-host-adopcion-tareas-programadas.md` · manual usuario: `docs/99-manual-usuario/SPEC-012-tareas-programadas-soporte.md`.
 
-Integración API de maestros (GEN-36 / snapshot-delta hacia ERP) vive en **laravel-core** + SP `pq_sp_partes_integracion_maestros_*` en manifiesto; **no** hay pantalla Partes dedicada: consumidores usan OpenAPI `/api/v1/integracion/...`.
+## 2.13 Integración API de maestros (SPEC-014)
 
-## 2.13 Visión de sistema (sin ERP en el MVP)
+Canal **REST** paralelo al ABM de Archivos; **no** usa GEN-14 Excel ni GEN-36 importaciones asíncronas (esos son otros contratos Framework).
+
+| Tema | Dónde |
+|------|--------|
+| Rutas | Cinco `POST` bajo `/api/v1/integracion/maestros/` (`clientes`, `asistentes`, `tipos-cliente`, `tipos-tarea`, `asignaciones-cliente-tipo`) — `backend/routes/api.php` |
+| Controller | `PartesIntegracionMaestrosController` |
+| Permiso | `partes.integracion.maestros` (middleware de ruta; distinto del ABM) |
+| Gate Partes | `partes.profile` + `partes.notCliente` (sin perfil cliente) |
+| Persistencia | SP `pq_sp_partes_integracion_maestros_*` en `backend/scripts/sql/partes/` |
+| Contrato / ejemplos | `docs/05-open-spec/100-SistemaPartes/SPEC-014-apis-importar-datos-maestros.md` · producto `docs/02-producto/Sistema-Partes-IA/17-APIs-importar-datos-maestros.md` |
+| Manual usuario (corpus) | `docs/99-manual-usuario/SPEC-014-integracion-maestros-erp.md` |
+
+Upsert por `code`; respuesta envelope GEN-20 con conteo y detalle de filas rechazadas. **Sin UI** y **excluido de mobile**.
+
+## 2.14 Visión de sistema (sin ERP en el MVP)
 
 ```text
 Usuario (web / mobile)
@@ -676,6 +690,7 @@ Handoff: `docs/_handoff/GEN-15-lab-local-2026-10-28.md`.
 | Adopción SDK / ritual bump | `docs/01-arquitectura/plan-partes-adopcion-sdk-sin-fork-gen.md` |
 | Pins SDK (versiones pinneadas) | `docs/01-arquitectura/ritual-bump-sdk.md` |
 | Tareas programadas / backups | `docs/06-operacion/adopcion-gen-13-tareas-programadas.md` |
+| Integración API maestros | `docs/05-open-spec/100-SistemaPartes/SPEC-014-apis-importar-datos-maestros.md` |
 | Contrato vivo de endpoints | `/api/documentation` (Swagger) |
 
 Este manual describe el sistema **tal como está implementado al 15 de noviembre de 2026** (pins **1.3.18-beta.39** / **2.4.30-beta.21**). Si un SPEC-update o un control de calidad cambia el alcance, prevalecen el SPEC unificado y OpenAPI.

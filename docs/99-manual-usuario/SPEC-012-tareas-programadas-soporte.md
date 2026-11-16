@@ -3,7 +3,7 @@ specId: SPEC-012
 titulo: Tareas programadas (soporte técnico)
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-11-15
+ultimaActualizacion: 2026-11-16
 procesoErrores: P13
 openSpec: docs/05-open-spec/001-Generalidades/SPEC-001-13-host-adopcion-tareas-programadas.md
 ---

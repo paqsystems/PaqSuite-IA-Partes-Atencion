@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|--------|
-| **Versión documento** | 2026-11-15 |
+| **Versión documento** | 2026-11-16 |
 | **Ámbito** | Módulo Partes de Atención |
 | **Público** | Asistentes, supervisores, clientes y soporte funcional |
 | **Corpus** | Fuente restringida del **Asistente IA** (menú avatar) |
@@ -61,6 +61,7 @@ En el diseñador (piloto), puede haber **asistencia IA** para armar diseños en 
 | Entender objetos y datos | — | [SPEC-001](./SPEC-001-objetos-datos-y-glosario.md) |
 | Entrar y entender mi perfil | Login / avatar | [SPEC-002](./SPEC-002-identidad-funcional-y-acceso.md) |
 | Mantener catálogos | Archivos | [SPEC-003](./SPEC-003-maestros-y-catalogos.md) |
+| Sincronizar maestros desde ERP (integración) | Canal API (sin pantalla) | [SPEC-014](./SPEC-014-integracion-maestros-erp.md) |
 | Cargar el trabajo del día | Partes → Carga diaria | [SPEC-004](./SPEC-004-operacion-carga-diaria.md) |
 | Registrar una compra de horas | Partes → Carga de paquetes | [SPEC-013](./SPEC-013-carga-paquetes-horas.md) |
 | Importar planilla | Carga diaria → Importar | [SPEC-009](./SPEC-009-importacion-excel.md) |
@@ -93,7 +94,9 @@ La **captura inteligente** del formulario de carga diaria o de paquetes es otra 
 
 ## Integración con otros sistemas
 
-Si necesitás conectar otro sistema al producto, solicitá al administrador la **URL de documentación OpenAPI** del backend de tu instalación (ruta habitual: `/api/documentation`). Este manual no describe contratos de integración.
+- **Maestros** (clientes, asistentes, tipos): canal API para equipos de integración — sin menú en el portal. Resumen: [SPEC-014](./SPEC-014-integracion-maestros-erp.md).
+- **Contratos completos:** solicitá al administrador la **URL de documentación OpenAPI** del backend (`/api/documentation` en su instalación).
+- **Tareas del día / partes:** no se importan por ese canal; usá carga diaria o importación Excel en web ([SPEC-004](./SPEC-004-operacion-carga-diaria.md), [SPEC-009](./SPEC-009-importacion-excel.md)).
 
 ## Condiciones de uso
 

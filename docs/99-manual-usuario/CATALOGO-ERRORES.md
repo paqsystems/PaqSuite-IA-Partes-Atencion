@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|--------|
-| **Versión** | 2026-11-15 |
+| **Versión** | 2026-11-16 |
 | **Uso** | Corpus del **Asistente IA** (menú avatar) y referencia para manuales por proceso |
 | **Idioma** | Español canónico (las pantallas pueden mostrar otros idiomas con el mismo significado) |
 

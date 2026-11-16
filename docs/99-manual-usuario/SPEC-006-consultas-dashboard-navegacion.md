@@ -3,7 +3,7 @@ specId: SPEC-006
 titulo: Consultas, dashboard y navegación
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-05
+ultimaActualizacion: 2026-11-16
 procesoErrores: P07
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-006-consultas-dashboard-navegacion.md
 ---

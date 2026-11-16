@@ -3,7 +3,7 @@ specId: SPEC-002
 titulo: Identidad funcional y acceso a Partes
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-11-07
+ultimaActualizacion: 2026-11-16
 procesoErrores: P01
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-002-identidad-funcional-y-acceso.md
 ---

@@ -3,7 +3,7 @@ specId: SPEC-001
 titulo: Objetos, datos y glosario del módulo
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-05
+ultimaActualizacion: 2026-11-16
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-001-modelo-datos-modulo.md
 ---
 

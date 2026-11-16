@@ -3,7 +3,7 @@ specId: SPEC-009
 titulo: Importación desde Excel (carga diaria)
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-11
+ultimaActualizacion: 2026-11-16
 openSpec: docs/02-producto/Sistema-Partes-IA/13-importacion-partes-excel.md
 ---
 

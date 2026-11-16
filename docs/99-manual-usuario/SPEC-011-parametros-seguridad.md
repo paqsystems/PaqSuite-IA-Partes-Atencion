@@ -3,7 +3,7 @@ specId: SPEC-011
 titulo: Parámetros generales y seguridad
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-11-15
+ultimaActualizacion: 2026-11-16
 openSpec: docs/05-open-spec/100-SistemaPartes/
 ---
 

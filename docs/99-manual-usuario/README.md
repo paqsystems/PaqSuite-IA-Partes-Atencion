@@ -35,5 +35,6 @@ Un archivo `.md` por capacidad (prefijo `SPEC-00N`). Los archivos que empiezan c
 | [SPEC-011-parametros-seguridad.md](./SPEC-011-parametros-seguridad.md) | Parámetros y administración de seguridad | Publicado |
 | [SPEC-012-tareas-programadas-soporte.md](./SPEC-012-tareas-programadas-soporte.md) | Tareas programadas y copias de base (soporte) | Publicado |
 | [SPEC-013-carga-paquetes-horas.md](./SPEC-013-carga-paquetes-horas.md) | Carga de paquetes de horas (supervisor) | Publicado |
+| [SPEC-014-integracion-maestros-erp.md](./SPEC-014-integracion-maestros-erp.md) | Sincronización de maestros con ERP (integración) | Publicado |
 
-Última actualización del índice: **2026-11-15**.
+Última actualización del índice: **2026-11-16**.
