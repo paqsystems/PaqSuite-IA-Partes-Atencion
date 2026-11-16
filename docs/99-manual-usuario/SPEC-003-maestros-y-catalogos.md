@@ -3,7 +3,7 @@ specId: SPEC-003
 titulo: Maestros y catálogos de Partes
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-05
+ultimaActualizacion: 2026-11-16
 procesoErrores: P02
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-003-maestros-y-catalogos.md
 ---
@@ -41,6 +41,10 @@ En el alta/edición de un cliente podés completar, de forma opcional, **Erp Cli
 1. Mantener tipos (incluye el genérico y el marcado como **default**).
 2. Asignar a un cliente solo tipos **no genéricos**.
 3. Siempre debe quedar un tipo default usable; no inhabilites el default sin designar otro.
+
+### Sincronización desde otro sistema (integración)
+
+Si tu organización sincroniza maestros desde un ERP u otro sistema, el equipo de integración usa un **canal API** (sin pantalla en el portal). Las mismas reglas de negocio aplican que en Archivos. Detalle para usuarios y responsables: [SPEC-014](./SPEC-014-integracion-maestros-erp.md).
 
 ## Particularidades
 

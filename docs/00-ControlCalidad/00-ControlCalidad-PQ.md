@@ -46,6 +46,7 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 
 | # | Fecha | Estado | Resumen |
 |---|-------|--------|---------|
+| 18 | 15/11/2026 | **Pendiente** | Alineación GEN-13 (chrome `ProcessPageLayout` + i18n SDK) — auditoría cableado vs Partes referencia operativa · [CC #18](#control-de-calidad-18) |
 | 1 | 31/07/2026 | Especificado | `es_tarea` + Paquete de Horas — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md)) |
 | 2 | 01/08/2026 | Especificado | ERP clientes + informes — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md)) |
 | 3 | 09/08/2026 | Especificado | Masivo tilde + carga decimal/Excel/plantillas/tipo default + Smart Capture controles — **F1/F Aprobado 16/09/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-03-2026-09-16.md)) |
@@ -63,6 +64,67 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 15 | 04/11/2026 | Especificado · **F1/F Aprobado** · **Parte I** cerrada | Informar por mail a clientes desde Proceso masivo (asistencias / revisar / observaciones) — refino CC #7 (URL tenant, i18n destinatario, guard salida, plantilla v1 hardcode) |
 | 16 | 07/11/2026 | Especificado · **F1/F Aprobado con observaciones** | ABM Usuarios — notificar acceso **por usuario** (no masivo): ícono junto al mail, alta sin contraseña manual + envío automático, reenvío en edición — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-16-2026-11-07.md) |
 | 17 | 14/11/2026 | Especificado | **GEN-37** — catálogo semántico en `emission-designer-schemas` (labels; IA = description+synonyms) |
+
+---
+
+## Control de Calidad #18
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 15/11/2026 |
+| **Responsable** | Pablo Quarracino (PQ) |
+| **Estado** | **Pendiente** |
+| **Origen** | Auditoría agente (15/11/2026) — cableado GEN-13 / backups vs SDK Framework y comparación con host PedidosWeb |
+| **Competencia** | **Partes (host)** — presentación e i18n FE; el motor RDS/scheduler **no** es el foco (referencia operativa vigente) |
+| **SoT** | Framework [`adopcion-gen-13-tareas-programadas-host.md`](https://github.com/paqsystems/PaqSuite-IA-FRAMEWORK/blob/develop/docs/06-operacion/adopcion-gen-13-tareas-programadas-host.md) · reglas **43** / **44** · host [`adopcion-gen-13-tareas-programadas.md`](../06-operacion/adopcion-gen-13-tareas-programadas.md) |
+| **Pin vigente (no bloqueante)** | `laravel-core` **1.3.18-beta.39** · `@paqsuite/react-core` **2.4.30-beta.21** |
+| **Comando G (futuro)** | `Corrige los errores del CC #18 alineación GEN-13 chrome/i18n Partes de PQ` |
+
+### Contexto
+
+El backend Partes (RDS, `partes:tasks-run-due`, poller, multi-tenant, `SchedulingTaskDefinitionRepository`, `TaskExecutionServiceFactory`) está **alineado** al contrato SDK y es **SoT operativo** para otros hosts. Este control recoge **deuda de alineación FE / anti-fork i18n** detectada en la auditoría, sin reabrir backup ni scheduler salvo regresión en smoke.
+
+### Mejoras solicitadas / seguimiento
+
+#### GEN-13 · Chrome de tareas (FE)
+
+a) Migrar `frontend/src/features/tareasProgramadas/TareasProgramadasSdkRoutes.tsx` al patrón **PedidosWeb**: `ProcessPageLayout` con toolbar de solapas (Procesos → Definiciones → Ejecuciones → Historial), `data-testid` `tareasProgramadas.tab.*`, título vía `menu.tareasProgramadas` o equivalente de producto — **sin** `<h1>` suelto ni CSS de solapas desalineado del shell.
+
+b) Mantener redirect legado `monitoreo` → `ejecuciones` si existe ruta o bookmark antiguo.
+
+c) Nota: `TaskScheduledLayout` **no** está exportado en el pin actual de `react-core`; no bloquear el CC por su ausencia; priorizar equivalencia con PedidosWeb.
+
+#### GEN-13 · i18n sin fork GEN (regla 43)
+
+a) Tras `i18n.init` en `frontend/src/i18n/i18n.ts`, registrar **`registerTareasProgramadasI18nResources(i18n, 'common')`** (mismo namespace que el resto del shell).
+
+b) Reducir `tareasProgramadasI18n.ts` / `createTaskTranslator` a **overrides mínimos de producto** (p. ej. mensajes de envelope backup Partes), no duplicar catálogo `tareasProgramadas.monitoreo.*` / `grid.*` / tabs que ya vive en el SDK.
+
+c) Eliminar progresivamente claves `tareasProgramadas.*` duplicadas en JSON host si quedan tras el register.
+
+d) Smoke: cambio FR/EN → solapas, monitor, formulario backup y pie de grilla coherentes sin mezcla ES/EN.
+
+#### GEN-13 · Smoke de regresión (post-cambio FE)
+
+1. E2E existentes `tareasProgramadasGen13E2e` / CC PQ #20 — deben seguir verdes.
+2. Una corrida manual backup RDS (defer polling) — **sin** tocar cableado BE; solo confirmar que el cambio FE no rompe headers/rutas.
+
+### Fuera de alcance
+
+- Reescribir `partes:tasks-run-due`, poller RDS, `SchedulingTaskDefinitionRepository` o gateways backup (ya conformes).
+- Bump de pin salvo que un fix del SDK lo exija para el chrome/i18n (documentar en TR si aplica).
+
+### Criterios de aceptación preliminares
+
+- [ ] **CA-18-01** Tareas programadas usan `ProcessPageLayout` + cuatro solapas con `data-testid` SDK.
+- [ ] **CA-18-02** `registerTareasProgramadasI18nResources` en bootstrap; sin catálogo masivo duplicado en host.
+- [ ] **CA-18-03** Vitest/E2E GEN-13 Partes verdes; smoke backup manual sin regresión.
+
+### Derivación SDD
+
+Pendiente **Parte G** → SPEC-update / HU-update / TR-update en `docs/.../updates/001-Generalidades/` (familia GEN-13 host) o TR puntual en `TR-GEN-13-adopcion-tareas-programadas.md`.
 
 ---
 
