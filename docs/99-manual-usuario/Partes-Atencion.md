@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|--------|
-| **Versión documento** | 2026-10-05 |
+| **Versión documento** | 2026-11-15 |
 | **Ámbito** | Módulo Partes de Atención |
 | **Público** | Asistentes, supervisores, clientes y soporte funcional |
 | **Corpus** | Fuente restringida del **Asistente IA** (menú avatar) |
@@ -46,9 +46,10 @@ Detalle de cada objeto y campo: [SPEC-001](./SPEC-001-objetos-datos-y-glosario.m
 | **Informes** | Consulta detallada, paquete de horas | Según perfil |
 | **Seguridad** | Usuarios, roles, permisos | Administradores |
 | **Parámetros** | Auth, Partes, importación, emisiones | Administradores / supervisor |
-| **Soporte Técnico** | Diseñador de emisiones | Quien tenga permiso de diseño |
+| **Soporte técnico** | Diseñador de emisiones; **tareas programadas** (copias de base de datos y monitoreo) | Quien tenga permiso en cada opción |
 
 En el diseñador (piloto), puede haber **asistencia IA** para armar diseños en lenguaje natural; siempre hay que **guardar** desde el diseñador y la clave la administra soporte en el servicio de reportes. Detalle: [SPEC-010 § Asistencia IA](./SPEC-010-emisiones-informes.md).
+
 | **Avatar** | Perfil Partes (solo lectura), **Asistente IA**, Preferencias de modelo, idioma, apariencia, salir | Todos |
 
 **Cliente:** Inicio + Informes (+ perfil en el avatar). Sin Archivos, Partes, Seguridad ni Parámetros de administración.
@@ -67,6 +68,7 @@ En el diseñador (piloto), puede haber **asistencia IA** para armar diseños en 
 | Ver totales e informes | Inicio / Informes | [SPEC-006](./SPEC-006-consultas-dashboard-navegacion.md) |
 | Emitir un reporte | Consulta detallada → Emitir | [SPEC-010](./SPEC-010-emisiones-informes.md) |
 | Parámetros o usuarios/roles | Parámetros / Seguridad | [SPEC-011](./SPEC-011-parametros-seguridad.md) |
+| Programar o ejecutar copias de la base (soporte) | Parámetros → Soporte técnico → Tareas programadas | [SPEC-012](./SPEC-012-tareas-programadas-soporte.md) |
 | Usar el celular | App móvil | [SPEC-007](./SPEC-007-mobile-capacitor.md) |
 | Ayuda documental (Asistente IA) | Avatar → Asistente IA | [SPEC-008](./SPEC-008-asistente-ia-y-preferencias.md) |
 | Buscar un mensaje de error | — | [CATALOGO-ERRORES](./CATALOGO-ERRORES.md) |
@@ -84,7 +86,7 @@ La **captura inteligente** del formulario de carga diaria o de paquetes es otra 
 
 - La **delimitación de datos** la define tu perfil funcional; el menú solo oculta pantallas.
 - En **web**, los informes pueden usar vista **pivot**; en **móvil** no.
-- En **móvil** no hay maestros, proceso masivo, pivot, importación Excel, **emisión de reportes** ni administración de seguridad.
+- En **móvil** no hay maestros, proceso masivo, pivot, importación Excel, **emisión de reportes**, **tareas programadas** ni administración de seguridad.
 - **Emitir** en consulta detallada usa el universo filtrado del informe; no es el export de la grilla.
 - Duración máxima de una tarea: **1440 minutos** (24 h).
 - Si otro usuario modificó la misma tarea, el sistema pide **refrescar** e intentar de nuevo.
@@ -101,7 +103,7 @@ Si necesitás conectar otro sistema al producto, solicitá al administrador la *
 
 ## Errores
 
-Todos los mensajes catalogados, agrupados por proceso (**P00**–**P11**), están en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md). En cualquier pantalla pueden aparecer errores **transversales** (conexión, sesión vencida, sin perfil Partes).
+Todos los mensajes catalogados, agrupados por proceso (**P00**–**P13**), están en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md). En cualquier pantalla pueden aparecer errores **transversales** (conexión, sesión vencida, sin perfil Partes).
 
 ## Preguntas frecuentes
 

@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|--------|
-| **Versión** | 2026-10-05 |
+| **Versión** | 2026-11-15 |
 | **Uso** | Corpus del **Asistente IA** (menú avatar) y referencia para manuales por proceso |
 | **Idioma** | Español canónico (las pantallas pueden mostrar otros idiomas con el mismo significado) |
 
@@ -25,6 +25,7 @@ Este documento reúne **todos los mensajes de error catalogados** del producto P
 | **P10** | Asistente IA (avatar) y preferencias de modelo |
 | **P11** | Parámetros generales y administración de seguridad |
 | **P12** | Carga de paquetes de horas (supervisor) |
+| **P13** | Tareas programadas (soporte técnico) |
 
 Para conectividad con otros sistemas (integraciones), el administrador debe indicar la **URL de documentación OpenAPI** del backend de su instalación (ruta habitual: `/api/documentation`).
 
@@ -270,3 +271,20 @@ Para conectividad con otros sistemas (integraciones), el administrador debe indi
 | `partes.paquete.conflictoVersion` | El registro cambió | Otro usuario lo editó | Refrescar e intentar de nuevo |
 | `partes.paquete.notPaquete` | No es un paquete de horas | Se eligió una tarea | Operar desde carga diaria |
 | `partes.paquete.clienteNoUsable` | El cliente no está usable | Cliente inhabilitado | Elegir un cliente activo |
+
+---
+
+## P13 — Tareas programadas (soporte)
+
+| Clave / síntoma | Qué ve el usuario (resumen) | Causa habitual | Qué hacer |
+|-----------------|-----------------------------|----------------|-----------|
+| *(sin permiso)* | No ve el menú o acceso denegado | Falta permiso de Soporte técnico | Pedir permiso a administración |
+| Estado **fallida** en historial | Copia o tarea con error | Mantenimiento, destino no disponible, timeout | Leer motivo en historial; reintentar o escalar a infra |
+| Estado **omitida** | No se ejecutó la corrida | Otra copia en curso o bloqueo de instalación | Esperar fin de la corrida anterior |
+| **En curso** prolongado | Pantalla no cierra la ejecución | Cierre lo completa la agenda del servidor | Usar Liberar colgadas o pedir a infra; revisar historial minutos después |
+| Historial sin filas | Listado vacío | Sin corridas aún o desfase de refresco | Refrescar; escalar si debería haber datos |
+| Guardar definición rechazado | Mensaje de validación en formulario | Frecuencia o parámetros incompletos | Corregir campos marcados |
+
+*(También **P00**.)*
+
+Detalle operativo para el usuario: [SPEC-012-tareas-programadas-soporte.md](./SPEC-012-tareas-programadas-soporte.md).

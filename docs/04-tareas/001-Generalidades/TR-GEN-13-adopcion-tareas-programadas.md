@@ -8,6 +8,7 @@ Jira: [PIAPARTES-49](https://paqsystems.atlassian.net/browse/PIAPARTES-49)
 | SPEC | [SPEC-001-13 host](../../05-open-spec/001-Generalidades/SPEC-001-13-host-adopcion-tareas-programadas.md) |
 | SoT Framework | `TR-GEN-13-backup-windows-rds-update` · cableado Must: `PaqSuite-IA-FRAMEWORK/docs/06-operacion/adopcion-gen-13-tareas-programadas-host.md` |
 | Estado | Finalizado |
+| Pins repo (2026-11-15) | `paqsuite/laravel-core` **1.3.18-beta.39** · `@paqsuite/react-core` **2.4.30-beta.21** |
 | Prioridad | MUST |
 | F / verificación | [D-VERIFICACION-CC-PQ-10](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-10-2026-10-30.md) |
 | Operación | [adopcion-gen-13-tareas-programadas.md](../../06-operacion/adopcion-gen-13-tareas-programadas.md) |

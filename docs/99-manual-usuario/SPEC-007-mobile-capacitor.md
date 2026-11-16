@@ -3,7 +3,7 @@ specId: SPEC-007
 titulo: App móvil de Partes de Atención
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-05
+ultimaActualizacion: 2026-11-15
 procesoErrores: P09
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-007-mobile-capacitor.md
 ---
@@ -14,7 +14,7 @@ openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-007-mobile-capacitor.md
 
 ## Resumen
 
-La **app móvil** ofrece login con empresa, dashboard, consultas en formato **kardex** (tarjetas), carga individual de tareas (asistente/supervisor) e informe de paquete de horas. No incluye maestros, proceso masivo, pivot, importación Excel, emisión de reportes ni administración de seguridad: esas funciones quedan en la **web**.
+La **app móvil** ofrece login con empresa, dashboard, consultas en formato **kardex** (tarjetas), carga individual de tareas (asistente/supervisor) e informe de paquete de horas. No incluye maestros, proceso masivo, pivot, importación Excel, emisión de reportes, **tareas programadas** ni administración de seguridad: esas funciones quedan en la **web**.
 
 ## Funcionamiento
 
@@ -54,6 +54,7 @@ La **app móvil** ofrece login con empresa, dashboard, consultas en formato **ka
 - Sin pivot / informes pivot.
 - Sin importación Excel.
 - Sin menú de administración de seguridad.
+- Sin **tareas programadas** (copias de base / soporte).
 - Sin preferencia de “abrir en pestaña nueva”: la navegación es siempre dentro de la app.
 
 ### Límites / cupos visibles al usuario
