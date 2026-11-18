@@ -15,6 +15,9 @@ final class DesignLayoutWhitelist
         'addGroupByField',
         'addGroupSum',
         'setPageOrientation',
+        'setControlAppearance',
+        'addDetailField',
+        'addDetailStaticText',
     ];
 
     /** @var list<string> columnas schema Consulta detallada (TR-011 / TR-015). */

@@ -33,12 +33,35 @@ final class DesignLayoutActionPlanner
     public function fromHeuristics(string $message): array
     {
         $text = mb_strtolower(trim($message), 'UTF-8');
+
+        if (DesignLayoutRemovalIntentHeuristics::matches($message)) {
+            return [
+                'replyText' => 'partes.emissionDesign.noMappedActions',
+                'actions' => [],
+            ];
+        }
+
         $actions = [];
+
+        $appearanceActions = DesignLayoutAppearanceHeuristics::tryMatch($message);
+        if ($appearanceActions !== []) {
+            $actions = array_merge($actions, $appearanceActions);
+        }
+
+        $staticTextActions = DesignLayoutDetailStaticTextHeuristics::tryMatch($message);
+        if ($staticTextActions !== []) {
+            $actions = array_merge($actions, $staticTextActions);
+        }
+
+        $detailFieldActions = DesignLayoutDetailFieldHeuristics::tryMatch($message);
+        if ($detailFieldActions !== []) {
+            $actions = array_merge($actions, $detailFieldActions);
+        }
 
         // Primero verbos explícitos ("cambia el título a …"); el patrón suelto
         // `título …` no debe comerse la preposición "a" cuando el valor va entre comillas.
         $title = $this->extractTitleFromMessage($message);
-        if ($title !== null) {
+        if ($title !== null && $appearanceActions === []) {
             $actions[] = $this->action('setReportTitle', ['title' => mb_substr($title, 0, 200)]);
         }
 
@@ -85,7 +108,7 @@ final class DesignLayoutActionPlanner
         $system = <<<PROMPT
 Sos el asistente de diseño de informes Partes (Smart Capture bajo DevExpress).
 Respondé SOLO JSON válido (sin markdown):
-{"replyText":"string","actions":[{"action":"setReportTitle|addGroupByField|addGroupSum|setPageOrientation","payload":{}}]}
+{"replyText":"string","actions":[{"action":"setReportTitle|addGroupByField|addGroupSum|setPageOrientation|setControlAppearance|addDetailField|addDetailStaticText","payload":{}}]}
 Reglas:
 - Solo actions de: {$types}
 - Campos técnicos permitidos: {$fields}
@@ -94,6 +117,9 @@ Reglas:
 - addGroupByField/addGroupSum: payload.field = name técnico
 - setReportTitle: payload.title string 1..200
 - setPageOrientation: payload.orientation = portrait|landscape
+- setControlAppearance: payload.target {kind:field|reportTitle|controlName, fieldName?, name?} + fontFamily, fontSizePt, bold, italic, underline, textAlign, verticalAlign, foreColor (#hex), backColor, textAngle
+- addDetailField: payload.field = name técnico existente en schema; agrega XRLabel en DetailBand (no PageHeader)
+- addDetailStaticText: payload.text string 1..200; texto literal en DetailBand sin binding
 - Edición incremental; no inventes campos
 - Si el pedido no mapea, actions=[] y replyText explica la limitación en español
 PROMPT;
@@ -125,6 +151,12 @@ PROMPT;
             }
             if ($action === 'setPageOrientation' && isset($item['orientation']) && ! isset($payload['orientation'])) {
                 $payload['orientation'] = $item['orientation'];
+            }
+            if ($action === 'addDetailField' && isset($item['field']) && ! isset($payload['field'])) {
+                $payload['field'] = $item['field'];
+            }
+            if ($action === 'addDetailStaticText' && isset($item['text']) && ! isset($payload['text'])) {
+                $payload['text'] = $item['text'];
             }
             if ($action === '') {
                 continue;
@@ -184,6 +216,29 @@ PROMPT;
                 $payload = ['orientation' => $orientation];
             }
 
+            if ($type === 'setControlAppearance') {
+                $payload = $this->sanitizeAppearancePayload($payload);
+                if ($payload === null) {
+                    continue;
+                }
+            }
+
+            if ($type === 'addDetailField') {
+                $field = trim((string) ($payload['field'] ?? ''));
+                if (! DesignLayoutWhitelist::isSchemaField($field)) {
+                    continue;
+                }
+                $payload = ['field' => $field];
+            }
+
+            if ($type === 'addDetailStaticText') {
+                $literal = trim((string) ($payload['text'] ?? ''));
+                if ($literal === '' || mb_strlen($literal) > 200) {
+                    continue;
+                }
+                $payload = ['text' => $literal];
+            }
+
             $out[] = [
                 'action' => $type,
                 'payload' => $payload,
@@ -197,11 +252,108 @@ PROMPT;
     /**
      * Extrae el texto de título pedido por el usuario (heurística).
      */
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>|null
+     */
+    private function sanitizeAppearancePayload(array $payload): ?array
+    {
+        $target = is_array($payload['target'] ?? null) ? $payload['target'] : [];
+        $kind = strtolower(trim((string) ($target['kind'] ?? '')));
+        if ($kind === '') {
+            return null;
+        }
+
+        $normalizedTarget = ['kind' => $kind];
+        if ($kind === 'field') {
+            $fieldName = trim((string) ($target['fieldName'] ?? $target['field'] ?? ''));
+            if (! DesignLayoutWhitelist::isSchemaField($fieldName)) {
+                return null;
+            }
+            $normalizedTarget['fieldName'] = $fieldName;
+        } elseif ($kind === 'controlname' || $kind === 'control') {
+            $name = trim((string) ($target['name'] ?? ''));
+            if ($name === '' || mb_strlen($name) > 80) {
+                return null;
+            }
+            $normalizedTarget['kind'] = 'controlName';
+            $normalizedTarget['name'] = $name;
+        } elseif ($kind !== 'reporttitle' && $kind !== 'report_title') {
+            return null;
+        } else {
+            $normalizedTarget['kind'] = 'reportTitle';
+        }
+
+        $out = ['target' => $normalizedTarget];
+        $hasStyle = false;
+
+        if (isset($payload['fontFamily'])) {
+            $family = trim((string) $payload['fontFamily']);
+            if ($family !== '' && mb_strlen($family) <= 80) {
+                $out['fontFamily'] = $family;
+                $hasStyle = true;
+            }
+        }
+
+        if (isset($payload['fontSizePt'])) {
+            $size = (float) $payload['fontSizePt'];
+            if ($size >= 6 && $size <= 72) {
+                $out['fontSizePt'] = abs($size - round($size)) < 0.01 ? (int) round($size) : $size;
+                $hasStyle = true;
+            }
+        }
+
+        foreach (['bold', 'italic', 'underline'] as $flag) {
+            if (array_key_exists($flag, $payload)) {
+                $out[$flag] = (bool) $payload[$flag];
+                $hasStyle = true;
+            }
+        }
+
+        if (isset($payload['textAlign'])) {
+            $align = strtolower(trim((string) $payload['textAlign']));
+            if (in_array($align, ['left', 'center', 'right', 'justify'], true)) {
+                $out['textAlign'] = $align;
+                $hasStyle = true;
+            }
+        }
+
+        if (isset($payload['verticalAlign'])) {
+            $valign = strtolower(trim((string) $payload['verticalAlign']));
+            if (in_array($valign, ['top', 'middle', 'bottom'], true)) {
+                $out['verticalAlign'] = $valign;
+                $hasStyle = true;
+            }
+        }
+
+        foreach (['foreColor', 'backColor'] as $colorKey) {
+            if (! isset($payload[$colorKey])) {
+                continue;
+            }
+            $raw = trim((string) $payload[$colorKey]);
+            $resolved = DesignLayoutColorCatalog::resolve($raw) ?? $raw;
+            if (preg_match('/^#[0-9a-f]{6}$/i', $resolved) === 1) {
+                $out[$colorKey] = strtolower($resolved);
+                $hasStyle = true;
+            }
+        }
+
+        if (isset($payload['textAngle'])) {
+            $angle = (float) $payload['textAngle'];
+            if ($angle >= -360 && $angle <= 360) {
+                $out['textAngle'] = $angle;
+                $hasStyle = true;
+            }
+        }
+
+        return $hasStyle ? $out : null;
+    }
+
     private function extractTitleFromMessage(string $message): ?string
     {
         $patterns = [
             // "cambia/pone/setea el título a|como|en|: «valor»"
-            '/(?:pon[eé]|cambi[aá]|seteá?|set)\s+(?:el\s+)?t[ií]tulo\s+(?:a|como|en|:)\s*[«"\']?([^«"\'\n]+?)[»"\']?\s*$/iu',
+            '/(?:pon[eé]|cambi[aá]|seteá?|set)\s+(?:el\s+)?t[ií]tulo\s+(?:a|como|:)\s*[«"\']?([^«"\'\n]+?)[»"\']?\s*$/iu',
             // "título: valor" / "título = valor" (exige : o = para no confundir "título a …")
             '/t[ií]tulo\s*[:=]\s*[«"\']?([^«"\'\n]+?)[»"\']?\s*$/iu',
         ];

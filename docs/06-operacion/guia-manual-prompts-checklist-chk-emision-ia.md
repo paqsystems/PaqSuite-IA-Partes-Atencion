@@ -3,7 +3,10 @@
 Batería **camino B**: Smart Capture en **Diseñador de emisiones** + **apply** sidecar (whitelist v1).  
 Matriz SoT: Framework [`15-reportes-emisiones-ia-checklist-matriz.json`](../../../PaqSuite-IA-FRAMEWORK/docs/02-producto/15-reportes-emisiones-ia-checklist-matriz.json).
 
-Registrar resultados en el D-VERIFICACION de **TR-015-update-b** (columna **CHK-xx**: OK · Parcial · Fallo · N/A · Bloqueado).
+Registrar resultados en el D-VERIFICACION del TR que corresponda:
+
+- **Oleada 3 (apariencia):** [D-VERIFICACION-TR-015-update-c](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-c-2026-11-18.md) + guía acotada [smoke-oleada3-apariencia-controles.md](./smoke-oleada3-apariencia-controles.md)
+- Resto checklist camino B: **TR-015-update-b** (columna **CHK-xx**: OK · Parcial · Fallo · N/A · Bloqueado)
 
 ---
 
@@ -29,14 +32,16 @@ Registrar resultados en el D-VERIFICACION de **TR-015-update-b** (columna **CHK-
 
 | ID | Estado | Prompt (pegar en SC) | Resultado esperado (manual) | Capa auto ya cubierta |
 |----|--------|----------------------|-----------------------------|------------------------|
-| CHK-01 | diferido | `Agregá la columna observación en el detalle` | Sin apply; sin nueva columna en diseño; respuesta acorde a límite MVP | PHPUnit planner |
-| CHK-02 | diferido | `Agregá un texto fijo que diga Borrador en el detalle` | Sin apply; sin control nuevo en detalle | PHPUnit |
-| CHK-03 | mvp_parcial | `Cambiá el título a Consulta detallada` | Apply → título en Report Header (`lblReportTitle`); banner Guardar/Descartar; **Preview** muestra el texto | Planner + script apply |
+| CHK-01 | **mvp** | `Agregá la columna observación en el detalle` | Apply → label en detalle con `[observacion]`; banner Guardar/Descartar | Planner + apply |
+| CHK-02 | **mvp** | `Agregá un texto fijo que diga Borrador en el detalle` | Apply → label literal «Borrador» en detalle | Planner + apply |
+| CHK-03 | mvp_parcial | `Cambiá el título a Consulta detallada` | Apply → `lblReportTitle` + bandas **Page Header/Footer** (vacías); Guardar/Descartar; Preview | Planner + apply |
 | CHK-04 | diferido | `Poné un título encima de cada columna en el encabezado de página` | Sin apply; no títulos por columna auto-generados | PHPUnit |
 | CHK-05 | diferido | `Encerrá el título en un panel` | Sin apply; sin panel nuevo | PHPUnit |
 | CHK-06 | diferido | `Poné el nombre de la empresa arriba a la izquierda` | Sin apply (v1); opcional captura si el asistente explica límite | PHPUnit |
 | CHK-07 | diferido | `Agregá la fecha con el mes en letras arriba a la derecha` | Sin apply | PHPUnit |
-| CHK-08 | mvp_parcial | `Cambiá el título a CONSULTA DETALLADA` | Apply con texto **CONSULTA DETALLADA**; formato rico (negrita/subrayado/centrado) = **Parcial** si solo cambia el literal | Planner + apply |
+| CHK-08 | mvp | `Cambiá el título a CONSULTA DETALLADA` | Apply con texto **CONSULTA DETALLADA** (literal) | Planner + apply |
+| CHK-08-format | **mvp** | `Poné el título en negrita, subrayado y centrado` | Apply → `lblReportTitle` con estilo; banner Guardar/Descartar | Planner + apply |
+| CHK-27 | **mvp** | `Al código de cliente asignale Times New Roman 12, azul marino, negrita, subrayado e italica, centrado` | Apply sobre control con `[clienteCode]` en detalle; variante con columna presente | Planner + apply |
 | CHK-09 | diferido | `Agregá un pie de informe` | Sin apply; sin Report Footer nuevo | PHPUnit |
 | CHK-10 | diferido | `Totalizá todos los registros en el pie del informe` | Sin apply a report footer | PHPUnit |
 | CHK-11 | diferido | `Creá un campo calculado que sume duracionMinutos y presencial` | Sin apply | PHPUnit |
@@ -55,6 +60,11 @@ Registrar resultados en el D-VERIFICACION de **TR-015-update-b** (columna **CHK-
 | CHK-24 | futuro_producto | `Poné una tabla dinámica en el pie de página` | **N/A** | — |
 | CHK-25 | futuro_producto | `Si el grupo no terminó no imprimas totales en el pie` | **N/A** | — |
 | CHK-26 | **mvp** | `Poné el formato en horizontal` | Apply → orientación horizontal (Preview / Page Settings); alias: `Formato horizontal` | Planner + apply |
+| CHK-28 | futuro_producto | `Quitá la columna observación del detalle` | **N/A** piloto (prioridad SPEC = comprobantes) | — |
+| CHK-29 | futuro_producto | `Sacá la agrupación por cliente` | **N/A** | — |
+| CHK-30 | futuro_producto | `Eliminá el campo calculado de duración total` | **N/A** | — |
+| CHK-31 | futuro_producto | `Quitá el texto fijo que dice Borrador en el detalle` | **N/A** | — |
+| CHK-32 | futuro_producto | `Eliminá el gráfico del informe` | **N/A** | — |
 | LAB-21 | mvp_parcial | Ver secuencia abajo | Dos turnos con apply entre medias | Script `eval-emission-ia-checklist-lab-extras.ps1` |
 
 ---

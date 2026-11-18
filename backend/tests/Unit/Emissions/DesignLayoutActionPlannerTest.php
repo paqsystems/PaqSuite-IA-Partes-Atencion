@@ -26,6 +26,62 @@ final class DesignLayoutActionPlannerTest extends TestCase
         $this->assertSame('clienteNombre', $group['payload']['field'] ?? null);
     }
 
+    public function test_heuristics_chk03_set_report_title(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Cambiá el título a Consulta detallada');
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('setReportTitle', $result['actions'][0]['action']);
+        $this->assertSame('Consulta detallada', $result['actions'][0]['payload']['title'] ?? null);
+    }
+
+    public function test_heuristics_add_detail_static_text_borrador(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Agregá un texto fijo que diga Borrador en el detalle');
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('addDetailStaticText', $result['actions'][0]['action']);
+        $this->assertSame('Borrador', $result['actions'][0]['payload']['text'] ?? null);
+    }
+
+    public function test_heuristics_add_detail_field_observacion(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Agregá la columna observación en el detalle');
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('addDetailField', $result['actions'][0]['action']);
+        $this->assertSame('observacion', $result['actions'][0]['payload']['field'] ?? null);
+    }
+
+    public function test_heuristics_cliente_code_appearance(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $prompt = 'Al código de cliente asignale Times New Roman 12, azul marino, negrita, subrayado e italica, centrado';
+        $result = $planner->fromHeuristics($prompt);
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('setControlAppearance', $result['actions'][0]['action']);
+        $payload = $result['actions'][0]['payload'];
+        $this->assertSame('field', $payload['target']['kind'] ?? null);
+        $this->assertSame('clienteCode', $payload['target']['fieldName'] ?? null);
+        $this->assertSame('Times New Roman', $payload['fontFamily'] ?? null);
+        $this->assertSame(12, $payload['fontSizePt'] ?? null);
+        $this->assertSame('#001f3f', $payload['foreColor'] ?? null);
+    }
+
+    public function test_heuristics_title_appearance(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Poné el título en negrita, subrayado y centrado');
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('setControlAppearance', $result['actions'][0]['action']);
+        $this->assertSame('reportTitle', $result['actions'][0]['payload']['target']['kind'] ?? null);
+    }
+
     public function test_sanitize_drops_unknown_field(): void
     {
         $planner = new DesignLayoutActionPlanner($this->unusedLlm());

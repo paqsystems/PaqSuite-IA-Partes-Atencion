@@ -13,7 +13,7 @@ final class DesignSemanticCatalog
      */
     public static function fieldsForProcess(string $processCode): array
     {
-        $path = base_path('database/emission-designer-schemas/'.$processCode.'.json');
+        $path = dirname(__DIR__, 4).'/database/emission-designer-schemas/'.$processCode.'.json';
         if (! is_readable($path)) {
             return [];
         }
