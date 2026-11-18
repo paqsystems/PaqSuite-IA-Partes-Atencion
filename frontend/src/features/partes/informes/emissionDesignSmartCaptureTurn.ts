@@ -60,7 +60,8 @@ export async function handleEmissionDesignSmartCaptureSend(
     return
   }
 
-  if (payload.credentialId === null || handlers.activeCredentialId === null) {
+  const credentialId = payload.credentialId ?? handlers.activeCredentialId
+  if (credentialId === null) {
     handlers.onError(handlers.resolveMessage('partes.emissionDesign.configurationRequired'))
     return
   }
@@ -68,7 +69,7 @@ export async function handleEmissionDesignSmartCaptureSend(
   const base = buildSmartCaptureTurnRequest({
     message: payload.message,
     modality: payload.modality,
-    credentialId: payload.credentialId,
+    credentialId,
     draftContext: {
       processCode: handlers.processCode,
       reportUrl: handlers.reportUrl,
