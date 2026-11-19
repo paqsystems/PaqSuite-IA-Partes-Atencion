@@ -16,7 +16,7 @@ Jira: [PIAPARTES-62](https://paqsystems.atlassian.net/browse/PIAPARTES-62) (Task
 | **Dependencias** | [TR-011](./TR-011-reportes-emisiones.md); [TR-015](./TR-015-piloto-dx-reporting-ia.md) (schema + veredicto B); [TR-010](./TR-010-smart-capture-carga-diaria.md) (patrón GEN-03, **no** mismos endpoints); Framework `dx-reporting` + fix `GetDesignerModel`/`processCode` |
 | **Clasificación** | HU COMPLEJA (host + sidecar) |
 | **Última actualización** | 2026-11-13 |
-| **Estado** | **En Control Calidad** (CC #17 GEN-37 — 2026-11-14; además update GEN-37 abierto) |
+| **Estado** | **En Control Calidad** (T8/T9 manual oleada 2 B; GEN-37 CC #17 cerrado Parte I 18/11/2026) |
 | **Evidencia D** | [D-VERIFICACION-TR-015-update-b-2026-11-13](../updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-b-2026-11-13.md) |
 | **Revisión C1** | [C1 ambiguity review](./TR-015-update-b-smart-capture-diseno-informes-C1-ambiguity-review.md) — **Apto con observaciones** |
 | **Obsoleto funcional (camino A)** | [SPEC-016](../../05-open-spec/100-SistemaPartes/SPEC-016-prompt-to-report-edicion-informes.md) / [TR-016](./TR-016-edicion-ia-informes-existentes-prompt-to-report.md) — **no** es la entrega MVP; pivot trazabilidad a este TR |
@@ -304,3 +304,16 @@ Cualquier otro `type` → **D-12** (omitir en turno LLM; 422 solo payload client
 | 2026-11-13 | Parte D1: plan implementación (sin código). |
 | 2026-11-13 | Parte D: T1–T7 implementados (apply sidecar, D4, turn BE, SC FE, OpenAPI, i18n, runbook §6.2); tests unit/feature/vitest; [D-VERIFICACION](../updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-b-2026-11-13.md); Estado **Pendiente de Revisión**. T8/T9 manual → E/F1. |
 | 2026-11-13 | Parte E: DesignLayout 2/2 + DesignAssistantTurn 6/6 + Vitest design 4/4 **PASS**; EmissionsPartes 1 fail seed clienteId; E2E diseñador blocked (Playwright browsers). T8/T9 → F1. |
+| 2026-11-18 | CC-PQ #17 GEN-37: § CC #17 — `DesignSemanticCatalog`; schema enrich; TR-015-update CC #17 eliminado. |
+
+---
+
+## CC-PQ #17 — GEN-37 semántica IA (Parte I 18/11/2026)
+
+| ID | Entrega |
+|----|---------|
+| T-G37-1 | `description` + `synonyms` en `partes.informes.consultaDetallada.json` |
+| T-G37-2 | `DesignLayoutActionPlanner` + `DesignSemanticCatalog` leen vocabulario del JSON |
+| T-G37-3 | Tests: `DesignLayoutActionPlanner` + schema canonical |
+
+DoD CC #17: CA-37-02, CA-37-06. Evidencia: [D-VERIFICACION-CC-PQ-17](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-17-2026-11-14-gen37.md).

@@ -155,3 +155,13 @@ Diseño informes Partes: adoptar **GEN-03** (`SmartCapturePanel` + turno host) y
 | 2026-11-13 | Parte C: TR-015-update-b. |
 | 2026-11-13 | Parte C1: Apto con observaciones; HU/TR Especificado. |
 | 2026-11-13 | Parte D1: plan T1–T9 (FW apply + Partes SC/turn). |
+| 2026-11-18 | CC-PQ #17 GEN-37: §10 — `description`/`synonyms` en schema Consulta detallada; planner `DesignSemanticCatalog`; Parte I update GEN-37 eliminado. |
+
+---
+
+## 10. CC-PQ #17 — GEN-37 semántica IA (Parte I 18/11/2026)
+
+- **Must** en `partes.informes.consultaDetallada.json`: `description` + `synonyms` por field (R-37-04: sin sinónimo ambiguo entre dos `name`).
+- Planner SC diseño: vocabulario desde el **mismo** JSON (`DesignSemanticCatalog` / `DesignLayoutActionPlanner`); no diccionario paralelo en host.
+- Smoke: frase con sinónimo de duración → acción sobre `duracionMinutos` (CA-37-06).
+- Evidencia: [D-VERIFICACION-CC-PQ-17](../../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-17-2026-11-14-gen37.md).

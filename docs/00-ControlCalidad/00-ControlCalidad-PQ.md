@@ -46,7 +46,6 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 
 | # | Fecha | Estado | Resumen |
 |---|-------|--------|---------|
-| 18 | 15/11/2026 | **Pendiente** | Alineación GEN-13 (chrome `ProcessPageLayout` + i18n SDK) — auditoría cableado vs Partes referencia operativa · [CC #18](#control-de-calidad-18) |
 | 1 | 31/07/2026 | Especificado | `es_tarea` + Paquete de Horas — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-01-2026-07-31.md)) |
 | 2 | 01/08/2026 | Especificado | ERP clientes + informes — F1/F Aprobado · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-02-2026-08-01.md)) |
 | 3 | 09/08/2026 | Especificado | Masivo tilde + carga decimal/Excel/plantillas/tipo default + Smart Capture controles — **F1/F Aprobado 16/09/2026** · **Parte I unificada** ([D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-03-2026-09-16.md)) |
@@ -63,7 +62,8 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 14 | 03/11/2026 | Especificado | ABM Clientes — columnas usuario/mail + FilterRow usuario — **F1/F Aprobado** · **Parte I** · manual DEV OK — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-14-2026-11-03.md) |
 | 15 | 04/11/2026 | Especificado · **F1/F Aprobado** · **Parte I** cerrada | Informar por mail a clientes desde Proceso masivo (asistencias / revisar / observaciones) — refino CC #7 (URL tenant, i18n destinatario, guard salida, plantilla v1 hardcode) |
 | 16 | 07/11/2026 | Especificado · **F1/F Aprobado con observaciones** | ABM Usuarios — notificar acceso **por usuario** (no masivo): ícono junto al mail, alta sin contraseña manual + envío automático, reenvío en edición — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-16-2026-11-07.md) |
-| 17 | 14/11/2026 | Especificado | **GEN-37** — catálogo semántico en `emission-designer-schemas` (labels; IA = description+synonyms) |
+| 17 | 14/11/2026 | Especificado · **F1/F Aprobado** · **Parte I** | **GEN-37** — catálogo semántico en `emission-designer-schemas` (labels; IA = description+synonyms) — [D-VERIFICACION](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-17-2026-11-14-gen37.md) |
+| 18 | 15/11/2026 | **Pendiente** | Alineación GEN-13 (chrome `ProcessPageLayout` + i18n SDK) — auditoría cableado vs Partes referencia operativa · [CC #18](#control-de-calidad-18) |
 
 ---
 
@@ -136,9 +136,9 @@ Pendiente **Parte G** → SPEC-update / HU-update / TR-update en `docs/.../updat
 |-------|--------|
 | **Fecha** | 14/11/2026 |
 | **Responsable** | Adopción producto (pedido GEN-37) |
-| **Estado** | **Especificado** · D/E en curso de verificación |
+| **Estado** | **Especificado** · **F1/F Aprobado** · **Parte I** **18/11/2026** |
 | **Parte G** | 14/11/2026 — SPEC/HU/TR-update CC #17 |
-| **Parte D/E** | 14/11/2026 — [D-VERIFICACION-CC-PQ-17](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-17-2026-11-14-gen37.md) · installation:update DEV OK |
+| **Parte D/E/F/I** | [D-VERIFICACION-CC-PQ-17](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-17-2026-11-14-gen37.md) — F **18/11/2026**; Parte I → [SPEC-011](../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) §11 · [TR-011](../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) §20 · oleada 2 B / [TR-015-update-b](../04-tareas/100-SistemaPartes/TR-015-update-b-smart-capture-diseno-informes.md) |
 | **Origen** | Adoptar **GEN-37** (Framework SPEC-001-37 / `37-catalogo-semantico-campos-dataset.md`). Deuda: schemas host solo con `name`+`type`. |
 | **Proceso** | Emisiones GEN-15 — diseñador DX · Field List · IA diseño (SPEC-015 camino B) |
 | **Relación** | [SPEC-011](../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) · [SPEC-015-update oleada 2 B](../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-2-b-update.md) · Framework **GEN-37** |
@@ -156,22 +156,22 @@ Adoptar el **contrato GEN-37** sin inventar un catálogo semántico paralelo ni 
 
 ### Criterios de aceptación
 
-- [ ] **CA-37-01** `partes.informes.consultaDetallada.json` y `paqueteHoras.json`: todo `fields[]` con `label` no vacío y ≠ `name` (salvo excepción TR).
-- [ ] **CA-37-02** Consulta detallada: todo field con `description` y `synonyms` útiles; sin sinónimo ambiguo a dos `name`.
-- [ ] **CA-37-03** `captionKey` opcional presente; claves en es/en/pt/fr/it (o reuso `partes.informe.field.*`).
-- [ ] **CA-37-04** V-EM-04 / unit port-names: mismos `name` que antes (sin cambiar wire del dataset).
-- [ ] **CA-37-05** Manifiesto regenerado; paso `emissionDesignerSchema` listo para update.
-- [ ] **CA-37-06** Smoke: Field List captions humanas; pedido IA con sinónimo resuelve a `name` técnico.
-- [ ] **CA-37-07** Sin fork de schema canónico ni hardcode de labels Partes en sidecar C#.
+- [x] **CA-37-01** `partes.informes.consultaDetallada.json` y `paqueteHoras.json`: todo `fields[]` con `label` no vacío y ≠ `name` (salvo excepción TR).
+- [x] **CA-37-02** Consulta detallada: todo field con `description` y `synonyms` útiles; sin sinónimo ambiguo a dos `name`.
+- [x] **CA-37-03** `captionKey` opcional presente; claves en es/en/pt/fr/it (o reuso `partes.informe.field.*`).
+- [x] **CA-37-04** V-EM-04 / unit port-names: mismos `name` que antes (sin cambiar wire del dataset).
+- [x] **CA-37-05** Manifiesto regenerado; paso `emissionDesignerSchema` listo para update.
+- [x] **CA-37-06** Smoke: Field List captions humanas; pedido IA con sinónimo resuelve a `name` técnico (código OK; UI opcional post-deploy).
+- [x] **CA-37-07** Sin fork de schema canónico ni hardcode de labels Partes en sidecar C#.
 
 ### Derivación SDD
 
 | Ítem | Updates |
 |------|---------|
-| Catálogo semántico (ambos procesos) | [SPEC-011-update](../05-open-spec/updates/100-SistemaPartes/SPEC-011-update-cc-pq-17-2026-11-14-gen37-catalogo-semantico.md) · [HU-011-update](../03-historias-usuario/updates/100-SistemaPartes/HU-011-reportes-emisiones-update-cc-pq-17-2026-11-14-gen37.md) · [TR-011-update](../04-tareas/updates/100-SistemaPartes/TR-011-update-cc-pq-17-2026-11-14-gen37.md) |
-| Semántica IA (consulta detallada) | [SPEC-015-update GEN-37](../05-open-spec/updates/100-SistemaPartes/SPEC-015-update-cc-pq-17-2026-11-14-gen37-semantica-ia.md) · [HU-015-update GEN-37](../03-historias-usuario/updates/100-SistemaPartes/HU-015-update-cc-pq-17-2026-11-14-gen37.md) · [TR-015-update GEN-37](../04-tareas/updates/100-SistemaPartes/TR-015-update-cc-pq-17-2026-11-14-gen37.md) |
+| Catálogo semántico (ambos procesos) | *Procesado* · **Parte I 18/11/2026** → [SPEC-011](../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) §11 · [HU-011](../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) · [TR-011](../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) §20 |
+| Semántica IA (consulta detallada) | *Procesado* · **Parte I 18/11/2026** → [SPEC-015 oleada 2 B](../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-2-b-update.md) §10 · [HU-015-update camino B](../03-historias-usuario/100-SistemaPartes/HU-015-update-ia-diseno-informes-camino-b.md) · [TR-015-update-b](../04-tareas/100-SistemaPartes/TR-015-update-b-smart-capture-diseno-informes.md) |
 
-*Procesado* (Parte G 14/11/2026)
+*Procesado* (Parte G 14/11/2026) · **Parte I 18/11/2026** — updates CC #17 eliminados
 
 ### Dependencia Framework
 

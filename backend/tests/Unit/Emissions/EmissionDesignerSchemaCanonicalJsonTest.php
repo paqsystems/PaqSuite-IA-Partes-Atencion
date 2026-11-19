@@ -5,6 +5,7 @@ namespace Tests\Unit\Emissions;
 use App\Services\Emissions\DesignAssistant\DesignSemanticCatalog;
 use App\Services\Emissions\PartesConsultaDetalladaEmissionPort;
 use App\Services\Emissions\PartesPaqueteHorasEmissionPort;
+use App\Support\Emissions\EmissionDesignerSchemaDxSidecarExport;
 use Tests\TestCase;
 
 final class EmissionDesignerSchemaCanonicalJsonTest extends TestCase
@@ -27,6 +28,26 @@ final class EmissionDesignerSchemaCanonicalJsonTest extends TestCase
             'Consulta detallada',
             requireIaSemantics: true,
         );
+    }
+
+    public function test_dx_sidecar_exports_match_canonical_gen37_labels(): void
+    {
+        foreach (EmissionDesignerSchemaDxSidecarExport::aliasTargetsByProcessCode() as $processCode => $relPaths) {
+            $canonical = EmissionDesignerSchemaDxSidecarExport::readCanonical($processCode);
+            $expected = EmissionDesignerSchemaDxSidecarExport::encodeSidecarJson(
+                EmissionDesignerSchemaDxSidecarExport::toSidecarPayloadFromCanonical($canonical)
+            );
+
+            foreach ($relPaths as $rel) {
+                $abs = base_path($rel);
+                $this->assertFileExists($abs, "Falta export sidecar {$rel}; correr export-emission-designer-schemas-for-dx-sidecar.php");
+                $this->assertSame(
+                    $expected,
+                    (string) file_get_contents($abs),
+                    "Drift GEN-37: {$rel} no coincide con canónico {$processCode}"
+                );
+            }
+        }
     }
 
     public function test_consulta_detallada_semantic_catalog_loads_from_json(): void

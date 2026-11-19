@@ -1,15 +1,22 @@
-# Schemas semánticos — sidecar DX Reporting (Consulta detallada)
+# Schemas semánticos — sidecar DX Reporting (generados)
 
-Copiar estos archivos al sidecar Framework en despliegue:
+**No editar a mano.** Se generan desde el artefacto canónico GEN-15/GEN-37:
+
+```bash
+cd backend
+php scripts/dev/export-emission-designer-schemas-for-dx-sidecar.php
+```
+
+Copiar al sidecar Framework en despliegue lab:
 
 `PaqSuite-IA-FRAMEWORK/services/dx-reporting/src/PaqSuite.DxReporting/data/schemas/`
 
-Claves alineadas a `processCode` / `reportUrl` del diseñador Partes:
+(o `scripts/dev/sync-dx-reporting-schemas.ps1` para `resources/emissions/schemas` + copia manual de esta carpeta).
 
-| Archivo | Uso |
-|---------|-----|
+| Archivo | Clave sidecar |
+|---------|----------------|
 | `partes.informes.consultaDetallada.json` | `processCode` GEN |
-| `partes.consultaDetallada.principal.json` | Variante reportUrl con puntos |
-| `partes_consultaDetallada_principal.json` | Reporte principal seed / default Vite |
+| `partes.consultaDetallada.principal.json` | Variante `reportUrl` con puntos |
+| `partes_consultaDetallada_principal.json` | Reporte principal seed / Vite |
 
-SoT operativo en el repo Framework (mismo contenido). Prompt-to-Report usa columnas + `label`/`synonyms` vía sidecar con `OPENAI_*` en el proceso .NET.
+SoT contenido: `database/emission-designer-schemas/partes.informes.consultaDetallada.json`.

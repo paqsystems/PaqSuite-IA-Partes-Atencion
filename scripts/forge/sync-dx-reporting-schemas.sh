@@ -5,20 +5,27 @@ set -euo pipefail
 
 scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repoRoot="$(cd "${scriptDir}/../.." && pwd)"
-sourceDir="${repoRoot}/backend/resources/emissions/schemas"
+sourceDirs=(
+  "${repoRoot}/backend/resources/emissions/schemas"
+  "${repoRoot}/backend/scripts/dx-reporting/schemas"
+)
 
 defaultTarget="/home/forge/paqsuite-dx-reporting/data/schemas"
 targetDir="${PAQSUITE_DX_SCHEMAS_DIR:-${PAQSUITE_DX_SCHEMA_STORAGE_PATH:-$defaultTarget}}"
 
-if [[ ! -d "$sourceDir" ]]; then
-  echo "sync-dx-reporting-schemas: sin carpeta ${sourceDir}; omitido."
-  exit 0
-fi
-
 shopt -s nullglob
-jsonFiles=("${sourceDir}"/*.json)
+jsonFiles=()
+for sourceDir in "${sourceDirs[@]}"; do
+  if [[ ! -d "$sourceDir" ]]; then
+    continue
+  fi
+  for file in "${sourceDir}"/*.json; do
+    jsonFiles+=("$file")
+  done
+done
+
 if [[ ${#jsonFiles[@]} -eq 0 ]]; then
-  echo "sync-dx-reporting-schemas: no hay *.json en ${sourceDir}; omitido."
+  echo "sync-dx-reporting-schemas: sin JSON en resources/emissions/schemas ni scripts/dx-reporting/schemas; omitido."
   exit 0
 fi
 

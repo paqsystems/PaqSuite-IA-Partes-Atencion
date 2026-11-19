@@ -12,9 +12,9 @@ Jira: PIAPARTES-39
 | **Roles** | Cliente / asistente / supervisor (emitir según menú); diseñar = `emission.design` + desktop |
 | **Dependencias** | [TR-002](./TR-002-identidad-funcional-y-acceso.md); [TR-006](./TR-006-consultas-dashboard-navegacion.md) (`GET /partes/informes/tareas`, `pq_sp_partes_tarea_list`); [TR-007](./TR-007-mobile-capacitor.md) (policy native); paquetes `@paqsuite/react-core` + `paqsuite/laravel-core`; GEN-15 (SPEC-001-15 / TR-GEN-15-*) |
 | **Clasificación** | HU COMPLEJA |
-| **Estado** | En Control Calidad |
+| **Estado** | Finalizado |
 | **Revisión C1** | Apto con observaciones (ver §11) |
-| **Última actualización** | 2026-11-14 (CC #17 GEN-37 — TR-update abierto) |
+| **Última actualización** | 2026-11-18 (CC #17 GEN-37 — Parte I) |
 
 **Origen:** [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md)  
 **Referencia SPEC:** [SPEC-011](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md)  
@@ -324,6 +324,7 @@ Ninguna bloqueante.
 | 2026-10-29 | Parte F1+F+I: [D-VERIFICACION-TR-011](../updates/100-SistemaPartes/D-VERIFICACION-TR-011-2026-10-29.md). Runtime desplegado = sidecar `remote`. Emitir usa el diseño guardado (no la plantilla estándar). Duración = minutos. |
 | 2026-10-29 | CC ST #1: `selectedTareaIds`; puerto filtra ids; Emitir disabled sin tildes. Ver [D-VERIFICACION-CC-ST-01](../updates/100-SistemaPartes/D-VERIFICACION-CC-ST-01-2026-10-29.md). |
 | 2026-11-07 | Parte I: evidencia `E-TR-011-reportes-emisiones-2026-10-16.md` fusionada en §16 y archivo eliminado. |
+| 2026-11-18 | CC-PQ #17 GEN-37: §20; Parte I; updates eliminados. |
 
 ---
 
@@ -469,4 +470,20 @@ Deuda plataforma: pipeline GEN-34 unificado de schemas — [Framework CC #13](ht
 | Partes BE | Ruta `GET /api/v1/emissions/design/report-storage-urls` (mismo auth que field-schema: sidecar token o `emission.design`). Helper `EmissionReportDxStorageUrl`. |
 | Ops | Sidecar `PaqSuite:BackendBaseUrl` + `PaqSuite:SidecarSchemaToken` alineados a `EMISSION_DESIGNER_SIDECAR_TOKEN` del host. Sin backend: fallback heurístico (solo nombres inferibles). |
 | Producto | D-EM-13 en `docs/02-producto/Sistema-Partes-IA/15-reportes-emisiones.md`; prueba manual TR-015 #8. |
+
+---
+
+## 20) CC-PQ #17 — GEN-37 labels en schemas emisiones (Parte I 18/11/2026)
+
+Verificación: [D-VERIFICACION-CC-PQ-17](../updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-17-2026-11-14-gen37.md).
+
+| Tarea | Entrega |
+|-------|---------|
+| Schemas canónicos | `emission-designer-schemas/partes.informes.consultaDetallada.json` · `paqueteHoras.json` — `label` Must; `captionKey` opcional |
+| Tests | `EmissionDesignerSchemaCanonicalJsonTest` (assert `label`; anti-drift sidecar) |
+| Manifiesto | Regenerado; paso `emissionDesignerSchema` en `installation:update` |
+| Sidecar | `EmissionDesignerSchemaDxSidecarExport` + `scripts/dev/export-emission-designer-schemas-for-dx-sidecar.php` |
+| Framework | Validator preserve `label`/`description`/`synonyms` (path-lab mínimo) |
+
+Semántica IA (`description`/`synonyms`) → TR-015-update-b § CC #17.
 
