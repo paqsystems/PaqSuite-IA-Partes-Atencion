@@ -35,10 +35,10 @@ Registrar resultados en el D-VERIFICACION del TR que corresponda:
 | CHK-01 | **mvp** | `Agregá la columna observación en el detalle` | Apply → label en detalle con `[observacion]`; banner Guardar/Descartar | Planner + apply |
 | CHK-02 | **mvp** | `Agregá un texto fijo que diga Borrador en el detalle` | Apply → label literal «Borrador» en detalle | Planner + apply |
 | CHK-03 | mvp_parcial | `Cambiá el título a Consulta detallada` | Apply → `lblReportTitle` + bandas **Page Header/Footer** (vacías); Guardar/Descartar; Preview | Planner + apply |
-| CHK-04 | diferido | `Poné un título encima de cada columna en el encabezado de página` | Sin apply; no títulos por columna auto-generados | PHPUnit |
-| CHK-05 | diferido | `Encerrá el título en un panel` | Sin apply; sin panel nuevo | PHPUnit |
-| CHK-06 | diferido | `Poné el nombre de la empresa arriba a la izquierda` | Sin apply (v1); opcional captura si el asistente explica límite | PHPUnit |
-| CHK-07 | diferido | `Agregá la fecha con el mes en letras arriba a la derecha` | Sin apply | PHPUnit |
+| CHK-04 | **mvp** | `Poné un título encima de cada columna en el encabezado de página` | Variante **con columnas en detalle** (ej. spike-layout-b-1) → `lblPageHdr_*` fila 3; sin detalle → mensaje SC sin romper lienzo | Planner + apply + [smoke CHK-04](./smoke-oleada5-page-header-chk04.md) |
+| CHK-05 | **mvp** | `Encerrá el título en un panel` | Apply → `pnlReportTitle` fila 2; **re-aplicar** con panel ya armado → mensaje *«El título del informe ya está encerrado…»* (`noop:wrapReportTitleInPanel:ya_colocados`); sin error HTTP | Planner + apply |
+| CHK-06 | **mvp** | `Poné el nombre de la empresa arriba a la izquierda` | Lab (`local` / tenant `DEV`): apply → `lblPageHdr_Empresa` fila 1 izq.; **re-aplicar** mismo texto → mensaje *«…ya muestra el nombre de empresa…»* (`noop:setPageHeaderEmpresa:ya_colocados`) | Planner + apply (oleada 5) |
+| CHK-07 | **mvp** | `Agregá la fecha con el mes en letras arriba a la derecha` | Apply → `pageInfoFecha` fila 1 derecha; **re-aplicar** si `pageInfoFecha` ya existe → mensaje *«…ya tiene la fecha de impresión…»* (`noop:setPageHeaderFecha:ya_colocados`); convive con CHK-06 | Planner + apply |
 | CHK-08 | mvp | `Cambiá el título a CONSULTA DETALLADA` | Apply con texto **CONSULTA DETALLADA** (literal) | Planner + apply |
 | CHK-08-format | **mvp** | `Poné el título en negrita, subrayado y centrado` | Apply → `lblReportTitle` con estilo; banner Guardar/Descartar | Planner + apply |
 | CHK-27 | **mvp** | `Al código de cliente asignale Times New Roman 12, azul marino, negrita, subrayado e italica, centrado` | Apply sobre control con `[clienteCode]` en detalle; variante con columna presente | Planner + apply |

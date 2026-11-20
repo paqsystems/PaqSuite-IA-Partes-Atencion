@@ -31,11 +31,18 @@ export type EmissionDesignSmartCaptureHandlers = {
   signal?: AbortSignal
 }
 
+function normalizeApplyPayload(payload: unknown): Record<string, unknown> {
+  if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+    return payload as Record<string, unknown>
+  }
+  return {}
+}
+
 function toApplyActions(actions: SmartCaptureTurnAction[]): Array<Record<string, unknown>> {
   return actions.map((item) => ({
     type: item.action,
     action: item.action,
-    payload: item.payload ?? {},
+    payload: normalizeApplyPayload(item.payload),
   }))
 }
 
@@ -132,7 +139,13 @@ export async function handleEmissionDesignSmartCaptureSend(
       })
 
       const applyJson = (await applyRes.json().catch(() => null)) as
-        | { ok?: boolean; applied?: number; pendingReview?: boolean; error?: string }
+        | {
+            ok?: boolean
+            applied?: number
+            pendingReview?: boolean
+            error?: string
+            details?: string[]
+          }
         | null
 
       if (!applyRes.ok || !applyJson?.ok) {
@@ -147,6 +160,66 @@ export async function handleEmissionDesignSmartCaptureSend(
       await applySmartCaptureActions(actions, {
         applyAction: async () => undefined,
       })
+
+      const details = (applyJson.details ?? []).map((d) => String(d))
+      const noopSinDetalle = details.some((d) =>
+        d.includes('addPageHeaderColumnLabels:sin_columnas_detalle'),
+      )
+      const noopYaColocados = details.some((d) =>
+        d.includes('addPageHeaderColumnLabels:ya_colocados'),
+      )
+      const noopEmpresaYaColocado = details.some(
+        (d) =>
+          d.includes('setPageHeaderEmpresa:ya_colocados') ||
+          d.includes('setPageHeaderEmpresa:ya_mismo_texto') ||
+          d === 'noop:setPageHeaderEmpresa',
+      )
+
+      if ((applyJson.applied ?? 0) === 0 && noopSinDetalle) {
+        handlers.onAssistantReply(
+          handlers.resolveMessage('partes.emissionDesign.pageHeader.noDetailColumns'),
+        )
+        return
+      }
+
+      if ((applyJson.applied ?? 0) === 0 && noopYaColocados) {
+        handlers.onAssistantReply(
+          handlers.resolveMessage('partes.emissionDesign.pageHeader.columnLabelsAlreadyPlaced'),
+        )
+        return
+      }
+
+      if ((applyJson.applied ?? 0) === 0 && noopEmpresaYaColocado) {
+        handlers.onAssistantReply(
+          handlers.resolveMessage('partes.emissionDesign.pageHeader.empresaAlreadyPlaced'),
+        )
+        return
+      }
+
+      const noopFechaYaColocado = details.some(
+        (d) =>
+          d.includes('setPageHeaderFecha:ya_colocados') || d === 'noop:setPageHeaderFecha',
+      )
+
+      if ((applyJson.applied ?? 0) === 0 && noopFechaYaColocado) {
+        handlers.onAssistantReply(
+          handlers.resolveMessage('partes.emissionDesign.pageHeader.fechaAlreadyPlaced'),
+        )
+        return
+      }
+
+      const noopTitlePanelYaColocado = details.some(
+        (d) =>
+          d.includes('wrapReportTitleInPanel:ya_colocados') ||
+          d === 'noop:wrapReportTitleInPanel',
+      )
+
+      if ((applyJson.applied ?? 0) === 0 && noopTitlePanelYaColocado) {
+        handlers.onAssistantReply(
+          handlers.resolveMessage('partes.emissionDesign.pageHeader.titlePanelAlreadyPlaced'),
+        )
+        return
+      }
 
       // Solo banner Guardar/Descartar si el sidecar dejó backup (pendingReview).
       if (applyJson.pendingReview) {

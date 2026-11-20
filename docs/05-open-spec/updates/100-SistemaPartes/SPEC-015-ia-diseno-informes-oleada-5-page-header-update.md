@@ -10,8 +10,8 @@
 | Estado | **Especificado** (Parte A, 2026-11-18) |
 | SPEC previa | [Oleada 3 apariencia](./SPEC-015-ia-diseno-informes-oleada-3-apariencia-update.md) (Finalizado) · [Oleada 2 B](./SPEC-015-ia-diseno-informes-oleada-2-b-update.md) |
 | Plan origen | [oleada-5-page-header-plan](./SPEC-015-ia-diseno-informes-oleada-5-page-header-plan.md) |
-| HU | *(Parte B — pendiente)* `HU-015-update-e` |
-| TR | *(Parte C — pendiente)* `TR-015-update-e` |
+| HU | [HU-015-update-e](../../../03-historias-usuario/100-SistemaPartes/HU-015-update-e-page-header-informes.md) |
+| TR | [TR-015-update-e](../../../04-tareas/100-SistemaPartes/TR-015-update-e-page-header-informes.md) |
 | Contrato Framework | Extender [15-reportes-emisiones-update-4-ia-diseno.md](../../../../PaqSuite-IA-FRAMEWORK/docs/02-producto/15-reportes-emisiones-update-4-ia-diseno.md) §oleada 5 |
 | Matriz CHK | Framework `15-reportes-emisiones-ia-checklist-matriz.json` — **CHK-04, CHK-05, CHK-06, CHK-07** |
 | Proceso piloto | `partes.informes.consultaDetallada` |
@@ -48,7 +48,7 @@ Diseño informes Partes oleada 5: adoptar **GEN-03** + **GEN-15**; nuevas accion
 | **5.1** | CHK-04 | `addPageHeaderColumnLabels` | `PageHeaderBand` |
 | **5.2** | CHK-06 | `setPageHeaderEmpresa` | `PageHeaderBand` |
 | **5.3** | CHK-07 | `setPageHeaderFecha` | `PageHeaderBand` |
-| **5.4** | CHK-05 | `wrapReportTitleInPanel` | `ReportHeaderBand` |
+| **5.4** | CHK-05 | `wrapReportTitleInPanel` | `PageHeaderBand` fila 2 |
 
 Prompts canónicos (matriz):
 
@@ -230,9 +230,11 @@ No mergear hitos en un solo PR sin CA del hito anterior verificado (F1).
 |-------|--------|
 | **A (este doc)** | **Hecho** 2026-11-18 |
 | A1 | §5 + ajuste contratos 2026-11-18 (D-06…D-08, tres filas) |
-| B HU | Pendiente |
-| C TR | Pendiente |
-| D/E | Pendiente |
+| B HU | **Hecho** 2026-11-19 — [HU-015-update-e](../../../03-historias-usuario/100-SistemaPartes/HU-015-update-e-page-header-informes.md) |
+| C TR | **Hecho** 2026-11-19 — [TR-015-update-e](../../../04-tareas/100-SistemaPartes/TR-015-update-e-page-header-informes.md) |
+| C1 | Apto 2026-11-19 |
+| D1 | T1 — [D1 oleada5 CHK-04](../../../04-tareas/100-SistemaPartes/d1/D1-TR-015-update-e-oleada5-t1-chk04.md) |
+| D/E | T1 pendiente |
 
 ---
 
@@ -248,3 +250,4 @@ Tras cada hito: actualizar `estado` CHK → `mvp` / `mvp_parcial`, `expectedActi
 |-------|--------|
 | 2026-11-18 | Parte A — SPEC formal oleada 5 page header |
 | 2026-11-18 | Contratos: noop+mensaje CHK-04; Empresa demo; XRPageInfo `dd, MMMM 'de' yyyy`; tres filas PageHeader |
+| 2026-11-19 | Parte B/C — HU-015-update-e + TR-015-update-e |

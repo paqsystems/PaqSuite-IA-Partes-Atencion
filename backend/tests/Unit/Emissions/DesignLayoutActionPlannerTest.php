@@ -56,6 +56,74 @@ final class DesignLayoutActionPlannerTest extends TestCase
         $this->assertSame('observacion', $result['actions'][0]['payload']['field'] ?? null);
     }
 
+    public function test_heuristics_chk04_page_header_column_labels(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics(
+            'Poné un título encima de cada columna en el encabezado de página',
+        );
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('addPageHeaderColumnLabels', $result['actions'][0]['action']);
+        $this->assertSame('{}', json_encode($result['actions'][0]['payload']));
+    }
+
+    public function test_heuristics_chk06_page_header_empresa_demo_lab(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics(
+            'Poné el nombre de la empresa arriba a la izquierda',
+        );
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('setPageHeaderEmpresa', $result['actions'][0]['action']);
+        $this->assertSame('Empresa demo', $result['actions'][0]['payload']['text'] ?? null);
+    }
+
+    public function test_heuristics_chk05_title_panel(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Encerrá el título en un panel');
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('wrapReportTitleInPanel', $result['actions'][0]['action']);
+        $this->assertSame('{}', json_encode($result['actions'][0]['payload']));
+    }
+
+    public function test_heuristics_chk07_page_header_fecha(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics(
+            'Agregá la fecha con el mes en letras arriba a la derecha',
+        );
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('setPageHeaderFecha', $result['actions'][0]['action']);
+        $this->assertSame('{}', json_encode($result['actions'][0]['payload']));
+    }
+
+    public function test_heuristics_chk07_does_not_match_group_by_fecha(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Agrupá por fecha');
+
+        $types = array_column($result['actions'], 'action');
+        $this->assertContains('addGroupByField', $types);
+        $this->assertNotContains('setPageHeaderFecha', $types);
+    }
+
+    public function test_heuristics_chk06_extracts_quoted_empresa_name(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics(
+            'Poné la empresa «ACME Consultores» arriba a la izquierda en el encabezado',
+        );
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('setPageHeaderEmpresa', $result['actions'][0]['action']);
+        $this->assertSame('ACME Consultores', $result['actions'][0]['payload']['text'] ?? null);
+    }
+
     public function test_heuristics_cliente_code_appearance(): void
     {
         $planner = new DesignLayoutActionPlanner($this->unusedLlm());

@@ -18,6 +18,10 @@ final class DesignLayoutWhitelist
         'setControlAppearance',
         'addDetailField',
         'addDetailStaticText',
+        'addPageHeaderColumnLabels',
+        'setPageHeaderEmpresa',
+        'setPageHeaderFecha',
+        'wrapReportTitleInPanel',
     ];
 
     /** @var list<string> columnas schema Consulta detallada (TR-011 / TR-015). */

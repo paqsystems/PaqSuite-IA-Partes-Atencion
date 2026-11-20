@@ -43,6 +43,29 @@ final class DesignLayoutActionPlanner
 
         $actions = [];
 
+        $pageHeaderColumnActions = DesignLayoutPageHeaderHeuristics::tryMatchColumnLabels($message);
+        if ($pageHeaderColumnActions !== []) {
+            $actions = array_merge($actions, $pageHeaderColumnActions);
+        }
+
+        $pageHeaderEmpresaActions = DesignLayoutPageHeaderHeuristics::tryMatchEmpresa(
+            $message,
+            DesignLayoutPageHeaderLab::resolveTenantCliente(),
+        );
+        if ($pageHeaderEmpresaActions !== []) {
+            $actions = array_merge($actions, $pageHeaderEmpresaActions);
+        }
+
+        $pageHeaderFechaActions = DesignLayoutPageHeaderHeuristics::tryMatchFecha($message);
+        if ($pageHeaderFechaActions !== []) {
+            $actions = array_merge($actions, $pageHeaderFechaActions);
+        }
+
+        $pageHeaderTitlePanelActions = DesignLayoutPageHeaderHeuristics::tryMatchTitlePanel($message);
+        if ($pageHeaderTitlePanelActions !== []) {
+            $actions = array_merge($actions, $pageHeaderTitlePanelActions);
+        }
+
         $appearanceActions = DesignLayoutAppearanceHeuristics::tryMatch($message);
         if ($appearanceActions !== []) {
             $actions = array_merge($actions, $appearanceActions);
@@ -61,7 +84,7 @@ final class DesignLayoutActionPlanner
         // Primero verbos explícitos ("cambia el título a …"); el patrón suelto
         // `título …` no debe comerse la preposición "a" cuando el valor va entre comillas.
         $title = $this->extractTitleFromMessage($message);
-        if ($title !== null && $appearanceActions === []) {
+        if ($title !== null && $appearanceActions === [] && $pageHeaderTitlePanelActions === []) {
             $actions[] = $this->action('setReportTitle', ['title' => mb_substr($title, 0, 200)]);
         }
 
@@ -108,7 +131,7 @@ final class DesignLayoutActionPlanner
         $system = <<<PROMPT
 Sos el asistente de diseño de informes Partes (Smart Capture bajo DevExpress).
 Respondé SOLO JSON válido (sin markdown):
-{"replyText":"string","actions":[{"action":"setReportTitle|addGroupByField|addGroupSum|setPageOrientation|setControlAppearance|addDetailField|addDetailStaticText","payload":{}}]}
+{"replyText":"string","actions":[{"action":"setReportTitle|addGroupByField|addGroupSum|setPageOrientation|setControlAppearance|addDetailField|addDetailStaticText|addPageHeaderColumnLabels|setPageHeaderEmpresa|setPageHeaderFecha|wrapReportTitleInPanel","payload":{}}]}
 Reglas:
 - Solo actions de: {$types}
 - Campos técnicos permitidos: {$fields}
@@ -120,6 +143,10 @@ Reglas:
 - setControlAppearance: payload.target {kind:field|reportTitle|controlName, fieldName?, name?} + fontFamily, fontSizePt, bold, italic, underline, textAlign, verticalAlign, foreColor (#hex), backColor, textAngle
 - addDetailField: payload.field = name técnico existente en schema; agrega XRLabel en DetailBand (no PageHeader)
 - addDetailStaticText: payload.text string 1..200; texto literal en DetailBand sin binding
+- addPageHeaderColumnLabels: payload.fields opcional (objeto vacío = todas las columnas del detalle)
+- setPageHeaderEmpresa: payload.text string 1..200 (nombre empresa en page header fila 1)
+- setPageHeaderFecha: payload.format opcional (default sidecar dd, MMMM 'de' yyyy); page header fila 1 derecha
+- wrapReportTitleInPanel: payload vacío; panel pnlReportTitle fila 2 page header alrededor de lblReportTitle
 - Edición incremental; no inventes campos
 - Si el pedido no mapea, actions=[] y replyText explica la limitación en español
 PROMPT;
@@ -239,9 +266,44 @@ PROMPT;
                 $payload = ['text' => $literal];
             }
 
+            if ($type === 'addPageHeaderColumnLabels') {
+                $fields = is_array($payload['fields'] ?? null) ? $payload['fields'] : [];
+                $validFields = [];
+                foreach ($fields as $item) {
+                    $name = trim((string) $item);
+                    if ($name !== '' && DesignLayoutWhitelist::isSchemaField($name)) {
+                        $validFields[] = $name;
+                    }
+                }
+                $payload = $validFields === []
+                    ? new \stdClass()
+                    : ['fields' => array_values(array_unique($validFields))];
+            }
+
+            if ($type === 'setPageHeaderEmpresa') {
+                $literal = trim((string) ($payload['text'] ?? ''));
+                if ($literal === '' || mb_strlen($literal) > 200) {
+                    continue;
+                }
+                $payload = ['text' => $literal];
+            }
+
+            if ($type === 'setPageHeaderFecha') {
+                $format = trim((string) ($payload['format'] ?? ''));
+                if ($format === '' || mb_strlen($format) > 80 || preg_match('/(H{1,2}|h{1,2}|:mm|:ss)/', $format) === 1) {
+                    $payload = new \stdClass();
+                } else {
+                    $payload = ['format' => $format];
+                }
+            }
+
+            if ($type === 'wrapReportTitleInPanel') {
+                $payload = new \stdClass();
+            }
+
             $out[] = [
                 'action' => $type,
-                'payload' => $payload,
+                'payload' => self::normalizeActionPayloadForJson($payload),
                 'resultado' => 'ok',
             ];
         }
@@ -379,9 +441,24 @@ PROMPT;
     {
         return [
             'action' => $action,
-            'payload' => $payload,
+            'payload' => self::normalizeActionPayloadForJson($payload),
             'resultado' => 'ok',
         ];
+    }
+
+    /**
+     * Sidecar Newtonsoft exige objeto JSON en payload (no array vacío `[]`).
+     *
+     * @param  array<string, mixed>|\stdClass  $payload
+     * @return array<string, mixed>|\stdClass
+     */
+    private static function normalizeActionPayloadForJson(array|\stdClass $payload): array|\stdClass
+    {
+        if ($payload === []) {
+            return new \stdClass();
+        }
+
+        return $payload;
     }
 
     /**
