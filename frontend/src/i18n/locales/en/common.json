@@ -563,6 +563,7 @@
   "partes.emissionDesign.pageHeader.empresaAlreadyPlaced": "The page header already shows the company name at the top left (lblPageHdr_Empresa) with the same text. No changes were applied.",
   "partes.emissionDesign.pageHeader.fechaAlreadyPlaced": "The page header already has the print date at the top right (pageInfoFecha) with the same format. No changes were applied.",
   "partes.emissionDesign.pageHeader.titlePanelAlreadyPlaced": "The report title is already inside a panel on row 2 of the page header (pnlReportTitle). No changes were applied.",
+  "partes.emissionDesign.group.alreadyGrouped": "The report is already grouped by customer (clienteNombre) with group header and footer. No changes were applied.",
   "partes.emissionDesign.noMappedActions": "I could not map the request to allowed actions. Try title, group by client, or sum minutes.",
   "partes.emissionDesign.appliedRefresh": "Changes applied. The designer refreshed; review the canvas and Save if needed.",
   "partes.emissionDesign.pendingReviewHint": "Changes applied on the canvas. Confirm with Save or revert with Discard.",

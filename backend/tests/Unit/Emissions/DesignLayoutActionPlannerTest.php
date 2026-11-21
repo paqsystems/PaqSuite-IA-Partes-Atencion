@@ -9,6 +9,16 @@ use PHPUnit\Framework\TestCase;
 
 final class DesignLayoutActionPlannerTest extends TestCase
 {
+    public function test_heuristics_chk18_agrupar_por_cliente(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Agrupá por cliente');
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('addGroupByField', $result['actions'][0]['action']);
+        $this->assertSame('clienteNombre', $result['actions'][0]['payload']['field'] ?? null);
+    }
+
     public function test_heuristics_group_and_sum(): void
     {
         $planner = new DesignLayoutActionPlanner($this->unusedLlm());

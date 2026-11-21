@@ -221,6 +221,18 @@ export async function handleEmissionDesignSmartCaptureSend(
         return
       }
 
+      const noopGroupYaAgrupado = details.some(
+        (d) =>
+          d.includes('addGroupByField:ya_agrupado') || d === 'noop:addGroupByField',
+      )
+
+      if ((applyJson.applied ?? 0) === 0 && noopGroupYaAgrupado) {
+        handlers.onAssistantReply(
+          handlers.resolveMessage('partes.emissionDesign.group.alreadyGrouped'),
+        )
+        return
+      }
+
       // Solo banner Guardar/Descartar si el sidecar dejó backup (pendingReview).
       if (applyJson.pendingReview) {
         handlers.onPendingReview?.(true)

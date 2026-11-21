@@ -51,7 +51,7 @@ Registrar resultados en el D-VERIFICACION del TR que corresponda:
 | CHK-15 | diferido | `Agregá una imagen de fondo al informe` | Sin apply | PHPUnit |
 | CHK-16 | diferido | `Insertá el logo de la empresa` | Sin apply | PHPUnit |
 | CHK-17 | diferido | `Mostrá clienteCode como código QR` | Sin apply | PHPUnit |
-| CHK-18 | **mvp** | `Agrupá por cliente` | Apply → Group Header/Footer con **clienteNombre**; lienzo coherente; Guardar/Descartar | Planner + apply |
+| CHK-18 | **mvp** | `Agrupá por cliente` | Apply → Group Header/Footer con **clienteNombre**; **re-aplicar** → mensaje *«…ya está agrupado por cliente…»* (`noop:addGroupByField:ya_agrupado`); Guardar/Descartar | Planner + apply + [oleada 6](../04-tareas/100-SistemaPartes/TR-015-update-f-agrupacion-cliente-chk18.md) |
 | CHK-19 | mvp_parcial | `Agrupá por cliente` | Mismo prompt que CHK-18; en grupo: etiqueta tipo **Cliente:** + campo; negrita/subrayado = bonus (Parcial si falta subrayado) | Apply script |
 | CHK-20 | mvp_parcial | `Agrupá por cliente y sumá los minutos` | Apply grupo + total **duracionMinutos** en group footer (copy ~«Total minutos») | Planner + apply |
 | CHK-21 | mvp_parcial | `Agregá un segundo nivel de agrupación por fecha dentro de cada cliente` | **Un solo turno:** esperado **sin apply** (no_mapped). Para lab positivo ver **LAB-21** | Manual |
@@ -87,6 +87,8 @@ Fallo: segundo turno ignora fecha o pisa el primer grupo sin explicación.
 
 Ver tabla viva en [`D-VERIFICACION-TR-015-update-b-2026-11-13.md`](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-b-2026-11-13.md) § **Checklist CHK — manual UI**.
 
+Oleada 6 CHK-18: [D-VERIFICACION-TR-015-update-f-chk18-2026-11-21.md](../04-tareas/100-SistemaPartes/D-VERIFICACION-TR-015-update-f-chk18-2026-11-21.md).
+
 ## Plantilla de registro (copiar al D-VERIFICACION)
 
 ```markdown
@@ -107,6 +109,7 @@ php vendor/bin/phpunit --filter DesignLayoutChecklistPlannerTest
 # Apply sidecar
 cd C:\Programacion\PaqSuite-IA-FRAMEWORK\services\dx-reporting\scripts
 .\eval-emission-ia-checklist-apply.ps1
+.\eval-emission-ia-oleada6-apply.ps1
 .\eval-emission-ia-checklist-lab-extras.ps1
 ```
 
