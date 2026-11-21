@@ -62,6 +62,6 @@ Referencia agente (misma captura): `assets/image-e82bf9b1-eb53-4b0b-ac38-d1e5b95
 
 - Copy del header de grupo sigue estilo técnico `clienteNombre:` (mejora prevista en **CHK-19**, fuera de este hito).
 
-### Recomendación
+### Cierre F
 
-Marcar TR/HU **Pendiente de Revisión humana** / cierre oleada 6 CHK-18 en tablero; **no** incluir CHK-19 en el mismo PR sin nuevo hito.
+Ver [F-TR-015-update-f-oleada6-chk18.md](./F-TR-015-update-f-oleada6-chk18.md) — **Aprobado** (2026-11-21).

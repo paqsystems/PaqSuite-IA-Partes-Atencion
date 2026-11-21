@@ -221,6 +221,17 @@ export async function handleEmissionDesignSmartCaptureSend(
         return
       }
 
+      const noopTitleFormatoYa = details.some((d) =>
+        d.includes('setControlAppearance:ya_formateado'),
+      )
+
+      if ((applyJson.applied ?? 0) === 0 && noopTitleFormatoYa) {
+        handlers.onAssistantReply(
+          handlers.resolveMessage('partes.emissionDesign.appearance.titleAlreadyFormatted'),
+        )
+        return
+      }
+
       const noopGroupYaAgrupado = details.some(
         (d) =>
           d.includes('addGroupByField:ya_agrupado') || d === 'noop:addGroupByField',

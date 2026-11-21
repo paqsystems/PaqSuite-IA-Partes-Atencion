@@ -66,9 +66,12 @@ Smoke manual UI: pendiente F1.
 
 ---
 
-## 5) Evidencia F1
+## 5) Evidencia F1 / cierre F
 
-[D-VERIFICACION-TR-015-update-f-chk18-2026-11-21.md](./D-VERIFICACION-TR-015-update-f-chk18-2026-11-21.md) — **F1 Aprobado** (smoke manual + eval oleada 6).
+| Parte | Documento |
+|-------|-----------|
+| F1 | [D-VERIFICACION-TR-015-update-f-chk18-2026-11-21.md](./D-VERIFICACION-TR-015-update-f-chk18-2026-11-21.md) |
+| **F** | [F-TR-015-update-f-oleada6-chk18.md](./F-TR-015-update-f-oleada6-chk18.md) — **Aprobado** 2026-11-21 |
 
 Captura: [`evidence/chk-18-smart-capture-2026-11-21.png`](./evidence/chk-18-smart-capture-2026-11-21.png).
 

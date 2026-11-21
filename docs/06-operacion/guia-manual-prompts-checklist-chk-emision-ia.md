@@ -40,7 +40,7 @@ Registrar resultados en el D-VERIFICACION del TR que corresponda:
 | CHK-06 | **mvp** | `Poné el nombre de la empresa arriba a la izquierda` | Lab (`local` / tenant `DEV`): apply → `lblPageHdr_Empresa` fila 1 izq.; **re-aplicar** mismo texto → mensaje *«…ya muestra el nombre de empresa…»* (`noop:setPageHeaderEmpresa:ya_colocados`) | Planner + apply (oleada 5) |
 | CHK-07 | **mvp** | `Agregá la fecha con el mes en letras arriba a la derecha` | Apply → `pageInfoFecha` fila 1 derecha; **re-aplicar** si `pageInfoFecha` ya existe → mensaje *«…ya tiene la fecha de impresión…»* (`noop:setPageHeaderFecha:ya_colocados`); convive con CHK-06 | Planner + apply |
 | CHK-08 | mvp | `Cambiá el título a CONSULTA DETALLADA` | Apply con texto **CONSULTA DETALLADA** (literal) | Planner + apply |
-| CHK-08-format | **mvp** | `Poné el título en negrita, subrayado y centrado` | Apply → `lblReportTitle` con estilo; banner Guardar/Descartar | Planner + apply |
+| CHK-08-format | **mvp** | `Poné el título en negrita, subrayado y centrado` | Apply → `lblReportTitle` con negrita/subrayado/centrado (page header o report header); **re-aplicar** → *«El título… ya estaba…»* (`noop:setControlAppearance:ya_formateado`); script `eval-emission-ia-chk08-format-apply.ps1` | Planner + apply oleada 3b |
 | CHK-27 | **mvp** | `Al código de cliente asignale Times New Roman 12, azul marino, negrita, subrayado e italica, centrado` | Apply sobre control con `[clienteCode]` en detalle; variante con columna presente | Planner + apply |
 | CHK-09 | diferido | `Agregá un pie de informe` | Sin apply; sin Report Footer nuevo | PHPUnit |
 | CHK-10 | diferido | `Totalizá todos los registros en el pie del informe` | Sin apply a report footer | PHPUnit |
@@ -52,7 +52,7 @@ Registrar resultados en el D-VERIFICACION del TR que corresponda:
 | CHK-16 | diferido | `Insertá el logo de la empresa` | Sin apply | PHPUnit |
 | CHK-17 | diferido | `Mostrá clienteCode como código QR` | Sin apply | PHPUnit |
 | CHK-18 | **mvp** | `Agrupá por cliente` | Apply → Group Header/Footer con **clienteNombre**; **re-aplicar** → mensaje *«…ya está agrupado por cliente…»* (`noop:addGroupByField:ya_agrupado`); Guardar/Descartar | Planner + apply + [oleada 6](../04-tareas/100-SistemaPartes/TR-015-update-f-agrupacion-cliente-chk18.md) |
-| CHK-19 | mvp_parcial | `Agrupá por cliente` | Mismo prompt que CHK-18; en grupo: etiqueta tipo **Cliente:** + campo; negrita/subrayado = bonus (Parcial si falta subrayado) | Apply script |
+| CHK-19 | mvp_parcial | `Agrupá por cliente` | Mismo prompt que CHK-18; group header con **Cliente:** + `[clienteNombre]` en negrita; **re-aplicar** con caption OK → `noop:addGroupByField:ya_agrupado`; layout CHK-18 legacy se repara en el mismo apply; script `eval-emission-ia-oleada7-chk19-apply.ps1` | Apply oleada 7 + [TR-015-update-h](../04-tareas/100-SistemaPartes/TR-015-update-h-group-header-cliente-chk19.md) |
 | CHK-20 | mvp_parcial | `Agrupá por cliente y sumá los minutos` | Apply grupo + total **duracionMinutos** en group footer (copy ~«Total minutos») | Planner + apply |
 | CHK-21 | mvp_parcial | `Agregá un segundo nivel de agrupación por fecha dentro de cada cliente` | **Un solo turno:** esperado **sin apply** (no_mapped). Para lab positivo ver **LAB-21** | Manual |
 | CHK-22 | diferido | `Arma el detalle en columnas: fecha, cliente, minutos` | Sin apply | PHPUnit |
@@ -87,7 +87,7 @@ Fallo: segundo turno ignora fecha o pisa el primer grupo sin explicación.
 
 Ver tabla viva en [`D-VERIFICACION-TR-015-update-b-2026-11-13.md`](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-b-2026-11-13.md) § **Checklist CHK — manual UI**.
 
-Oleada 6 CHK-18: [D-VERIFICACION-TR-015-update-f-chk18-2026-11-21.md](../04-tareas/100-SistemaPartes/D-VERIFICACION-TR-015-update-f-chk18-2026-11-21.md).
+Oleada 6 CHK-18: [F-TR-015-update-f-oleada6-chk18](../04-tareas/100-SistemaPartes/F-TR-015-update-f-oleada6-chk18.md) · [D-VERIFICACION](../04-tareas/100-SistemaPartes/D-VERIFICACION-TR-015-update-f-chk18-2026-11-21.md).
 
 ## Plantilla de registro (copiar al D-VERIFICACION)
 

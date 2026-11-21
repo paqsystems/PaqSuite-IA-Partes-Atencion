@@ -157,7 +157,11 @@ final class DesignLayoutActionPlannerTest extends TestCase
 
         $this->assertCount(1, $result['actions']);
         $this->assertSame('setControlAppearance', $result['actions'][0]['action']);
-        $this->assertSame('reportTitle', $result['actions'][0]['payload']['target']['kind'] ?? null);
+        $payload = $result['actions'][0]['payload'];
+        $this->assertSame('reportTitle', $payload['target']['kind'] ?? null);
+        $this->assertTrue($payload['bold'] ?? false);
+        $this->assertTrue($payload['underline'] ?? false);
+        $this->assertSame('center', $payload['textAlign'] ?? null);
     }
 
     public function test_sanitize_drops_unknown_field(): void

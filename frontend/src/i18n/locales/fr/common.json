@@ -540,6 +540,7 @@
   "partes.emissionDesign.pageHeader.fechaAlreadyPlaced": "L'en-tête de page a déjà la date d'impression en haut à droite (pageInfoFecha) avec le même format. Aucune modification appliquée.",
   "partes.emissionDesign.pageHeader.titlePanelAlreadyPlaced": "Le titre du rapport est déjà dans un panneau sur la ligne 2 de l'en-tête de page (pnlReportTitle). Aucune modification appliquée.",
   "partes.emissionDesign.group.alreadyGrouped": "Le rapport est déjà groupé par client (clienteNombre) avec en-tête et pied de groupe. Aucune modification appliquée.",
+  "partes.emissionDesign.appearance.titleAlreadyFormatted": "Le titre du rapport était déjà en gras, souligné et centré. Aucune modification appliquée.",
   "partes.emissionDesign.noMappedActions": "Impossible de mapper la demande aux actions autorisées. Essayez titre, regroupement client ou somme des minutes.",
   "partes.emissionDesign.appliedRefresh": "Modifications appliquées. Le concepteur a été actualisé ; vérifiez et enregistrez si besoin.",
   "partes.emissionDesign.pendingReviewHint": "Modifications appliquées sur le canevas. Confirmez avec Enregistrer ou annulez avec Annuler.",
