@@ -8,7 +8,7 @@
 | Título | Encabezado de grupo con etiqueta Cliente: y negrita vía Smart Capture |
 | Épica | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE (oleada 7) |
-| Estado | **Especificado** (2026-11-21) |
+| Estado | **Finalizado** (2026-11-24) |
 | Jira | PIAPARTES-70 |
 | SPEC | [SPEC-015-update oleada 7](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-7-group-header-chk19-update.md) |
 | TR | [TR-015-update-h](../../04-tareas/100-SistemaPartes/TR-015-update-h-group-header-cliente-chk19.md) |

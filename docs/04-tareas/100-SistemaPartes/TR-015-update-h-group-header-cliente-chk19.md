@@ -8,7 +8,7 @@
 | **D1** | [D1-TR-015-update-h-chk19](./d1/D1-TR-015-update-h-chk19.md) |
 | **TR previa** | [TR-015-update-f](./TR-015-update-f-agrupacion-cliente-chk18.md) |
 | **Matriz** | `PaqSuite-IA-FRAMEWORK/docs/02-producto/15-reportes-emisiones-ia-checklist-matriz.json` (CHK-19) |
-| **Estado** | **Pendiente de Revisión** (parte D 2026-11-21) |
+| **Estado** | **Finalizado** (F 2026-11-24, smoke CHK-19 OK) |
 | **Jira** | PIAPARTES-69 (Epic) · PIAPARTES-70 (HU) · PIAPARTES-71 (TR) |
 
 ---
@@ -76,12 +76,12 @@ Smoke manual: diseñador muestra **Cliente:** en preview de grupo; re-aplicar si
 
 ---
 
-## 5) Evidencia F1 / cierre F (pendiente)
+## 5) Evidencia F1 / cierre F
 
 | Parte | Documento |
 |-------|-----------|
-| F1 | `D-VERIFICACION-TR-015-update-h-chk19-*.md` (tras E + smoke) |
-| **F** | `F-TR-015-update-h-oleada7-chk19.md` |
+| F1 | [D-VERIFICACION-TR-015-update-h-chk19-2026-11-24](./D-VERIFICACION-TR-015-update-h-chk19-2026-11-24.md) |
+| **F** | [F-TR-015-update-h-oleada7-chk19](./F-TR-015-update-h-oleada7-chk19.md) |
 
 ---
 

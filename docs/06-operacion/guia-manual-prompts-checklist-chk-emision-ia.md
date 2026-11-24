@@ -42,19 +42,19 @@ Registrar resultados en el D-VERIFICACION del TR que corresponda:
 | CHK-08 | mvp | `Cambiá el título a CONSULTA DETALLADA` | Apply con texto **CONSULTA DETALLADA** (literal) | Planner + apply |
 | CHK-08-format | **mvp** | `Poné el título en negrita, subrayado y centrado` | Apply → `lblReportTitle` con negrita/subrayado/centrado (page header o report header); **re-aplicar** → *«El título… ya estaba…»* (`noop:setControlAppearance:ya_formateado`); script `eval-emission-ia-chk08-format-apply.ps1` | Planner + apply oleada 3b |
 | CHK-27 | **mvp** | `Al código de cliente asignale Times New Roman 12, azul marino, negrita, subrayado e italica, centrado` | Apply sobre control con `[clienteCode]` en detalle; variante con columna presente | Planner + apply |
-| CHK-09 | diferido | `Agregá un pie de informe` | Sin apply; sin Report Footer nuevo | PHPUnit |
-| CHK-10 | diferido | `Totalizá todos los registros en el pie del informe` | Sin apply a report footer | PHPUnit |
-| CHK-11 | diferido | `Creá un campo calculado que sume duracionMinutos y presencial` | Sin apply | PHPUnit |
-| CHK-12 | diferido | `Campo calculado IIf entre clienteNombre y observacion` | Sin apply | PHPUnit |
-| CHK-13 | diferido | `Mostrá un campo calculado en el detalle` | Sin apply | PHPUnit |
-| CHK-14 | diferido | `Totalizá el campo calculado en el pie del informe` | Sin apply | PHPUnit |
+| CHK-09 | **mvp** | `Agregá un pie de informe` | Apply → `ReportFooterBand` (no PageFooter); script oleada 9 | [TR-k](../04-tareas/100-SistemaPartes/TR-015-update-k-report-footer-chk09-10.md) |
+| CHK-10 | **mvp** | `Totalizá todos los registros en el pie del informe` | Batch ensureReportFooter + count; «Total registros» | oleada 9 |
+| CHK-11 | **mvp** | `Creá un campo calculado que sume duracionMinutos` | `addCalculatedField` sum (solo numéricos) | [TR-l](../04-tareas/100-SistemaPartes/TR-015-update-l-calculados-chk11-14.md) |
+| CHK-12 | **mvp** | `Campo calculado IIf entre clienteNombre y observacion` | `calc_textoCliente` | oleada 10 |
+| CHK-13 | **mvp** | `Mostrá un campo calculado en el detalle` | Tras CHK-12; label en Detail | oleada 10 |
+| CHK-14 | **mvp** | `Totalizá el campo calculado en el pie del informe` | Tras CHK-11; suma calc en ReportFooter | oleada 10 |
 | CHK-15 | diferido | `Agregá una imagen de fondo al informe` | Sin apply | PHPUnit |
 | CHK-16 | diferido | `Insertá el logo de la empresa` | Sin apply | PHPUnit |
 | CHK-17 | diferido | `Mostrá clienteCode como código QR` | Sin apply | PHPUnit |
 | CHK-18 | **mvp** | `Agrupá por cliente` | Apply → Group Header/Footer con **clienteNombre**; **re-aplicar** → mensaje *«…ya está agrupado por cliente…»* (`noop:addGroupByField:ya_agrupado`); Guardar/Descartar | Planner + apply + [oleada 6](../04-tareas/100-SistemaPartes/TR-015-update-f-agrupacion-cliente-chk18.md) |
 | CHK-19 | mvp_parcial | `Agrupá por cliente` | Mismo prompt que CHK-18; group header con **Cliente:** + `[clienteNombre]` en negrita; **re-aplicar** con caption OK → `noop:addGroupByField:ya_agrupado`; layout CHK-18 legacy se repara en el mismo apply; script `eval-emission-ia-oleada7-chk19-apply.ps1` | Apply oleada 7 + [TR-015-update-h](../04-tareas/100-SistemaPartes/TR-015-update-h-group-header-cliente-chk19.md) |
-| CHK-20 | mvp_parcial | `Agrupá por cliente y sumá los minutos` | Apply grupo + total **duracionMinutos** en group footer (copy ~«Total minutos») | Planner + apply |
-| CHK-21 | mvp_parcial | `Agregá un segundo nivel de agrupación por fecha dentro de cada cliente` | **Un solo turno:** esperado **sin apply** (no_mapped). Para lab positivo ver **LAB-21** | Manual |
+| CHK-20 | mvp_parcial | `Agrupá por cliente y sumá los minutos` | Apply batch grupo + total **duracionMinutos** en **mismo** group footer cliente (copy «Total minutos» / `sumSum`); script `eval-emission-ia-chk20-apply.ps1` | Planner + apply + [TR-015-update-i](../04-tareas/100-SistemaPartes/TR-015-update-i-group-sum-minutos-chk20.md) |
+| CHK-21 | mvp_parcial | `Agregá un segundo nivel de agrupación por fecha dentro de cada cliente` | **Un turno:** sin acciones; mensaje `useTwoTurns` (LAB-21). Ver [TR-015-update-j](../04-tareas/100-SistemaPartes/TR-015-update-j-segundo-grupo-chk21.md) | Planner + manual |
 | CHK-22 | diferido | `Arma el detalle en columnas: fecha, cliente, minutos` | Sin apply | PHPUnit |
 | CHK-23 | futuro_producto | `Usá papel continuo sin alto fijo para comanda` | **N/A** piloto Partes; anotar N/A | — |
 | CHK-24 | futuro_producto | `Poné una tabla dinámica en el pie de página` | **N/A** | — |

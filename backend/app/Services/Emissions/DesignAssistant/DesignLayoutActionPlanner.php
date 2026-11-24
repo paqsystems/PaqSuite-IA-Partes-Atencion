@@ -81,6 +81,11 @@ final class DesignLayoutActionPlanner
             $actions = array_merge($actions, $detailFieldActions);
         }
 
+        $reportFooterActions = DesignLayoutReportFooterHeuristics::tryMatch($message);
+        if ($reportFooterActions !== []) {
+            $actions = array_merge($actions, $reportFooterActions);
+        }
+
         // Primero verbos explícitos ("cambia el título a …"); el patrón suelto
         // `título …` no debe comerse la preposición "a" cuando el valor va entre comillas.
         $title = $this->extractTitleFromMessage($message);
@@ -88,12 +93,14 @@ final class DesignLayoutActionPlanner
             $actions[] = $this->action('setReportTitle', ['title' => mb_substr($title, 0, 200)]);
         }
 
-        if (preg_match('/agrup(a|á|ar).*(cliente)/u', $text) === 1) {
-            $actions[] = $this->action('addGroupByField', ['field' => 'clienteNombre']);
-        } elseif (preg_match('/agrup(a|á|ar).*(t[eé]cnico|asistente|usuario)/u', $text) === 1) {
-            $actions[] = $this->action('addGroupByField', ['field' => 'usuarioNombre']);
-        } elseif (preg_match('/agrup(a|á|ar).*(fecha)/u', $text) === 1) {
-            $actions[] = $this->action('addGroupByField', ['field' => 'fecha']);
+        if (! $this->isSecondLevelGroupingRequest($text)) {
+            if (preg_match('/agrup(a|á|ar).*(cliente)/u', $text) === 1) {
+                $actions[] = $this->action('addGroupByField', ['field' => 'clienteNombre']);
+            } elseif (preg_match('/agrup(a|á|ar).*(t[eé]cnico|asistente|usuario)/u', $text) === 1) {
+                $actions[] = $this->action('addGroupByField', ['field' => 'usuarioNombre']);
+            } elseif (preg_match('/agrup(a|á|ar).*(fecha)/u', $text) === 1) {
+                $actions[] = $this->action('addGroupByField', ['field' => 'fecha']);
+            }
         }
 
         if (preg_match('/(sum(a|á|ar)|totaliz(a|á|ar)|subtotal).*(minuto|duraci[oó]n|hora)/u', $text) === 1) {
@@ -109,7 +116,9 @@ final class DesignLayoutActionPlanner
         $actions = $this->sanitizeActions($actions);
         if ($actions === []) {
             return [
-                'replyText' => 'partes.emissionDesign.noMappedActions',
+                'replyText' => $this->isSecondLevelGroupingRequest($text)
+                    ? 'partes.emissionDesign.group.useTwoTurns'
+                    : 'partes.emissionDesign.noMappedActions',
                 'actions' => [],
             ];
         }
@@ -131,7 +140,7 @@ final class DesignLayoutActionPlanner
         $system = <<<PROMPT
 Sos el asistente de diseño de informes Partes (Smart Capture bajo DevExpress).
 Respondé SOLO JSON válido (sin markdown):
-{"replyText":"string","actions":[{"action":"setReportTitle|addGroupByField|addGroupSum|setPageOrientation|setControlAppearance|addDetailField|addDetailStaticText|addPageHeaderColumnLabels|setPageHeaderEmpresa|setPageHeaderFecha|wrapReportTitleInPanel","payload":{}}]}
+{"replyText":"string","actions":[{"action":"setReportTitle|addGroupByField|addGroupSum|setPageOrientation|setControlAppearance|addDetailField|addDetailStaticText|addPageHeaderColumnLabels|setPageHeaderEmpresa|setPageHeaderFecha|wrapReportTitleInPanel|ensureReportFooter|addReportSum|addCalculatedField|addDetailCalculatedLabel","payload":{}}]}
 Reglas:
 - Solo actions de: {$types}
 - Campos técnicos permitidos: {$fields}
@@ -147,6 +156,10 @@ Reglas:
 - setPageHeaderEmpresa: payload.text string 1..200 (nombre empresa en page header fila 1)
 - setPageHeaderFecha: payload.format opcional (default sidecar dd, MMMM 'de' yyyy); page header fila 1 derecha
 - wrapReportTitleInPanel: payload vacío; panel pnlReportTitle fila 2 page header alrededor de lblReportTitle
+- ensureReportFooter: payload vacío; crea ReportFooterBand (no PageFooter)
+- addReportSum: summary count|sum; field numérico si sum; calculatedField para totalizar calculado en report footer
+- addCalculatedField: kind sum|iif; fields[] numéricos (sum) o testField/trueField/falseField (iif); name opcional calc_*
+- addDetailCalculatedLabel: calculatedName existente en layout
 - Edición incremental; no inventes campos
 - Si el pedido no mapea, actions=[] y replyText explica la limitación en español
 PROMPT;
@@ -299,6 +312,77 @@ PROMPT;
 
             if ($type === 'wrapReportTitleInPanel') {
                 $payload = new \stdClass();
+            }
+
+            if ($type === 'ensureReportFooter') {
+                $payload = new \stdClass();
+            }
+
+            if ($type === 'addReportSum') {
+                $summary = strtolower(trim((string) ($payload['summary'] ?? 'count')));
+                if (! in_array($summary, ['count', 'sum'], true)) {
+                    continue;
+                }
+                $next = ['summary' => $summary];
+                $calculatedField = trim((string) ($payload['calculatedField'] ?? ''));
+                if ($calculatedField !== '') {
+                    $next['calculatedField'] = $calculatedField;
+                } elseif ($summary === 'sum') {
+                    $field = trim((string) ($payload['field'] ?? ''));
+                    if (! DesignLayoutWhitelist::isNumericField($field)) {
+                        continue;
+                    }
+                    $next['field'] = $field;
+                }
+                $payload = $next;
+            }
+
+            if ($type === 'addCalculatedField') {
+                $kind = strtolower(trim((string) ($payload['kind'] ?? '')));
+                if (! in_array($kind, ['sum', 'iif'], true)) {
+                    continue;
+                }
+                $next = ['kind' => $kind];
+                if ($kind === 'sum') {
+                    $fields = is_array($payload['fields'] ?? null) ? $payload['fields'] : [];
+                    $valid = [];
+                    foreach ($fields as $f) {
+                        $name = trim((string) $f);
+                        if (DesignLayoutWhitelist::isNumericField($name)) {
+                            $valid[] = $name;
+                        }
+                    }
+                    if ($valid === []) {
+                        continue;
+                    }
+                    $next['fields'] = array_values(array_unique($valid));
+                } else {
+                    foreach (['testField', 'trueField', 'falseField'] as $k) {
+                        $f = trim((string) ($payload[$k] ?? ''));
+                        if (! DesignLayoutWhitelist::isSchemaField($f)) {
+                            $f = '';
+                        }
+                        if ($f !== '') {
+                            $next[$k] = $f;
+                        }
+                    }
+                    if (count($next) < 4) {
+                        continue;
+                    }
+                }
+                $calcName = trim((string) ($payload['name'] ?? ''));
+                if ($calcName !== '' && mb_strlen($calcName) <= 80) {
+                    $next['name'] = $calcName;
+                }
+                $payload = $next;
+            }
+
+            if ($type === 'addDetailCalculatedLabel') {
+                $calcName = trim((string) ($payload['calculatedName'] ?? ''));
+                if ($calcName === '' || mb_strlen($calcName) > 80) {
+                    continue;
+                }
+                $payload = ['calculatedName' => $calcName];
             }
 
             $out[] = [
@@ -475,5 +559,19 @@ PROMPT;
         $decoded = json_decode($json, true);
 
         return is_array($decoded) ? $decoded : [];
+    }
+
+    private function isSecondLevelGroupingRequest(string $text): bool
+    {
+        if (preg_match('/segund[oa]\s+(nivel|grupo)/u', $text) === 1) {
+            return true;
+        }
+
+        if (preg_match('/segund[oa]\s+.*agrup/u', $text) === 1) {
+            return true;
+        }
+
+        return preg_match('/agrup/u', $text) === 1
+            && preg_match('/dentro de cada/u', $text) === 1;
     }
 }

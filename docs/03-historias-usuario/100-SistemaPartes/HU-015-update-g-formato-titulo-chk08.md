@@ -8,7 +8,7 @@
 | Título | Título en negrita, subrayado y centrado vía Smart Capture |
 | Épica | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE (oleada 3b) |
-| Estado | **Implementando** (2026-11-21) |
+| Estado | **Finalizado** (2026-11-24) |
 | Jira | [PIAPARTES-67](https://paqsystems.atlassian.net/browse/PIAPARTES-67) |
 | SPEC | [SPEC-015-update oleada 3b](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-3b-formato-titulo-chk08-update.md) |
 | TR | [TR-015-update-g](../../04-tareas/100-SistemaPartes/TR-015-update-g-formato-titulo-chk08.md) |

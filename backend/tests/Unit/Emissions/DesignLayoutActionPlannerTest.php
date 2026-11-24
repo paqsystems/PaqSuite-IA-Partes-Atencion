@@ -24,16 +24,52 @@ final class DesignLayoutActionPlannerTest extends TestCase
         $planner = new DesignLayoutActionPlanner($this->unusedLlm());
         $result = $planner->fromHeuristics('agrupá por cliente y sumá los minutos');
 
-        $types = array_column($result['actions'], 'action');
-        $this->assertContains('addGroupByField', $types);
-        $this->assertContains('addGroupSum', $types);
-        $group = null;
-        foreach ($result['actions'] as $action) {
-            if ($action['action'] === 'addGroupByField') {
-                $group = $action;
-            }
-        }
-        $this->assertSame('clienteNombre', $group['payload']['field'] ?? null);
+        $this->assertCount(2, $result['actions']);
+        $this->assertSame('addGroupByField', $result['actions'][0]['action']);
+        $this->assertSame('clienteNombre', $result['actions'][0]['payload']['field'] ?? null);
+        $this->assertSame('addGroupSum', $result['actions'][1]['action']);
+        $this->assertSame('duracionMinutos', $result['actions'][1]['payload']['field'] ?? null);
+        $this->assertSame('sum', $result['actions'][1]['payload']['summary'] ?? null);
+    }
+
+    public function test_heuristics_chk09_report_footer(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Agregá un pie de informe');
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('ensureReportFooter', $result['actions'][0]['action']);
+    }
+
+    public function test_heuristics_chk10_report_count(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Totalizá todos los registros en el pie del informe');
+
+        $this->assertCount(2, $result['actions']);
+        $this->assertSame('ensureReportFooter', $result['actions'][0]['action']);
+        $this->assertSame('addReportSum', $result['actions'][1]['action']);
+        $this->assertSame('count', $result['actions'][1]['payload']['summary'] ?? null);
+    }
+
+    public function test_heuristics_chk11_calculated_sum(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Creá un campo calculado que sume duracionMinutos');
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('addCalculatedField', $result['actions'][0]['action']);
+        $this->assertSame('sum', $result['actions'][0]['payload']['kind'] ?? null);
+    }
+
+    public function test_heuristics_chk21_second_level_no_mapped(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $prompt = 'Agregá un segundo nivel de agrupación por fecha dentro de cada cliente';
+        $result = $planner->fromHeuristics($prompt);
+
+        $this->assertSame([], $result['actions']);
+        $this->assertSame('partes.emissionDesign.group.useTwoTurns', $result['replyText']);
     }
 
     public function test_heuristics_chk03_set_report_title(): void

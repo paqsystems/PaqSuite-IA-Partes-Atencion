@@ -16,7 +16,7 @@ Este documento fija el **alcance acotado** de la primera versión productiva con
 |     ID     | Limitación MVP | Evolución futura (orientativa) |
 |------------|----------------|--------------------------------|
 | **L-B-01** | Solo el proceso emisible **`partes.informes.consultaDetallada`**. | Otros procesos (p. ej. paquete de horas). |
-| **L-B-02** | **Whitelist v1.1:** agrupar, subtotales, título, orientación, **`setControlAppearance`** (fuente/color/alineación/B-I-U sobre control existente). Sin altas de columnas/bandas. | Más tipos (filtros visuales, gráficos, formato condicional, padding/bordes). |
+| **L-B-02** | **Whitelist v1.2:** … + **`ensureReportFooter`**, **`addReportSum`**, **`addCalculatedField`**, **`addDetailCalculatedLabel`**. Sin altas arbitrarias de bandas fuera catálogo. | Imágenes, QR, columnas detalle, eliminar controles. |
 | **L-B-03** | El asistente **no genera ni pisa el informe como un archivo interno opaco**; traduce el pedido a **pasos concretos del catálogo** que el programa ejecuta y muestra en el diseñador. Ver [§ L-B-03 en lenguaje humano](#l-b-03-en-lenguaje-humano). | Nuevas acciones en la lista, no “liberar” REPX crudo. |
 | **L-B-04** | **Edición incremental** acotada; no “rehacer todo el informe” en un solo mensaje abierto. | Plantillas + flujos guiados. |
 | **L-B-05** | **Sin** wizard **Prompt-to-Report** nativo de DevExpress (camino A apagado en Partes). | — |

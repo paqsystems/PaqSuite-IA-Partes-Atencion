@@ -7,7 +7,7 @@
 | ID | SPEC-015-update-oleada-3b-formato-titulo-chk08 |
 | Título | Negrita, subrayado y centrado del título vía Smart Capture |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | **Implementando** (2026-11-21) |
+| Estado | **Finalizado** (2026-11-24) |
 | Jira | [PIAPARTES-66](https://paqsystems.atlassian.net/browse/PIAPARTES-66) (Epic) |
 | SPEC previa | [Oleada 3 apariencia](./SPEC-015-ia-diseno-informes-oleada-3-apariencia-update.md) |
 | HU | [HU-015-update-g](../../../03-historias-usuario/100-SistemaPartes/HU-015-update-g-formato-titulo-chk08.md) |

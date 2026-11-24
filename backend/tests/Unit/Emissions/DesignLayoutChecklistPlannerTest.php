@@ -25,6 +25,7 @@ final class DesignLayoutChecklistPlannerTest extends TestCase
         string $prompt,
         string $plannerExpect,
         array $expectedActions,
+        ?string $expectedReplyKey = null,
     ): void {
         if ($checkId === 'CHK-00') {
             $this->markTestSkipped('Matriz checklist no encontrada en ruta Framework.');
@@ -36,11 +37,8 @@ final class DesignLayoutChecklistPlannerTest extends TestCase
 
         if ($plannerExpect === 'no_mapped') {
             $this->assertSame([], $actions, "{$checkId}: se esperaba sin acciones");
-            $this->assertSame(
-                'partes.emissionDesign.noMappedActions',
-                $result['replyText'],
-                "{$checkId}: reply de no mapeo"
-            );
+            $replyKey = $expectedReplyKey ?? 'partes.emissionDesign.noMappedActions';
+            $this->assertSame($replyKey, $result['replyText'], "{$checkId}: reply de no mapeo");
 
             return;
         }
@@ -72,6 +70,7 @@ final class DesignLayoutChecklistPlannerTest extends TestCase
                     'skip',
                     'no_mapped',
                     [],
+                    null,
                 ],
             ];
         }
@@ -101,11 +100,15 @@ final class DesignLayoutChecklistPlannerTest extends TestCase
                 $expectedActions[] = $row;
             }
 
+            $replyKey = isset($item['expectedReplyKey']) && is_string($item['expectedReplyKey'])
+                ? $item['expectedReplyKey']
+                : null;
             $rows[(string) ($item['id'] ?? 'CHK')] = [
                 (string) ($item['id'] ?? 'CHK'),
                 (string) ($item['promptCanonico'] ?? ''),
                 $plannerExpect,
                 $expectedActions,
+                $replyKey,
             ];
         }
 

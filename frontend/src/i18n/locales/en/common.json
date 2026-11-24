@@ -564,6 +564,7 @@
   "partes.emissionDesign.pageHeader.fechaAlreadyPlaced": "The page header already has the print date at the top right (pageInfoFecha) with the same format. No changes were applied.",
   "partes.emissionDesign.pageHeader.titlePanelAlreadyPlaced": "The report title is already inside a panel on row 2 of the page header (pnlReportTitle). No changes were applied.",
   "partes.emissionDesign.group.alreadyGrouped": "The report is already grouped by customer (clienteNombre) with group header and footer. No changes were applied.",
+  "partes.emissionDesign.group.useTwoTurns": "To group by customer and then by date, use two turns: first «Group by customer», apply, then «Group by date».",
   "partes.emissionDesign.appearance.titleAlreadyFormatted": "The report title was already bold, underlined, and centered. No changes were applied.",
   "partes.emissionDesign.noMappedActions": "I could not map the request to allowed actions. Try title, group by client, or sum minutes.",
   "partes.emissionDesign.appliedRefresh": "Changes applied. The designer refreshed; review the canvas and Save if needed.",

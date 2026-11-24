@@ -7,7 +7,7 @@
 | **D1** | [D1-TR-015-update-g-chk08-format](./d1/D1-TR-015-update-g-chk08-format.md) |
 | **TR previa** | [TR-015-update-c](./TR-015-update-c-apariencia-controles-informes.md) |
 | **Matriz** | `PaqSuite-IA-FRAMEWORK/docs/02-producto/15-reportes-emisiones-ia-checklist-matriz.json` (CHK-08-format) |
-| **Estado** | **Pendiente de Revisión** (parte D 2026-11-21) |
+| **Estado** | **Finalizado** (F 2026-11-24, smoke CHK-08-format OK) |
 | **Jira** | [PIAPARTES-66](https://paqsystems.atlassian.net/browse/PIAPARTES-66) (Epic) · [PIAPARTES-67](https://paqsystems.atlassian.net/browse/PIAPARTES-67) (HU) · [PIAPARTES-68](https://paqsystems.atlassian.net/browse/PIAPARTES-68) (TR) |
 
 ---
@@ -61,10 +61,19 @@ cd C:\Programacion\PaqSuite-IA-FRAMEWORK\services\dx-reporting\scripts
 .\eval-emission-ia-chk08-format-apply.ps1
 ```
 
-Smoke manual UI (re-aplicar prompt): pendiente **F1**.
+Smoke manual UI (re-aplicar prompt): ver F1 (pendiente confirmación operador).
 
 ---
 
-## 5) Confirmación alcance
+## 5) Evidencia F1 / cierre F
+
+| Parte | Documento |
+|-------|-----------|
+| F1 | [D-VERIFICACION-TR-015-update-g-chk08-format-2026-11-24](./D-VERIFICACION-TR-015-update-g-chk08-format-2026-11-24.md) |
+| **F** | [F-TR-015-update-g-oleada3b-chk08-format](./F-TR-015-update-g-oleada3b-chk08-format.md) |
+
+---
+
+## 6) Confirmación alcance
 
 Solo CHK-08-format. Sin CHK-27. Sin CHK-08 texto.

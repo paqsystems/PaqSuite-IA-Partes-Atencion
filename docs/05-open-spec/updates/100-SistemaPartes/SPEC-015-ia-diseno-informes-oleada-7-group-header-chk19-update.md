@@ -7,7 +7,7 @@
 | ID | SPEC-015-update-oleada-7-group-header-chk19 |
 | Título | Etiqueta «Cliente:» y negrita en encabezado de grupo vía Smart Capture |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | **Especificado** (2026-11-21) |
+| Estado | **Finalizado** (2026-11-24) |
 | Jira | PIAPARTES-69 (Epic) |
 | SPEC previa | [Oleada 6 agrupación CHK-18](./SPEC-015-ia-diseno-informes-oleada-6-agrupacion-chk18-update.md) |
 | HU | [HU-015-update-h](../../../03-historias-usuario/100-SistemaPartes/HU-015-update-h-group-header-cliente-chk19.md) |

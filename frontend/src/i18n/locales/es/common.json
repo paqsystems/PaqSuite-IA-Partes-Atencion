@@ -564,6 +564,7 @@
   "partes.emissionDesign.pageHeader.fechaAlreadyPlaced": "El encabezado de página ya tiene la fecha de impresión arriba a la derecha (pageInfoFecha) con el mismo formato. No apliqué cambios.",
   "partes.emissionDesign.pageHeader.titlePanelAlreadyPlaced": "El título del informe ya está encerrado en un panel en la fila 2 del encabezado de página (pnlReportTitle). No apliqué cambios.",
   "partes.emissionDesign.group.alreadyGrouped": "El informe ya está agrupado por cliente (clienteNombre) con encabezado y pie de grupo. No apliqué cambios.",
+  "partes.emissionDesign.group.useTwoTurns": "Para agrupar por cliente y después por fecha usá dos turnos: primero «Agrupá por cliente», aplicá, y luego «Agrupá por fecha».",
   "partes.emissionDesign.appearance.titleAlreadyFormatted": "El título del informe ya estaba en negrita, subrayado y centrado. No apliqué cambios.",
   "partes.emissionDesign.noMappedActions": "No pude mapear el pedido a acciones permitidas. Probá pedir título, agrupación por cliente o suma de minutos.",
   "partes.emissionDesign.appliedRefresh": "Cambios aplicados. El diseñador se actualizó; revisá el lienzo y guardá si corresponde.",

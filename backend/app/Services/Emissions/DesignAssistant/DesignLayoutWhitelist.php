@@ -22,6 +22,10 @@ final class DesignLayoutWhitelist
         'setPageHeaderEmpresa',
         'setPageHeaderFecha',
         'wrapReportTitleInPanel',
+        'ensureReportFooter',
+        'addReportSum',
+        'addCalculatedField',
+        'addDetailCalculatedLabel',
     ];
 
     /** @var list<string> columnas schema Consulta detallada (TR-011 / TR-015). */

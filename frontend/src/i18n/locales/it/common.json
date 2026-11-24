@@ -540,6 +540,7 @@
   "partes.emissionDesign.pageHeader.fechaAlreadyPlaced": "L'intestazione di pagina ha già la data di stampa in alto a destra (pageInfoFecha) con lo stesso formato. Nessuna modifica applicata.",
   "partes.emissionDesign.pageHeader.titlePanelAlreadyPlaced": "Il titolo del report è già in un pannello sulla riga 2 dell'intestazione di pagina (pnlReportTitle). Nessuna modifica applicata.",
   "partes.emissionDesign.group.alreadyGrouped": "Il report è già raggruppato per cliente (clienteNombre) con intestazione e piè di gruppo. Nessuna modifica applicata.",
+  "partes.emissionDesign.group.useTwoTurns": "Per raggruppare per cliente e poi per data, usa due turni: prima «Raggruppa per cliente», applica, poi «Raggruppa per data».",
   "partes.emissionDesign.appearance.titleAlreadyFormatted": "Il titolo del report era già in grassetto, sottolineato e centrato. Nessuna modifica applicata.",
   "partes.emissionDesign.noMappedActions": "Non sono riuscito a mappare la richiesta alle azioni consentite. Prova titolo, raggruppamento per cliente o somma minuti.",
   "partes.emissionDesign.appliedRefresh": "Modifiche applicate. Il designer è stato aggiornato; controlla e salva se necessario.",
