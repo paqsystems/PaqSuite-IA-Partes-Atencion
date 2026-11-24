@@ -3,7 +3,7 @@
 | Campo | Valor |
 |-------|--------|
 | HU / SPEC | [HU-015-update-k](../../03-historias-usuario/100-SistemaPartes/HU-015-update-k-report-footer-chk09-10.md) · [SPEC oleada 9](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-9-report-footer-chk09-10-update.md) |
-| Estado | **Pendiente de Revisión** (D 2026-11-24) |
+| Estado | **Finalizado** (F 2026-11-24, smoke CHK-09/10 OK) |
 
 ## Entrega
 

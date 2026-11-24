@@ -7,7 +7,7 @@
 | ID | SPEC-015-update-oleada-9-report-footer-chk09-10 |
 | Título | Pie de informe (Report Footer) y total de registros vía Smart Capture |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | **Especificado** (2026-11-24) |
+| Estado | **Finalizado** (2026-11-24) |
 | SPEC previa | [Oleada 7b CHK-20](./SPEC-015-ia-diseno-informes-oleada-7b-group-sum-chk20-update.md) |
 | HU | [HU-015-update-k](../../../03-historias-usuario/100-SistemaPartes/HU-015-update-k-report-footer-chk09-10.md) |
 | TR | [TR-015-update-k](../../../04-tareas/100-SistemaPartes/TR-015-update-k-report-footer-chk09-10.md) |

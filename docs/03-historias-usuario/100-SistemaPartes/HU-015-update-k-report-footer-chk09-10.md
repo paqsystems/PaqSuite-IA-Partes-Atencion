@@ -5,7 +5,7 @@
 | Campo | Valor |
 |-------|--------|
 | ID | HU-015-update-k |
-| Estado | **Especificado** (2026-11-24) |
+| Estado | **Finalizado** (2026-11-24) |
 | SPEC | [SPEC oleada 9](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-9-report-footer-chk09-10-update.md) |
 | TR | [TR-015-update-k](../../04-tareas/100-SistemaPartes/TR-015-update-k-report-footer-chk09-10.md) |
 

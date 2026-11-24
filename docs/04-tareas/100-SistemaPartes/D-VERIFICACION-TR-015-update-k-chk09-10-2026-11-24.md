@@ -2,7 +2,7 @@
 
 | Fecha F1 | 2026-11-24 |
 
-**Aprobado** (automatizado). Smoke UI: CHK-09 **OK**; CHK-10 pendiente operador.
+**Aprobado** — automatizado + smoke UI CHK-09 y CHK-10 **OK** (usuario 2026-11-24).
 
 | Comando | OK |
 |---------|-----|
@@ -13,4 +13,4 @@
 | CHK | Prompt | Smoke |
 |-----|--------|-------|
 | 09 | Agregá un pie de informe | **OK** (usuario 2026-11-24) |
-| 10 | Totalizá todos los registros en el pie del informe | Pendiente |
+| 10 | Totalizá todos los registros en el pie del informe | **OK** (usuario 2026-11-24) |
