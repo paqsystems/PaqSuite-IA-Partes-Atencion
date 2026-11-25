@@ -3,10 +3,20 @@
 Batería **camino B**: Smart Capture en **Diseñador de emisiones** + **apply** sidecar (whitelist v1).  
 Matriz SoT: Framework [`15-reportes-emisiones-ia-checklist-matriz.json`](../../../PaqSuite-IA-FRAMEWORK/docs/02-producto/15-reportes-emisiones-ia-checklist-matriz.json).
 
-Registrar resultados en el D-VERIFICACION del TR que corresponda:
+Registrar resultados en el **D-VERIFICACION / F** del TR u oleada que corresponda (no usar la tabla histórica de TR-015-update-b):
 
-- **Oleada 3 (apariencia):** [D-VERIFICACION-TR-015-update-c](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-c-2026-11-18.md) + guía acotada [smoke-oleada3-apariencia-controles.md](./smoke-oleada3-apariencia-controles.md)
-- Resto checklist camino B: **TR-015-update-b** (columna **CHK-xx**: OK · Parcial · Fallo · N/A · Bloqueado)
+| Alcance | Cierre (F) / F1 |
+|---------|-----------------|
+| CHK-01, 02, 03, 08 texto | [F oleada4](../04-tareas/100-SistemaPartes/F-TR-015-update-d-oleada4-chk01-03-08.md) · [D oleada4](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-oleada4-chk01-03-2026-11-18.md) |
+| CHK-08-format | [F oleada 3b](../04-tareas/100-SistemaPartes/F-TR-015-update-g-oleada3b-chk08-format.md) |
+| CHK-27 + CHK-08-format (oleada 3) | [D-CIERRE oleada3](../04-tareas/updates/100-SistemaPartes/D-CIERRE-oleada3-apariencia-2026-11-18.md) · [D update-c](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-c-2026-11-18.md) · [smoke oleada3](./smoke-oleada3-apariencia-controles.md) |
+| CHK-04…07 | [F oleada5](../04-tareas/100-SistemaPartes/F-TR-015-update-e-oleada5-page-header.md) |
+| CHK-09, 10 | [F oleada9](../04-tareas/100-SistemaPartes/F-TR-015-update-k-oleada9-chk09-10.md) |
+| CHK-11…14 | [F oleada10](../04-tareas/100-SistemaPartes/F-TR-015-update-l-oleada10-chk11-14.md) |
+| CHK-18…21 | F oleadas 6–8 en `docs/04-tareas/100-SistemaPartes/F-TR-015-update-*.md` |
+| **CHK-15..17** | [Prompts SDD nuevo hilo](./prompts-nuevo-hilo-oleada-11-chk15-17-sdd.md) · Jira PIAPARTES-78/79 · [SPEC oleada 11](../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-11-imagenes-chk15-17-update.md) |
+| **CHK-26** | **Diferido** — lab script TR-j; sin F |
+| Registro libre / huecos | Tabla viva [D-VERIFICACION-TR-015-update-b](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-b-2026-11-13.md) (§ histórico 2026-11-13, no SoT de pendientes) |
 
 ---
 
@@ -32,25 +42,25 @@ Registrar resultados en el D-VERIFICACION del TR que corresponda:
 
 | ID | Estado | Prompt (pegar en SC) | Resultado esperado (manual) | Capa auto ya cubierta |
 |----|--------|----------------------|-----------------------------|------------------------|
-| CHK-01 | **mvp** | `Agregá la columna observación en el detalle` | Apply → label en detalle con `[observacion]`; banner Guardar/Descartar | Planner + apply |
-| CHK-02 | **mvp** | `Agregá un texto fijo que diga Borrador en el detalle` | Apply → label literal «Borrador» en detalle | Planner + apply |
-| CHK-03 | mvp_parcial | `Cambiá el título a Consulta detallada` | Apply → `lblReportTitle` + bandas **Page Header/Footer** (vacías); Guardar/Descartar; Preview | Planner + apply |
+| CHK-01 | **mvp** | `Agregá la columna observación en el detalle` | Apply → label en detalle con `[observacion]`; banner Guardar/Descartar | Cierre [F oleada4](../04-tareas/100-SistemaPartes/F-TR-015-update-d-oleada4-chk01-03-08.md) |
+| CHK-02 | **mvp** | `Agregá un texto fijo que diga Borrador en el detalle` | Apply → label literal «Borrador» en detalle | Idem oleada4 |
+| CHK-03 | mvp_parcial | `Cambiá el título a Consulta detallada` | Apply → `lblReportTitle` + bandas **Page Header/Footer** (vacías); Guardar/Descartar; Preview | Idem oleada4 |
 | CHK-04 | **mvp** | `Poné un título encima de cada columna en el encabezado de página` | Variante **con columnas en detalle** (ej. spike-layout-b-1) → `lblPageHdr_*` fila 3; sin detalle → mensaje SC sin romper lienzo | Planner + apply + [smoke CHK-04](./smoke-oleada5-page-header-chk04.md) |
 | CHK-05 | **mvp** | `Encerrá el título en un panel` | Apply → `pnlReportTitle` fila 2; **re-aplicar** con panel ya armado → mensaje *«El título del informe ya está encerrado…»* (`noop:wrapReportTitleInPanel:ya_colocados`); sin error HTTP | Planner + apply |
 | CHK-06 | **mvp** | `Poné el nombre de la empresa arriba a la izquierda` | Lab (`local` / tenant `DEV`): apply → `lblPageHdr_Empresa` fila 1 izq.; **re-aplicar** mismo texto → mensaje *«…ya muestra el nombre de empresa…»* (`noop:setPageHeaderEmpresa:ya_colocados`) | Planner + apply (oleada 5) |
 | CHK-07 | **mvp** | `Agregá la fecha con el mes en letras arriba a la derecha` | Apply → `pageInfoFecha` fila 1 derecha; **re-aplicar** si `pageInfoFecha` ya existe → mensaje *«…ya tiene la fecha de impresión…»* (`noop:setPageHeaderFecha:ya_colocados`); convive con CHK-06 | Planner + apply |
-| CHK-08 | mvp | `Cambiá el título a CONSULTA DETALLADA` | Apply con texto **CONSULTA DETALLADA** (literal) | Planner + apply |
+| CHK-08 | mvp | `Cambiá el título a CONSULTA DETALLADA` | Apply con texto **CONSULTA DETALLADA** (literal) | Planner + apply · cierre [F oleada4](../04-tareas/100-SistemaPartes/F-TR-015-update-d-oleada4-chk01-03-08.md) |
 | CHK-08-format | **mvp** | `Poné el título en negrita, subrayado y centrado` | Apply → `lblReportTitle` con negrita/subrayado/centrado (page header o report header); **re-aplicar** → *«El título… ya estaba…»* (`noop:setControlAppearance:ya_formateado`); script `eval-emission-ia-chk08-format-apply.ps1` | Planner + apply oleada 3b |
-| CHK-27 | **mvp** | `Al código de cliente asignale Times New Roman 12, azul marino, negrita, subrayado e italica, centrado` | Apply sobre control con `[clienteCode]` en detalle; variante con columna presente | Planner + apply |
+| CHK-27 | **mvp** | `Al código de cliente asignale Times New Roman 12, azul marino, negrita, subrayado e italica, centrado` | Apply sobre control con `[clienteCode]` en detalle; variante con columna presente | Planner + apply · **cerrado** oleada 3 ([D-CIERRE](../04-tareas/updates/100-SistemaPartes/D-CIERRE-oleada3-apariencia-2026-11-18.md)) |
 | CHK-09 | **mvp** | `Agregá un pie de informe` | Apply → `ReportFooterBand` (no PageFooter); script oleada 9 | [TR-k](../04-tareas/100-SistemaPartes/TR-015-update-k-report-footer-chk09-10.md) |
 | CHK-10 | **mvp** | `Totalizá todos los registros en el pie del informe` | Batch ensureReportFooter + count; «Total registros» | oleada 9 |
 | CHK-11 | **mvp** | `Creá un campo calculado que sume duracionMinutos` | `addCalculatedField` sum (solo numéricos) | [TR-l](../04-tareas/100-SistemaPartes/TR-015-update-l-calculados-chk11-14.md) |
 | CHK-12 | **mvp** | `Campo calculado IIf entre clienteNombre y observacion` | `calc_textoCliente` | oleada 10 |
 | CHK-13 | **mvp** | `Mostrá un campo calculado en el detalle` | Tras CHK-12; label en Detail | oleada 10 |
 | CHK-14 | **mvp** | `Totalizá el campo calculado en el pie del informe` | Tras CHK-11; suma calc en ReportFooter | oleada 10 |
-| CHK-15 | diferido | `Agregá una imagen de fondo al informe` | Sin apply | PHPUnit |
-| CHK-16 | diferido | `Insertá el logo de la empresa` | Sin apply | PHPUnit |
-| CHK-17 | diferido | `Mostrá clienteCode como código QR` | Sin apply | PHPUnit |
+| CHK-15 | **mvp** (oleada 11) | `Agregá una imagen de fondo al informe` | Apply → watermark informe (`setReportWatermarkImage`); banner Guardar/Descartar | [SPEC oleada 11](../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-11-imagenes-chk15-17-update.md) — **pendiente implementar** |
+| CHK-16 | **mvp** (oleada 11) | `Insertá el logo de la empresa` | Apply → `imgPageHdr_Logo` en page header (`setPageHeaderLogo`) | Idem oleada 11 |
+| CHK-17 | **mvp** (oleada 11) | `Mostrá clienteCode como código QR` | Apply → `XRBarCode` en detalle (`addDetailBarCode`) | Idem; layout con `clienteCode` |
 | CHK-18 | **mvp** | `Agrupá por cliente` | Apply → Group Header/Footer con **clienteNombre**; **re-aplicar** → mensaje *«…ya está agrupado por cliente…»* (`noop:addGroupByField:ya_agrupado`); Guardar/Descartar | Planner + apply + [oleada 6](../04-tareas/100-SistemaPartes/TR-015-update-f-agrupacion-cliente-chk18.md) |
 | CHK-19 | mvp_parcial | `Agrupá por cliente` | Mismo prompt que CHK-18; group header con **Cliente:** + `[clienteNombre]` en negrita; **re-aplicar** con caption OK → `noop:addGroupByField:ya_agrupado`; layout CHK-18 legacy se repara en el mismo apply; script `eval-emission-ia-oleada7-chk19-apply.ps1` | Apply oleada 7 + [TR-015-update-h](../04-tareas/100-SistemaPartes/TR-015-update-h-group-header-cliente-chk19.md) |
 | CHK-20 | mvp_parcial | `Agrupá por cliente y sumá los minutos` | Apply batch grupo + total **duracionMinutos** en **mismo** group footer cliente (copy «Total minutos» / `sumSum`); script `eval-emission-ia-chk20-apply.ps1` | Planner + apply + [TR-015-update-i](../04-tareas/100-SistemaPartes/TR-015-update-i-group-sum-minutos-chk20.md) |
@@ -59,13 +69,27 @@ Registrar resultados en el D-VERIFICACION del TR que corresponda:
 | CHK-23 | futuro_producto | `Usá papel continuo sin alto fijo para comanda` | **N/A** piloto Partes; anotar N/A | — |
 | CHK-24 | futuro_producto | `Poné una tabla dinámica en el pie de página` | **N/A** | — |
 | CHK-25 | futuro_producto | `Si el grupo no terminó no imprimas totales en el pie` | **N/A** | — |
-| CHK-26 | **mvp** | `Poné el formato en horizontal` | Apply → orientación horizontal (Preview / Page Settings); alias: `Formato horizontal` | Planner + apply |
+| CHK-26 | **diferido** | `Poné el formato en horizontal` | Apply → orientación horizontal (Preview / Page Settings); alias: `Formato horizontal` | Código lab (`setPageOrientation`); **prioridad diferida** tras CHK-15..17 |
 | CHK-28 | futuro_producto | `Quitá la columna observación del detalle` | **N/A** piloto (prioridad SPEC = comprobantes) | — |
 | CHK-29 | futuro_producto | `Sacá la agrupación por cliente` | **N/A** | — |
 | CHK-30 | futuro_producto | `Eliminá el campo calculado de duración total` | **N/A** | — |
 | CHK-31 | futuro_producto | `Quitá el texto fijo que dice Borrador en el detalle` | **N/A** | — |
 | CHK-32 | futuro_producto | `Eliminá el gráfico del informe` | **N/A** | — |
 | LAB-21 | mvp_parcial | Ver secuencia abajo | Dos turnos con apply entre medias | Script `eval-emission-ia-checklist-lab-extras.ps1` |
+
+---
+
+## Secuencia oleada 11 — CHK-15, 16, 17 (cuando exista apply)
+
+Mismo setup Consulta detallada; variante con columna **clienteCode** en detalle antes de CHK-17.
+
+| Orden | Prompt (pegar en SC) | Verificar |
+|-------|----------------------|-----------|
+| 1 | `Insertá el logo de la empresa` | PictureBox logo page header |
+| 2 | `Agregá una imagen de fondo al informe` | Watermark en preview |
+| 3 | `Mostrá clienteCode como código QR` | QR escaneable en detalle |
+
+Contrato completo: [SPEC oleada 11](../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-11-imagenes-chk15-17-update.md).
 
 ---
 
@@ -85,7 +109,7 @@ Fallo: segundo turno ignora fecha o pisa el primer grupo sin explicación.
 
 ## Registro acumulado (manual)
 
-Ver tabla viva en [`D-VERIFICACION-TR-015-update-b-2026-11-13.md`](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-b-2026-11-13.md) § **Checklist CHK — manual UI**.
+SoT de cierre por ítem: tabla **Registrar resultados** al inicio de esta guía. La sección «Checklist CHK — manual UI» en [`D-VERIFICACION-TR-015-update-b-2026-11-13.md`](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-b-2026-11-13.md) es **histórica** (2026-11-13); no define pendientes actuales.
 
 Oleada 6 CHK-18: [F-TR-015-update-f-oleada6-chk18](../04-tareas/100-SistemaPartes/F-TR-015-update-f-oleada6-chk18.md) · [D-VERIFICACION](../04-tareas/100-SistemaPartes/D-VERIFICACION-TR-015-update-f-chk18-2026-11-21.md).
 

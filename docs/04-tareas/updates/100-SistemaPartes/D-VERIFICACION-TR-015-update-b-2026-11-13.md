@@ -91,7 +91,9 @@ Leyenda veredicto: **OK** · **Parcial** · **Fallo** · **N/A** · **Bloqueado*
 | CHK-11 | diferido | **OK** | 2026-11-18 | No se pueden crear campos calculados personalizados ni sumar campos no numéricos (presencial). Solo sumas permitidas (p. ej. duracionMinutos). |
 | CHK-15 | diferido | **OK** | 2026-11-18 | No es posible agregar imagen de fondo; solo modificar título, agrupar, sumas de campos permitidos u orientación. |
 
-Pendientes manual UI: CHK-01, CHK-03, CHK-05, CHK-08, CHK-12…CHK-14, CHK-16…CHK-22, CHK-18…CHK-20, CHK-26, LAB-21.
+> **Obsoleto (2026-11-25):** la línea «Pendientes manual UI» debajo **no** refleja el estado real tras oleadas 4–10. Usar [guía CHK](../../../06-operacion/guia-manual-prompts-checklist-chk-emision-ia.md) y archivos `F-TR-015-update-*` / `D-CIERRE-oleada*`.
+
+Pendientes manual UI (snapshot 2026-11-13 — **no usar**): CHK-01, CHK-03, CHK-05, CHK-08, CHK-12…CHK-14, CHK-16…CHK-22, CHK-18…CHK-20, CHK-26, LAB-21.
 
 ---
 
