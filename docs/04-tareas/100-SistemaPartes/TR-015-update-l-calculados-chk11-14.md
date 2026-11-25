@@ -1,6 +1,6 @@
 # TR-015-update-l – Calculados CHK-11..14 (oleada 10)
 
-| Estado | **Pendiente de Revisión** (D 2026-11-24) |
+| Estado | **Finalizado** (F 2026-11-25, smoke CHK-11..14 OK) |
 | HU / SPEC | HU-015-update-l · SPEC oleada 10 |
 
 ## Entrega

@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|--------|
-| Estado | **Especificado** (2026-11-24) |
+| Estado | **Finalizado** (2026-11-25) |
 | HU | [HU-015-update-l](../../../03-historias-usuario/100-SistemaPartes/HU-015-update-l-calculados-chk11-14.md) |
 | TR | [TR-015-update-l](../../../04-tareas/100-SistemaPartes/TR-015-update-l-calculados-chk11-14.md) |
 | Depende | Oleada 9 (CHK-14 report footer) |
