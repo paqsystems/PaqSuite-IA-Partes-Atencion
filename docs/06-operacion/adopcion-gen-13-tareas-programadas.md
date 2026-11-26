@@ -300,8 +300,8 @@ SoT Framework: [SPEC-001-13-update-defer-manual-rds-polling-2026-11-11](https://
 | Override SP parámetros definición | `backend/database/sp/pq_sp_task_definition_parameter_set.sql` |
 | Otros SP host tenant | `backend/database/sp/*.sql`, `backend/scripts/sql/partes/` |
 | Deploy SP post-manifiesto | `backend/scripts/deploy-sp.php` |
-| UI rutas SDK | `frontend/src/features/tareasProgramadas/TareasProgramadasSdkRoutes.tsx` — **debe** usar `TaskScheduledLayout` + pin `@paqsuite/react-core` ≥ **2.4.30-beta.14** (Framework: `docs/05-open-spec/updates/001-Generalidades/SPEC-001-13-update-chrome-pestanas-ejecuciones-2026-11-11.md`); eliminar solapas NavLink locales al migrar. |
-| i18n host (it/fr/…) | `frontend/src/features/tareasProgramadas/tareasProgramadasI18n.ts` — **no** duplicar `tareasProgramadas.tabs.*` (SDK); revisar overrides de `monitoreo.title` vs caption **Ejecuciones**. |
+| UI rutas SDK | `frontend/src/features/tareasProgramadas/TareasProgramadasSdkRoutes.tsx` — **estado implementado (SoT):** layout host `TareasProgramadasLayout` con solapas `NavLink` (Procesos → Definiciones → Ejecuciones → Historial), rutas en `AppRouter.tsx` bajo `/tareas-programadas/*`, páginas `Task*Page` del SDK. El export `TaskScheduledLayout` **no** está en el pin **2.4.30-beta.21** (`@paqsuite/react-core/src/index.ts`); objetivo Framework: `SPEC-001-13-update-chrome-pestanas-ejecuciones-2026-11-11` · deuda CC PQ alinear chrome sin fork i18n (`00-ControlCalidad-PQ.md` § GEN-13 FE). |
+| i18n host (it/fr/…) | `frontend/src/features/tareasProgramadas/tareasProgramadasI18n.ts` + claves `tareasProgramadas.tabs.*` en JSON host para **títulos de solapas del layout local**; reducir duplicados del catálogo SDK (`monitoreo.*`, `grid.*`) según ritual bump regla **43**. |
 | Tests wrappers / GEN-13 | `SchedulingTaskDefinitionRepositoryTest.php`, `StaleTaskExecutionRecoveryTest.php`, `BackupRdsExecutionPollerTest.php`, `RdsBackupTestDoubles.php` |
 | Nginx timeout (opcional) | `scripts/forge/nginx-php-fastcgi-backup-run.timeout.snippet` — residual si no se usa defer polling |
 

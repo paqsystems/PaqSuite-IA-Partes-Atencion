@@ -22,7 +22,7 @@
 2. `php tools/build-installation-manifest.php --semver=<release>`.
 3. `php tools/validate-installation-manifest.php --semver=<release>`.
 4. PR con JSON actualizado + CI verde.
-5. Forge: `scripts/forge/post-deploy.sh` → por **cada** instalación SQL directo en `EMPRESAS_CONEXION` del proyecto: `migrate --force` + `paqsuite:installation:update` + `deploy-sp.php` (no solo el `PAQSUITE_CLIENTE` del `.env`).
+5. Forge: `scripts/forge/post-deploy.sh` → export sidecar GEN-37 (opcional lab) + sync schemas DX → por **cada** instalación SQL directo en `EMPRESAS_CONEXION` del proyecto: `migrate --force` + `paqsuite:installation:update` + `deploy-sp.php` (no solo el `PAQSUITE_CLIENTE` del `.env`). **Preview** (`develop` → `partesatencion-paqsystems-dev`) y **productivo** (`main` → `partesatencion-paqsystems`) usan el **mismo** deploy script con `post-deploy.sh`.
 6. Smoke AC-04 (preview): health → login → menú → API representativa.
 
 ## Smoke AC-04 (piloto MONO directo)

@@ -3,7 +3,7 @@ specId: SPEC-013
 titulo: Carga de paquetes de horas
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-11-06
+ultimaActualizacion: 2026-11-16
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-013-carga-paquetes-horas.md
 procesoErrores: P12
 ---

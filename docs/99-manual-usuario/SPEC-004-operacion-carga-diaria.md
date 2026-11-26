@@ -3,7 +3,7 @@ specId: SPEC-004
 titulo: Carga diaria de tareas
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-05
+ultimaActualizacion: 2026-11-16
 procesoErrores: P03
 openSpec: docs/05-open-spec/100-SistemaPartes/SPEC-004-operacion-carga-diaria.md
 ---

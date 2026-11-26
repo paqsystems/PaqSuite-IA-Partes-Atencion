@@ -10,8 +10,8 @@ Jira: PIAPARTES-11
 | ID | SPEC-011 |
 | Título | Reportes / emisiones — diseñar informes y emitir desde Consulta detallada (adopción GEN-15) |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | En revisión |
-| Última actualización | 2026-11-14 (CC #17 GEN-37 — SPEC-update abierto) |
+| Estado | Finalizado |
+| Última actualización | 2026-11-18 (CC #17 GEN-37 — Parte I) |
 | Revisión A1 | Apto con observaciones — ambigüedades críticas de universo/MONO cerradas (2026-08-25) |
 | HU relacionada(s) | [HU-011-reportes-emisiones](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) |
 | TR relacionada(s) | [TR-011-reportes-emisiones](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
@@ -348,6 +348,20 @@ Ninguna bloqueante tras A1. Refinamientos → B/C / TR:
 | 2026-11-02 | CC-PQ #12: segundo proceso emisible **Paquete de Horas** (`partes.informes.paqueteHoras`); mismo criterio de filas tildadas. |
 | 03/11/2026 | CC-PQ #13: diseñador — Field List del proceso Paquete de horas expone columnas de negocio (schemas sidecar + layout host). Parte I acotada; TR-011 §18; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 | 2026-11-07 | Parte I: evidencia E de TR-011 absorbida en el original (§16); archivo `E-TR-011` eliminado. |
+| 2026-11-18 | CC-PQ #17 / GEN-37: catálogo semántico Field List — §11; Parte I; updates eliminados. [D-VERIFICACION-CC-PQ-17](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-17-2026-11-14-gen37.md). |
+
+---
+
+## 11. CC-PQ #17 — GEN-37 catálogo semántico (Parte I 18/11/2026)
+
+SoT Framework **GEN-37** sobre `backend/database/emission-designer-schemas/{processCode}.json` (mismo artefacto GEN-15).
+
+| processCode | `label` | `captionKey` | `description` / `synonyms` |
+|-------------|---------|--------------|----------------------------|
+| `partes.informes.consultaDetallada` | **Must** | Recomendado (`partes.informe.field.*`) | **Must** (IA diseño — [TR-015-update-b](../../04-tareas/100-SistemaPartes/TR-015-update-b-smart-capture-diseno-informes.md) § CC #17) |
+| `partes.informes.paqueteHoras` | **Must** | Recomendado | Recomendado (sin IA diseño MVP) |
+
+Reglas: `fields[].name` **sin cambio** (V-EM-04); manifiesto + `installation:update`; sidecar DX vía export canónico (CA-37-07). Sin catálogo paralelo ni labels hardcode en C#.
 
 ---
 

@@ -3,7 +3,7 @@ specId: SPEC-011
 titulo: Parámetros generales y seguridad
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-05
+ultimaActualizacion: 2026-11-16
 openSpec: docs/05-open-spec/100-SistemaPartes/
 ---
 
@@ -19,7 +19,7 @@ openSpec: docs/05-open-spec/100-SistemaPartes/
 
 ### Parámetros
 
-1. Menú **Parámetros** → elegí el programa (**Auth**, **Partes**, **Emission**, **ExcelImport**, etc., según lo que muestre tu instalación).
+1. Menú **Parámetros** → elegí el programa (**Auth**, **Partes**, **Emission**, **ExcelImport**, etc., según lo que muestre tu instalación) o, bajo **Soporte técnico**, **Tareas programadas** (solo soporte con permiso; ver [SPEC-012](./SPEC-012-tareas-programadas-soporte.md)).
 2. Revisá el listado de parámetros (nombre y valor actual en texto).
 3. **Editar** abre un control acorde al tipo (número, sí/no, texto).
 4. Guardá. El efecto depende del parámetro (por ejemplo tramo de duración, tope de masivo, refresco del dashboard, habilitar importación o emisiones).

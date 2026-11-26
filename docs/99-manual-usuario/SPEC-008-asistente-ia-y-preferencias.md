@@ -3,7 +3,7 @@ specId: SPEC-008
 titulo: Asistente IA y preferencias de modelo
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-05
+ultimaActualizacion: 2026-11-16
 openSpec: docs/02-producto/Sistema-Partes-IA/12-asistente-ia-ayuda-y-chat-documental.md
 ---
 
