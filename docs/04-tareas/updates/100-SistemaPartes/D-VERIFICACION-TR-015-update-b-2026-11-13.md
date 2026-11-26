@@ -74,8 +74,33 @@ Ejecutar en lab: sidecar `:5055` + Partes + BYOK GEN-16 (no OpenAI sidecar oblig
 
 ---
 
+## Checklist CHK (matriz Framework) — manual UI
+
+SoT prompts: Framework [`15-reportes-emisiones-ia-checklist-matriz.json`](../../../../../PaqSuite-IA-FRAMEWORK/docs/02-producto/15-reportes-emisiones-ia-checklist-matriz.json) · guía Partes [`guia-manual-prompts-checklist-chk-emision-ia.md`](../../../06-operacion/guia-manual-prompts-checklist-chk-emision-ia.md).
+
+Leyenda veredicto: **OK** · **Parcial** · **Fallo** · **N/A** · **Bloqueado**.
+
+| CHK | Estado spec | Veredicto manual | Fecha | Observación (operador) |
+|-----|-------------|------------------|-------|-------------------------|
+| CHK-02 | diferido | **OK** | 2026-11-18 | No es posible agregar textos fijos personalizados como «Borrador» en el detalle del informe usando las acciones y campos permitidos. |
+| CHK-04 | diferido | **OK** | 2026-11-18 | El sistema ya muestra los títulos o nombres de campo en el encabezado de cada columna de manera automática; no pide acciones adicionales para esta función. |
+| CHK-06 | diferido | **Parcial** | 2026-11-18 | Se configuró el **título del informe** con el nombre del cliente (empresa) en la parte superior — no es el comportamiento esperado del ítem (empresa sup. izq. sin apply en v1); posible confusión título vs page header. |
+| CHK-07 | diferido | **Parcial** | 2026-11-18 | Agregó fecha agrupando por mes arriba a la derecha (pedido); **resultado real:** se agregó la fecha pero **a la izquierda**. Ítem diferido: no debería apply ideal; si hubo mutación, revisar heurística/LLM. |
+| CHK-09 | diferido | **OK** | 2026-11-18 | No es posible agregar un pie de informe con las acciones disponibles. Solo título, agrupaciones, sumatorias y orientación de página. |
+| CHK-10 | diferido | **Fallo** | 2026-11-18 | Mensaje indicando que se aplicó el cambio; **el cambio no se visualiza en el lienzo** ni aparece el banner **Guardar / Descartar** (L-B-10). Investigar apply fantasma o refresh diseñador. |
+| CHK-11 | diferido | **OK** | 2026-11-18 | No se pueden crear campos calculados personalizados ni sumar campos no numéricos (presencial). Solo sumas permitidas (p. ej. duracionMinutos). |
+| CHK-15 | diferido | **OK** | 2026-11-18 | No es posible agregar imagen de fondo; solo modificar título, agrupar, sumas de campos permitidos u orientación. |
+
+> **Obsoleto (2026-11-25):** la línea «Pendientes manual UI» debajo **no** refleja el estado real tras oleadas 4–10. Usar [guía CHK](../../../06-operacion/guia-manual-prompts-checklist-chk-emision-ia.md) y archivos `F-TR-015-update-*` / `D-CIERRE-oleada*`.
+
+Pendientes manual UI (snapshot 2026-11-13 — **no usar**): CHK-01, CHK-03, CHK-05, CHK-08, CHK-12…CHK-14, CHK-16…CHK-22, CHK-18…CHK-20, CHK-26, LAB-21.
+
+---
+
 ## Gaps / follow-ups
 
+- CHK-10: apply comunicado sin efecto en lienzo ni `pendingReview` → bug a reproducir (network `/api/layout/apply`, backup sidecar).
+- CHK-06 / CHK-07: ítems **diferido** con mutación parcial del layout → revisar planner/respuesta al liberar LLM libre.
 - Batería manual #1–#8 → **Parte F1**.
 - E2E: `npx playwright install` (Chromium) en la PC de lab.
 - Fixture `ApiV1EmissionsPartesTest` (seed cliente) — fuera de alcance Must TR-015-update-b.
@@ -90,3 +115,4 @@ Ejecutar en lab: sidecar `:5055` + Partes + BYOK GEN-16 (no OpenAI sidecar oblig
 |-------|--------|
 | 2026-11-13 | Creado al cierre Parte D (código T1–T7 + tests + runbook; T8/T9 checklist para F1). |
 | 2026-11-13 | Parte E: re-ejecución PHPUnit/Vitest Must PASS; 1 fail emisiones seed; E2E blocked Playwright browsers. |
+| 2026-11-18 | Registro manual CHK-02, 04, 06, 07, 09, 10, 11, 15 (operador). |

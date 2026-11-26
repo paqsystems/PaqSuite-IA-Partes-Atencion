@@ -67,8 +67,8 @@ export default defineConfig(({ mode }) => {
       alias: resolveAlias,
     },
     server: {
-      port: 3000,
-      /** Lab Partes: URL canónica `http://127.0.0.1:3000`. Evita ambigüedad `localhost` → `::1` si hay conflicto IPv6. */
+      port: 3102,
+      /** Lab Partes: URL canónica `http://127.0.0.1:3102` (evitar 3000 si hay cookie/tenant viejo). */
       host: '127.0.0.1',
       /** Lab Partes: si el puerto está tomado, fallar (no saltar a 3001). */
       strictPort: true,
