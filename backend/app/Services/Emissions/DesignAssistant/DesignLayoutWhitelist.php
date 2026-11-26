@@ -26,6 +26,10 @@ final class DesignLayoutWhitelist
         'addReportSum',
         'addCalculatedField',
         'addDetailCalculatedLabel',
+        'setReportWatermarkImage',
+        'setPageHeaderLogo',
+        'addDetailBarCode',
+        'removeDetailField',
     ];
 
     /** @var list<string> columnas schema Consulta detallada (TR-011 / TR-015). */

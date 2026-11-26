@@ -5,7 +5,7 @@
 | Campo | Valor |
 |-------|--------|
 | ID | HU-015-update-m |
-| Estado | **Especificado** |
+| Estado | **Finalizado** |
 | Jira | [PIAPARTES-78](https://paqsystems.atlassian.net/browse/PIAPARTES-78) (parent [PIAPARTES-53](https://paqsystems.atlassian.net/browse/PIAPARTES-53)) |
 | SPEC | [SPEC oleada 11](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-11-imagenes-chk15-17-update.md) |
 | TR | [TR-015-update-m](../../04-tareas/100-SistemaPartes/TR-015-update-m-imagenes-chk15-17.md) (Jira [PIAPARTES-79](https://paqsystems.atlassian.net/browse/PIAPARTES-79)) |

@@ -34,6 +34,14 @@ final class DesignLayoutActionPlanner
     {
         $text = mb_strtolower(trim($message), 'UTF-8');
 
+        $removeDetailActions = DesignLayoutRemoveDetailFieldHeuristics::tryMatch($message);
+        if ($removeDetailActions !== []) {
+            return [
+                'replyText' => 'partes.emissionDesign.actionsPlanned',
+                'actions' => $removeDetailActions,
+            ];
+        }
+
         if (DesignLayoutRemovalIntentHeuristics::matches($message)) {
             return [
                 'replyText' => 'partes.emissionDesign.noMappedActions',
@@ -84,6 +92,11 @@ final class DesignLayoutActionPlanner
         $reportFooterActions = DesignLayoutReportFooterHeuristics::tryMatch($message);
         if ($reportFooterActions !== []) {
             $actions = array_merge($actions, $reportFooterActions);
+        }
+
+        $imageActions = DesignLayoutImagesHeuristics::tryMatch($message);
+        if ($imageActions !== []) {
+            $actions = array_merge($actions, $imageActions);
         }
 
         // Primero verbos explícitos ("cambia el título a …"); el patrón suelto
@@ -140,7 +153,7 @@ final class DesignLayoutActionPlanner
         $system = <<<PROMPT
 Sos el asistente de diseño de informes Partes (Smart Capture bajo DevExpress).
 Respondé SOLO JSON válido (sin markdown):
-{"replyText":"string","actions":[{"action":"setReportTitle|addGroupByField|addGroupSum|setPageOrientation|setControlAppearance|addDetailField|addDetailStaticText|addPageHeaderColumnLabels|setPageHeaderEmpresa|setPageHeaderFecha|wrapReportTitleInPanel|ensureReportFooter|addReportSum|addCalculatedField|addDetailCalculatedLabel","payload":{}}]}
+{"replyText":"string","actions":[{"action":"setReportTitle|addGroupByField|addGroupSum|setPageOrientation|setControlAppearance|addDetailField|removeDetailField|addDetailStaticText|addPageHeaderColumnLabels|setPageHeaderEmpresa|setPageHeaderFecha|wrapReportTitleInPanel|ensureReportFooter|addReportSum|addCalculatedField|addDetailCalculatedLabel|setReportWatermarkImage|setPageHeaderLogo|addDetailBarCode","payload":{}}]}
 Reglas:
 - Solo actions de: {$types}
 - Campos técnicos permitidos: {$fields}
@@ -151,6 +164,7 @@ Reglas:
 - setPageOrientation: payload.orientation = portrait|landscape
 - setControlAppearance: payload.target {kind:field|reportTitle|controlName, fieldName?, name?} + fontFamily, fontSizePt, bold, italic, underline, textAlign, verticalAlign, foreColor (#hex), backColor, textAngle
 - addDetailField: payload.field = name técnico existente en schema; agrega XRLabel en DetailBand (no PageHeader)
+- removeDetailField: payload.field = name técnico; quita XRLabel del DetailBand vinculado al campo (v1 solo observacion)
 - addDetailStaticText: payload.text string 1..200; texto literal en DetailBand sin binding
 - addPageHeaderColumnLabels: payload.fields opcional (objeto vacío = todas las columnas del detalle)
 - setPageHeaderEmpresa: payload.text string 1..200 (nombre empresa en page header fila 1)
@@ -160,6 +174,9 @@ Reglas:
 - addReportSum: summary count|sum; field numérico si sum; calculatedField para totalizar calculado en report footer
 - addCalculatedField: kind sum|iif; fields[] numéricos (sum) o testField/trueField/falseField (iif); name opcional calc_*
 - addDetailCalculatedLabel: calculatedName existente en layout
+- setReportWatermarkImage: payload.source default (imagen piloto)
+- setPageHeaderLogo: payload.source empresa
+- addDetailBarCode: payload.field schema + symbology QRCode; placement opcional detail|pageHeader|reportHeader|reportFooter|pageFooter (default detail)
 - Edición incremental; no inventes campos
 - Si el pedido no mapea, actions=[] y replyText explica la limitación en español
 PROMPT;
@@ -263,7 +280,7 @@ PROMPT;
                 }
             }
 
-            if ($type === 'addDetailField') {
+            if ($type === 'addDetailField' || $type === 'removeDetailField') {
                 $field = trim((string) ($payload['field'] ?? ''));
                 if (! DesignLayoutWhitelist::isSchemaField($field)) {
                     continue;
@@ -383,6 +400,48 @@ PROMPT;
                     continue;
                 }
                 $payload = ['calculatedName' => $calcName];
+            }
+
+            if ($type === 'setReportWatermarkImage') {
+                $source = strtolower(trim((string) ($payload['source'] ?? 'default')));
+                if ($source !== 'default') {
+                    continue;
+                }
+                $payload = ['source' => 'default'];
+            }
+
+            if ($type === 'setPageHeaderLogo') {
+                $source = strtolower(trim((string) ($payload['source'] ?? 'empresa')));
+                if ($source !== 'empresa') {
+                    continue;
+                }
+                $payload = ['source' => 'empresa'];
+            }
+
+            if ($type === 'addDetailBarCode') {
+                $field = trim((string) ($payload['field'] ?? ''));
+                if (! DesignLayoutWhitelist::isSchemaField($field)) {
+                    continue;
+                }
+                $symbology = trim((string) ($payload['symbology'] ?? 'QRCode'));
+                if (strcasecmp($symbology, 'QRCode') !== 0) {
+                    continue;
+                }
+                $placement = strtolower(trim((string) ($payload['placement'] ?? 'detail')));
+                $allowedPlacements = ['detail', 'pageheader', 'reportheader', 'reportfooter', 'pagefooter'];
+                if (! in_array($placement, $allowedPlacements, true)) {
+                    $placement = 'detail';
+                }
+                if ($placement === 'pageheader') {
+                    $placement = 'pageHeader';
+                } elseif ($placement === 'reportheader') {
+                    $placement = 'reportHeader';
+                } elseif ($placement === 'reportfooter') {
+                    $placement = 'reportFooter';
+                } elseif ($placement === 'pagefooter') {
+                    $placement = 'pageFooter';
+                }
+                $payload = ['field' => $field, 'symbology' => 'QRCode', 'placement' => $placement];
             }
 
             $out[] = [

@@ -6,7 +6,7 @@
 |-------|--------|
 | ID | SPEC-015-update-oleada-11-imagenes-chk15-17 |
 | Título | Imagen de fondo, logo de empresa y código QR en detalle vía Smart Capture |
-| Estado | **Especificado** (HU/TR listos; pendiente D) |
+| Estado | **Finalizado** (F 2026-11-25; smoke OK) |
 | Jira | Épica [PIAPARTES-53](https://paqsystems.atlassian.net/browse/PIAPARTES-53) · Story [PIAPARTES-78](https://paqsystems.atlassian.net/browse/PIAPARTES-78) · Task [PIAPARTES-79](https://paqsystems.atlassian.net/browse/PIAPARTES-79) |
 | HU | [HU-015-update-m](../../../03-historias-usuario/100-SistemaPartes/HU-015-update-m-imagenes-chk15-17.md) |
 | TR | [TR-015-update-m](../../../04-tareas/100-SistemaPartes/TR-015-update-m-imagenes-chk15-17.md) |

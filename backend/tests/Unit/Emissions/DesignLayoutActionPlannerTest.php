@@ -62,6 +62,25 @@ final class DesignLayoutActionPlannerTest extends TestCase
         $this->assertSame('sum', $result['actions'][0]['payload']['kind'] ?? null);
     }
 
+    public function test_heuristics_chk28_remove_observacion_detalle(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Quitá la columna observación del detalle');
+
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('removeDetailField', $result['actions'][0]['action']);
+        $this->assertSame('observacion', $result['actions'][0]['payload']['field'] ?? null);
+    }
+
+    public function test_heuristics_chk29_remove_group_still_no_mapped(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Sacá la agrupación por cliente');
+
+        $this->assertSame([], $result['actions']);
+        $this->assertSame('partes.emissionDesign.noMappedActions', $result['replyText']);
+    }
+
     public function test_heuristics_chk21_second_level_no_mapped(): void
     {
         $planner = new DesignLayoutActionPlanner($this->unusedLlm());
@@ -198,6 +217,42 @@ final class DesignLayoutActionPlannerTest extends TestCase
         $this->assertTrue($payload['bold'] ?? false);
         $this->assertTrue($payload['underline'] ?? false);
         $this->assertSame('center', $payload['textAlign'] ?? null);
+    }
+
+    public function test_heuristics_chk15_watermark(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Agregá una imagen de fondo al informe');
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('setReportWatermarkImage', $result['actions'][0]['action']);
+        $this->assertSame('default', $result['actions'][0]['payload']['source'] ?? null);
+    }
+
+    public function test_heuristics_chk16_logo(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Insertá el logo de la empresa');
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('setPageHeaderLogo', $result['actions'][0]['action']);
+        $this->assertSame('empresa', $result['actions'][0]['payload']['source'] ?? null);
+    }
+
+    public function test_heuristics_chk17_qr_cliente(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Mostrá clienteCode como código QR');
+        $this->assertCount(1, $result['actions']);
+        $this->assertSame('addDetailBarCode', $result['actions'][0]['action']);
+        $this->assertSame('clienteCode', $result['actions'][0]['payload']['field'] ?? null);
+        $this->assertSame('QRCode', $result['actions'][0]['payload']['symbology'] ?? null);
+        $this->assertSame('detail', $result['actions'][0]['payload']['placement'] ?? null);
+    }
+
+    public function test_heuristics_qr_en_page_header(): void
+    {
+        $planner = new DesignLayoutActionPlanner($this->unusedLlm());
+        $result = $planner->fromHeuristics('Mostrá clienteCode como código QR en el encabezado de página');
+        $this->assertSame('pageHeader', $result['actions'][0]['payload']['placement'] ?? null);
     }
 
     public function test_sanitize_drops_unknown_field(): void

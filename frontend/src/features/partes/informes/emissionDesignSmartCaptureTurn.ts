@@ -244,6 +244,46 @@ export async function handleEmissionDesignSmartCaptureSend(
         return
       }
 
+      const noopWatermarkYa = details.some((d) =>
+        d.includes('setReportWatermarkImage:ya_existe'),
+      )
+      if ((applyJson.applied ?? 0) === 0 && noopWatermarkYa) {
+        handlers.onAssistantReply(
+          handlers.resolveMessage('partes.emissionDesign.images.watermarkAlreadySet'),
+        )
+        return
+      }
+
+      const noopLogoYa = details.some((d) =>
+        d.includes('setPageHeaderLogo:ya_colocados'),
+      )
+      if ((applyJson.applied ?? 0) === 0 && noopLogoYa) {
+        handlers.onAssistantReply(
+          handlers.resolveMessage('partes.emissionDesign.images.logoAlreadyPlaced'),
+        )
+        return
+      }
+
+      const noopBarCodeYa = details.some((d) =>
+        d.includes('addDetailBarCode:ya_existe'),
+      )
+      if ((applyJson.applied ?? 0) === 0 && noopBarCodeYa) {
+        handlers.onAssistantReply(
+          handlers.resolveMessage('partes.emissionDesign.barCode.alreadyPlaced'),
+        )
+        return
+      }
+
+      const noopRemoveDetailYaAusente = details.some((d) =>
+        d.includes('removeDetailField:ya_ausente'),
+      )
+      if ((applyJson.applied ?? 0) === 0 && noopRemoveDetailYaAusente) {
+        handlers.onAssistantReply(
+          handlers.resolveMessage('partes.emissionDesign.removeDetailField.noop.ya_ausente'),
+        )
+        return
+      }
+
       // Solo banner Guardar/Descartar si el sidecar dejó backup (pendingReview).
       if (applyJson.pendingReview) {
         handlers.onPendingReview?.(true)

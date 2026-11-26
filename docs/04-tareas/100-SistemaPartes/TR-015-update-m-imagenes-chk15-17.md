@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|--------|
-| Estado | **Especificado** |
+| Estado | **Finalizado** |
 | Jira | [PIAPARTES-79](https://paqsystems.atlassian.net/browse/PIAPARTES-79) |
 | HU / SPEC | [HU-015-update-m](../../03-historias-usuario/100-SistemaPartes/HU-015-update-m-imagenes-chk15-17.md) · [SPEC oleada 11](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-11-imagenes-chk15-17-update.md) |
 | TR previa | [TR-015-update-l](./TR-015-update-l-calculados-chk11-14.md) |
@@ -28,11 +28,12 @@ Host Partes: extender `DesignLayoutWhitelist`, heurísticas (`DesignLayoutImages
 
 ## 3) Tests (parte E)
 
-| Capa | Comando |
-|------|---------|
-| Planner | `php vendor/bin/phpunit --filter DesignLayoutChecklistPlannerTest` |
-| Sidecar | `dotnet test` filtros por appliers nuevos |
-| Apply | `.\eval-emission-ia-oleada11-chk15-17-apply.ps1` |
+| Capa | Comando | Resultado 2026-11-25 |
+|------|---------|-------------------|
+| Planner | `php vendor/bin/phpunit --filter DesignLayoutChecklistPlannerTest` | OK (30) |
+| Planner unit | `php vendor/bin/phpunit --filter DesignLayoutActionPlannerTest` | OK (26) |
+| Sidecar | `dotnet test --filter LayoutImagesOleada11` | OK (3) |
+| Apply | `.\eval-emission-ia-oleada11-chk15-17-apply.ps1` | PASS 16→15→17 |
 
 ## 4) Smoke manual
 

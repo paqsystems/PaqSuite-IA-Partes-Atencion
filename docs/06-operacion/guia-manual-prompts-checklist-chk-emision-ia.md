@@ -13,8 +13,12 @@ Registrar resultados en el **D-VERIFICACION / F** del TR u oleada que correspond
 | CHK-04…07 | [F oleada5](../04-tareas/100-SistemaPartes/F-TR-015-update-e-oleada5-page-header.md) |
 | CHK-09, 10 | [F oleada9](../04-tareas/100-SistemaPartes/F-TR-015-update-k-oleada9-chk09-10.md) |
 | CHK-11…14 | [F oleada10](../04-tareas/100-SistemaPartes/F-TR-015-update-l-oleada10-chk11-14.md) |
-| CHK-18…21 | F oleadas 6–8 en `docs/04-tareas/100-SistemaPartes/F-TR-015-update-*.md` |
-| **CHK-15..17** | [Prompts SDD nuevo hilo](./prompts-nuevo-hilo-oleada-11-chk15-17-sdd.md) · Jira PIAPARTES-78/79 · [SPEC oleada 11](../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-11-imagenes-chk15-17-update.md) |
+| CHK-18 | [F oleada 6](../04-tareas/100-SistemaPartes/F-TR-015-update-f-oleada6-chk18.md) |
+| CHK-19 | [F oleada 7](../04-tareas/100-SistemaPartes/F-TR-015-update-h-oleada7-chk19.md) |
+| CHK-20 | [F oleada 7b](../04-tareas/100-SistemaPartes/F-TR-015-update-i-oleada7b-chk20.md) |
+| CHK-21 + LAB-21 | [F oleada 8](../04-tareas/100-SistemaPartes/F-TR-015-update-j-oleada8-chk21.md) |
+| **CHK-15..17** | [F oleada 11](../04-tareas/100-SistemaPartes/F-TR-015-update-m-oleada11-chk15-17.md) · [prompts SDD](./prompts-nuevo-hilo-oleada-11-chk15-17-sdd.md) · [SPEC oleada 11](../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-11-imagenes-chk15-17-update.md) |
+| **CHK-28** | [F oleada 12](../04-tareas/100-SistemaPartes/F-TR-015-update-n-oleada12-chk28.md) · [D F1](../04-tareas/100-SistemaPartes/D-VERIFICACION-TR-015-update-n-chk28-2026-11-26.md) · [prompts oleada 12](./prompts-nuevo-hilo-oleada-12-chk28-sdd.md) |
 | **CHK-26** | **Diferido** — lab script TR-j; sin F |
 | Registro libre / huecos | Tabla viva [D-VERIFICACION-TR-015-update-b](../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-TR-015-update-b-2026-11-13.md) (§ histórico 2026-11-13, no SoT de pendientes) |
 
@@ -36,11 +40,15 @@ Registrar resultados en el **D-VERIFICACION / F** del TR u oleada que correspond
 
 **Ítems `diferido` / `futuro_producto`:** éxito = **no** mutar el REPX (sin apply o mensaje claro de límite); anotá el texto de la respuesta.
 
+**Ítems `mvp_parcial` en la tabla:** viene de la **matriz Framework** (alcance del checklist histórico ≠ 100 % paridad producto). **No** indica oleada pendiente: si hay fila en la tabla **Cierre (F)** arriba, el ítem ya tiene **F Finalizado** y smoke documentado.
+
 ---
 
 ## Tabla de prompts y criterio
 
-| ID | Estado | Prompt (pegar en SC) | Resultado esperado (manual) | Capa auto ya cubierta |
+Columna **Estado (matriz):** `mvp` | `mvp_parcial` | `diferido` | `futuro_producto`. Para re-smoke o auditoría, mirá la última columna (**Cierre F / TR**) además del estado.
+
+| ID | Estado (matriz) | Prompt (pegar en SC) | Resultado esperado (manual) | Cierre F / TR |
 |----|--------|----------------------|-----------------------------|------------------------|
 | CHK-01 | **mvp** | `Agregá la columna observación en el detalle` | Apply → label en detalle con `[observacion]`; banner Guardar/Descartar | Cierre [F oleada4](../04-tareas/100-SistemaPartes/F-TR-015-update-d-oleada4-chk01-03-08.md) |
 | CHK-02 | **mvp** | `Agregá un texto fijo que diga Borrador en el detalle` | Apply → label literal «Borrador» en detalle | Idem oleada4 |
@@ -58,19 +66,19 @@ Registrar resultados en el **D-VERIFICACION / F** del TR u oleada que correspond
 | CHK-12 | **mvp** | `Campo calculado IIf entre clienteNombre y observacion` | `calc_textoCliente` | oleada 10 |
 | CHK-13 | **mvp** | `Mostrá un campo calculado en el detalle` | Tras CHK-12; label en Detail | oleada 10 |
 | CHK-14 | **mvp** | `Totalizá el campo calculado en el pie del informe` | Tras CHK-11; suma calc en ReportFooter | oleada 10 |
-| CHK-15 | **mvp** (oleada 11) | `Agregá una imagen de fondo al informe` | Apply → watermark informe (`setReportWatermarkImage`); banner Guardar/Descartar | [SPEC oleada 11](../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-11-imagenes-chk15-17-update.md) — **pendiente implementar** |
-| CHK-16 | **mvp** (oleada 11) | `Insertá el logo de la empresa` | Apply → `imgPageHdr_Logo` en page header (`setPageHeaderLogo`) | Idem oleada 11 |
-| CHK-17 | **mvp** (oleada 11) | `Mostrá clienteCode como código QR` | Apply → `XRBarCode` en detalle (`addDetailBarCode`) | Idem; layout con `clienteCode` |
-| CHK-18 | **mvp** | `Agrupá por cliente` | Apply → Group Header/Footer con **clienteNombre**; **re-aplicar** → mensaje *«…ya está agrupado por cliente…»* (`noop:addGroupByField:ya_agrupado`); Guardar/Descartar | Planner + apply + [oleada 6](../04-tareas/100-SistemaPartes/TR-015-update-f-agrupacion-cliente-chk18.md) |
-| CHK-19 | mvp_parcial | `Agrupá por cliente` | Mismo prompt que CHK-18; group header con **Cliente:** + `[clienteNombre]` en negrita; **re-aplicar** con caption OK → `noop:addGroupByField:ya_agrupado`; layout CHK-18 legacy se repara en el mismo apply; script `eval-emission-ia-oleada7-chk19-apply.ps1` | Apply oleada 7 + [TR-015-update-h](../04-tareas/100-SistemaPartes/TR-015-update-h-group-header-cliente-chk19.md) |
-| CHK-20 | mvp_parcial | `Agrupá por cliente y sumá los minutos` | Apply batch grupo + total **duracionMinutos** en **mismo** group footer cliente (copy «Total minutos» / `sumSum`); script `eval-emission-ia-chk20-apply.ps1` | Planner + apply + [TR-015-update-i](../04-tareas/100-SistemaPartes/TR-015-update-i-group-sum-minutos-chk20.md) |
-| CHK-21 | mvp_parcial | `Agregá un segundo nivel de agrupación por fecha dentro de cada cliente` | **Un turno:** sin acciones; mensaje `useTwoTurns` (LAB-21). Ver [TR-015-update-j](../04-tareas/100-SistemaPartes/TR-015-update-j-segundo-grupo-chk21.md) | Planner + manual |
+| CHK-15 | **mvp** | `Agregá una imagen de fondo al informe` | Apply → watermark (`setReportWatermarkImage`); re-aplicar → `noop:ya_existe`; Guardar/Descartar | **F cerrado** [oleada 11](../04-tareas/100-SistemaPartes/F-TR-015-update-m-oleada11-chk15-17.md) · `eval-emission-ia-oleada11-chk15-17-apply.ps1` |
+| CHK-16 | **mvp** | `Insertá el logo de la empresa` | Apply → `imgPageHdr_Logo` (`setPageHeaderLogo`); smoke 16→15→17 | Idem F oleada 11 |
+| CHK-17 | **mvp** | `Mostrá clienteCode como código QR` (detalle default) | `addDetailBarCode`; variantes: `… en el encabezado de página` (`pageHeader`), pie informe/página, etc. | Idem F oleada 11 |
+| CHK-18 | **mvp** | `Agrupá por cliente` | Group Header/Footer **clienteNombre**; re-aplicar → `noop:ya_agrupado`; Guardar/Descartar | **F cerrado** [oleada 6](../04-tareas/100-SistemaPartes/F-TR-015-update-f-oleada6-chk18.md) · [TR-f](../04-tareas/100-SistemaPartes/TR-015-update-f-agrupacion-cliente-chk18.md) |
+| CHK-19 | **mvp_parcial** (F cerrado) | `Agrupá por cliente` | Igual prompt CHK-18 + caption **Cliente:** + negrita (subrayado no MVP); `eval-emission-ia-oleada7-chk19-apply.ps1` | **F cerrado** [oleada 7](../04-tareas/100-SistemaPartes/F-TR-015-update-h-oleada7-chk19.md) — matriz: sin subrayado obligatorio |
+| CHK-20 | **mvp_parcial** (F cerrado) | `Agrupá por cliente y sumá los minutos` | Batch grupo + suma; copy **«Total minutos»** (no literal «Total:» genérico); `eval-emission-ia-chk20-apply.ps1` | **F cerrado** [oleada 7b](../04-tareas/100-SistemaPartes/F-TR-015-update-i-oleada7b-chk20.md) |
+| CHK-21 | **mvp_parcial** (F cerrado) | `Agregá un segundo nivel de agrupación por fecha dentro de cada cliente` | **Un turno:** sin apply → `useTwoTurns`. Segundo nivel: **LAB-21** (dos turnos cliente → fecha) | **F cerrado** [oleada 8](../04-tareas/100-SistemaPartes/F-TR-015-update-j-oleada8-chk21.md) · opción B |
 | CHK-22 | diferido | `Arma el detalle en columnas: fecha, cliente, minutos` | Sin apply | PHPUnit |
 | CHK-23 | futuro_producto | `Usá papel continuo sin alto fijo para comanda` | **N/A** piloto Partes; anotar N/A | — |
 | CHK-24 | futuro_producto | `Poné una tabla dinámica en el pie de página` | **N/A** | — |
 | CHK-25 | futuro_producto | `Si el grupo no terminó no imprimas totales en el pie` | **N/A** | — |
 | CHK-26 | **diferido** | `Poné el formato en horizontal` | Apply → orientación horizontal (Preview / Page Settings); alias: `Formato horizontal` | Código lab (`setPageOrientation`); **prioridad diferida** tras CHK-15..17 |
-| CHK-28 | futuro_producto | `Quitá la columna observación del detalle` | **N/A** piloto (prioridad SPEC = comprobantes) | — |
+| CHK-28 | **mvp** | `Quitá la columna observación del detalle` | Sin observación en **detalle** ni título en page header; re-prompt → noop | **F cerrado** [oleada 12](../04-tareas/100-SistemaPartes/F-TR-015-update-n-oleada12-chk28.md) |
 | CHK-29 | futuro_producto | `Sacá la agrupación por cliente` | **N/A** | — |
 | CHK-30 | futuro_producto | `Eliminá el campo calculado de duración total` | **N/A** | — |
 | CHK-31 | futuro_producto | `Quitá el texto fijo que dice Borrador en el detalle` | **N/A** | — |
