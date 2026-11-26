@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 
 const remoteBaseUrl = (process.env.PW_BASE_URL ?? process.env.PLAYWRIGHT_BASE_URL ?? '').trim()
 const isRemoteE2e = /^https?:\/\//i.test(remoteBaseUrl) && !/localhost|127\.0\.0\.1/i.test(remoteBaseUrl)
+const uiCaptureEnabled = process.env.PW_UI_CAPTURE === '1'
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -14,7 +15,26 @@ export default defineConfig({
     baseURL: isRemoteE2e ? remoteBaseUrl : 'http://localhost:3101',
     trace: 'on-first-retry',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      testIgnore: /ui-screenshot-catalog\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    ...(uiCaptureEnabled
+      ? [
+          {
+            name: 'ui-screenshots',
+            testMatch: /ui-screenshot-catalog\.spec\.ts/,
+            use: {
+              ...devices['Desktop Chrome'],
+              viewport: { width: 1440, height: 900 },
+            },
+            timeout: Number(process.env.PW_UI_CAPTURE_TEST_TIMEOUT_MS ?? 360_000),
+          },
+        ]
+      : []),
+  ],
   ...(isRemoteE2e
     ? {}
     : {
