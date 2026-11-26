@@ -233,7 +233,14 @@ export function EmissionDesignSmartCaptureSlot({
         }}
       />
       <div data-testid="emissionDesignAssistantTurn" style={{ display: 'none' }} aria-hidden />
-      <LlmPreferencesModalHost visible={prefsOpen} onClose={() => setPrefsOpen(false)} />
+      <LlmPreferencesModalHost
+        visible={prefsOpen}
+        onClose={() => {
+          setPrefsOpen(false)
+          void llmSelection.refresh()
+        }}
+        onCredentialsChanged={() => void llmSelection.refresh()}
+      />
     </div>
   )
 }
