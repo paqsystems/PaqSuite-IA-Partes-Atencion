@@ -14,6 +14,7 @@ import {
   fetchLayoutContent,
   restoreLayoutBackup,
 } from './layoutPendingReviewApi'
+import { EmissionDesignHydrateGate } from './EmissionDesignHydrateGate'
 
 const DESIGN_SC_PROCESS = 'partes.informes.consultaDetallada'
 
@@ -100,10 +101,16 @@ export function ReportDesignerHostPage() {
 
               return (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                  <DxReportDesignerPanel
-                    key={`dx-${designerRemountKey}-${context.reportCode ?? 'none'}`}
-                    context={context}
-                  />
+                  <EmissionDesignHydrateGate
+                    processCode={context.processCode}
+                    reportCode={context.reportCode}
+                    onHydrateDone={onAppliedRefresh}
+                  >
+                    <DxReportDesignerPanel
+                      key={`dx-${designerRemountKey}-${context.reportCode ?? 'none'}`}
+                      context={context}
+                    />
+                  </EmissionDesignHydrateGate>
                   {showSc ? (
                     <EmissionDesignSmartCaptureSlot
                       processCode={context.processCode}

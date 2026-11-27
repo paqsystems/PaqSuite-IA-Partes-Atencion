@@ -136,6 +136,10 @@ Route::prefix('v1')->group(function () {
             Route::get('/emissions/jobs/{jobId}', [$e, 'showJob']);
             Route::get('/emissions/jobs/{jobId}/download', [$e, 'download']);
             Route::get('/emissions/design/processes/{processCode}/reports', [$e, 'designReports']);
+            Route::post(
+                '/emissions/design/processes/{processCode}/reports/hydrate-sidecar',
+                [$e, 'designHydrateSidecar'],
+            );
             Route::post('/emissions/design/processes/{processCode}/reports', [$e, 'designCreateReport']);
             Route::put('/emissions/design/reports/{reportId}/layout', [$e, 'designUpdateLayout'])->whereNumber('reportId');
             Route::post('/emissions/design/reports/{reportId}/set-principal', [$e, 'designSetPrincipal'])->whereNumber('reportId');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Emissions;
 
 use App\Http\Controllers\Api\V1\CapabilityEnvelopeController;
 use App\Repositories\Sp\Emissions\SpEmissionRepository;
+use App\Services\Emissions\EmissionSidecarLayoutHydrator;
 use App\Support\Emissions\EmissionReportDxStorageUrl;
 use DateTimeInterface;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +35,7 @@ final class EmissionsController extends CapabilityEnvelopeController
         private readonly EmissionCapabilityGuard $capabilityGuard,
         private readonly MenuProcedimientoChecker $menuChecker,
         private readonly AccesoTotalChecker $accesoTotalChecker,
+        private readonly EmissionSidecarLayoutHydrator $sidecarLayoutHydrator,
     ) {
     }
 
@@ -275,6 +277,43 @@ final class EmissionsController extends CapabilityEnvelopeController
         return ApiResponse::success([
             'processCode' => $processCode,
             'urls' => array_values(array_unique($urls)),
+        ]);
+    }
+
+    public function designHydrateSidecar(Request $request, string $processCode): JsonResponse
+    {
+        $disabled = $this->disabledResponse();
+        if ($disabled !== null) {
+            return $disabled;
+        }
+
+        $designForbidden = $this->designForbiddenResponse();
+        if ($designForbidden !== null) {
+            return $designForbidden;
+        }
+
+        $process = $this->repository->findProcess($processCode);
+        if ($process === null || ! $process->active) {
+            return ApiResponse::errorFromCatalog(PaqSuiteEnvelopeCatalog::EMISSION_PROCESS_NOT_FOUND);
+        }
+
+        $reportCodes = $request->input('reportCodes');
+        $filter = null;
+        if (is_array($reportCodes)) {
+            $filter = array_values(array_filter(
+                array_map(static fn ($v) => is_string($v) ? trim($v) : '', $reportCodes),
+                static fn (string $c) => $c !== '',
+            ));
+            if ($filter === []) {
+                $filter = null;
+            }
+        }
+
+        $result = $this->sidecarLayoutHydrator->hydrateProcess($processCode, $filter);
+
+        return ApiResponse::success([
+            'processCode' => $processCode,
+            ...$result,
         ]);
     }
 

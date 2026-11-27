@@ -12,7 +12,7 @@ Jira: PIAPARTES-25
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
 | Estado | En Control Calidad |
-| Última actualización | 2026-11-14 (CC #17 GEN-37) |
+| Última actualización | 2026-11-27 (CC ST #4 catálogo Save DX) |
 | SPEC origen | [SPEC-011-reportes-emisiones](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) |
 | TR relacionada(s) | [TR-011-reportes-emisiones](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
 
