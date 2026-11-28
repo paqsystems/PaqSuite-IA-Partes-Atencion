@@ -192,6 +192,8 @@ La navegacion mobile debe seguir el framework comun del producto, adaptando la p
 
 El alcance mobile ya queda mayormente definido en esta base conceptual.
 
+La **primera entrega mobile acordada** para el host Partes-Atención (menú reducido a tres procesos) está fijada en [`21-mobile-v1-alcance-gen22.md`](./21-mobile-v1-alcance-gen22.md). Ese documento prevalece sobre listados más amplios de este archivo cuando haya diferencia de alcance v1.
+
 Lo que sigue abierto no es el set principal de pantallas, sino algunos detalles de comportamiento, especialmente:
 
 - la aplicacion exacta del campo `empresa` en login;
