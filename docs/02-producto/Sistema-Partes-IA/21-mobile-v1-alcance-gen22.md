@@ -167,4 +167,6 @@ Estas exclusiones **no** niegan la existencia en web; delimitan la **primera ent
 
 ---
 
-**Siguiente paso metodológico sugerido:** update de SPEC-007 (Parte A) → alineación HU/TR → D1/D en `partesMobilePolicy`, rutas y presentadores kardex por proceso.
+**OpenSpec:** [SPEC-007-update-mobile-v1](../../05-open-spec/updates/100-SistemaPartes/SPEC-007-mobile-v1-alcance-update.md) (Parte A, 2026-11-27).
+
+**Siguiente paso metodológico:** Parte B (HU) → Parte C (TR) → D1/D en `partesMobilePolicy`, rutas y presentadores kardex por proceso.
