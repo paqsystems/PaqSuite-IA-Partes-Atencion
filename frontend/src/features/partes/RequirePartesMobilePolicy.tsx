@@ -2,7 +2,9 @@ import { isNativeApp, MobileRouteGuard } from '@paqsuite/react-core'
 import { useCallback } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { getAuthSession } from '../auth/authSessionStore'
 import { partesMobilePolicy } from './mobile/partesMobilePolicy'
+import { resolveNativeMobileHomePath } from './mobile/resolveNativeMobileHomePath'
 
 /** En native, deniega deep-links fuera de allowlist GEN-22. */
 export function RequirePartesMobilePolicy() {
@@ -20,13 +22,14 @@ export function RequirePartesMobilePolicy() {
     return <Outlet />
   }
 
+  const homePath = resolveNativeMobileHomePath(getAuthSession())
+
   return (
     <MobileRouteGuard
-      homePath="/partes"
+      homePath={homePath}
       pathname={location.pathname}
       isAllowed={(pathname) => partesMobilePolicy.isAllowed(pathname)}
       onRedirect={onRedirect}
-      bypassPaths={['/dashboard']}
       t={(key) => t(key)}
     >
       <Outlet />

@@ -13,7 +13,7 @@ Jira: PIAPARTES-85
 | **Contrato API** | Sin cambios BE v1 — reutilizar APIs TR-004 / TR-006 (`fetchInformeTareas`, `fetchPaqueteHoras`, `listTareas` CRUD carga) |
 | **Prioridad** | MUST-HAVE (release mobile v1) |
 | **Clasificación** | HU COMPLEJA (delta sobre TR-007) |
-| **Estado** | Pendiente |
+| **Estado** | Pendiente de Revisión |
 | **Última actualización** | 2026-11-27 |
 | **TR base** | [TR-007-mobile-capacitor](../../100-SistemaPartes/TR-007-mobile-capacitor.md) |
 | **Revisión C1** | **Apto** — [C1 mobile v1](./TR-007-update-mobile-v1-alcance-gen22-C1-ambiguity-review.md) (2026-11-27) |
@@ -218,3 +218,4 @@ Ninguna bloqueante. HU permite gráfico paquete opcional (A1-M2); TR-007 exigía
 | 2026-11-27 | Parte C SDD — TR-update desde SPEC-007-update + HU-007-update (PIAPARTES-83). |
 | 2026-11-27 | Parte C1 — veredicto **Apto**; decisiones D-MV1-C1-01…05 en §4.1. |
 | 2026-11-27 | Parte D1 — [plan](./D1-TR-007-update-mobile-v1-alcance-gen22.md). |
+| 2026-11-27 | Parte D — T1–T8, T6–T7 FE; Vitest policy/home/menú OK. Pendiente T9 smoke/build mobile manual. |

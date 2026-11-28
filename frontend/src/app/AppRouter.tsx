@@ -43,7 +43,9 @@ import {
 } from '../features/partes/informes/PartesConsultasPages'
 const ReportDesignerHostPage = lazy(() => import('../features/partes/informes/ReportDesignerHostPage'))
 import { PaqueteHorasPage } from '../features/partes/informes/PaqueteHorasPage'
-import { ConsultaKardexMobilePage } from '../features/partes/mobile/ConsultaKardexMobilePage'
+import { getAuthSession } from '../features/auth/authSessionStore'
+import { PartesCargaMobilePage } from '../features/partes/mobile/PartesCargaMobilePage'
+import { resolveNativeMobileHomePath } from '../features/partes/mobile/resolveNativeMobileHomePath'
 import { ParametrosGeneralesPage } from '../features/admin/ParametrosGeneralesPage'
 import { EmpresasAdminPage } from '../features/admin/security/EmpresasAdminPage'
 import { PermisosAdminPage } from '../features/admin/security/PermisosAdminPage'
@@ -84,9 +86,27 @@ function AuthBootstrap() {
   return null
 }
 
-function ConsultaRoute() {
+function NativePartesHomeRedirect() {
+  return <Navigate to={resolveNativeMobileHomePath(getAuthSession())} replace />
+}
+
+function DashboardEntry() {
   if (isNativeApp()) {
-    return <ConsultaKardexMobilePage />
+    return <NativePartesHomeRedirect />
+  }
+  return <Navigate to="/partes" replace />
+}
+
+function PartesRootEntry() {
+  if (isNativeApp()) {
+    return <NativePartesHomeRedirect />
+  }
+  return <PartesDashboardPage />
+}
+
+function PartesConsultaLegacyRoute() {
+  if (isNativeApp()) {
+    return <NativePartesHomeRedirect />
   }
   return <Navigate to="/partes/informes/consulta-detallada" replace />
 }
@@ -123,12 +143,21 @@ export function AppRouter() {
           <Route path="/select-empresa" element={<SelectEmpresaPage />} />
           <Route element={<AuthenticatedShell />}>
             <Route element={<RequirePartesMobilePolicy />}>
-              <Route path="/dashboard" element={<Navigate to="/partes" replace />} />
-              <Route path="/shell" element={<Navigate to="/partes" replace />} />
-              <Route path="/partes" element={<PartesDashboardPage />} />
+              <Route path="/dashboard" element={<DashboardEntry />} />
+              <Route path="/shell" element={<DashboardEntry />} />
+              <Route path="/partes" element={<PartesRootEntry />} />
               <Route path="/chat-assistant" element={<ChatAssistantHostPage />} />
-              <Route path="/partes/consulta" element={<ConsultaRoute />} />
-              <Route path="/partes/carga" element={<ConsultaRoute />} />
+              <Route path="/partes/consulta" element={<PartesConsultaLegacyRoute />} />
+              <Route
+                path="/partes/carga"
+                element={
+                  isNativeApp() ? (
+                    <PartesCargaMobilePage />
+                  ) : (
+                    <Navigate to="/partes/carga-diaria" replace />
+                  )
+                }
+              />
               <Route path="/partes/informes/paquete-horas" element={<PaqueteHorasPage />} />
               <Route path="/partes/informes/consulta-detallada" element={<ConsultaDetalladaPage />} />
               <Route path="/partes/informes/consultas-agrupadas" element={<ConsultasAgrupadasPage />} />

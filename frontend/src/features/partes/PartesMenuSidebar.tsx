@@ -8,6 +8,7 @@ import {
   type MenuSidebarLabels,
 } from '@paqsuite/react-core'
 import { getAuthSession, getAuthToken } from '../auth/authSessionStore'
+import { mapNativeMenuRoute } from './mobile/mapNativeMenuRoute'
 import { partesMobilePolicy } from './mobile/partesMobilePolicy'
 
 /** Exportado para tests unitarios. */
@@ -45,6 +46,14 @@ export function filterMenuForNonSupervisor(nodes: MenuNode[]): MenuNode[] {
       node.routeName === '/partes/carga-paquetes' ||
       node.menuKey === 'partes_carga_paquetes',
   )
+}
+
+function mapMenuNodeRoutesForNative(nodes: MenuNode[]): MenuNode[] {
+  return nodes.map((node) => ({
+    ...node,
+    routeName: node.routeName ? mapNativeMenuRoute(node.routeName) : node.routeName,
+    children: mapMenuNodeRoutesForNative(node.children ?? []),
+  }))
 }
 
 function filterMenuNodes(
@@ -89,6 +98,7 @@ export function transformPartesMenuItems(
     next = filterMenuForNonSupervisor(next)
   }
   if (input.native) {
+    next = mapMenuNodeRoutesForNative(next)
     next = partesMobilePolicy.filterItems(next)
   }
   return next

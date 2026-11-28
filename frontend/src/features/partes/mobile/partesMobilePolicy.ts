@@ -5,16 +5,13 @@ import {
 } from '@paqsuite/react-core'
 
 /**
- * Allowlist native Partes (TR-007 RN-TR-02).
- * `/partes` es prefijo GEN: los hijos web-only se cortan con `partesWebOnlyExclusions`.
+ * Allowlist native Partes v1 (TR-007-update RN-MV1-TR-01).
+ * Sin dashboard, chat, raíz `/partes` ni consulta legacy `/partes/consulta`.
  */
 export const partesMobileAllowlist = [
-  '/partes',
-  '/partes/consulta',
   '/partes/carga',
+  '/partes/informes/consulta-detallada',
   '/partes/informes/paquete-horas',
-  '/chat-assistant',
-  '/dashboard',
   '/change-password',
   '/select-empresa',
 ] as const
@@ -32,8 +29,6 @@ const partesWebOnlyExclusions: GenMobileExclusion[] = [
       '/partes/carga-diaria/*',
       '/partes/carga-paquetes',
       '/partes/carga-paquetes/*',
-      '/partes/informes/consulta-detallada',
-      '/partes/informes/consulta-detallada/*',
       '/partes/informes/consultas-agrupadas',
       '/partes/informes/consultas-agrupadas/*',
       '/emisiones',

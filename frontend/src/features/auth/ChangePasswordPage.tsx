@@ -6,6 +6,7 @@ import {
   LanguageSelector,
   authClassNames,
   getGuestLocale,
+  isNativeApp,
   normalizeLocale,
   type LocaleCode,
 } from '@paqsuite/react-core'
@@ -22,6 +23,7 @@ import {
 import { getAuthSession, patchAuthSession } from './authSessionStore'
 import { resolveAppAuthHero } from './appProductBranding'
 import { resolvePostLoginRoute } from './postLoginRouter'
+import { resolveNativeMobileHomePath } from '../partes/mobile/resolveNativeMobileHomePath'
 
 export function ChangePasswordPage() {
   const { t } = useTranslation()
@@ -171,7 +173,11 @@ export function ChangePasswordPage() {
               stylingMode="outlined"
               useSubmitBehavior={false}
               disabled={isSubmitting}
-              onClick={() => navigate('/partes')}
+              onClick={() =>
+                navigate(
+                  isNativeApp() ? resolveNativeMobileHomePath(getAuthSession()) : '/partes',
+                )
+              }
               elementAttr={{ 'data-testid': 'changeCancel' }}
             />
           ) : null}

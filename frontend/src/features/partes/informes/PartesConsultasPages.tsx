@@ -27,6 +27,7 @@ import { usePartesDuracionHorasSummaryItems, usePartesMinutosColumnSummaryItems 
 import { listCatalogo, listPartesResource } from '../maestros/partesMaestrosApi'
 import { fetchInformeAgrupado, fetchInformeTareas } from './partesInformeApi'
 import { enrichRowsWithDiaSemana } from './partesInformeDiaSemana'
+import { ConsultaDetalladaMobileView } from '../mobile/ConsultaDetalladaMobileView'
 import { PartesInformeGrillaPivotSection } from './PartesInformeGrillaPivotSection'
 import {
   buildPartesConsultaDetalladaPivotCatalog,
@@ -57,13 +58,20 @@ function catalogDisplay(item: Record<string, unknown> | null, descriptionKey: 'n
 }
 
 export function ConsultaDetalladaPage() {
+  if (isNativeApp()) {
+    return <ConsultaDetalladaMobileView />
+  }
+  return <ConsultaDetalladaWebPage />
+}
+
+function ConsultaDetalladaWebPage() {
   const { t, i18n } = useTranslation()
   const dateFormat = resolvePartesDateDisplayFormat(i18n.language)
   const pageTitle = useProcessMenuTitle(
     t('partes.informe.page.consultaDetallada'),
     '/partes/informes/consulta-detallada',
   )
-  const native = isNativeApp()
+  const native = false as boolean
   const session = getAuthSession()
   const esSupervisor = Boolean(session?.partes?.esSupervisor)
   const isCliente = session?.partes?.tipoFuncional === 'cliente'

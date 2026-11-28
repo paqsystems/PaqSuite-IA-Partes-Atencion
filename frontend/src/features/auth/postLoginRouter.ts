@@ -1,13 +1,18 @@
 import {
+  isNativeApp,
   postLoginSelectorPath,
   resolveEmpresaGate,
   type EmpresaGateResult,
 } from '@paqsuite/react-core'
+import { resolveNativeMobileHomePath } from '../partes/mobile/resolveNativeMobileHomePath'
 import type { AuthSession } from './authTypes'
 
 export type PostLoginRoute =
   | '/change-password'
   | '/partes'
+  | '/partes/carga'
+  | '/partes/informes/consulta-detallada'
+  | '/partes/informes/paquete-horas'
   | typeof postLoginSelectorPath
   | '/login'
 
@@ -37,6 +42,13 @@ export function resolvePostLoginRoute(session: AuthSession): PostLoginDecision {
 
   if (gate === 'selector') {
     return { route: postLoginSelectorPath, gate }
+  }
+
+  if (isNativeApp()) {
+    return {
+      route: resolveNativeMobileHomePath(session) as PostLoginRoute,
+      gate,
+    }
   }
 
   return { route: '/partes', gate }

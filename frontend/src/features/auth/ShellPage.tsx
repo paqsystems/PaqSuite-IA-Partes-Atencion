@@ -28,6 +28,7 @@ import { buildAuthPlatformHeaders, resolvePlatformCliente } from './platformCont
 import { PartesMenuSidebar } from '../partes/PartesMenuSidebar'
 import { PartesMobileMenu } from '../partes/PartesMobileMenu'
 import { PartesMobileConfigHost } from '../partes/mobile/PartesMobileConfigHost'
+import { mapNativeMenuRoute } from '../partes/mobile/mapNativeMenuRoute'
 import { LlmPreferencesModalHost } from '../llmCredentials/LlmPreferencesModalHost'
 import { resolveAuthMessage } from './authMessages'
 import {
@@ -256,7 +257,7 @@ export function AuthenticatedShell() {
               t={menuTranslate}
               onItemsLoaded={handleMenuItemsLoaded}
               onNavigate={(routeName) => {
-                navigate(routeName)
+                navigate(mapNativeMenuRoute(routeName))
               }}
             />
           ) : (
