@@ -167,6 +167,6 @@ Estas exclusiones **no** niegan la existencia en web; delimitan la **primera ent
 
 ---
 
-**OpenSpec:** [SPEC-007-update-mobile-v1](../../05-open-spec/updates/100-SistemaPartes/SPEC-007-mobile-v1-alcance-update.md) (Parte A, 2026-11-27).
+**OpenSpec:** [SPEC-007-update-mobile-v1](../../05-open-spec/updates/100-SistemaPartes/SPEC-007-mobile-v1-alcance-update.md) · **HU:** [HU-007-update-mobile-v1](../../03-historias-usuario/updates/100-SistemaPartes/HU-007-update-mobile-v1-alcance-gen22.md) (PIAPARTES-84, Parte B 2026-11-27).
 
-**Siguiente paso metodológico:** Parte B (HU) → Parte C (TR) → D1/D en `partesMobilePolicy`, rutas y presentadores kardex por proceso.
+**Siguiente paso metodológico:** Parte C (TR-007-update) → D1/D en `partesMobilePolicy`, rutas y presentadores kardex por proceso.

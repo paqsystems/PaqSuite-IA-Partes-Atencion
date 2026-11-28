@@ -15,8 +15,8 @@ Jira: PIAPARTES-83
 | SPEC base | [SPEC-007](../../100-SistemaPartes/SPEC-007-mobile-capacitor.md) |
 | Fuentes producto | [`21-mobile-v1-alcance-gen22.md`](../../../02-producto/Sistema-Partes-IA/21-mobile-v1-alcance-gen22.md); [`10-mobile.md`](../../../02-producto/Sistema-Partes-IA/10-mobile.md) |
 | Depende de | SPEC-002, SPEC-004, SPEC-006; Framework **GEN-22** ([SPEC-001-22](../../../../PaqSuite-IA-FRAMEWORK/docs/05-open-spec/001-Generalidades/SPEC-001-22-experiencia-mobile.md)) |
-| HU relacionada(s) | *(pendiente Parte B — update HU-007 o HU-007-update)* |
-| TR relacionada(s) | *(pendiente Parte C — update TR-007 o TR-007-update)* |
+| HU relacionada(s) | [HU-007-update-mobile-v1-alcance-gen22](../../../03-historias-usuario/updates/100-SistemaPartes/HU-007-update-mobile-v1-alcance-gen22.md) |
+| TR relacionada(s) | [TR-007-update-mobile-v1-alcance-gen22](../../../04-tareas/updates/100-SistemaPartes/TR-007-update-mobile-v1-alcance-gen22.md) |
 | `superficie` | `mobile-capacitor` |
 | `stackCliente` | Capacitor (`frontend/` + android/ios) |
 | `modalidad` | MONO |
@@ -155,3 +155,7 @@ Este documento **no invalida** SPEC-007 en bloque: lo **acota** para la release 
 |-------|--------|
 | 2026-11-27 | Parte A SDD — SPEC update desde `21-mobile-v1-alcance-gen22.md` (PIAPARTES-83). |
 | 2026-11-27 | Parte A1 — veredicto **Apto**; decisiones D-MV1-A1-01…04 en §2.1.1. |
+| 2026-11-27 | Parte B — HU-007-update-mobile-v1-alcance-gen22. |
+| 2026-11-27 | Parte C — TR-007-update-mobile-v1-alcance-gen22. |
+| 2026-11-27 | Parte C1 — TR C1 **Apto**; Epic listo para D1. |
+| 2026-11-27 | Parte D1 — plan TR-007-update. |
