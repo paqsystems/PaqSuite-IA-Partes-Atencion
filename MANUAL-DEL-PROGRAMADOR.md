@@ -4,7 +4,7 @@
 |-------|--------|
 | **Producto** | PaqSuite IA — Partes de Atención (`SistemaPartes`, portal MONO) |
 | **Público** | Programadores, integradores y soporte técnico que necesitan entender el sistema de punta a punta |
-| **Fecha** | 28 de octubre de 2026 |
+| **Fecha** | 15 de noviembre de 2026 |
 | **Complementa** | Este documento enseña. No sustituye SPEC, HU, TR ni el contrato OpenAPI. |
 
 Este texto está pensado para que alguien que entra al repositorio por primera vez pueda responder dos preguntas:
@@ -20,7 +20,7 @@ Al final hay un **anexo** sobre **emisiones GEN-15** y el **sidecar DevExpress R
 
 Si venís a **programar**, empezá por la Parte 1. Ahí está el mapa del monorepo, las capas, las reglas que no se improvisan y el circuito OpenSpec (cómo nace un cambio: SPEC → HU → TR → código → tests → verificación).
 
-Si venís a **entender qué hace el producto**, andá a la Parte 2. Ahí está el inventario de prestaciones: maestros, carga diaria, supervisión masiva, consultas, dashboard, Excel, IA, mobile, emisiones, etc.
+Si venís a **entender qué hace el producto**, andá a la Parte 2. Ahí está el inventario de prestaciones: maestros, carga diaria, supervisión masiva, consultas, dashboard, Excel, IA, mobile, emisiones, tareas programadas (backups), etc.
 
 Si venís a **tocar informes o el diseñador DX**, leé la Parte 1 (auth, tenant, envelope, proxy Vite) y el **Anexo A (emisiones / Reporting)**.
 
@@ -65,6 +65,8 @@ Herencia compartida de PaqSuite (no reinventar login, envelope, grillas, menú, 
 El producto **adopta capacidades GEN del Framework** (login, i18n, menú, grillas, pivots, Excel, chat IA, emisiones, mobile). El host aporta el dominio Partes: catálogo `PQ_PARTES_*`, gate de identidad funcional, menú, permisos, APIs/operaciones de negocio, pantallas de carga, consultas y dashboard.
 
 Config canónica: `PAQSUITE_PROYECTO=partesatencion`, `PAQSUITE_TENANCY=single`, `PAQSUITE_DB=unified`. Detalle: `docs/01-arquitectura/integracion-framework-sdk.md`.
+
+**Pins SDK vigentes en repo (SoT deploy):** `paqsuite/laravel-core` **1.3.18-beta.39** (`backend/composer.json`) · `@paqsuite/react-core` **2.4.30-beta.21** (`frontend/package.json`). Ritual bump: `docs/01-arquitectura/ritual-bump-sdk.md` · registry Cloudsmith: `docs/06-operacion/adopcion-gen-35-cloudsmith.md`.
 
 ## 1.3 Stack y puertos locales habituales
 
@@ -236,6 +238,7 @@ Si estás por implementar una TR, el orden mental es: leer SPEC (fuente de verda
 |------|---------|
 | `backend/routes/api.php` | Rutas `/api/v1`, grupos `partes.profile` |
 | `backend/app/Http/Controllers/Api/V1/Partes/` | Tareas, maestros, informes, turno smart capture |
+| `backend/app/Tasks/` | Wrappers GEN-13 (`SchedulingTaskDefinitionRepository`, `PartesTaskExecutionRepository`, backup RDS, comandos `partes:tasks-*`) |
 | `backend/app/Services/Partes/` | Núcleo de negocio + smart capture |
 | `backend/app/Services/Partes/SmartCapture/` | Extracción LLM / propuesta de campos |
 | `backend/app/Http/Middleware/EnsurePartesFunctionalProfile.php` | Middleware `partes.profile` |
@@ -255,6 +258,7 @@ Si estás por implementar una TR, el orden mental es: leer SPEC (fuente de verda
 | `frontend/src/features/auth/` | Login, shell, gate, i18n producto |
 | `frontend/src/features/admin/security/` | ABM seguridad GEN (web) |
 | `frontend/src/features/chatAssistant/` | Chat documental BYOK |
+| `frontend/src/features/tareasProgramadas/` | Rutas `/tareas-programadas/*`, layout host + páginas SDK GEN-13 |
 
 ### Docs
 
@@ -265,7 +269,7 @@ Si estás por implementar una TR, el orden mental es: leer SPEC (fuente de verda
 | `docs/03-historias-usuario/100-SistemaPartes/` | HU |
 | `docs/04-tareas/100-SistemaPartes/` | TR y cierres D/E/F |
 | `docs/99-manual-usuario/` | Manuales de usuario / corpus chat |
-| `docs/06-operacion/` | Deploy, smoke mobile, URLs API |
+| `docs/06-operacion/` | Deploy, smoke mobile, URLs API, adopción GEN-13 backups |
 
 ## 1.10 Tests y calidad
 
@@ -285,8 +289,13 @@ No se hace commit ni push sin autorización explícita. `main` solo se actualiza
 | `EXCEL_IMPORT_ENABLED` / flag público equivalente | Importación Excel GEN-14 (proceso Partes en carga diaria; TR-009) |
 | `ADMIN_SECURITY_UI_ENABLED` | ABM roles/permisos en web (excluido mobile) |
 | `PAQSUITE_INSTALACION_RESOLVER` | `config` (mapa PHP) vs `sql` (`EMPRESAS_CONEXION` en Forge) |
+| `PAQSUITE_TASKS_BACKUP_BACKEND` | Perfil Partes: **`rds`** (no Windows en prod host) |
+| `PAQSUITE_TASKS_BACKUP_DEFER_MANUAL_POLLING` | **`true`** en Partes: backup manual cierra en cron, no bloquea HTTP |
+| `TASKS_BACKUP_S3_ARN_PREFIX` | Prefijo bucket/carpeta S3 (sin `.bak`); obligatorio con RDS |
+| `PAQSUITE_TASKS_CLIENTES` | CSV opcional para acotar scheduler (`PAQ,DEMO`); vacío = todos los SQL directo |
+| `PAQSUITE_TASKS_SCHEDULE_TIMEZONE` | Zona de agenda (default `America/Argentina/Buenos_Aires`) |
 
-Sin el flag, la UI y a veces el menú no exponen el proceso aunque el código exista. La matriz completa lab vs Forge está en **§1.12**.
+Sin el flag, la UI y a veces el menú no exponen el proceso aunque el código exista. La matriz completa lab vs Forge está en **§1.12**. Operación GEN-13 (smoke, triage, inventario): **`docs/06-operacion/adopcion-gen-13-tareas-programadas.md`** (SoT host; Framework: `adopcion-gen-13-tareas-programadas-host.md`).
 
 ## 1.12 Variables de entorno por ambiente (lab, Forge dev, Forge prod)
 
@@ -328,6 +337,13 @@ El FE en Vercel **siempre** llama al BE por URL absoluta (`VITE_API_BASE_URL`). 
 | **`PAQSUITE_EMISSION_DX_SERVICE_URL`** | `http://127.0.0.1:5055/api/v1/dx-reporting` (sidecar local) | URL del sidecar (a menudo `127.0.0.1` si comparte VM con Laravel) | URL pública o interna del sidecar |
 | **`PAQSUITE_EMISSION_DX_API_KEY`** | Secreto compartido con el sidecar | Idem | Idem (rotación coordinada) |
 | **`PAQSUITE_CHAT_LLM_TIMEOUT_SECONDS`** | Default `60` | Igual | Igual |
+| **`PAQSUITE_TASKS_BACKUP_BACKEND`** | `rds` | `rds` | `rds` |
+| **`PAQSUITE_TASKS_BACKUP_DEFER_MANUAL_POLLING`** | `true` (recomendado) | `true` | `true` |
+| **`TASKS_BACKUP_S3_ARN_PREFIX`** | Según bucket lab / omitir en sqlite | Prefijo carpeta S3 autorizado | Idem prod |
+| **`PAQSUITE_TASKS_CLIENTES`** | Vacío o `DEV` / lista lab | Vacío o CSV tenants del sitio | Vacío = todos SQL directo del proyecto |
+| **`TASKS_BACKUP_POLL_SECONDS`** / **`TASKS_BACKUP_LOCK_LEASE_SECONDS`** | Defaults en `config/paqsuite.php` | Ajustar si lock RDS o polling | Idem |
+
+**Scheduler en Forge:** integración **Laravel Scheduler** → cada minuto `php artisan schedule:run` (dispara `partes:tasks-run-due`). `PAQSUITE_CLIENTE` en el `.env` del sitio **no** limita el cron a un solo tenant.
 
 **Tras cambiar `.env` en Forge:**
 
@@ -376,6 +392,7 @@ No usa `VITE_API_PROXY_TARGET`. La URL por defecto sale del bootstrap SDK (`proj
 3. Leer `docs/02-producto/Sistema-Partes-IA/01-vision-y-alcance.md` y el README de la carpeta (orden de lectura).
 4. Para un bug o mejora: no parchear a ciegas. Si cambia el “qué”, hay SPEC-update (Parte G). Si solo es implementación de una TR ya apta, Parte D.
 5. Cualquier listado de tareas o informes debe respetar **perfil funcional** + filtros de pantalla (`es_tarea`, fechas, cerrado).
+6. Si tocás backups o agenda: leer `docs/06-operacion/adopcion-gen-13-tareas-programadas.md` antes de cambiar env, scheduler o wrappers en `backend/app/Tasks/`.
 
 ## 1.14 Mobile — APK lab/debug vs producción (variables y build)
 
@@ -526,9 +543,36 @@ Si `ADMIN_SECURITY_UI_ENABLED` está activo: usuarios, roles, permisos, empresas
 
 Misma API y reglas de negocio; presentación kardex para consulta/carga móvil, dashboard reducido, paquete de horas, chat in-app. Ver §1.12 (Forge) y §1.14 (APK), y `docs/99-manual-usuario/SPEC-007-mobile-capacitor.md`.
 
-Excluido en native: maestros, carga diaria escritorio, masivo, consultas detalladas/agrupadas web, pivot, Excel, emisiones, admin seguridad, `openInNewTab`.
+Excluido en native: maestros, carga diaria escritorio, masivo, consultas detalladas/agrupadas web, pivot, Excel, emisiones, admin seguridad, tareas programadas, `openInNewTab`.
 
-## 2.12 Visión de sistema (sin ERP en el MVP)
+## 2.12 Tareas programadas y backups (GEN-13)
+
+- Ruta web: `/tareas-programadas` (menú **Parámetros → Soporte técnico**; permiso de menú).
+- Proceso host: **`BACKUP_DATABASE`** (catálogo `PQ_TASK_PROCESS`; seed `PqTaskProcessFrameworkSeeder`).
+- UI: páginas SDK (`TaskProcessesPage`, `TaskDefinitionsPage`, `TaskExecutionsPage`, historial) montadas en `frontend/src/features/tareasProgramadas/TareasProgramadasSdkRoutes.tsx` con **layout host** `TareasProgramadasLayout` (solapas locales; el export `TaskScheduledLayout` aún no está en el pin react-core).
+- Backend: motor y API en `paqsuite/laravel-core`; host aporta `SchedulingTaskDefinitionRepository` (`nextRunAt`), `PartesTaskDefinitionRepository` / `PartesTaskExecutionRepository` (sqlsrv rowsets), `App\Tasks\Backup\*`, comandos `partes:tasks-run-due`, `partes:tasks-recover-stale`, `partes:tasks-backfill-next-run-at`.
+- Agenda: `backend/app/Console/Kernel.php` → `partes:tasks-run-due` cada minuto + `tasks:purge-history` diario; multi-tenant vía `SchedulerClienteResolver`.
+- Perfil Partes: MONO + RDS; destino S3 con `TASKS_BACKUP_S3_ARN_PREFIX`; manual diferido con `PAQSUITE_TASKS_BACKUP_DEFER_MANUAL_POLLING=true`.
+- **No** en mobile (`partesMobilePolicy.ts`).
+- SoT operación y triage: `docs/06-operacion/adopcion-gen-13-tareas-programadas.md` · SPEC: `docs/05-open-spec/001-Generalidades/SPEC-001-13-host-adopcion-tareas-programadas.md` · manual usuario: `docs/99-manual-usuario/SPEC-012-tareas-programadas-soporte.md`.
+
+## 2.13 Integración API de maestros (SPEC-014)
+
+Canal **REST** paralelo al ABM de Archivos; **no** usa GEN-14 Excel ni GEN-36 importaciones asíncronas (esos son otros contratos Framework).
+
+| Tema | Dónde |
+|------|--------|
+| Rutas | Cinco `POST` bajo `/api/v1/integracion/maestros/` (`clientes`, `asistentes`, `tipos-cliente`, `tipos-tarea`, `asignaciones-cliente-tipo`) — `backend/routes/api.php` |
+| Controller | `PartesIntegracionMaestrosController` |
+| Permiso | `partes.integracion.maestros` (middleware de ruta; distinto del ABM) |
+| Gate Partes | `partes.profile` + `partes.notCliente` (sin perfil cliente) |
+| Persistencia | SP `pq_sp_partes_integracion_maestros_*` en `backend/scripts/sql/partes/` |
+| Contrato / ejemplos | `docs/05-open-spec/100-SistemaPartes/SPEC-014-apis-importar-datos-maestros.md` · producto `docs/02-producto/Sistema-Partes-IA/17-APIs-importar-datos-maestros.md` |
+| Manual usuario (corpus) | `docs/99-manual-usuario/SPEC-014-integracion-maestros-erp.md` |
+
+Upsert por `code`; respuesta envelope GEN-20 con conteo y detalle de filas rechazadas. **Sin UI** y **excluido de mobile**.
+
+## 2.14 Visión de sistema (sin ERP en el MVP)
 
 ```text
 Usuario (web / mobile)
@@ -644,6 +688,9 @@ Handoff: `docs/_handoff/GEN-15-lab-local-2026-10-28.md`.
 | Variables lab / Forge / Vercel | Este manual **§1.12** |
 | APK Android lab vs prod | Este manual **§1.14**; `docs/06-operacion/runbook-smoke-mobile-partes.md` |
 | Adopción SDK / ritual bump | `docs/01-arquitectura/plan-partes-adopcion-sdk-sin-fork-gen.md` |
+| Pins SDK (versiones pinneadas) | `docs/01-arquitectura/ritual-bump-sdk.md` |
+| Tareas programadas / backups | `docs/06-operacion/adopcion-gen-13-tareas-programadas.md` |
+| Integración API maestros | `docs/05-open-spec/100-SistemaPartes/SPEC-014-apis-importar-datos-maestros.md` |
 | Contrato vivo de endpoints | `/api/documentation` (Swagger) |
 
-Este manual describe el sistema **tal como está implementado al 28 de octubre de 2026**. Si un SPEC-update o un control de calidad cambia el alcance, prevalecen el SPEC unificado y OpenAPI.
+Este manual describe el sistema **tal como está implementado al 15 de noviembre de 2026** (pins **1.3.18-beta.39** / **2.4.30-beta.21**). Si un SPEC-update o un control de calidad cambia el alcance, prevalecen el SPEC unificado y OpenAPI.

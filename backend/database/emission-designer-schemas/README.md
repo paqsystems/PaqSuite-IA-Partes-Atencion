@@ -9,6 +9,8 @@ JSON **canónico v1** desplegado en DIC vía manifiesto `kind: emissionDesignerS
 
 Regenerar manifiesto: `php tools/build-installation-manifest.php` (desde `backend/`).
 
+Copias lab sidecar DX (sin fork manual): `php scripts/dev/export-emission-designer-schemas-for-dx-sidecar.php` → luego `scripts/dev/sync-dx-reporting-schemas.ps1` si aplica.
+
 SoT:
 
 - Framework `docs/02-producto/37-catalogo-semantico-campos-dataset.md` · SPEC-001-37

@@ -11,8 +11,8 @@ Jira: PIAPARTES-25
 | Título | Diseñar informes y emitir salidas documentales de Consulta detallada (adopción GEN-15) |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE |
-| Estado | En Control Calidad |
-| Última actualización | 2026-11-14 (CC #17 GEN-37) |
+| Estado | Finalizado |
+| Última actualización | 2026-11-18 (CC #17 GEN-37 — Parte I) |
 | SPEC origen | [SPEC-011-reportes-emisiones](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) |
 | TR relacionada(s) | [TR-011-reportes-emisiones](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
 
@@ -303,3 +303,13 @@ Ninguna bloquea Parte C.
 | 2026-10-29 | CC ST #1: emisión acotada a filas tildadas; `selectedTareaIds` en hostContext; CA-CC1-11-01…04. |
 | 03/11/2026 | CC-PQ #13: Field List diseñador **Paquete de horas** con dataset de negocio (schemas sidecar + REPX host). Parte I acotada; [D-VERIFICACION-CC-PQ-13](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-13-2026-11-03.md). |
 | 2026-11-07 | Parte I: archivo `E-TR-011-reportes-emisiones-2026-10-16.md` fusionado en TR-011 §16 y eliminado. |
+| 2026-11-18 | CC-PQ #17 GEN-37: Field List con etiquetas humanas (`label` / `captionKey`) en schemas Consulta detallada y Paquete de horas; Parte I — [D-VERIFICACION-CC-PQ-17](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-17-2026-11-14-gen37.md). |
+
+---
+
+## CC-PQ #17 — GEN-37 (Parte I 18/11/2026)
+
+1. Todo `fields[]` de `partes.informes.consultaDetallada` y `paqueteHoras` tiene `label` ES no vacío (≠ `name` salvo excepción documentada).
+2. `captionKey` opcional alineado a i18n producto (sin GEN-14).
+3. Wire `name` idéntico a port-names / puerto.
+4. Manifiesto regenerado; sin labels hardcode en sidecar host.

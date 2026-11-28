@@ -9,6 +9,7 @@ import { parseDevExtremeLicenseKey } from './parseDevExtremeLicenseKey'
 function readLicenseKey(): string {
   return parseDevExtremeLicenseKey([
     import.meta.env.VITE_DEVEXPRESS_LICENSE_KEY,
+    import.meta.env.VITE_DEVEXTREME_LICENSE_KEY,
     import.meta.env.VITE_DEVEXTREME_LICENSE,
   ])
 }

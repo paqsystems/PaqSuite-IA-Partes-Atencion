@@ -10,7 +10,7 @@ Jira: [PIAPARTES-61](https://paqsystems.atlassian.net/browse/PIAPARTES-61)
 | Título | Asistencia IA en el diseñador de Consulta detallada vía Smart Capture (GEN-03) — oleada 2 camino B |
 | Épica / carpeta | `100-SistemaPartes` |
 | Clasificación | MUST-HAVE (oleada 2 productiva) |
-| Estado | **En Control Calidad** (CC #17 GEN-37 — 2026-11-14) |
+| Estado | **En Control Calidad** (oleada 2 B — T8/T9 manual pendiente; GEN-37 CC #17 cerrado Parte I 18/11/2026) |
 | SPEC origen | [SPEC-015-update oleada 2 B](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-2-b-update.md) |
 | A1 | [A1 ambiguity review](../../05-open-spec/updates/100-SistemaPartes/SPEC-015-ia-diseno-informes-oleada-2-b-update-A1-ambiguity-review.md) — Apto con observaciones |
 | SPEC base | [SPEC-015-ia-diseno-informes](../../05-open-spec/100-SistemaPartes/SPEC-015-ia-diseno-informes.md) |
@@ -295,3 +295,12 @@ Feature: Smart Capture en diseño de informe Consulta detallada
 | 2026-11-13 | Parte B1: enriquecimiento desde SPEC-update + A1 (trazabilidad CA-B2, R-B2, CA-12 Dataset, Gherkin, riesgos). |
 | 2026-11-13 | Parte C: enlazada [TR-015-update-b](../../04-tareas/100-SistemaPartes/TR-015-update-b-smart-capture-diseno-informes.md). |
 | 2026-11-13 | Parte C1: TR Apto con observaciones → HU **Especificado**. |
+| 2026-11-18 | CC-PQ #17 GEN-37: criterios `description`/`synonyms` + prompt desde schema — Parte I; HU-015-update CC #17 eliminado. |
+
+---
+
+## CC-PQ #17 — GEN-37 (Parte I 18/11/2026)
+
+1. Fields de Consulta detallada con `description` y `synonyms` útiles (sin ambigüedad R-37-04).
+2. Turno SC incluye vocabulario del JSON en el prompt.
+3. Smoke documentado en [D-VERIFICACION-CC-PQ-17](../../04-tareas/updates/100-SistemaPartes/D-VERIFICACION-CC-PQ-17-2026-11-14-gen37.md).

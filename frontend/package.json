@@ -21,6 +21,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:ui-screenshots": "playwright test ui-screenshot-catalog --project=ui-screenshots --workers=1",
     "test:all": "npm run test && npm run test:e2e"
   },
   "dependencies": {

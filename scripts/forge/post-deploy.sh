@@ -39,7 +39,11 @@ if [[ -z "${PAQSUITE_CLIENTE:-}" || -z "${PAQSUITE_PROYECTO:-}" ]]; then
   exit 1
 fi
 
-# Sidecar DX (mismo servidor): schemas Field List del diseñador (GEN-15).
+# Sidecar DX (mismo servidor): proyección GEN-37 desde canónico + copia Field List (GEN-15 lab).
+if [[ -f "${DEPLOY_PATH}/scripts/dev/export-emission-designer-schemas-for-dx-sidecar.php" ]]; then
+  php scripts/dev/export-emission-designer-schemas-for-dx-sidecar.php \
+    || echo "export-emission-designer-schemas-for-dx-sidecar: aviso (no bloquea deploy)." >&2
+fi
 if [[ -f "${scriptDir}/sync-dx-reporting-schemas.sh" ]]; then
   bash "${scriptDir}/sync-dx-reporting-schemas.sh" || echo "sync-dx-reporting-schemas: aviso (no bloquea deploy)." >&2
 fi

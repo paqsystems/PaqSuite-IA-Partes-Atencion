@@ -1,0 +1,340 @@
+{
+  "generatedAt": "2026-11-25T23:44:40.478Z",
+  "tenant": "DEMO",
+  "user": "admin",
+  "baseUrl": "http://localhost:3101",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "entries": [
+    {
+      "id": "auth-forgot-password",
+      "file": "01-auth-forgot-password.png",
+      "title": "Olvidé la contraseña",
+      "capturedAt": "2026-11-25T23:44:47.459Z",
+      "url": "http://localhost:3101/forgot-password?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "shell-dashboard",
+      "file": "02-shell-dashboard-menu.png",
+      "title": "Pantalla principal (Menú + dashboard)",
+      "capturedAt": "2026-11-25T23:45:18.921Z",
+      "url": "http://localhost:3101/partes?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "shell-avatar-menu-compact",
+      "file": "03-shell-avatar-menu-compact.png",
+      "title": "Menú Avatar (apariencia compact)",
+      "capturedAt": "2026-11-25T23:45:41.702Z",
+      "url": "http://localhost:3101/partes?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "llm-preferences-list",
+      "file": "04-llm-preferences.png",
+      "title": "Preferencias",
+      "capturedAt": "2026-11-25T23:46:08.942Z",
+      "url": "http://localhost:3101/partes?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "llm-preferences-edit",
+      "file": "05-llm-preferences-edit.png",
+      "title": "Preferencias — edición",
+      "capturedAt": "2026-11-25T23:46:15.156Z",
+      "url": "http://localhost:3101/partes?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "chat-assistant",
+      "file": "06-chat-assistant.png",
+      "title": "Asistente IA",
+      "capturedAt": "2026-11-25T23:46:34.170Z",
+      "url": "http://localhost:3101/chat-assistant?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "auth-change-password",
+      "file": "07-auth-change-password.png",
+      "title": "Cambio contraseña",
+      "capturedAt": "2026-11-25T23:46:48.178Z",
+      "url": "http://localhost:3101/change-password?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "maestros-asistentes-list",
+      "file": "08-maestros-asistentes-grilla.png",
+      "title": "ABM Asistentes — grilla",
+      "capturedAt": "2026-11-25T23:47:10.322Z",
+      "url": "http://localhost:3101/archivos/partes/asistentes?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "maestros-asistentes-edit",
+      "file": "09-maestros-asistentes-editar.png",
+      "title": "ABM Asistentes — edición",
+      "capturedAt": "2026-11-25T23:47:16.563Z",
+      "url": "http://localhost:3101/archivos/partes/asistentes?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "maestros-clientes-list",
+      "file": "10-maestros-clientes-grilla.png",
+      "title": "ABM Clientes — grilla",
+      "capturedAt": "2026-11-25T23:47:41.079Z",
+      "url": "http://localhost:3101/archivos/partes/clientes?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "maestros-clientes-edit",
+      "file": "11-maestros-clientes-editar.png",
+      "title": "ABM Clientes — edición",
+      "capturedAt": "2026-11-25T23:47:47.370Z",
+      "url": "http://localhost:3101/archivos/partes/clientes?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "maestros-tipos-cliente-list",
+      "file": "12-maestros-tipos-cliente-grilla.png",
+      "title": "ABM Tipos de cliente — grilla",
+      "capturedAt": "2026-11-25T23:48:09.334Z",
+      "url": "http://localhost:3101/archivos/partes/tipos-cliente?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "maestros-tipos-cliente-edit",
+      "file": "13-maestros-tipos-cliente-editar.png",
+      "title": "ABM Tipos de cliente — edición",
+      "capturedAt": "2026-11-25T23:48:15.599Z",
+      "url": "http://localhost:3101/archivos/partes/tipos-cliente?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "maestros-tipos-tarea-list",
+      "file": "14-maestros-tipos-tarea-grilla.png",
+      "title": "ABM Tipo de tarea — grilla",
+      "capturedAt": "2026-11-25T23:48:37.015Z",
+      "url": "http://localhost:3101/archivos/partes/tipos-tarea?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "maestros-tipos-tarea-edit",
+      "file": "15-maestros-tipos-tarea-editar.png",
+      "title": "ABM Tipo de tarea — edición",
+      "capturedAt": "2026-11-25T23:48:43.241Z",
+      "url": "http://localhost:3101/archivos/partes/tipos-tarea?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "maestros-asignaciones-list",
+      "file": "16-maestros-asignaciones-grilla.png",
+      "title": "ABM Asignación tipos por cliente — grilla",
+      "capturedAt": "2026-11-25T23:49:10.730Z",
+      "url": "http://localhost:3101/archivos/partes/cliente-tipos-tarea?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "maestros-asignaciones-edit",
+      "file": "17-maestros-asignaciones-editar.png",
+      "title": "ABM Asignación tipos por cliente — edición (sin filas)",
+      "capturedAt": "2026-11-25T23:49:16.819Z",
+      "url": "http://localhost:3101/archivos/partes/cliente-tipos-tarea?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "carga-partes-inicial",
+      "file": "18-carga-partes-inicial.png",
+      "title": "Carga Partes — pantalla inicial",
+      "capturedAt": "2026-11-25T23:49:48.614Z",
+      "url": "http://localhost:3101/partes/carga-diaria?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "carga-partes-excel",
+      "file": "19-carga-partes-importacion-excel.png",
+      "title": "Carga Partes — importación Excel",
+      "capturedAt": "2026-11-25T23:49:51.756Z",
+      "url": "http://localhost:3101/partes/carga-diaria?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "carga-partes-edit",
+      "file": "20-carga-partes-edicion.png",
+      "title": "Carga Partes — edición",
+      "capturedAt": "2026-11-25T23:49:59.104Z",
+      "url": "http://localhost:3101/partes/carga-diaria?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "proceso-masivo",
+      "file": "21-proceso-masivo-inicial.png",
+      "title": "Proceso masivo — pantalla inicial",
+      "capturedAt": "2026-11-25T23:50:20.244Z",
+      "url": "http://localhost:3101/partes/proceso-masivo?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "carga-paquetes",
+      "file": "22-carga-paquetes-horas-inicial.png",
+      "title": "Carga de paquetes de horas — pantalla inicial",
+      "capturedAt": "2026-11-25T23:50:50.225Z",
+      "url": "http://localhost:3101/partes/carga-paquetes?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "consulta-detallada-inicial",
+      "file": "23-consulta-detallada-inicial.png",
+      "title": "Consulta detallada — pantalla inicial",
+      "capturedAt": "2026-11-25T23:51:19.640Z",
+      "url": "http://localhost:3101/partes/informes/consulta-detallada?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "consulta-detallada-pivot",
+      "file": "24-consulta-detallada-pivot.png",
+      "title": "Consulta detallada — modo pivot",
+      "capturedAt": "2026-11-25T23:51:25.795Z",
+      "url": "http://localhost:3101/partes/informes/consulta-detallada?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "paquete-horas-inicial",
+      "file": "26-paquete-horas-inicial.png",
+      "title": "Paquete de horas — ventana inicial",
+      "capturedAt": "2026-11-25T23:51:53.460Z",
+      "url": "http://localhost:3101/partes/informes/paquete-horas?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "paquete-horas-con-datos",
+      "file": "27-paquete-horas-con-datos.png",
+      "title": "Paquete de horas — con datos en grilla",
+      "capturedAt": "2026-11-25T23:52:00.231Z",
+      "url": "http://localhost:3101/partes/informes/paquete-horas?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "admin-usuarios-list",
+      "file": "28-admin-usuarios-inicial.png",
+      "title": "ABM Usuarios — pantalla inicial",
+      "capturedAt": "2026-11-25T23:52:18.515Z",
+      "url": "http://localhost:3101/admin/usuarios?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "admin-usuarios-edit",
+      "file": "29-admin-usuarios-editar.png",
+      "title": "ABM Usuarios — edición",
+      "capturedAt": "2026-11-25T23:52:24.709Z",
+      "url": "http://localhost:3101/admin/usuarios?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "admin-empresas-list",
+      "file": "30-admin-empresas-inicial.png",
+      "title": "ABM Empresa — pantalla inicial",
+      "capturedAt": "2026-11-25T23:52:41.710Z",
+      "url": "http://localhost:3101/admin/empresas?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "admin-roles-list",
+      "file": "32-admin-roles-inicial.png",
+      "title": "ABM Roles — pantalla inicial",
+      "capturedAt": "2026-11-25T23:53:01.490Z",
+      "url": "http://localhost:3101/admin/roles?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "admin-roles-edit",
+      "file": "33-admin-roles-editar.png",
+      "title": "ABM Roles — edición de un rol",
+      "capturedAt": "2026-11-25T23:53:07.753Z",
+      "url": "http://localhost:3101/admin/roles?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "admin-roles-permisos",
+      "file": "34-admin-roles-seleccion-permisos.png",
+      "title": "ABM Roles — selección de permisos",
+      "capturedAt": "2026-11-25T23:53:19.250Z",
+      "url": "http://localhost:3101/admin/roles/1/atributos?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "admin-permisos-list",
+      "file": "35-admin-permisos-inicial.png",
+      "title": "ABM Permisos — pantalla inicial",
+      "capturedAt": "2026-11-25T23:53:38.972Z",
+      "url": "http://localhost:3101/admin/permisos?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "parametros-auth-list",
+      "file": "39-parametros-auth-inicial.png",
+      "title": "ABM Parámetros AUTH — pantalla inicial",
+      "capturedAt": "2026-11-25T23:53:58.779Z",
+      "url": "http://localhost:3101/parametros/Auth?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "parametros-auth-edit",
+      "file": "40-parametros-auth-editar.png",
+      "title": "ABM Parámetros AUTH — edición",
+      "capturedAt": "2026-11-25T23:54:04.979Z",
+      "url": "http://localhost:3101/parametros/Auth?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "emisiones-disenador-proceso",
+      "file": "41-disenador-seleccion-proceso.png",
+      "title": "Diseñador informes — selección proceso",
+      "capturedAt": "2026-11-25T23:54:22.096Z",
+      "url": "http://localhost:3101/emisiones/disenador?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "emisiones-disenador-informe",
+      "file": "42-disenador-seleccion-informe.png",
+      "title": "Diseñador informes — selección informe",
+      "capturedAt": "2026-11-25T23:54:26.207Z",
+      "url": "http://localhost:3101/emisiones/disenador?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "tareas-procesos",
+      "file": "44-tareas-programadas-procesos.png",
+      "title": "Tareas programadas — solapa Procesos",
+      "capturedAt": "2026-11-25T23:56:43.257Z",
+      "url": "http://localhost:3101/tareas-programadas/procesos?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "tareas-definiciones",
+      "file": "45-tareas-programadas-definiciones.png",
+      "title": "Tareas programadas — solapa Definición",
+      "capturedAt": "2026-11-25T23:57:00.230Z",
+      "url": "http://localhost:3101/tareas-programadas/definiciones?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "tareas-ejecuciones",
+      "file": "46-tareas-programadas-ejecuciones.png",
+      "title": "Tareas programadas — solapa Ejecuciones",
+      "capturedAt": "2026-11-25T23:57:18.554Z",
+      "url": "http://localhost:3101/tareas-programadas/ejecuciones?cliente=DEMO",
+      "status": "ok"
+    },
+    {
+      "id": "tareas-historial",
+      "file": "47-tareas-programadas-historial.png",
+      "title": "Tareas programadas — solapa Historial",
+      "capturedAt": "2026-11-25T23:57:35.535Z",
+      "url": "http://localhost:3101/tareas-programadas/historial?cliente=DEMO",
+      "status": "ok"
+    }
+  ]
+}

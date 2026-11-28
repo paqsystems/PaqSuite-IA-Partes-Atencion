@@ -1,23 +1,182 @@
 {
-  "name": "Paquete de horas",
-  "columns": [
-    { "name": "fecha", "type": "date" },
-    { "name": "clienteCode", "type": "string" },
-    { "name": "clienteNombre", "type": "string" },
-    { "name": "usuarioCode", "type": "string" },
-    { "name": "usuarioNombre", "type": "string" },
-    { "name": "tipoClienteCode", "type": "string" },
-    { "name": "tipoClienteDescripcion", "type": "string" },
-    { "name": "tipoTareaCode", "type": "string" },
-    { "name": "tipoTareaDescripcion", "type": "string" },
-    { "name": "duracionMinutos", "type": "number" },
-    { "name": "saldo", "type": "number" },
-    { "name": "esTarea", "type": "boolean" },
-    { "name": "observacion", "type": "string" },
-    { "name": "erpCliente", "type": "string" },
-    { "name": "erpArticulo", "type": "string" },
-    { "name": "sinCargo", "type": "boolean" },
-    { "name": "presencial", "type": "boolean" },
-    { "name": "cerrado", "type": "boolean" }
-  ]
+    "name": "Paquete de horas",
+    "columns": [
+        {
+            "name": "fecha",
+            "type": "date",
+            "label": "Fecha",
+            "description": "Fecha del renglón (tarea o movimiento de paquete).",
+            "synonyms": [
+                "día",
+                "jornada"
+            ]
+        },
+        {
+            "name": "clienteCode",
+            "type": "string",
+            "label": "Cliente (código)",
+            "description": "Código interno del cliente.",
+            "synonyms": [
+                "código de cliente"
+            ]
+        },
+        {
+            "name": "clienteNombre",
+            "type": "string",
+            "label": "Cliente (nombre)",
+            "description": "Nombre o razón social del cliente.",
+            "synonyms": [
+                "razón social",
+                "empresa",
+                "cliente"
+            ]
+        },
+        {
+            "name": "usuarioCode",
+            "type": "string",
+            "label": "Asistente (código)",
+            "description": "Código del asistente.",
+            "synonyms": [
+                "código de asistente"
+            ]
+        },
+        {
+            "name": "usuarioNombre",
+            "type": "string",
+            "label": "Asistente (nombre)",
+            "description": "Nombre del asistente.",
+            "synonyms": [
+                "técnico",
+                "asistente",
+                "usuario"
+            ]
+        },
+        {
+            "name": "tipoClienteCode",
+            "type": "string",
+            "label": "Tipo de cliente (código)",
+            "description": "Código del tipo de cliente.",
+            "synonyms": [
+                "código tipo cliente"
+            ]
+        },
+        {
+            "name": "tipoClienteDescripcion",
+            "type": "string",
+            "label": "Tipo de cliente",
+            "description": "Descripción del tipo de cliente.",
+            "synonyms": [
+                "categoría de cliente"
+            ]
+        },
+        {
+            "name": "tipoTareaCode",
+            "type": "string",
+            "label": "Tipo de tarea (código)",
+            "description": "Código del tipo de tarea.",
+            "synonyms": [
+                "código tipo tarea"
+            ]
+        },
+        {
+            "name": "tipoTareaDescripcion",
+            "type": "string",
+            "label": "Tipo de tarea",
+            "description": "Descripción del tipo de tarea.",
+            "synonyms": [
+                "tipo",
+                "categoría de tarea"
+            ]
+        },
+        {
+            "name": "duracionMinutos",
+            "type": "number",
+            "label": "Duración (minutos)",
+            "description": "Duración del renglón en minutos.",
+            "synonyms": [
+                "minutos",
+                "tiempo",
+                "duración",
+                "horas"
+            ]
+        },
+        {
+            "name": "saldo",
+            "type": "number",
+            "label": "Saldo",
+            "description": "Saldo de horas del paquete en el renglón.",
+            "synonyms": [
+                "balance",
+                "restante",
+                "horas restantes"
+            ]
+        },
+        {
+            "name": "esTarea",
+            "type": "boolean",
+            "label": "Es tarea",
+            "description": "Indica si el renglón corresponde a una tarea (frente a movimiento de paquete).",
+            "synonyms": [
+                "tarea",
+                "renglón de tarea"
+            ]
+        },
+        {
+            "name": "observacion",
+            "type": "string",
+            "label": "Observación",
+            "description": "Texto libre del renglón.",
+            "synonyms": [
+                "nota",
+                "comentario"
+            ]
+        },
+        {
+            "name": "erpCliente",
+            "type": "string",
+            "label": "ERP cliente",
+            "description": "Código de cliente en el ERP vinculado.",
+            "synonyms": [
+                "cliente erp"
+            ]
+        },
+        {
+            "name": "erpArticulo",
+            "type": "string",
+            "label": "ERP artículo",
+            "description": "Código de artículo o servicio ERP vinculado.",
+            "synonyms": [
+                "artículo erp"
+            ]
+        },
+        {
+            "name": "sinCargo",
+            "type": "boolean",
+            "label": "Sin cargo",
+            "description": "Indica si el renglón no se factura.",
+            "synonyms": [
+                "gratis",
+                "no facturable"
+            ]
+        },
+        {
+            "name": "presencial",
+            "type": "boolean",
+            "label": "Presencial",
+            "description": "Atención presencial.",
+            "synonyms": [
+                "en sitio",
+                "on-site"
+            ]
+        },
+        {
+            "name": "cerrado",
+            "type": "boolean",
+            "label": "Cerrado",
+            "description": "Estado cerrado del renglón.",
+            "synonyms": [
+                "finalizado"
+            ]
+        }
+    ]
 }

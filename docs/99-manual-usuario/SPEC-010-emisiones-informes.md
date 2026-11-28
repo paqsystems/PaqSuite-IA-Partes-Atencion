@@ -3,7 +3,7 @@ specId: SPEC-010
 titulo: Emisión de reportes y diseñador
 estado: publicado
 moduloCodigo: Partes
-ultimaActualizacion: 2026-10-30
+ultimaActualizacion: 2026-11-16
 openSpec: docs/02-producto/Sistema-Partes-IA/15-reportes-emisiones.md
 ---
 

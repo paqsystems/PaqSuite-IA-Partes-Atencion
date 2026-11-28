@@ -12,7 +12,7 @@ Plantilla de redacción: [`_plantilla-manual-spec.md`](./_plantilla-manual-spec.
 | Prohibido | Explicaciones técnicas de software, infraestructura o codificación |
 | SDK / componentes GEN | No se documentan aquí (manual análogo en Framework) |
 | Conectividad / integraciones | Solo indicar que el administrador provea la URL de documentación **OpenAPI** del backend (`/api/documentation` en su instalación) |
-| Errores | Catálogo maestro en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md); cada proceso lista los que pueden aparecer (código **P00**–**P11**) |
+| Errores | Catálogo maestro en [CATALOGO-ERRORES.md](./CATALOGO-ERRORES.md); cada proceso lista los que pueden aparecer (código **P00**–**P13**) |
 
 Un archivo `.md` por capacidad (prefijo `SPEC-00N`). Los archivos que empiezan con `_` no se incluyen en el índice automático del asistente.
 
@@ -33,6 +33,8 @@ Un archivo `.md` por capacidad (prefijo `SPEC-00N`). Los archivos que empiezan c
 | [SPEC-009-importacion-excel.md](./SPEC-009-importacion-excel.md) | Importación Excel en carga diaria | Publicado |
 | [SPEC-010-emisiones-informes.md](./SPEC-010-emisiones-informes.md) | Emitir reportes y diseñador | Publicado |
 | [SPEC-011-parametros-seguridad.md](./SPEC-011-parametros-seguridad.md) | Parámetros y administración de seguridad | Publicado |
+| [SPEC-012-tareas-programadas-soporte.md](./SPEC-012-tareas-programadas-soporte.md) | Tareas programadas y copias de base (soporte) | Publicado |
 | [SPEC-013-carga-paquetes-horas.md](./SPEC-013-carga-paquetes-horas.md) | Carga de paquetes de horas (supervisor) | Publicado |
+| [SPEC-014-integracion-maestros-erp.md](./SPEC-014-integracion-maestros-erp.md) | Sincronización de maestros con ERP (integración) | Publicado |
 
-Última actualización del índice: **2026-11-09**.
+Última actualización del índice: **2026-11-16**.
