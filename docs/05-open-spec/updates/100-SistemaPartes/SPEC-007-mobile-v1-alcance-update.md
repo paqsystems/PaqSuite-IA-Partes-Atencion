@@ -10,6 +10,7 @@ Jira: PIAPARTES-83
 | Título | Mobile Capacitor v1 — menú reducido a Carga diaria, Consulta detallada y Paquete de horas |
 | Épica / carpeta | `100-SistemaPartes` |
 | Estado | Pendiente |
+| Revisión A1 | **Apto** — [A1 mobile v1](./SPEC-007-mobile-v1-alcance-update-A1-ambiguity-review.md) (2026-11-27) |
 | Última actualización | 2026-11-27 |
 | SPEC base | [SPEC-007](../../100-SistemaPartes/SPEC-007-mobile-capacitor.md) |
 | Fuentes producto | [`21-mobile-v1-alcance-gen22.md`](../../../02-producto/Sistema-Partes-IA/21-mobile-v1-alcance-gen22.md); [`10-mobile.md`](../../../02-producto/Sistema-Partes-IA/10-mobile.md) |
@@ -56,9 +57,14 @@ Transversal **GEN-22 (MUST):**
 - Navegación in-app; i18n `mobile.*` / `partes.*`; `data-testid` estables.
 - Shell/layouts GEN (auth, menú filtrado).
 
-**Decisión v1 — consulta detallada y CRUD:** por defecto **carga solo en proceso 1** y consulta detallada **solo lectura** en v1 (cerrar en HU/TR si se habilita CRUD desde kardex con la misma UX que carga).
+### 2.1.1 Decisiones de diseño (A1 cerradas — 27/11/2026)
 
-**Aterrizaje post-login:** sin dashboard menú v1; primer proceso permitido o pantalla de accesos (definir en TR).
+| ID | Decisión |
+|----|----------|
+| **D-MV1-A1-01** | **Aterrizaje post-login:** tras auth, navegar a la **primera ruta permitida** entre los tres procesos §2.1, en orden de `pq_menus` (`30100` → `40100` → `40300`) según permisos e identidad SPEC-002. **Sin** dashboard ni hub adicional en v1. |
+| **D-MV1-A1-02** | **Ruta native carga:** canónica **`/partes/carga`** (formulario individual). El ítem menú `partes_carga_diaria` (web `/partes/carga-diaria`) se resuelve a esa ruta en native vía policy/router; **no** montar grilla `CargaDiariaPage` en native. |
+| **D-MV1-A1-03** | **Consulta detallada v1 = solo lectura** en kardex. Alta/edición/baja solo en proceso 1 (carga). Evolutivo: CRUD en consulta detallada requiere HU/TR futuro. |
+| **D-MV1-A1-04** | **Allowlist v1 (mínima):** `/partes/carga`, `/partes/informes/consulta-detallada`, `/partes/informes/paquete-horas`, `/change-password` + rutas auth GEN obligatorias (`/login`, etc.). **Denegar** en v1: `/partes`, `/dashboard`, `/partes/consulta`, `/chat-assistant`, y resto exclusiones §2.2. |
 
 ### 2.2 Fuera de alcance (v1)
 
@@ -92,7 +98,7 @@ Mantener exclusiones SPEC-007 base salvo donde este update las **reemplaza** exp
 |----|--------|
 | R-MV1-01 | Mismo backend/envelope que web; solo cambia UX native. |
 | R-MV1-02 | Menú native = **solo** los tres procesos §2.1 (más cambio clave si allowlist lo incluye). |
-| R-MV1-03 | `partesMobilePolicy`: **permitir** `/partes/informes/consulta-detallada`; **no** permitir `/partes`, `/dashboard` como proceso operativo v1, ni `/partes/consulta` legacy. |
+| R-MV1-03 | `partesMobilePolicy` según **D-MV1-A1-04** (allowlist mínima; consulta detallada permitida; sin `/partes`, `/dashboard`, `/partes/consulta` legacy). |
 | R-MV1-04 | Consultas = kardex; prohibido DataGrid desktop de proceso en native. |
 | R-MV1-05 | Carga individual hereda SPEC-004; cliente sin carga. |
 | R-MV1-06 | Consulta detallada: `es_tarea = true`; sin Emitir en native. |
@@ -130,9 +136,9 @@ Mantener exclusiones SPEC-007 base salvo donde este update las **reemplaza** exp
 
 | Tema | Estado |
 |------|--------|
-| CRUD en kardex consulta detallada vs solo lectura | **Default:** solo lectura v1 (cerrar en HU) |
-| Ruta native exacta para carga (`/partes/carga` vs alias menú) | TR debe fijar sin duplicar reglas |
-| Gráficos en paquete horas mobile | Opcional v1 |
+| CRUD en kardex consulta detallada | **Cerrado A1:** solo lectura v1 (D-MV1-A1-03) |
+| Ruta native carga / post-login | **Cerrado A1:** D-MV1-A1-01, D-MV1-A1-02 |
+| Gráficos en paquete horas mobile | Opcional v1 (A1-M2) |
 | Delta respecto código TR-007 ya mergeado | TR update lista archivos |
 
 ---
@@ -148,3 +154,4 @@ Este documento **no invalida** SPEC-007 en bloque: lo **acota** para la release 
 | Fecha | Cambio |
 |-------|--------|
 | 2026-11-27 | Parte A SDD — SPEC update desde `21-mobile-v1-alcance-gen22.md` (PIAPARTES-83). |
+| 2026-11-27 | Parte A1 — veredicto **Apto**; decisiones D-MV1-A1-01…04 en §2.1.1. |
