@@ -1,5 +1,7 @@
 # Mobile v1 — Partes-Atención (adopción GEN-22)
 
+Jira: PIAPARTES-83
+
 ## Objetivo
 
 Registrar la **decisión de producto** para la **primera versión mobile** del host **PaqSuite-IA-Partes-Atencion**: experiencia **Capacitor** (mismo `frontend/` + `android/` / `ios/`), sobre el **mismo backend** y las mismas reglas de dominio que web, con un menú operativo **reducido** a tres procesos de negocio.
