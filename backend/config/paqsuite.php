@@ -173,6 +173,10 @@ return [
             'paqsuite.instalacion.db',
             'auth:sanctum',
         ],
+        'designerSidecarToken' => env(
+            'EMISSION_DESIGNER_SIDECAR_TOKEN',
+            env('PAQSUITE_SIDECAR_SCHEMA_TOKEN', ''),
+        ),
         'dxReporting' => [
             'mode' => env('PAQSUITE_EMISSION_DX_MODE', 'fake'),
             'serviceUrl' => env(

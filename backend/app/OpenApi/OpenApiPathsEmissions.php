@@ -92,6 +92,17 @@ namespace App\OpenApi;
  * )
  *
  * @OA\Post(
+ *   path="/api/v1/emissions/design/processes/{processCode}/reports/hydrate-sidecar",
+ *   operationId="emissionsDesignHydrateSidecar",
+ *   tags={"Emisiones"},
+ *   summary="CC-ST-4: materializar layouts del catálogo en el sidecar (if-not-exists)",
+ *   security={{"sanctum":{}},{"tenant":{}}},
+ *   @OA\Parameter(name="processCode", in="path", required=true, @OA\Schema(type="string")),
+ *   @OA\Response(response=200, description="Contadores hydrated/skipped/failed", @OA\JsonContent(ref="#/components/schemas/ApiEnvelope")),
+ *   @OA\Response(response=403, description="Sin permiso de diseño (4709)")
+ * )
+ *
+ * @OA\Post(
  *   path="/api/v1/emissions/design/processes/{processCode}/reports",
  *   operationId="emissionsDesignCreateReport",
  *   tags={"Emisiones"},

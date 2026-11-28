@@ -14,7 +14,7 @@ Jira: PIAPARTES-39
 | **Clasificación** | HU COMPLEJA |
 | **Estado** | Finalizado |
 | **Revisión C1** | Apto con observaciones (ver §11) |
-| **Última actualización** | 2026-11-18 (CC #17 GEN-37 — Parte I) |
+| **Última actualización** | 2026-11-27 (CC ST #4 catálogo Save DX — TR-update abierto) |
 
 **Origen:** [HU-011](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md)  
 **Referencia SPEC:** [SPEC-011](../../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md)  

@@ -55,6 +55,34 @@ final class SpEmissionReportLayoutTest extends TestCase
         $this->assertSame($byId, $byCode);
     }
 
+    public function test_hydrate_standard_consulta_usa_repx_host(): void
+    {
+        $this->seedProcess();
+        DB::table('pq_emission_reports')->insert([
+            'process_code' => 'partes.informes.consultaDetallada',
+            'report_code' => 'partes_consultaDetallada_principal',
+            'name' => '<Original>',
+            'is_standard' => 1,
+            'is_principal' => 1,
+            'visible_mobile' => 1,
+            'layout_definition' => '{}',
+            'layout_mime' => 'application/json',
+            'is_active' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $repository = $this->app->make(SpEmissionRepository::class);
+        $xml = $repository->resolveDesignLayoutXmlForSidecarHydrate(
+            'partes.informes.consultaDetallada',
+            'partes_consultaDetallada_principal',
+            true,
+        );
+
+        $this->assertNotNull($xml);
+        $this->assertStringContainsString('XtraReportsLayoutSerializer', $xml);
+    }
+
     public function test_catalogo_con_repx_propio_no_usa_fallback(): void
     {
         $this->seedProcess();

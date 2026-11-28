@@ -3,6 +3,18 @@
 Batería **camino B**: Smart Capture en **Diseñador de emisiones** + **apply** sidecar (whitelist v1).  
 Matriz SoT: Framework [`15-reportes-emisiones-ia-checklist-matriz.json`](../../../PaqSuite-IA-FRAMEWORK/docs/02-producto/15-reportes-emisiones-ia-checklist-matriz.json).
 
+**Sesión DEV (prompts naturales, hallazgos):** [sesion-pruebas-dev-spec-015-chk-emision-ia-2026-11-27.md](./sesion-pruebas-dev-spec-015-chk-emision-ia-2026-11-27.md) — CHK-06 variantes + capturas Caso A/B; § normalidad de uso, brecha smoke vs DEV, **brief por zonas** (Consulta detallada).
+
+### Cómo leer esta guía
+
+| Modo | Uso |
+|------|-----|
+| **Columna «Prompt (pegar en SC)»** | Frases **canónicas** alineadas a la matriz Framework: regresión, comparar oleadas, scripts `eval-emission-ia-*-apply.ps1`. |
+| **Uso normal en producto** | Prompts **naturales** o un **brief por bandas** (*Page Header → campos…*, *Detalle → …*). Ver ejemplo en [sesión DEV](./sesion-pruebas-dev-spec-015-chk-emision-ia-2026-11-27.md#especificación-por-zonas--ejemplo-consulta-detallada); **procedimiento** en [runbook prompts naturales](./runbook-pruebas-prompts-naturales-emision-ia.md). |
+| **Criterio de éxito piloto** | Mismo layout útil que el encadenamiento CHK; sin regresiones de apply; gaps documentados (ítems sin whitelist). |
+
+Los F1 cerrados con prompts canónicos **no sustituyen** prueba en DEV con lenguaje natural ni briefs multi-zona.
+
 Registrar resultados en el **D-VERIFICACION / F** del TR u oleada que corresponda (no usar la tabla histórica de TR-015-update-b):
 
 | Alcance | Cierre (F) / F1 |

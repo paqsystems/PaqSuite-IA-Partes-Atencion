@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Sp\Emissions;
 
+use App\Services\Emissions\PartesConsultaDetalladaEmissionPort;
 use App\Services\Emissions\PartesEmissionDesignRepxBuilder;
 use App\Services\Emissions\PartesPaqueteHorasEmissionPort;
 use Illuminate\Support\Facades\DB;
@@ -413,6 +414,40 @@ final class SpEmissionRepository implements EmissionRepository
     {
         return is_string($definition)
             && str_contains($definition, 'XtraReportsLayoutSerializer');
+    }
+
+    /**
+     * CC-ST-4 hydrate: XML REPX para escribir en sidecar (sin tocar BD).
+     */
+    public function resolveDesignLayoutXmlForSidecarHydrate(
+        string $processCode,
+        string $reportCode,
+        bool $isStandard,
+    ): ?string {
+        $row = DB::table('pq_emission_reports')
+            ->where('process_code', $processCode)
+            ->where('report_code', $reportCode)
+            ->where('is_active', 1)
+            ->first();
+
+        if ($row !== null) {
+            $definition = $row->layout_definition ?? null;
+            if ($this->isRepxXml($definition)) {
+                return (string) $definition;
+            }
+        }
+
+        if ($isStandard && $processCode === PartesConsultaDetalladaEmissionPort::PROCESS_CODE) {
+            $fallback = $this->fallbackConsultaDetalladaLayout();
+
+            return $fallback['layoutDefinition'] ?? null;
+        }
+
+        if ($processCode === PartesPaqueteHorasEmissionPort::PROCESS_CODE) {
+            return PartesEmissionDesignRepxBuilder::paqueteHorasPrincipal();
+        }
+
+        return null;
     }
 
     /**

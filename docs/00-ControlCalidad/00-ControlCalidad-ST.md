@@ -49,6 +49,87 @@ Este archivo **no sustituye** SPEC, HU ni TR: es la **entrada** del circuito de 
 | 1 | 29/10/2026 | Especificado | Consulta Detallada: selector de filas + Emitir solo tildadas |
 | 2 | 05/11/2026 | Pendiente | Diseñador: Prompt-to-Report IA sobre informe **ya confeccionado** (no solo creación nueva) |
 | 3 | 07/11/2026 | Pendiente | Sidecar diseñador: schema por `processCode` + no exponer placeholder **Dataset** (`id`/`label`) |
+| 4 | 27/11/2026 | Especificado | Diseñador: paridad catálogo shell vs Save DX + hydrate BD→sidecar + mapa rutas |
+
+---
+
+## Control de Calidad #4
+
+### Referencia del control
+
+| Campo | Valor |
+|-------|--------|
+| **Fecha** | 27/11/2026 |
+| **Responsable** | Sebastian Tomasini (ST) |
+| **Estado** | Especificado |
+| **Jira** | [PIAPARTES-82](https://paqsystems.atlassian.net/browse/PIAPARTES-82) |
+| **Origen** | Lab `/emisiones/disenador?cliente=DEV` · proceso `partes.informes.consultaDetallada` · sesión SPEC-015 + diseño informes |
+| **Proceso** | Diseñador GEN-15 · menú `partes_disenador_emisiones` · permiso `emission.design` |
+| **Relacionado** | CC #3 (schema/Dataset) — **no fusionar**; misma superficie, síntoma distinto |
+| **Trazabilidad base** | [SPEC-011](../05-open-spec/100-SistemaPartes/SPEC-011-reportes-emisiones.md) · [HU-011](../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) · [TR-011](../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) · [persistencia layouts](../06-operacion/persistencia-layouts-emisiones-dx.md) |
+
+### Hallazgos
+
+1. **SelectBox del shell** (`EmissionReportDesignerPage`): lista variantes desde `GET /api/v1/emissions/design/processes/{processCode}/reports` — en lab aparecen múltiples nombres legibles (`Spike B titulo`, `Consulta Partes`, `Report prueba ia 1`, `Pirulin`, `spike layout b 1`, etc.).
+2. **Diálogo Save / Save As DevExpress**: lista alimentada por `FileReportStorage.GetUrls()` en sidecar = archivos `data/layouts/*.repx` **∩** URLs de `GET …/design/report-storage-urls`. En la misma sesión solo figuran **dos** códigos (`partes.consultaDetallada.principal`, `partes_consultaDetallada_principal`), no el resto del catálogo.
+3. **SoT producto** = `pq_emission_reports.layout_definition` (BD); `.repx` sidecar = copia de trabajo ([persistencia](../06-operacion/persistencia-layouts-emisiones-dx.md)). Variantes en BD sin hydrate en sidecar explican desalineación shell vs Save.
+4. **Convención de código**: coexistencia histórica punto vs guión bajo en `report_code` / `reportUrl` dificulta diagnóstico y Save.
+5. **Mapa de rutas** FE → Laravel → sidecar → DXXRD estaba disperso; se consolidó en runbook operativo (derivación G).
+
+**Evidencia**
+
+| Captura | Descripción |
+|---------|-------------|
+| ![Shell catálogo](../06-operacion/evidencia-manual/cc-st04-shell-selectbox-catalogo-2026-11-27.png) | Combo del shell con N variantes |
+| ![Save DX](../06-operacion/evidencia-manual/cc-st04-save-dialog-catalago-2026-11-27.png) | Diálogo Save con solo 2 códigos técnicos |
+
+**Causa raíz (hipótesis validada en G):** dos fuentes de lista (BD vs disco sidecar filtrado) sin **hydrate** obligatorio al abrir variante; normalización de código incompleta entre capas.
+
+### Mejoras solicitadas
+
+#### SPEC-011 / HU-011 / TR-011 — paridad catálogo + hydrate
+
+*Procesado* · [SPEC-011-update](../05-open-spec/updates/100-SistemaPartes/SPEC-011-update-cc-st-04-2026-11-27-designer-catalog-save-parity.md) · [HU-011-update](../03-historias-usuario/updates/100-SistemaPartes/HU-011-reportes-emisiones-update-cc-st-04-2026-11-27-designer-catalog-save-parity.md) · [TR-011-update](../04-tareas/updates/100-SistemaPartes/TR-011-update-cc-st-04-2026-11-27-designer-catalog-save-parity.md)
+
+- **Paridad:** diálogos Guardar / Guardar como deben ofrecer las **mismas variantes del proceso** que el SelectBox del shell (tras clave canónica), con nombres entendibles donde DX lo permita (D-EM-13).
+- **Hydrate:** al seleccionar variante en shell, si hay `layout_definition` en BD y falta `.repx` en sidecar, materializar copia de trabajo **antes** de editar (opción 3 acordada en sesión SDD).
+- **Rutas:** documentar contrato FE → API → sidecar → DXXRD — [mapa-rutas-disenador-emisiones-gen15.md](../06-operacion/mapa-rutas-disenador-emisiones-gen15.md).
+- **Fuera de este hito:** CC #3 schema `processCode` / Dataset placeholder (épica aparte).
+
+### Criterios de aceptación preliminares
+
+- [ ] **CA-ST4-01** Cardinalidad shell = Save/Save As para el proceso confirmado.
+- [ ] **CA-ST4-02** Variante solo-BD abre layout correcto tras hydrate.
+- [ ] **CA-ST4-03** `report-storage-urls` coherente con `design/reports` en lab DEV.
+- [ ] **CA-ST4-04** Guardar persiste catálogo (callbacks GEN-15); sin regresión Emitir.
+- [ ] **CA-ST4-05** Checklist mapa rutas + evidencia F1.
+
+### Derivación SDD
+
+| Artefacto | Ruta |
+|-----------|------|
+| SPEC-update | `docs/05-open-spec/updates/100-SistemaPartes/SPEC-011-update-cc-st-04-2026-11-27-designer-catalog-save-parity.md` |
+| HU-update | `docs/03-historias-usuario/updates/100-SistemaPartes/HU-011-reportes-emisiones-update-cc-st-04-2026-11-27-designer-catalog-save-parity.md` |
+| TR-update | `docs/04-tareas/updates/100-SistemaPartes/TR-011-update-cc-st-04-2026-11-27-designer-catalog-save-parity.md` |
+| Mapa rutas | `docs/06-operacion/mapa-rutas-disenador-emisiones-gen15.md` |
+| Implementación | Partes BE/FE + coordinación `PaqSuite-IA-FRAMEWORK/services/dx-reporting` (TR §T4) |
+
+Siguiente paso: **A1** SPEC-update → **D1/D** implementación hydrate + tests.
+
+### Checklist diagnóstico lab (pegar en D-VERIFICACION)
+
+```powershell
+# Comparar counts (auth / token según runbook)
+# GET .../emissions/design/processes/partes.informes.consultaDetallada/reports
+# GET .../emissions/design/report-storage-urls?processCode=partes.informes.consultaDetallada
+Get-ChildItem C:\Programacion\PaqSuite-IA-FRAMEWORK\services\dx-reporting\src\PaqSuite.DxReporting\data\layouts\*.repx
+```
+
+| Fuente | Count observado 27/11 (anotar en F) |
+|--------|-------------------------------------|
+| Shell combo | ≥ 8 variantes visibles |
+| Save DX | 2 códigos |
+| `.repx` disco | *(completar en lab)* |
 
 ---
 

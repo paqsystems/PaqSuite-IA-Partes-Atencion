@@ -10,8 +10,8 @@ Jira: PIAPARTES-11
 | ID | SPEC-011 |
 | Título | Reportes / emisiones — diseñar informes y emitir desde Consulta detallada (adopción GEN-15) |
 | Épica / carpeta | `100-SistemaPartes` |
-| Estado | Finalizado |
-| Última actualización | 2026-11-18 (CC #17 GEN-37 — Parte I) |
+| Estado | En revisión |
+| Última actualización | 2026-11-27 (CC ST #4 catálogo vs Save DX — SPEC-update abierto) |
 | Revisión A1 | Apto con observaciones — ambigüedades críticas de universo/MONO cerradas (2026-08-25) |
 | HU relacionada(s) | [HU-011-reportes-emisiones](../../03-historias-usuario/100-SistemaPartes/HU-011-reportes-emisiones.md) |
 | TR relacionada(s) | [TR-011-reportes-emisiones](../../04-tareas/100-SistemaPartes/TR-011-reportes-emisiones.md) |
