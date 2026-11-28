@@ -84,7 +84,14 @@ final class DesignLayoutActionPlanner
             $actions = array_merge($actions, $staticTextActions);
         }
 
-        $detailFieldActions = DesignLayoutDetailFieldHeuristics::tryMatch($message);
+        $multiDetailActions = DesignLayoutMultiDetailFieldHeuristics::tryMatch($message);
+        if ($multiDetailActions !== []) {
+            $actions = array_merge($actions, $multiDetailActions);
+        }
+
+        $detailFieldActions = $multiDetailActions === []
+            ? DesignLayoutDetailFieldHeuristics::tryMatch($message)
+            : [];
         if ($detailFieldActions !== []) {
             $actions = array_merge($actions, $detailFieldActions);
         }
@@ -124,6 +131,13 @@ final class DesignLayoutActionPlanner
             $actions[] = $this->action('setPageOrientation', ['orientation' => 'landscape']);
         } elseif (preg_match('/(vertical|portrait|retratro)/u', $text) === 1) {
             $actions[] = $this->action('setPageOrientation', ['orientation' => 'portrait']);
+        }
+
+        if ($actions === []) {
+            $catalogActions = DesignLayoutChkCatalogPlanner::tryMatch($message);
+            if ($catalogActions !== []) {
+                $actions = $catalogActions;
+            }
         }
 
         $actions = $this->sanitizeActions($actions);

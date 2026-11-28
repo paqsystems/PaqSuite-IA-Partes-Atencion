@@ -81,6 +81,10 @@ export async function handleEmissionDesignSmartCaptureSend(
       processCode: handlers.processCode,
       reportUrl: handlers.reportUrl,
       locale: handlers.locale ?? 'es',
+      emissionDesign: {
+        processCode: handlers.processCode,
+        semanticSchema: `emission-designer-schema://${handlers.processCode}`,
+      },
     },
     pendingChoice: handlers.pendingChoice,
     images: payload.images ?? [],

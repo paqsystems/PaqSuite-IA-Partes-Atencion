@@ -50,6 +50,12 @@ Registrar resultados en el **D-VERIFICACION / F** del TR u oleada que correspond
 
 **Cómo pegar el prompt:** abrí Smart Capture, copiá el texto de la columna **Prompt (pegar en SC)** y **Enviar**. Confirmá apply si el asistente lo ofrece.
 
+**Contraste catálogo v5 (matriz Framework) vs piloto Partes:** la columna **Prompt** de esta guía usa frases **piloto** (campos y bandas concretos). No sustituye el `promptCanonico` del JSON. Para comprobar la frontera **sin motor oleada 2**, pegá **literal** en SC:
+
+`Agregá la columna `{variable}` en la banda `{banda}``
+
+**Éxito oleada 1:** el asistente **no** aplica al lienzo y explica que `{variable}` / `{banda}` no son válidos frente al esquema autorizado (p. ej. solo **DetailBand** para columnas). **No** uses una frase natural con «observación» / «detalle» como si fuera este contraste — el motor piloto seguirá aplicando.
+
 **Ítems `diferido` / `futuro_producto`:** éxito = **no** mutar el REPX (sin apply o mensaje claro de límite); anotá el texto de la respuesta.
 
 **Ítems `mvp_parcial` en la tabla:** viene de la **matriz Framework** (alcance del checklist histórico ≠ 100 % paridad producto). **No** indica oleada pendiente: si hay fila en la tabla **Cierre (F)** arriba, el ítem ya tiene **F Finalizado** y smoke documentado.
@@ -85,12 +91,12 @@ Columna **Estado (matriz):** `mvp` | `mvp_parcial` | `diferido` | `futuro_produc
 | CHK-19 | **mvp_parcial** (F cerrado) | `Agrupá por cliente` | Igual prompt CHK-18 + caption **Cliente:** + negrita (subrayado no MVP); `eval-emission-ia-oleada7-chk19-apply.ps1` | **F cerrado** [oleada 7](../04-tareas/100-SistemaPartes/F-TR-015-update-h-oleada7-chk19.md) — matriz: sin subrayado obligatorio |
 | CHK-20 | **mvp_parcial** (F cerrado) | `Agrupá por cliente y sumá los minutos` | Batch grupo + suma; copy **«Total minutos»** (no literal «Total:» genérico); `eval-emission-ia-chk20-apply.ps1` | **F cerrado** [oleada 7b](../04-tareas/100-SistemaPartes/F-TR-015-update-i-oleada7b-chk20.md) |
 | CHK-21 | **mvp_parcial** (F cerrado) | `Agregá un segundo nivel de agrupación por fecha dentro de cada cliente` | **Un turno:** sin apply → `useTwoTurns`. Segundo nivel: **LAB-21** (dos turnos cliente → fecha) | **F cerrado** [oleada 8](../04-tareas/100-SistemaPartes/F-TR-015-update-j-oleada8-chk21.md) · opción B |
-| CHK-22 | diferido | `Arma el detalle en columnas: fecha, cliente, minutos` | Sin apply | PHPUnit |
+| CHK-22 | activo (matriz v5) | **Canónico:** `Agregá los campos {variable} … en {banda}` — **ej. piloto:** `Arma el detalle en columnas: fecha, cliente, minutos` | Oleada 2 planner (N× `addDetailField`); sin apply hasta motor GEN | Planner (oleada 2) |
 | CHK-23 | futuro_producto | `Usá papel continuo sin alto fijo para comanda` | **N/A** piloto Partes; anotar N/A | — |
 | CHK-24 | futuro_producto | `Poné una tabla dinámica en el pie de página` | **N/A** | — |
 | CHK-25 | futuro_producto | `Si el grupo no terminó no imprimas totales en el pie` | **N/A** | — |
 | CHK-26 | **diferido** | `Poné el formato en horizontal` | Apply → orientación horizontal (Preview / Page Settings); alias: `Formato horizontal` | Código lab (`setPageOrientation`); **prioridad diferida** tras CHK-15..17 |
-| CHK-28 | **mvp** | `Quitá la columna observación del detalle` | Sin observación en **detalle** ni título en page header; re-prompt → noop | **F cerrado** [oleada 12](../04-tareas/100-SistemaPartes/F-TR-015-update-n-oleada12-chk28.md) |
+| CHK-28 | **mvp** | `Quitá {variable} de {banda}` — **ej. piloto:** `Quitá observación del detalle` | SoT genérico Framework [`el-smart-capture-del-disenador-de-reportes.md`](../../../PaqSuite-IA-FRAMEWORK/docs/02-producto/el-smart-capture-del-disenador-de-reportes.md) (CHK-28); sin la variable en la banda indicada (si no se nombra banda, todas); re-prompt → noop | **F cerrado** [oleada 12](../04-tareas/100-SistemaPartes/F-TR-015-update-n-oleada12-chk28.md) — prompt canónico **reemplazado** por forma generalizada |
 | CHK-29 | futuro_producto | `Sacá la agrupación por cliente` | **N/A** | — |
 | CHK-30 | futuro_producto | `Eliminá el campo calculado de duración total` | **N/A** | — |
 | CHK-31 | futuro_producto | `Quitá el texto fijo que dice Borrador en el detalle` | **N/A** | — |

@@ -82,6 +82,10 @@ final class DesignLayoutReportFooterHeuristics
             return false;
         }
 
+        if (preg_match('/p[aá]gina\s+footer|page\s+footer/u', $text) === 1) {
+            return false;
+        }
+
         return preg_match('/pie\s+(del|de)\s+informe/u', $text) === 1
             && preg_match('/totaliz|registros?/u', $text) !== 1;
     }

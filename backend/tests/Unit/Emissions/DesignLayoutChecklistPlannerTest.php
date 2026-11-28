@@ -3,6 +3,7 @@
 namespace Tests\Unit\Emissions;
 
 use App\Services\Emissions\DesignAssistant\DesignLayoutActionPlanner;
+use App\Services\Emissions\DesignAssistant\DesignLayoutChkCatalogBridge;
 use PaqSuite\LaravelCore\ChatAssistant\Contracts\LlmChatCompletionClient;
 use PaqSuite\LaravelCore\Llm\LlmCredentialContext;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +14,10 @@ use PHPUnit\Framework\TestCase;
  */
 final class DesignLayoutChecklistPlannerTest extends TestCase
 {
-    private const MATRIX_PATH = 'C:/Programacion/PaqSuite-IA-FRAMEWORK/docs/02-producto/15-reportes-emisiones-ia-checklist-matriz.json';
+    private static function matrixPath(): string
+    {
+        return DesignLayoutChkCatalogBridge::matrixPath();
+    }
 
     /**
      * @dataProvider checklistMatrixProvider
@@ -43,7 +47,20 @@ final class DesignLayoutChecklistPlannerTest extends TestCase
             return;
         }
 
+        if ($plannerExpect === 'mapped') {
+            $plannerExpect = 'actions';
+        }
+
         $this->assertNotSame([], $actions, "{$checkId}: se esperaban acciones");
+
+        if ($checkId === 'CHK-22') {
+            $this->assertGreaterThanOrEqual(2, count($actions), "{$checkId}: se esperaban al menos 2 addDetailField");
+            foreach ($actions as $action) {
+                $this->assertSame('addDetailField', $action['action'] ?? null, "{$checkId}: action");
+            }
+
+            return;
+        }
 
         foreach ($expectedActions as $index => $expected) {
             $this->assertArrayHasKey($index, $actions, "{$checkId}: falta acción índice {$index}");
@@ -63,7 +80,8 @@ final class DesignLayoutChecklistPlannerTest extends TestCase
 
     public static function checklistMatrixProvider(): array
     {
-        if (! is_readable(self::MATRIX_PATH)) {
+        $matrixPath = self::matrixPath();
+        if (! is_readable($matrixPath)) {
             return [
                 'matrix_missing' => [
                     'CHK-00',
@@ -75,7 +93,7 @@ final class DesignLayoutChecklistPlannerTest extends TestCase
             ];
         }
 
-        $decoded = json_decode((string) file_get_contents(self::MATRIX_PATH), true, 512, JSON_THROW_ON_ERROR);
+        $decoded = json_decode((string) file_get_contents($matrixPath), true, 512, JSON_THROW_ON_ERROR);
         $items = is_array($decoded['items'] ?? null) ? $decoded['items'] : [];
         $rows = [];
 
@@ -103,9 +121,12 @@ final class DesignLayoutChecklistPlannerTest extends TestCase
             $replyKey = isset($item['expectedReplyKey']) && is_string($item['expectedReplyKey'])
                 ? $item['expectedReplyKey']
                 : null;
+            $piloto = trim((string) ($item['ejemploPiloto'] ?? ''));
+            $prompt = $piloto !== '' ? $piloto : (string) ($item['promptCanonico'] ?? '');
+
             $rows[(string) ($item['id'] ?? 'CHK')] = [
                 (string) ($item['id'] ?? 'CHK'),
-                (string) ($item['promptCanonico'] ?? ''),
+                $prompt,
                 $plannerExpect,
                 $expectedActions,
                 $replyKey,
@@ -117,7 +138,7 @@ final class DesignLayoutChecklistPlannerTest extends TestCase
 
     public function test_matrix_file_is_readable(): void
     {
-        $this->assertFileIsReadable(self::MATRIX_PATH);
+        $this->assertFileIsReadable(self::matrixPath());
     }
 
     private function unusedLlm(): LlmChatCompletionClient

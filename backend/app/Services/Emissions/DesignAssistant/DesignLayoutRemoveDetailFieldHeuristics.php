@@ -31,7 +31,7 @@ final class DesignLayoutRemoveDetailFieldHeuristics
         }
 
         $field = DesignLayoutSemanticFieldResolver::resolveFromMessage($message);
-        if ($field !== 'observacion') {
+        if ($field === null || ! DesignLayoutWhitelist::isSchemaField($field)) {
             return [];
         }
 
