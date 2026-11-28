@@ -218,4 +218,5 @@ Ninguna bloqueante. HU permite gráfico paquete opcional (A1-M2); TR-007 exigía
 | 2026-11-27 | Parte C SDD — TR-update desde SPEC-007-update + HU-007-update (PIAPARTES-83). |
 | 2026-11-27 | Parte C1 — veredicto **Apto**; decisiones D-MV1-C1-01…05 en §4.1. |
 | 2026-11-27 | Parte D1 — [plan](./D1-TR-007-update-mobile-v1-alcance-gen22.md). |
-| 2026-11-27 | Parte D — T1–T8, T6–T7 FE; Vitest policy/home/menú OK. Pendiente T9 smoke/build mobile manual. |
+| 2026-11-27 | Parte D — T1–T8, T6–T7 FE; Vitest policy/home/menú OK; `npm run build:mobile` OK. Pendiente T9 smoke emulador §9. |
+| 2026-11-27 | Parte E — `php artisan test`: abort por `max_execution_time` 80s tras ExampleTest (exit 255); 3 fallos BE previos no mobile en admin/emisiones. `npm run test`: 241/242 OK; fallo `ReportDesignerHostPage.test.tsx` (timeout DX, ajeno). Subset mobile: 14 tests OK (policy, home, menú, consultaDetalladaHostContext). E2E no corrido (§8). Jira PIAPARTES-85 comentario E. |

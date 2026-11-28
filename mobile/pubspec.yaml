@@ -1,0 +1,25 @@
+name: partes_atencion_mobile
+description: Partes-Atención — cliente Flutter nativo (MONO). Scaffold v1 GEN-22 nativo.
+publish_to: none
+version: 0.1.0-scaffold
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  http: ^1.2.2
+  flutter_secure_storage: ^9.2.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

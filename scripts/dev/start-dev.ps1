@@ -71,9 +71,9 @@ if ($null -ne (Test-ProcessCommandLineMatch -Pattern $servePattern)) {
 }
 else {
     Start-Process -FilePath $php -ArgumentList @(
-        (Join-Path $backend 'artisan'), 'serve', '--host=127.0.0.1', "--port=$BackendPort"
+        (Join-Path $backend 'artisan'), 'serve', '--host=0.0.0.0', "--port=$BackendPort"
     ) -WorkingDirectory $backend -WindowStyle Minimized
-    Write-Host "[$projectLabel] Backend http://127.0.0.1:$BackendPort"
+    Write-Host "[$projectLabel] Backend http://127.0.0.1:$BackendPort (0.0.0.0 — emulador: http://10.0.2.2:$BackendPort)"
 }
 
 Write-Host ''
